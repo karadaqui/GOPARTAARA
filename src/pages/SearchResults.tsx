@@ -166,6 +166,7 @@ const SearchResults = () => {
     }
   };
 
+  const toggleSupplier = (s: string) => {
     setSelectedSuppliers((prev) =>
       prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
     );
