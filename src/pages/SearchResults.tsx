@@ -144,7 +144,7 @@ const SearchResults = () => {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
               {suppliers.map((supplier) => (
                 <a
                   key={supplier.name}
@@ -153,22 +153,24 @@ const SearchResults = () => {
                   rel="noopener noreferrer"
                   className="group glass rounded-2xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.02]"
                 >
-                  <div className={`h-24 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center`}>
-                    <span className="text-white font-display font-bold text-3xl tracking-wide opacity-90 group-hover:opacity-100 transition-opacity">
+                  <div className={`h-36 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center`}>
+                    <span className="text-white font-display font-bold text-5xl tracking-wide opacity-90 group-hover:opacity-100 transition-opacity">
                       {supplier.initials}
                     </span>
                   </div>
-                  <div className="p-5">
-                    <h3 className="font-display font-semibold text-base mb-1">
+                  <div className="p-6">
+                    <h3 className="font-display font-semibold text-lg mb-1">
                       {supplier.name}
                     </h3>
-                    <p className="text-xs text-muted-foreground mb-4">
+                    <p className="text-sm text-muted-foreground mb-5">
                       {supplier.description}
                     </p>
-                    <div className="flex items-center gap-1.5 text-sm text-primary font-medium">
-                      <ExternalLink size={14} />
-                      Search Now
-                    </div>
+                    <Button className="w-full rounded-xl gap-2" asChild>
+                      <span>
+                        <ExternalLink size={16} />
+                        Search Now
+                      </span>
+                    </Button>
                   </div>
                 </a>
               ))}
