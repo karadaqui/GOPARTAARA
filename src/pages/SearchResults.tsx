@@ -41,38 +41,25 @@ const availabilityConfig = {
   out_of_stock: { label: "Out of Stock", className: "text-red-400 bg-red-400/10" },
 };
 
-const supplierLogos: Record<string, string> = {
-  "Euro Car Parts": "https://logo.clearbit.com/eurocarparts.com",
-  "GSF Car Parts": "https://logo.clearbit.com/gsfcarparts.com",
-  "AutoDoc": "https://logo.clearbit.com/autodoc.co.uk",
-  "eBay Motors": "https://logo.clearbit.com/ebay.co.uk",
-  "Car Parts 4 Less": "https://logo.clearbit.com/carparts4less.co.uk",
-  "Halfords": "https://logo.clearbit.com/halfords.com",
+const supplierBranding: Record<string, { color: string; initials: string }> = {
+  "Euro Car Parts": { color: "from-blue-600 to-blue-800", initials: "ECP" },
+  "GSF Car Parts": { color: "from-green-600 to-green-800", initials: "GSF" },
+  "AutoDoc": { color: "from-orange-500 to-orange-700", initials: "AD" },
+  "eBay Motors": { color: "from-red-500 to-yellow-500", initials: "eBay" },
+  "Car Parts 4 Less": { color: "from-purple-600 to-purple-800", initials: "CP4L" },
+  "Halfords": { color: "from-sky-500 to-sky-700", initials: "H" },
 };
 
 const SupplierImage = ({ supplier }: { supplier: string }) => {
-  const [imgError, setImgError] = useState(false);
-  const logoUrl = supplierLogos[supplier];
-
-  if (!logoUrl || imgError) {
-    return (
-      <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-secondary/50">
-        <Package size={32} className="text-muted-foreground/40" />
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60 font-medium">
-          {supplier}
-        </span>
-      </div>
-    );
-  }
+  const brand = supplierBranding[supplier];
+  const gradient = brand?.color || "from-muted to-muted-foreground/20";
+  const initials = brand?.initials || supplier.charAt(0);
 
   return (
-    <div className="w-full h-full flex items-center justify-center bg-secondary/50 p-8">
-      <img
-        src={logoUrl}
-        alt={supplier}
-        className="max-h-16 max-w-[80%] object-contain opacity-70"
-        onError={() => setImgError(true)}
-      />
+    <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${gradient}`}>
+      <span className="text-white font-display font-bold text-2xl tracking-wide opacity-90">
+        {initials}
+      </span>
     </div>
   );
 };
