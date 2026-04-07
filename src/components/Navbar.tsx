@@ -1,40 +1,55 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, LogOut, User, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
-  { label: "Home", href: "#home" },
-  { label: "Search", href: "#search" },
-  { label: "Pricing", href: "#pricing" },
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
+  { label: "Home", href: "/" },
+  { label: "Search", href: "/#search" },
+  { label: "Pricing", href: "/#pricing" },
+  { label: "About", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavClick = (href: string) => {
+    setOpen(false);
+    if (href.startsWith("/#")) {
+      const id = href.slice(2);
+      if (location.pathname === "/") {
+        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+      } else {
+        navigate("/", { state: { scrollTo: id } });
+      }
+    } else {
+      navigate(href);
+    }
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass">
       <div className="container flex items-center justify-between h-16">
-        <a href="#home" className="font-display text-2xl font-bold tracking-tight">
+        <button onClick={() => handleNavClick("/")} className="font-display text-2xl font-bold tracking-tight">
           <span className="text-primary">PART</span>
           <span className="text-foreground">ARA</span>
-        </a>
+        </button>
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
           {navLinks.map((l) => (
-            <a
+            <button
               key={l.href}
-              href={l.href}
+              onClick={() => handleNavClick(l.href)}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               {l.label}
-            </a>
+            </button>
           ))}
           {!loading && (
             user ? (
@@ -77,14 +92,13 @@ const Navbar = () => {
         <div className="md:hidden glass border-t border-border pb-4">
           <div className="container flex flex-col gap-3 pt-3">
             {navLinks.map((l) => (
-              <a
+              <button
                 key={l.href}
-                href={l.href}
-                onClick={() => setOpen(false)}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+                onClick={() => handleNavClick(l.href)}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2 text-left"
               >
                 {l.label}
-              </a>
+              </button>
             ))}
             {!loading && (
               user ? (
