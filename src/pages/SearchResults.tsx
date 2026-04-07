@@ -41,29 +41,11 @@ const availabilityConfig = {
   out_of_stock: { label: "Out of Stock", className: "text-red-400 bg-red-400/10" },
 };
 
-const supplierBranding: Record<string, { color: string; initials: string }> = {
-  "Euro Car Parts": { color: "from-blue-600 to-blue-800", initials: "ECP" },
-  "GSF Car Parts": { color: "from-green-600 to-green-800", initials: "GSF" },
-  "AutoDoc": { color: "from-orange-500 to-orange-700", initials: "AD" },
-  "eBay Motors": { color: "from-red-500 to-yellow-500", initials: "eBay" },
-  "Car Parts 4 Less": { color: "from-purple-600 to-purple-800", initials: "CP4L" },
-};
-
-const SupplierImage = ({ supplier, partName }: { supplier: string; partName: string }) => {
-  const brand = supplierBranding[supplier];
-  const gradient = brand?.color || "from-muted to-muted-foreground/20";
-  const initials = brand?.initials || supplier.charAt(0);
-
-  return (
-    <div className={`w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br ${gradient} px-4`}>
-      <span className="text-white/90 font-display font-bold text-2xl tracking-wide">
-        {initials}
-      </span>
-      <span className="text-white/60 text-[11px] text-center leading-tight line-clamp-2 max-w-[90%]">
-        {partName}
-      </span>
-    </div>
-  );
+const supplierColors: Record<string, string> = {
+  "eBay Motors": "text-red-400",
+  "AutoDoc": "text-orange-400",
+  "Amazon UK": "text-yellow-400",
+  "RockAuto": "text-green-400",
 };
 
 type SortKey = "price_asc" | "price_desc" | "delivery" | "rating";
