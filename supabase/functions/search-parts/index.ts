@@ -4,7 +4,7 @@ const corsHeaders = {
 };
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
-const AI_GATEWAY_URL = "https://ai-gateway.lovable.dev/v1/chat/completions";
+const AI_GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
 const BodySchema = z.object({
   query: z.string().min(1).max(500),
