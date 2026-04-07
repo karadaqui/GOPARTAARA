@@ -43,6 +43,26 @@ const Auth = () => {
     }
   };
 
+  const handleOAuth = async (provider: "google" | "apple") => {
+    setOauthLoading(provider);
+    try {
+      const result = await lovable.auth.signInWithOAuth(provider, {
+        redirect_uri: window.location.origin,
+      });
+      if (result.error) {
+        toast({ title: "Error", description: String(result.error), variant: "destructive" });
+      } else if (result.redirected) {
+        return;
+      } else {
+        navigate("/");
+      }
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "OAuth sign in failed", variant: "destructive" });
+    } finally {
+      setOauthLoading(null);
+    }
+  
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       {/* Background glow */}
