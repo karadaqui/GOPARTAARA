@@ -39,10 +39,13 @@ const Navbar = () => {
           {!loading && (
             user ? (
               <div className="flex items-center gap-3">
-                <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                <button
+                  onClick={() => navigate("/dashboard")}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+                >
                   <User size={14} />
-                  {user.email}
-                </span>
+                  Dashboard
+                </button>
                 <Button size="sm" variant="outline" onClick={signOut} className="gap-1.5">
                   <LogOut size={14} />
                   Sign Out
