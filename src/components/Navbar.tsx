@@ -40,6 +40,13 @@ const Navbar = () => {
             user ? (
               <div className="flex items-center gap-3">
                 <button
+                  onClick={() => navigate("/saved")}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+                >
+                  <Bookmark size={14} />
+                  Saved Parts
+                </button>
+                <button
                   onClick={() => navigate("/dashboard")}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
                 >
