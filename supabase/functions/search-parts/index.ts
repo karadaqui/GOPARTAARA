@@ -42,7 +42,7 @@ IMPORTANT: The search results MUST be relevant to the exact query. If the query 
 Each result must have these fields:
 - partName: descriptive name including the vehicle make/model and part type from the query (e.g., "Volvo XC60 Right Wing Mirror Cover - Gloss Black")
 - partNumber: realistic part number (e.g., "31402680", "ECP-48291")
-- supplier: one of these real suppliers: "Euro Car Parts", "GSF Car Parts", "AutoDoc", "eBay Motors", "Car Parts 4 Less", "Halfords"
+- supplier: one of these real suppliers: "Euro Car Parts", "GSF Car Parts", "AutoDoc", "eBay Motors", "Car Parts 4 Less"
 - price: price in GBP as a number (realistic UK pricing)
 - originalPrice: original price before discount (null if no discount, number otherwise)  
 - availability: one of "in_stock", "low_stock", "out_of_stock"
@@ -105,18 +105,17 @@ IMPORTANT: Return ONLY the JSON array, no markdown, no explanation.`;
     }
 
     // Build real supplier search URLs
-    const supplierSearchUrls: Record<string, (q: string) => string> = {
-      "Euro Car Parts": (q) => `https://www.eurocarparts.com/${q.toLowerCase().replace(/\s+/g, "-")}`,
-      "GSF Car Parts": (q) => `https://www.gsfcarparts.com/search?q=${encodeURIComponent(q)}`,
-      "AutoDoc": (q) => `https://www.autodoc.co.uk/search/${encodeURIComponent(q)}`,
-      "eBay Motors": (q) => `https://www.ebay.co.uk/sch/i.html?_nkw=${encodeURIComponent(q)}&_sacat=9801`,
-      "Car Parts 4 Less": (q) => `https://www.carparts4less.co.uk/search/${encodeURIComponent(q)}`,
-      "Halfords": (q) => `https://www.halfords.com/search?q=${encodeURIComponent(q)}`,
+    const searchQuery = query.replace(/\s+/g, "+");
+    const supplierSearchUrls: Record<string, string> = {
+      "Euro Car Parts": `https://www.eurocarparts.com/search?q=${searchQuery}`,
+      "GSF Car Parts": `https://www.gsfcarparts.com/search?q=${searchQuery}`,
+      "AutoDoc": `https://www.autodoc.co.uk/search?q=${searchQuery}`,
+      "eBay Motors": `https://www.ebay.co.uk/sch/i.html?_nkw=${searchQuery}&_sacat=9801`,
+      "Car Parts 4 Less": `https://www.carparts4less.co.uk/search/${encodeURIComponent(query)}`,
     };
 
     const results = (Array.isArray(parts) ? parts : []).map((p: any, i: number) => {
       const supplier = p.supplier || "Unknown";
-      const urlBuilder = supplierSearchUrls[supplier];
       return {
         id: `part-${i}-${Date.now()}`,
         partName: p.partName || "Unknown Part",
@@ -129,7 +128,7 @@ IMPORTANT: Return ONLY the JSON array, no markdown, no explanation.`;
           : "in_stock",
         deliveryDays: typeof p.deliveryDays === "number" ? p.deliveryDays : 3,
         imageUrl: "/placeholder.svg",
-        url: urlBuilder ? urlBuilder(p.partName || query) : `https://www.google.com/search?q=${encodeURIComponent((p.partName || query) + " " + supplier)}`,
+        url: supplierSearchUrls[supplier] || `https://www.google.com/search?q=${searchQuery}+${supplier.replace(/\s+/g, "+")}`,
         rating: typeof p.rating === "number" ? p.rating : 4.0,
       };
     });
