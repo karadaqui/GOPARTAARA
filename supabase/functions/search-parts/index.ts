@@ -83,11 +83,24 @@ IMPORTANT: Return ONLY the JSON array, no markdown, no explanation.`;
     // Parse the JSON from the AI response (strip markdown fences if present)
     let parts;
     try {
-      const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      let cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      // Fix common AI JSON typos like "4.7\n  1}" -> "4.7\n  }"
+      cleaned = cleaned.replace(/(\d)\s*1}/g, "$1}");
       parts = JSON.parse(cleaned);
-    } catch {
+    } catch (parseErr) {
       console.error("Failed to parse AI response:", content);
-      parts = [];
+      // Try extracting just the array portion
+      try {
+        const arrayMatch = content.match(/\[[\s\S]*\]/);
+        if (arrayMatch) {
+          let extracted = arrayMatch[0].replace(/(\d)\s*1}/g, "$1}");
+          parts = JSON.parse(extracted);
+        } else {
+          parts = [];
+        }
+      } catch {
+        parts = [];
+      }
     }
 
     // Add IDs to each part
