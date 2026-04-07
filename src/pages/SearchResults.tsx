@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -9,13 +9,12 @@ import {
   SlidersHorizontal,
   ArrowUpDown,
   Check,
-  X,
   ExternalLink,
   Bookmark,
   Loader2,
   Package,
   TruckIcon,
-  Clock,
+  AlertCircle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,52 +26,13 @@ type PartResult = {
   partNumber: string;
   supplier: string;
   price: number;
-  originalPrice?: number;
+  originalPrice?: number | null;
   availability: "in_stock" | "low_stock" | "out_of_stock";
   deliveryDays: number;
   imageUrl: string;
   url: string;
   rating: number;
 };
-
-const MOCK_SUPPLIERS = [
-  "Euro Car Parts",
-  "GSF Car Parts",
-  "AutoDoc",
-  "eBay Motors",
-  "Car Parts 4 Less",
-  "Halfords",
-];
-
-function generateMockResults(query: string): PartResult[] {
-  if (!query) return [];
-  const results: PartResult[] = [];
-  const stockStates: PartResult["availability"][] = [
-    "in_stock",
-    "low_stock",
-    "out_of_stock",
-  ];
-
-  for (let i = 0; i < 12; i++) {
-    const supplier = MOCK_SUPPLIERS[i % MOCK_SUPPLIERS.length];
-    const basePrice = 15 + Math.floor(Math.random() * 180);
-    const hasDiscount = Math.random() > 0.6;
-    results.push({
-      id: `part-${i}`,
-      partName: `${query} — ${["OEM", "Aftermarket", "Premium", "Budget"][i % 4]} Fit`,
-      partNumber: `${supplier.substring(0, 3).toUpperCase()}-${1000 + i}`,
-      supplier,
-      price: hasDiscount ? +(basePrice * 0.85).toFixed(2) : basePrice,
-      originalPrice: hasDiscount ? basePrice : undefined,
-      availability: stockStates[i % 3],
-      deliveryDays: 1 + (i % 5),
-      imageUrl: "/placeholder.svg",
-      url: "#",
-      rating: +(3.5 + Math.random() * 1.5).toFixed(1),
-    });
-  }
-  return results;
-}
 
 const availabilityConfig = {
   in_stock: { label: "In Stock", className: "text-green-400 bg-green-400/10" },
@@ -95,8 +55,39 @@ const SearchResults = () => {
   const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [results, setResults] = useState<PartResult[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
-  const results = useMemo(() => generateMockResults(activeQuery), [activeQuery]);
+  const fetchResults = useCallback(async (q: string) => {
+    if (!q.trim()) return;
+    setSearching(true);
+    setSearchError(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("search-parts", {
+        body: { query: q.trim() },
+      });
+      if (error) throw error;
+      setResults(data?.results || []);
+    } catch (err: any) {
+      console.error("Search failed:", err);
+      setSearchError(err.message || "Search failed. Please try again.");
+      setResults([]);
+    } finally {
+      setSearching(false);
+    }
+  }, []);
+
+  // Search on mount if query param exists
+  useEffect(() => {
+    if (initialQuery) fetchResults(initialQuery);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Derive unique suppliers from results for filter chips
+  const supplierList = useMemo(
+    () => [...new Set(results.map((r) => r.supplier))].sort(),
+    [results]
+  );
 
   const filtered = useMemo(() => {
     let items = [...results];
@@ -120,6 +111,8 @@ const SearchResults = () => {
     if (!query.trim()) return;
     setActiveQuery(query.trim());
     setSearchParams({ q: query.trim() });
+    setSelectedSuppliers([]);
+    fetchResults(query.trim());
   };
 
   const toggleSupplier = (s: string) => {
@@ -173,9 +166,12 @@ const SearchResults = () => {
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search car parts..."
                 className="pl-10 bg-secondary border-border h-11 rounded-xl"
+                disabled={searching}
               />
             </div>
-            <Button type="submit" className="rounded-xl h-11 px-6">Search</Button>
+            <Button type="submit" className="rounded-xl h-11 px-6" disabled={searching}>
+              {searching ? <Loader2 size={16} className="animate-spin" /> : "Search"}
+            </Button>
           </form>
         </div>
       </div>
@@ -184,7 +180,12 @@ const SearchResults = () => {
         {/* Toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <p className="text-sm text-muted-foreground">
-            {activeQuery ? (
+            {searching ? (
+              <span className="flex items-center gap-2">
+                <Loader2 size={14} className="animate-spin" />
+                Searching suppliers...
+              </span>
+            ) : activeQuery ? (
               <>
                 <span className="text-foreground font-medium">{filtered.length}</span> results for{" "}
                 <span className="text-foreground font-medium">"{activeQuery}"</span>
@@ -232,7 +233,7 @@ const SearchResults = () => {
         </div>
 
         {/* Filters panel */}
-        {showFilters && (
+        {showFilters && supplierList.length > 0 && (
           <div className="glass rounded-2xl p-5 mb-6">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold">Suppliers</h3>
@@ -246,7 +247,7 @@ const SearchResults = () => {
               )}
             </div>
             <div className="flex flex-wrap gap-2">
-              {MOCK_SUPPLIERS.map((s) => {
+              {supplierList.map((s) => {
                 const active = selectedSuppliers.includes(s);
                 return (
                   <button
@@ -266,8 +267,41 @@ const SearchResults = () => {
           </div>
         )}
 
+        {/* Error state */}
+        {searchError && (
+          <div className="glass rounded-2xl p-8 text-center mb-6">
+            <AlertCircle size={32} className="text-destructive mx-auto mb-3" />
+            <p className="text-sm text-muted-foreground">{searchError}</p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-4 rounded-xl"
+              onClick={() => fetchResults(activeQuery)}
+            >
+              Try again
+            </Button>
+          </div>
+        )}
+
+        {/* Loading state */}
+        {searching && (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="glass rounded-2xl overflow-hidden animate-pulse">
+                <div className="aspect-[4/3] bg-secondary/50" />
+                <div className="p-5 space-y-3">
+                  <div className="h-3 bg-secondary rounded w-1/3" />
+                  <div className="h-4 bg-secondary rounded w-3/4" />
+                  <div className="h-3 bg-secondary rounded w-1/2" />
+                  <div className="h-6 bg-secondary rounded w-1/3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Results grid */}
-        {activeQuery ? (
+        {!searching && !searchError && activeQuery && filtered.length > 0 && (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((part) => {
               const avail = availabilityConfig[part.availability];
@@ -276,13 +310,11 @@ const SearchResults = () => {
                   key={part.id}
                   className="glass rounded-2xl overflow-hidden flex flex-col hover:border-primary/30 transition-colors"
                 >
-                  {/* Image */}
                   <div className="aspect-[4/3] bg-secondary/50 flex items-center justify-center p-6">
                     <Package size={48} className="text-muted-foreground/30" />
                   </div>
 
                   <div className="p-5 flex flex-col flex-1">
-                    {/* Supplier badge */}
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
                       {part.supplier}
                     </span>
@@ -293,7 +325,6 @@ const SearchResults = () => {
 
                     <p className="text-xs text-muted-foreground mb-3">#{part.partNumber}</p>
 
-                    {/* Price */}
                     <div className="flex items-baseline gap-2 mb-3">
                       <span className="font-display text-xl font-bold text-foreground">
                         £{part.price.toFixed(2)}
@@ -305,24 +336,33 @@ const SearchResults = () => {
                       )}
                     </div>
 
-                    {/* Availability + delivery */}
                     <div className="flex items-center gap-3 mb-4 text-xs">
                       <span className={`px-2 py-0.5 rounded-full font-medium ${avail.className}`}>
                         {avail.label}
                       </span>
                       <span className="flex items-center gap-1 text-muted-foreground">
                         <TruckIcon size={12} />
-                        {part.deliveryDays === 1
-                          ? "Next day"
-                          : `${part.deliveryDays} days`}
+                        {part.deliveryDays === 1 ? "Next day" : `${part.deliveryDays} days`}
                       </span>
                     </div>
 
-                    {/* Actions */}
                     <div className="mt-auto flex gap-2">
-                      <Button size="sm" className="flex-1 rounded-xl text-xs h-9 gap-1.5">
-                        <ExternalLink size={13} />
-                        View
+                      <Button
+                        size="sm"
+                        className="flex-1 rounded-xl text-xs h-9 gap-1.5"
+                        asChild={part.url !== "#"}
+                      >
+                        {part.url !== "#" ? (
+                          <a href={part.url} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink size={13} />
+                            View
+                          </a>
+                        ) : (
+                          <>
+                            <ExternalLink size={13} />
+                            View
+                          </>
+                        )}
                       </Button>
                       <Button
                         size="sm"
@@ -343,7 +383,21 @@ const SearchResults = () => {
               );
             })}
           </div>
-        ) : (
+        )}
+
+        {/* Empty state after search */}
+        {!searching && !searchError && activeQuery && filtered.length === 0 && results.length > 0 && (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <SlidersHorizontal size={48} className="text-muted-foreground/20 mb-4" />
+            <h2 className="font-display text-xl font-semibold mb-2">No matching results</h2>
+            <p className="text-sm text-muted-foreground max-w-md">
+              Try adjusting your filters to see more results.
+            </p>
+          </div>
+        )}
+
+        {/* Initial empty state */}
+        {!searching && !searchError && !activeQuery && (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <Search size={48} className="text-muted-foreground/20 mb-4" />
             <h2 className="font-display text-xl font-semibold mb-2">Search for car parts</h2>
