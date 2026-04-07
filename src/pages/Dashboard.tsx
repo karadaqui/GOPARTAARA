@@ -27,6 +27,7 @@ const Dashboard = () => {
 
   const [profile, setProfile] = useState<Tables<"profiles"> | null>(null);
   const [displayName, setDisplayName] = useState("");
+  const [avatarSignedUrl, setAvatarSignedUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
