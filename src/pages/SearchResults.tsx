@@ -86,7 +86,7 @@ const SearchResults = () => {
     } finally {
       setSearching(false);
     }
-  }, []);
+  }, [user]);
 
   // Search on mount if query param exists
   useEffect(() => {
