@@ -47,6 +47,7 @@ const Dashboard = () => {
       fetchProfile();
       fetchSearchHistory();
       fetchSavedPartsCount();
+      fetchSubscription();
     }
   }, [user]);
 
