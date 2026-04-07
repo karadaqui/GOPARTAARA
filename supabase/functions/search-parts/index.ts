@@ -104,22 +104,35 @@ IMPORTANT: Return ONLY the JSON array, no markdown, no explanation.`;
       }
     }
 
-    // Add IDs to each part
-    const results = (Array.isArray(parts) ? parts : []).map((p: any, i: number) => ({
-      id: `part-${i}-${Date.now()}`,
-      partName: p.partName || "Unknown Part",
-      partNumber: p.partNumber || `UNK-${i}`,
-      supplier: p.supplier || "Unknown",
-      price: typeof p.price === "number" ? p.price : 0,
-      originalPrice: typeof p.originalPrice === "number" ? p.originalPrice : null,
-      availability: ["in_stock", "low_stock", "out_of_stock"].includes(p.availability)
-        ? p.availability
-        : "in_stock",
-      deliveryDays: typeof p.deliveryDays === "number" ? p.deliveryDays : 3,
-      imageUrl: "/placeholder.svg",
-      url: p.url || "#",
-      rating: typeof p.rating === "number" ? p.rating : 4.0,
-    }));
+    // Build real supplier search URLs
+    const supplierSearchUrls: Record<string, (q: string) => string> = {
+      "Euro Car Parts": (q) => `https://www.eurocarparts.com/search/${encodeURIComponent(q)}`,
+      "GSF Car Parts": (q) => `https://www.gsfcarparts.com/search?q=${encodeURIComponent(q)}`,
+      "AutoDoc": (q) => `https://www.autodoc.co.uk/search?brand=&q=${encodeURIComponent(q)}`,
+      "eBay Motors": (q) => `https://www.ebay.co.uk/sch/i.html?_nkw=${encodeURIComponent(q)}&_sacat=9800`,
+      "Car Parts 4 Less": (q) => `https://www.carparts4less.co.uk/search/${encodeURIComponent(q)}`,
+      "Halfords": (q) => `https://www.halfords.com/search?q=${encodeURIComponent(q)}`,
+    };
+
+    const results = (Array.isArray(parts) ? parts : []).map((p: any, i: number) => {
+      const supplier = p.supplier || "Unknown";
+      const urlBuilder = supplierSearchUrls[supplier];
+      return {
+        id: `part-${i}-${Date.now()}`,
+        partName: p.partName || "Unknown Part",
+        partNumber: p.partNumber || `UNK-${i}`,
+        supplier,
+        price: typeof p.price === "number" ? p.price : 0,
+        originalPrice: typeof p.originalPrice === "number" ? p.originalPrice : null,
+        availability: ["in_stock", "low_stock", "out_of_stock"].includes(p.availability)
+          ? p.availability
+          : "in_stock",
+        deliveryDays: typeof p.deliveryDays === "number" ? p.deliveryDays : 3,
+        imageUrl: "/placeholder.svg",
+        url: urlBuilder ? urlBuilder(query) : `https://www.google.com/search?q=${encodeURIComponent(query + " " + supplier)}`,
+        rating: typeof p.rating === "number" ? p.rating : 4.0,
+      };
+    });
 
     return new Response(
       JSON.stringify({ results }),
