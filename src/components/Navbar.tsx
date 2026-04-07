@@ -90,6 +90,13 @@ const Navbar = () => {
               user ? (
                 <div className="flex flex-col gap-2">
                   <button
+                    onClick={() => { setOpen(false); navigate("/saved"); }}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 py-2"
+                  >
+                    <Bookmark size={14} />
+                    Saved Parts
+                  </button>
+                  <button
                     onClick={() => { setOpen(false); navigate("/dashboard"); }}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 py-2"
                   >
