@@ -37,7 +37,7 @@ const HeroSection = () => {
 
         {/* Search bar */}
         <div className="max-w-2xl mx-auto">
-          <div className="flex items-center gap-2 p-2 rounded-2xl glass glow-red">
+          <form onSubmit={handleSearch} className="flex items-center gap-2 p-2 rounded-2xl glass glow-red">
             <div className="flex-1 flex items-center gap-3 px-4">
               <Search className="text-muted-foreground shrink-0" size={20} />
               <input
