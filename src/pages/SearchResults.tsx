@@ -9,21 +9,27 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+const googleSite = (domain: string) => (q: string) =>
+  `https://www.google.com/search?q=site:${domain}+${q.replace(/\s+/g, "+")}`;
+
 const suppliers = [
-  {
-    name: "eBay Motors",
-    initials: "eBay",
-    gradient: "from-red-500 to-yellow-500",
-    description: "Millions of new & used car parts from trusted sellers",
-    buildUrl: (q: string) => `https://www.ebay.co.uk/sch/i.html?_nkw=${q.replace(/\s+/g, "+")}&_sacat=9801`,
-  },
-  {
-    name: "Amazon UK",
-    initials: "AMZ",
-    gradient: "from-orange-500 to-amber-600",
-    description: "Fast delivery with Prime on thousands of car parts",
-    buildUrl: (q: string) => `https://www.amazon.co.uk/s?k=${q.replace(/\s+/g, "+")}`,
-  },
+  // 🇬🇧 UK Suppliers
+  { name: "Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-600 to-indigo-700", buildUrl: googleSite("eurocarparts.com") },
+  { name: "GSF Car Parts", flag: "🇬🇧", gradient: "from-emerald-600 to-teal-700", buildUrl: googleSite("gsfcarparts.com") },
+  { name: "Car Parts 4 Less", flag: "🇬🇧", gradient: "from-purple-600 to-purple-800", buildUrl: googleSite("carparts4less.co.uk") },
+  { name: "Halfords", flag: "🇬🇧", gradient: "from-sky-500 to-sky-700", buildUrl: googleSite("halfords.com") },
+  { name: "AutoDoc", flag: "🇬🇧", gradient: "from-cyan-500 to-blue-600", buildUrl: googleSite("autodoc.co.uk") },
+  { name: "eBay UK", flag: "🇬🇧", gradient: "from-red-500 to-yellow-500", buildUrl: (q: string) => `https://www.ebay.co.uk/sch/i.html?_nkw=${q.replace(/\s+/g, "+")}&_sacat=9801` },
+  { name: "Amazon UK", flag: "🇬🇧", gradient: "from-orange-500 to-amber-600", buildUrl: (q: string) => `https://www.amazon.co.uk/s?k=${q.replace(/\s+/g, "+")}` },
+  { name: "Partmaster", flag: "🇬🇧", gradient: "from-slate-600 to-slate-800", buildUrl: googleSite("partmaster.co.uk") },
+  { name: "LKQ Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-500 to-blue-700", buildUrl: googleSite("lkqeurocarparts.com") },
+  { name: "First Line", flag: "🇬🇧", gradient: "from-green-600 to-green-800", buildUrl: googleSite("firstline.co.uk") },
+  // 🌍 International
+  { name: "RockAuto", flag: "🌍", gradient: "from-yellow-600 to-orange-700", buildUrl: googleSite("rockauto.com") },
+  { name: "PartsGeek", flag: "🌍", gradient: "from-red-600 to-red-800", buildUrl: googleSite("partsgeek.com") },
+  { name: "CARiD", flag: "🌍", gradient: "from-indigo-500 to-violet-700", buildUrl: googleSite("carid.com") },
+  { name: "Advance Auto Parts", flag: "🌍", gradient: "from-red-700 to-rose-900", buildUrl: googleSite("advanceautoparts.com") },
+  { name: "AutoZone", flag: "🌍", gradient: "from-amber-600 to-red-600", buildUrl: googleSite("autozone.com") },
 ];
 
 const SearchResults = () => {
