@@ -212,8 +212,8 @@ const Dashboard = () => {
           <div className="flex items-center gap-6">
             <div className="relative group">
               <div className="w-24 h-24 rounded-full bg-secondary border-2 border-border overflow-hidden flex items-center justify-center">
-                {profile?.avatar_url ? (
-                  <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                {avatarSignedUrl ? (
+                  <img src={avatarSignedUrl} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
                   <User size={36} className="text-muted-foreground" />
                 )}
