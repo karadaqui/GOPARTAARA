@@ -27,6 +27,7 @@ const Dashboard = () => {
 
   const [profile, setProfile] = useState<Tables<"profiles"> | null>(null);
   const [displayName, setDisplayName] = useState("");
+  const [avatarSignedUrl, setAvatarSignedUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -61,6 +62,14 @@ const Dashboard = () => {
     if (!error && data) {
       setProfile(data);
       setDisplayName(data.display_name || "");
+      if (data.avatar_url) {
+        const { data: signedData } = await supabase.storage
+          .from("avatars")
+          .createSignedUrl(data.avatar_url, 3600);
+        setAvatarSignedUrl(signedData?.signedUrl || null);
+      } else {
+        setAvatarSignedUrl(null);
+      }
     }
     setLoading(false);
   };
@@ -158,11 +167,9 @@ const Dashboard = () => {
       return;
     }
 
-    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
-
     const { error: updateError } = await supabase
       .from("profiles")
-      .update({ avatar_url: `${urlData.publicUrl}?t=${Date.now()}` })
+      .update({ avatar_url: path })
       .eq("user_id", user.id);
 
     setUploading(false);
@@ -205,8 +212,8 @@ const Dashboard = () => {
           <div className="flex items-center gap-6">
             <div className="relative group">
               <div className="w-24 h-24 rounded-full bg-secondary border-2 border-border overflow-hidden flex items-center justify-center">
-                {profile?.avatar_url ? (
-                  <img src={profile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+                {avatarSignedUrl ? (
+                  <img src={avatarSignedUrl} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
                   <User size={36} className="text-muted-foreground" />
                 )}
