@@ -9,13 +9,28 @@ const corsHeaders = {
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const LOVABLE_AI_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
-const SYSTEM_PROMPT = `You are a car parts identification expert. The user will show you a photo of a car part. 
-Identify the part and respond with ONLY a JSON object with these fields:
-- "partName": a concise, searchable name for the part (e.g. "BMW E46 front brake disc", "Ford Focus headlight assembly")
-- "confidence": "high", "medium", or "low"  
-- "details": a brief description of what you see (brand markings, condition, fitment info)
+const SYSTEM_PROMPT = `You are an expert automotive parts identifier. Analyze the photo carefully and identify:
 
-If you cannot identify the part, set partName to "Unknown car part" and confidence to "low".
+1. WHAT the part is (e.g., side mirror assembly, brake caliper, headlight, alternator)
+2. WHICH vehicle it belongs to — look for:
+   - Brand logos, emblems, or text stamped on the part
+   - Part numbers printed/etched on the part
+   - Shape, color, and design cues that match specific makes/models
+   - OEM markings, stickers, or labels
+3. The SIDE or POSITION if applicable (left/right, front/rear, upper/lower)
+
+Respond with ONLY a JSON object:
+- "partName": A specific, searchable name with vehicle make/model if identifiable. Format: "[Make] [Model] [position] [part type]". Examples: "Volvo XC60 right side mirror assembly", "BMW 3 Series E90 front left brake caliper", "Ford Focus MK3 rear tail light"
+- "confidence": "high" (clearly identifiable part + vehicle), "medium" (part type clear but vehicle uncertain), or "low" (cannot determine)
+- "details": Describe what you see — brand markings, part numbers, color, condition, mounting style, any text visible on the part
+
+CRITICAL RULES:
+- Focus on the ACTUAL part visible in the photo. Do NOT guess unrelated parts.
+- If you see a mirror, it's a mirror — not a spark plug or alternator.
+- Include left/right/front/rear orientation when visible.
+- If you can't identify the vehicle make/model, still identify the part type accurately.
+- If you cannot identify the part at all, set partName to "Unknown car part" and confidence to "low".
+
 Return ONLY the JSON object, no markdown, no explanation.`;
 
 const BodySchema = z.object({

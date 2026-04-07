@@ -41,6 +41,42 @@ const availabilityConfig = {
   out_of_stock: { label: "Out of Stock", className: "text-red-400 bg-red-400/10" },
 };
 
+const supplierLogos: Record<string, string> = {
+  "Euro Car Parts": "https://logo.clearbit.com/eurocarparts.com",
+  "GSF Car Parts": "https://logo.clearbit.com/gsfcarparts.com",
+  "AutoDoc": "https://logo.clearbit.com/autodoc.co.uk",
+  "eBay Motors": "https://logo.clearbit.com/ebay.co.uk",
+  "Car Parts 4 Less": "https://logo.clearbit.com/carparts4less.co.uk",
+  "Halfords": "https://logo.clearbit.com/halfords.com",
+};
+
+const SupplierImage = ({ supplier }: { supplier: string }) => {
+  const [imgError, setImgError] = useState(false);
+  const logoUrl = supplierLogos[supplier];
+
+  if (!logoUrl || imgError) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-secondary/50">
+        <Package size={32} className="text-muted-foreground/40" />
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60 font-medium">
+          {supplier}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full h-full flex items-center justify-center bg-secondary/50 p-8">
+      <img
+        src={logoUrl}
+        alt={supplier}
+        className="max-h-16 max-w-[80%] object-contain opacity-70"
+        onError={() => setImgError(true)}
+      />
+    </div>
+  );
+};
+
 type SortKey = "price_asc" | "price_desc" | "delivery" | "rating";
 
 const SearchResults = () => {
@@ -375,8 +411,8 @@ const SearchResults = () => {
                   key={part.id}
                   className="glass rounded-2xl overflow-hidden flex flex-col hover:border-primary/30 transition-colors"
                 >
-                  <div className="aspect-[4/3] bg-secondary/50 flex items-center justify-center p-6">
-                    <Package size={48} className="text-muted-foreground/30" />
+                  <div className="aspect-[4/3]">
+                    <SupplierImage supplier={part.supplier} />
                   </div>
 
                   <div className="p-5 flex flex-col flex-1">
