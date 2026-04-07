@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -15,6 +15,7 @@ import {
   Package,
   TruckIcon,
   AlertCircle,
+  Camera,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -58,6 +59,8 @@ const SearchResults = () => {
   const [results, setResults] = useState<PartResult[]>([]);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
+  const [identifying, setIdentifying] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   const fetchResults = useCallback(async (q: string) => {
     if (!q.trim()) return;
@@ -125,6 +128,44 @@ const SearchResults = () => {
     fetchResults(query.trim());
   };
 
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Too large", description: "Image must be under 5MB.", variant: "destructive" });
+      return;
+    }
+    setIdentifying(true);
+    try {
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const { data, error } = await supabase.functions.invoke("identify-part", {
+        body: { image: base64 },
+      });
+      if (error) throw error;
+      const partName = data?.partName || "Unknown car part";
+      if (partName === "Unknown car part" || data?.confidence === "low") {
+        toast({ title: "Part not recognized", description: data?.details || "Try a clearer photo.", variant: "destructive" });
+        return;
+      }
+      toast({ title: `Identified: ${partName}`, description: `Searching now...` });
+      setQuery(partName);
+      setActiveQuery(partName);
+      setSearchParams({ q: partName });
+      setSelectedSuppliers([]);
+      fetchResults(partName);
+    } catch (err: any) {
+      toast({ title: "Identification failed", description: err.message || "Try again.", variant: "destructive" });
+    } finally {
+      setIdentifying(false);
+      if (photoInputRef.current) photoInputRef.current.value = "";
+    }
+  };
+
   const toggleSupplier = (s: string) => {
     setSelectedSuppliers((prev) =>
       prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
@@ -179,7 +220,21 @@ const SearchResults = () => {
                 disabled={searching}
               />
             </div>
-            <Button type="submit" className="rounded-xl h-11 px-6" disabled={searching}>
+            <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoUpload}
+                disabled={identifying || searching}
+              />
+              <div className="flex items-center gap-1.5 px-3 h-11 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-sm text-secondary-foreground">
+                {identifying ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
+                <span className="hidden sm:inline">{identifying ? "Identifying..." : "Photo"}</span>
+              </div>
+            </label>
+            <Button type="submit" className="rounded-xl h-11 px-6" disabled={searching || identifying}>
               {searching ? <Loader2 size={16} className="animate-spin" /> : "Search"}
             </Button>
           </form>
