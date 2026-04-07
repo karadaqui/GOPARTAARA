@@ -50,15 +50,18 @@ const supplierBranding: Record<string, { color: string; initials: string }> = {
   "Halfords": { color: "from-sky-500 to-sky-700", initials: "H" },
 };
 
-const SupplierImage = ({ supplier }: { supplier: string }) => {
+const SupplierImage = ({ supplier, partName }: { supplier: string; partName: string }) => {
   const brand = supplierBranding[supplier];
   const gradient = brand?.color || "from-muted to-muted-foreground/20";
   const initials = brand?.initials || supplier.charAt(0);
 
   return (
-    <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${gradient}`}>
-      <span className="text-white font-display font-bold text-2xl tracking-wide opacity-90">
+    <div className={`w-full h-full flex flex-col items-center justify-center gap-3 bg-gradient-to-br ${gradient} px-4`}>
+      <span className="text-white/90 font-display font-bold text-2xl tracking-wide">
         {initials}
+      </span>
+      <span className="text-white/60 text-[11px] text-center leading-tight line-clamp-2 max-w-[90%]">
+        {partName}
       </span>
     </div>
   );
