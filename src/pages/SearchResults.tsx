@@ -69,6 +69,16 @@ const SearchResults = () => {
       });
       if (error) throw error;
       setResults(data?.results || []);
+
+      // Save to search history if user is logged in
+      if (user) {
+        supabase.from("search_history").insert({
+          user_id: user.id,
+          query: q.trim(),
+        }).then(({ error: histErr }) => {
+          if (histErr) console.error("Failed to save search history:", histErr);
+        });
+      }
     } catch (err: any) {
       console.error("Search failed:", err);
       setSearchError(err.message || "Search failed. Please try again.");
@@ -76,7 +86,7 @@ const SearchResults = () => {
     } finally {
       setSearching(false);
     }
-  }, []);
+  }, [user]);
 
   // Search on mount if query param exists
   useEffect(() => {
