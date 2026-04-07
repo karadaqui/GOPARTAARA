@@ -382,12 +382,8 @@ const SearchResults = () => {
                   key={part.id}
                   className="glass rounded-2xl overflow-hidden flex flex-col hover:border-primary/30 transition-colors"
                 >
-                  <div className="aspect-[4/3]">
-                    <SupplierImage supplier={part.supplier} partName={part.partName} />
-                  </div>
-
                   <div className="p-5 flex flex-col flex-1">
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1">
+                    <span className={`text-xs font-semibold mb-2 ${supplierColors[part.supplier] || "text-muted-foreground"}`}>
                       {part.supplier}
                     </span>
 

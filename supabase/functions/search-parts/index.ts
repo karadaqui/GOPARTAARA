@@ -107,11 +107,10 @@ IMPORTANT: Return ONLY the JSON array, no markdown, no explanation.`;
     // Build real supplier search URLs
     const searchQuery = query.replace(/\s+/g, "+");
     const supplierSearchUrls: Record<string, string> = {
-      "Euro Car Parts": `https://www.eurocarparts.com/search?q=${searchQuery}`,
-      "GSF Car Parts": `https://www.gsfcarparts.com/search?q=${searchQuery}`,
-      "AutoDoc": `https://www.autodoc.co.uk/search?q=${searchQuery}`,
       "eBay Motors": `https://www.ebay.co.uk/sch/i.html?_nkw=${searchQuery}&_sacat=9801`,
-      "Car Parts 4 Less": `https://www.carparts4less.co.uk/search/${encodeURIComponent(query)}`,
+      "AutoDoc": `https://www.autodoc.co.uk/catalogsearch/result/?q=${searchQuery}`,
+      "Amazon UK": `https://www.amazon.co.uk/s?k=${searchQuery}`,
+      "RockAuto": `https://www.rockauto.com/en/partsearch/?romterm=${searchQuery}`,
     };
 
     const results = (Array.isArray(parts) ? parts : []).map((p: any, i: number) => {
