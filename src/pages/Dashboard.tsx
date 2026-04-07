@@ -19,6 +19,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [searchHistory, setSearchHistory] = useState<Tables<"search_history">[]>([]);
+  const [savedPartsCount, setSavedPartsCount] = useState(0);
 
   useEffect(() => {
     if (!authLoading && !user) {
