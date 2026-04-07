@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Camera, Save, User, Mail, Crown, Clock, Bookmark, Loader2, Search, Trash2, X } from "lucide-react";
+import { ArrowLeft, Camera, Save, User, Mail, Crown, Clock, Bookmark, Loader2, Search, X } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 const Dashboard = () => {
