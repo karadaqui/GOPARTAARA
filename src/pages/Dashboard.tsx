@@ -50,6 +50,34 @@ const Dashboard = () => {
     setLoading(false);
   };
 
+  const fetchSearchHistory = async () => {
+    const { data } = await supabase
+      .from("search_history")
+      .select("*")
+      .eq("user_id", user!.id)
+      .order("created_at", { ascending: false })
+      .limit(10);
+    if (data) setSearchHistory(data);
+  };
+
+  const fetchSavedPartsCount = async () => {
+    const { count } = await supabase
+      .from("saved_parts")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user!.id);
+    setSavedPartsCount(count || 0);
+  };
+
+  const deleteHistoryItem = async (id: string) => {
+    const { error } = await supabase.from("search_history").delete().eq("id", id);
+    if (!error) setSearchHistory((prev) => prev.filter((h) => h.id !== id));
+  };
+
+  const clearAllHistory = async () => {
+    const { error } = await supabase.from("search_history").delete().eq("user_id", user!.id);
+    if (!error) setSearchHistory([]);
+  };
+
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
