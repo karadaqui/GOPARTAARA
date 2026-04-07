@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Menu, X, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
   { label: "Home", href: "#home" },
@@ -12,6 +14,8 @@ const navLinks = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const { user, signOut, loading } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass">
@@ -32,7 +36,24 @@ const Navbar = () => {
               {l.label}
             </a>
           ))}
-          <Button size="sm">Get Started</Button>
+          {!loading && (
+            user ? (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                  <User size={14} />
+                  {user.email}
+                </span>
+                <Button size="sm" variant="outline" onClick={signOut} className="gap-1.5">
+                  <LogOut size={14} />
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <Button size="sm" onClick={() => navigate("/auth")}>
+                Get Started
+              </Button>
+            )
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -55,7 +76,24 @@ const Navbar = () => {
                 {l.label}
               </a>
             ))}
-            <Button size="sm" className="w-fit">Get Started</Button>
+            {!loading && (
+              user ? (
+                <div className="flex flex-col gap-2">
+                  <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                    <User size={14} />
+                    {user.email}
+                  </span>
+                  <Button size="sm" variant="outline" onClick={signOut} className="w-fit gap-1.5">
+                    <LogOut size={14} />
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <Button size="sm" onClick={() => { setOpen(false); navigate("/auth"); }} className="w-fit">
+                  Get Started
+                </Button>
+              )
+            )}
           </div>
         </div>
       )}
