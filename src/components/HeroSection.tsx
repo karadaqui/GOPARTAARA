@@ -5,6 +5,14 @@ import { Button } from "@/components/ui/button";
 
 const HeroSection = () => {
   const [query, setQuery] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+    }
+  };
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
