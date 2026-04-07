@@ -128,7 +128,44 @@ const SearchResults = () => {
     fetchResults(query.trim());
   };
 
-  const toggleSupplier = (s: string) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Too large", description: "Image must be under 5MB.", variant: "destructive" });
+      return;
+    }
+    setIdentifying(true);
+    try {
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const { data, error } = await supabase.functions.invoke("identify-part", {
+        body: { image: base64 },
+      });
+      if (error) throw error;
+      const partName = data?.partName || "Unknown car part";
+      if (partName === "Unknown car part" || data?.confidence === "low") {
+        toast({ title: "Part not recognized", description: data?.details || "Try a clearer photo.", variant: "destructive" });
+        return;
+      }
+      toast({ title: `Identified: ${partName}`, description: `Searching now...` });
+      setQuery(partName);
+      setActiveQuery(partName);
+      setSearchParams({ q: partName });
+      setSelectedSuppliers([]);
+      fetchResults(partName);
+    } catch (err: any) {
+      toast({ title: "Identification failed", description: err.message || "Try again.", variant: "destructive" });
+    } finally {
+      setIdentifying(false);
+      if (photoInputRef.current) photoInputRef.current.value = "";
+    }
+  };
+
     setSelectedSuppliers((prev) =>
       prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
     );
