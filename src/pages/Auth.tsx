@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, Lock, User, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import ForgotPassword from "@/components/ForgotPassword";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
