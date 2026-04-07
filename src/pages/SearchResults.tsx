@@ -411,8 +411,8 @@ const SearchResults = () => {
                   key={part.id}
                   className="glass rounded-2xl overflow-hidden flex flex-col hover:border-primary/30 transition-colors"
                 >
-                  <div className="aspect-[4/3] bg-secondary/50 flex items-center justify-center p-6">
-                    <Package size={48} className="text-muted-foreground/30" />
+                  <div className="aspect-[4/3]">
+                    <SupplierImage supplier={part.supplier} />
                   </div>
 
                   <div className="p-5 flex flex-col flex-1">
