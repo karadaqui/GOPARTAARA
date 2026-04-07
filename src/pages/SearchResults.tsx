@@ -402,7 +402,7 @@ const SearchResults = () => {
                   className="glass rounded-2xl overflow-hidden flex flex-col hover:border-primary/30 transition-colors"
                 >
                   <div className="aspect-[4/3]">
-                    <SupplierImage supplier={part.supplier} />
+                    <SupplierImage supplier={part.supplier} partName={part.partName} />
                   </div>
 
                   <div className="p-5 flex flex-col flex-1">
