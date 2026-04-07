@@ -8,6 +8,17 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Camera, Save, User, Mail, Crown, Clock, Bookmark, Loader2, Search, X, ExternalLink, CreditCard } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
+const STRIPE_TIERS: Record<string, { label: string; price: string }> = {
+  prod_UI08qGZRqV94r2: { label: "Pro", price: "£9.99/mo" },
+  prod_UIBpaMM0bdRgJ9: { label: "Business", price: "£24.99/mo" },
+};
+
+type SubStatus = {
+  subscribed: boolean;
+  product_id?: string | null;
+  subscription_end?: string | null;
+};
+
 const Dashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -21,6 +32,9 @@ const Dashboard = () => {
   const [uploading, setUploading] = useState(false);
   const [searchHistory, setSearchHistory] = useState<Tables<"search_history">[]>([]);
   const [savedPartsCount, setSavedPartsCount] = useState(0);
+  const [subStatus, setSubStatus] = useState<SubStatus>({ subscribed: false });
+  const [subLoading, setSubLoading] = useState(true);
+  const [portalLoading, setPortalLoading] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
