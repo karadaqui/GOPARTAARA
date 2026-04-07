@@ -93,7 +93,31 @@ const Dashboard = () => {
     if (!error) setSearchHistory([]);
   };
 
-  const handleSave = async () => {
+  const fetchSubscription = async () => {
+    setSubLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("check-subscription");
+      if (!error && data) setSubStatus(data);
+    } catch {
+      // silently fail
+    } finally {
+      setSubLoading(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    setPortalLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal");
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to open portal", variant: "destructive" });
+    } finally {
+      setPortalLoading(false);
+    }
+  };
+
     if (!user) return;
     setSaving(true);
     const { error } = await supabase
