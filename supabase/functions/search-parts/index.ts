@@ -105,13 +105,13 @@ IMPORTANT: Return ONLY the JSON array, no markdown, no explanation.`;
     }
 
     // Build real supplier search URLs
-    const supplierSearchUrls: Record<string, (q: string) => string> = {
-      "Euro Car Parts": (q) => `https://www.eurocarparts.com/${q.toLowerCase().replace(/\s+/g, "-")}`,
-      "GSF Car Parts": (q) => `https://www.gsfcarparts.com/search?q=${encodeURIComponent(q)}`,
-      "AutoDoc": (q) => `https://www.autodoc.co.uk/search/${encodeURIComponent(q)}`,
-      "eBay Motors": (q) => `https://www.ebay.co.uk/sch/i.html?_nkw=${encodeURIComponent(q)}&_sacat=9801`,
-      "Car Parts 4 Less": (q) => `https://www.carparts4less.co.uk/search/${encodeURIComponent(q)}`,
-      "Halfords": (q) => `https://www.halfords.com/search?q=${encodeURIComponent(q)}`,
+    const searchQuery = query.replace(/\s+/g, "+");
+    const supplierSearchUrls: Record<string, string> = {
+      "Euro Car Parts": `https://www.eurocarparts.com/search?q=${searchQuery}`,
+      "GSF Car Parts": `https://www.gsfcarparts.com/search?q=${searchQuery}`,
+      "AutoDoc": `https://www.autodoc.co.uk/search?q=${searchQuery}`,
+      "eBay Motors": `https://www.ebay.co.uk/sch/i.html?_nkw=${searchQuery}&_sacat=9801`,
+      "Car Parts 4 Less": `https://www.carparts4less.co.uk/search/${encodeURIComponent(query)}`,
     };
 
     const results = (Array.isArray(parts) ? parts : []).map((p: any, i: number) => {
