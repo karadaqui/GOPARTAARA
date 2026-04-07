@@ -82,10 +82,13 @@ const Navbar = () => {
             {!loading && (
               user ? (
                 <div className="flex flex-col gap-2">
-                  <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                  <button
+                    onClick={() => { setOpen(false); navigate("/dashboard"); }}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 py-2"
+                  >
                     <User size={14} />
-                    {user.email}
-                  </span>
+                    Dashboard
+                  </button>
                   <Button size="sm" variant="outline" onClick={signOut} className="w-fit gap-1.5">
                     <LogOut size={14} />
                     Sign Out
