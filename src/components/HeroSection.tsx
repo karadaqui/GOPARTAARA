@@ -96,7 +96,7 @@ const HeroSection = () => {
         </h1>
 
         <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-12">
-          Search across 10+ trusted UK and global suppliers. Compare prices, check availability, and order — all in one place.
+          Search across 19 trusted UK and global suppliers. Compare prices, check availability, and order — all in one place.
         </p>
 
         {/* Search bar */}
