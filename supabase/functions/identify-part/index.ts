@@ -6,10 +6,10 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const AI_GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 
 const BodySchema = z.object({
-  image: z.string().min(1), // base64 data URI
+  image: z.string().min(1),
 });
 
 Deno.serve(async (req) => {
@@ -18,10 +18,10 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
+    const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
+    if (!ANTHROPIC_API_KEY) {
       return new Response(
-        JSON.stringify({ error: "LOVABLE_API_KEY is not configured" }),
+        JSON.stringify({ error: "ANTHROPIC_API_KEY is not configured" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -37,6 +37,17 @@ Deno.serve(async (req) => {
 
     const { image } = parsed.data;
 
+    // Extract media type and base64 data from the data URI
+    const match = image.match(/^data:(image\/\w+);base64,(.+)$/);
+    if (!match) {
+      return new Response(
+        JSON.stringify({ error: "Invalid image format. Expected a base64 data URI." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const mediaType = match[1];
+    const base64Data = match[2];
+
     const systemPrompt = `You are a car parts identification expert. The user will show you a photo of a car part. 
 Identify the part and respond with ONLY a JSON object with these fields:
 - "partName": a concise, searchable name for the part (e.g. "BMW E46 front brake disc", "Ford Focus headlight assembly")
@@ -46,44 +57,46 @@ Identify the part and respond with ONLY a JSON object with these fields:
 If you cannot identify the part, set partName to "Unknown car part" and confidence to "low".
 Return ONLY the JSON object, no markdown, no explanation.`;
 
-    const response = await fetch(AI_GATEWAY_URL, {
+    const response = await fetch(ANTHROPIC_API_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1024,
+        system: systemPrompt,
         messages: [
-          { role: "system", content: systemPrompt },
           {
             role: "user",
             content: [
-              { type: "text", text: "Identify this car part:" },
               {
-                type: "image_url",
-                image_url: { url: image },
+                type: "image",
+                source: {
+                  type: "base64",
+                  media_type: mediaType,
+                  data: base64Data,
+                },
+              },
+              {
+                type: "text",
+                text: "Identify this car part.",
               },
             ],
           },
         ],
-        temperature: 0.3,
       }),
     });
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error("AI Gateway error:", response.status, errText);
+      console.error("Anthropic API error:", response.status, errText);
       if (response.status === 429) {
         return new Response(
           JSON.stringify({ error: "Rate limited. Please try again in a moment." }),
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "AI credits exhausted. Please add funds." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
       return new Response(
@@ -93,14 +106,14 @@ Return ONLY the JSON object, no markdown, no explanation.`;
     }
 
     const aiData = await response.json();
-    const content = aiData.choices?.[0]?.message?.content || "{}";
+    const content = aiData.content?.[0]?.text || "{}";
 
     let result;
     try {
       const cleaned = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
       result = JSON.parse(cleaned);
     } catch {
-      console.error("Failed to parse AI response:", content);
+      console.error("Failed to parse Claude response:", content);
       result = { partName: "Unknown car part", confidence: "low", details: "Could not parse AI response" };
     }
 
