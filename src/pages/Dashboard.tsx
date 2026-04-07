@@ -118,6 +118,7 @@ const Dashboard = () => {
     }
   };
 
+  const handleSave = async () => {
     if (!user) return;
     setSaving(true);
     const { error } = await supabase
