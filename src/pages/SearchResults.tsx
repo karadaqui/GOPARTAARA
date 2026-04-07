@@ -47,7 +47,6 @@ const supplierBranding: Record<string, { color: string; initials: string }> = {
   "AutoDoc": { color: "from-orange-500 to-orange-700", initials: "AD" },
   "eBay Motors": { color: "from-red-500 to-yellow-500", initials: "eBay" },
   "Car Parts 4 Less": { color: "from-purple-600 to-purple-800", initials: "CP4L" },
-  "Halfords": { color: "from-sky-500 to-sky-700", initials: "H" },
 };
 
 const SupplierImage = ({ supplier, partName }: { supplier: string; partName: string }) => {
