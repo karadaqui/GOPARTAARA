@@ -167,11 +167,9 @@ const Dashboard = () => {
       return;
     }
 
-    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
-
     const { error: updateError } = await supabase
       .from("profiles")
-      .update({ avatar_url: `${urlData.publicUrl}?t=${Date.now()}` })
+      .update({ avatar_url: path })
       .eq("user_id", user.id);
 
     setUploading(false);
