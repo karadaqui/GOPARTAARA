@@ -248,8 +248,60 @@ const Dashboard = () => {
           <div className="glass rounded-2xl p-6 text-center">
             <Bookmark size={20} className="text-primary mx-auto mb-2" />
             <p className="text-xs text-muted-foreground">Saved Parts</p>
-            <p className="font-display font-bold text-lg">0</p>
+            <p className="font-display font-bold text-lg">{savedPartsCount}</p>
           </div>
+        </div>
+
+        {/* Search History */}
+        <div className="glass rounded-2xl p-8 mt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display text-lg font-semibold flex items-center gap-2">
+              <Search size={18} className="text-primary" />
+              Recent Searches
+            </h2>
+            {searchHistory.length > 0 && (
+              <button
+                onClick={clearAllHistory}
+                className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
+          {searchHistory.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-6">
+              No searches yet. Try searching for a car part!
+            </p>
+          ) : (
+            <div className="space-y-2">
+              {searchHistory.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/50 transition-colors group"
+                >
+                  <Search size={14} className="text-muted-foreground shrink-0" />
+                  <button
+                    onClick={() => navigate(`/search?q=${encodeURIComponent(item.query)}`)}
+                    className="flex-1 text-left text-sm font-medium hover:text-primary transition-colors truncate"
+                  >
+                    {item.query}
+                  </button>
+                  <span className="text-[10px] text-muted-foreground shrink-0">
+                    {new Date(item.created_at).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                    })}
+                  </span>
+                  <button
+                    onClick={() => deleteHistoryItem(item.id)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
