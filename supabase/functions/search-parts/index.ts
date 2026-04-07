@@ -116,7 +116,6 @@ IMPORTANT: Return ONLY the JSON array, no markdown, no explanation.`;
 
     const results = (Array.isArray(parts) ? parts : []).map((p: any, i: number) => {
       const supplier = p.supplier || "Unknown";
-      const urlBuilder = supplierSearchUrls[supplier];
       return {
         id: `part-${i}-${Date.now()}`,
         partName: p.partName || "Unknown Part",
@@ -129,7 +128,7 @@ IMPORTANT: Return ONLY the JSON array, no markdown, no explanation.`;
           : "in_stock",
         deliveryDays: typeof p.deliveryDays === "number" ? p.deliveryDays : 3,
         imageUrl: "/placeholder.svg",
-        url: urlBuilder ? urlBuilder(p.partName || query) : `https://www.google.com/search?q=${encodeURIComponent((p.partName || query) + " " + supplier)}`,
+        url: supplierSearchUrls[supplier] || `https://www.google.com/search?q=${searchQuery}+${supplier.replace(/\s+/g, "+")}`,
         rating: typeof p.rating === "number" ? p.rating : 4.0,
       };
     });
