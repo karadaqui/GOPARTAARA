@@ -16,6 +16,7 @@ const Auth = () => {
   const [displayName, setDisplayName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [oauthLoading, setOauthLoading] = useState<string | null>(null);
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
