@@ -12,7 +12,7 @@ import {
   ExternalLink,
   Bookmark,
   Loader2,
-  Package,
+  
   TruckIcon,
   AlertCircle,
   Camera,
