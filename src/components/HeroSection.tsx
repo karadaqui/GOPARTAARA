@@ -147,11 +147,12 @@ const HeroSection = () => {
 
         {/* Trust badges */}
         <div className="flex flex-wrap items-center justify-center gap-6 mt-12 text-xs text-muted-foreground">
-          {["eBay Motors", "Amazon UK"].map((s) => (
+          {["eBay UK", "Amazon UK", "Euro Car Parts", "AutoDoc", "GSF"].map((s) => (
             <span key={s} className="px-3 py-1.5 rounded-full border border-border bg-secondary/30">
               {s}
             </span>
           ))}
+          <span className="text-primary font-medium">+10 more</span>
         </div>
       </div>
     </section>
