@@ -42,7 +42,7 @@ IMPORTANT: The search results MUST be relevant to the exact query. If the query 
 Each result must have these fields:
 - partName: descriptive name including the vehicle make/model and part type from the query (e.g., "Volvo XC60 Right Wing Mirror Cover - Gloss Black")
 - partNumber: realistic part number (e.g., "31402680", "ECP-48291")
-- supplier: one of these real suppliers: "Euro Car Parts", "GSF Car Parts", "AutoDoc", "eBay Motors", "Car Parts 4 Less"
+- supplier: one of these real suppliers: "eBay Motors", "AutoDoc", "Amazon UK", "RockAuto"
 - price: price in GBP as a number (realistic UK pricing)
 - originalPrice: original price before discount (null if no discount, number otherwise)  
 - availability: one of "in_stock", "low_stock", "out_of_stock"
