@@ -220,7 +220,21 @@ const SearchResults = () => {
                 disabled={searching}
               />
             </div>
-            <Button type="submit" className="rounded-xl h-11 px-6" disabled={searching}>
+            <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoUpload}
+                disabled={identifying || searching}
+              />
+              <div className="flex items-center gap-1.5 px-3 h-11 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-sm text-secondary-foreground">
+                {identifying ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
+                <span className="hidden sm:inline">{identifying ? "Identifying..." : "Photo"}</span>
+              </div>
+            </label>
+            <Button type="submit" className="rounded-xl h-11 px-6" disabled={searching || identifying}>
               {searching ? <Loader2 size={16} className="animate-spin" /> : "Search"}
             </Button>
           </form>
