@@ -129,7 +129,7 @@ IMPORTANT: Return ONLY the JSON array, no markdown, no explanation.`;
           : "in_stock",
         deliveryDays: typeof p.deliveryDays === "number" ? p.deliveryDays : 3,
         imageUrl: "/placeholder.svg",
-        url: urlBuilder ? urlBuilder(query) : `https://www.google.com/search?q=${encodeURIComponent(query + " " + supplier)}`,
+        url: urlBuilder ? urlBuilder(p.partName || query) : `https://www.google.com/search?q=${encodeURIComponent((p.partName || query) + " " + supplier)}`,
         rating: typeof p.rating === "number" ? p.rating : 4.0,
       };
     });
