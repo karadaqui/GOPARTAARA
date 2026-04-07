@@ -24,6 +24,11 @@ const suppliers = [
   { name: "Partmaster", flag: "🇬🇧", gradient: "from-slate-600 to-slate-800", buildUrl: googleSite("partmaster.co.uk") },
   { name: "LKQ Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-500 to-blue-700", buildUrl: googleSite("lkqeurocarparts.com") },
   { name: "First Line", flag: "🇬🇧", gradient: "from-green-600 to-green-800", buildUrl: googleSite("firstline.co.uk") },
+  // 🇪🇺 European Amazon
+  { name: "Amazon Spain", flag: "🇪🇸", gradient: "from-red-600 to-yellow-500", buildUrl: (q: string) => `https://www.amazon.es/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara06-21` },
+  { name: "Amazon France", flag: "🇫🇷", gradient: "from-blue-600 to-red-500", buildUrl: (q: string) => `https://www.amazon.fr/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara00-21` },
+  { name: "Amazon Germany", flag: "🇩🇪", gradient: "from-gray-800 to-yellow-500", buildUrl: (q: string) => `https://www.amazon.de/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara0c0-21` },
+  { name: "Amazon Italy", flag: "🇮🇹", gradient: "from-green-600 to-red-500", buildUrl: (q: string) => `https://www.amazon.it/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara07-21` },
   // 🌍 International
   { name: "RockAuto", flag: "🌍", gradient: "from-yellow-600 to-orange-700", buildUrl: googleSite("rockauto.com") },
   { name: "PartsGeek", flag: "🌍", gradient: "from-red-600 to-red-800", buildUrl: googleSite("partsgeek.com") },
