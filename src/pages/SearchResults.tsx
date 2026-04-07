@@ -14,43 +14,15 @@ const suppliers = [
     name: "eBay Motors",
     initials: "eBay",
     gradient: "from-red-500 to-yellow-500",
-    description: "Millions of new & used car parts",
+    description: "Millions of new & used car parts from trusted sellers",
     buildUrl: (q: string) => `https://www.ebay.co.uk/sch/i.html?_nkw=${q.replace(/\s+/g, "+")}&_sacat=9801`,
   },
   {
     name: "Amazon UK",
     initials: "AMZ",
     gradient: "from-orange-500 to-amber-600",
-    description: "Fast delivery with Prime",
+    description: "Fast delivery with Prime on thousands of car parts",
     buildUrl: (q: string) => `https://www.amazon.co.uk/s?k=${q.replace(/\s+/g, "+")}`,
-  },
-  {
-    name: "AutoDoc",
-    initials: "AD",
-    gradient: "from-sky-500 to-blue-600",
-    description: "European auto parts specialist",
-    buildUrl: (q: string) => `https://www.autodoc.co.uk/search-results/${encodeURIComponent(q)}`,
-  },
-  {
-    name: "Car Parts 4 Less",
-    initials: "CP4L",
-    gradient: "from-green-500 to-emerald-600",
-    description: "Discount car parts online",
-    buildUrl: (q: string) => `https://www.carparts4less.co.uk/search?term=${encodeURIComponent(q)}`,
-  },
-  {
-    name: "GSF Car Parts",
-    initials: "GSF",
-    gradient: "from-emerald-600 to-teal-700",
-    description: "Trade & retail car parts",
-    buildUrl: (q: string) => `https://www.gsfcarparts.com/search?q=${encodeURIComponent(q)}`,
-  },
-  {
-    name: "Euro Car Parts",
-    initials: "ECP",
-    gradient: "from-blue-600 to-indigo-700",
-    description: "UK's #1 car parts retailer",
-    buildUrl: (q: string) => `https://www.eurocarparts.com/search?q=${encodeURIComponent(q)}`,
   },
 ];
 
@@ -172,7 +144,7 @@ const SearchResults = () => {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
               {suppliers.map((supplier) => (
                 <a
                   key={supplier.name}
@@ -181,22 +153,24 @@ const SearchResults = () => {
                   rel="noopener noreferrer"
                   className="group glass rounded-2xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.02]"
                 >
-                  <div className={`h-24 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center`}>
-                    <span className="text-white font-display font-bold text-3xl tracking-wide opacity-90 group-hover:opacity-100 transition-opacity">
+                  <div className={`h-36 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center`}>
+                    <span className="text-white font-display font-bold text-5xl tracking-wide opacity-90 group-hover:opacity-100 transition-opacity">
                       {supplier.initials}
                     </span>
                   </div>
-                  <div className="p-5">
-                    <h3 className="font-display font-semibold text-base mb-1">
+                  <div className="p-6">
+                    <h3 className="font-display font-semibold text-lg mb-1">
                       {supplier.name}
                     </h3>
-                    <p className="text-xs text-muted-foreground mb-4">
+                    <p className="text-sm text-muted-foreground mb-5">
                       {supplier.description}
                     </p>
-                    <div className="flex items-center gap-1.5 text-sm text-primary font-medium">
-                      <ExternalLink size={14} />
-                      Search Now
-                    </div>
+                    <Button className="w-full rounded-xl gap-2" asChild>
+                      <span>
+                        <ExternalLink size={16} />
+                        Search Now
+                      </span>
+                    </Button>
                   </div>
                 </a>
               ))}
