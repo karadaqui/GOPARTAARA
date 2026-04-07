@@ -1,138 +1,86 @@
-import { useState, useMemo, useEffect, useCallback, useRef } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useState, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Search,
-  SlidersHorizontal,
-  ArrowUpDown,
-  Check,
-  ExternalLink,
-  Bookmark,
-  Loader2,
-  
-  TruckIcon,
-  AlertCircle,
-  Camera,
-} from "lucide-react";
+import { Search, ExternalLink, Loader2, Camera } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-type PartResult = {
-  id: string;
-  partName: string;
-  partNumber: string;
-  supplier: string;
-  price: number;
-  originalPrice?: number | null;
-  availability: "in_stock" | "low_stock" | "out_of_stock";
-  deliveryDays: number;
-  imageUrl: string;
-  url: string;
-  rating: number;
-};
-
-const availabilityConfig = {
-  in_stock: { label: "In Stock", className: "text-green-400 bg-green-400/10" },
-  low_stock: { label: "Low Stock", className: "text-yellow-400 bg-yellow-400/10" },
-  out_of_stock: { label: "Out of Stock", className: "text-red-400 bg-red-400/10" },
-};
-
-const supplierColors: Record<string, string> = {
-  "eBay Motors": "text-red-400",
-  "AutoDoc": "text-orange-400",
-  "Amazon UK": "text-yellow-400",
-  "RockAuto": "text-green-400",
-};
-
-type SortKey = "price_asc" | "price_desc" | "delivery" | "rating";
+const suppliers = [
+  {
+    name: "eBay Motors",
+    initials: "eBay",
+    gradient: "from-red-500 to-yellow-500",
+    description: "Millions of new & used car parts",
+    buildUrl: (q: string) => `https://www.ebay.co.uk/sch/i.html?_nkw=${q.replace(/\s+/g, "+")}&_sacat=9801`,
+  },
+  {
+    name: "Amazon UK",
+    initials: "AMZ",
+    gradient: "from-orange-500 to-amber-600",
+    description: "Fast delivery with Prime",
+    buildUrl: (q: string) => `https://www.amazon.co.uk/s?k=${q.replace(/\s+/g, "+")}`,
+  },
+  {
+    name: "AutoDoc",
+    initials: "AD",
+    gradient: "from-sky-500 to-blue-600",
+    description: "European auto parts specialist",
+    buildUrl: (q: string) => `https://www.autodoc.co.uk/search-results/${encodeURIComponent(q)}`,
+  },
+  {
+    name: "Car Parts 4 Less",
+    initials: "CP4L",
+    gradient: "from-green-500 to-emerald-600",
+    description: "Discount car parts online",
+    buildUrl: (q: string) => `https://www.carparts4less.co.uk/search?term=${encodeURIComponent(q)}`,
+  },
+  {
+    name: "GSF Car Parts",
+    initials: "GSF",
+    gradient: "from-emerald-600 to-teal-700",
+    description: "Trade & retail car parts",
+    buildUrl: (q: string) => `https://www.gsfcarparts.com/search?q=${encodeURIComponent(q)}`,
+  },
+  {
+    name: "Euro Car Parts",
+    initials: "ECP",
+    gradient: "from-blue-600 to-indigo-700",
+    description: "UK's #1 car parts retailer",
+    buildUrl: (q: string) => `https://www.eurocarparts.com/search?q=${encodeURIComponent(q)}`,
+  },
+];
 
 const SearchResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
 
   const initialQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(initialQuery);
   const [activeQuery, setActiveQuery] = useState(initialQuery);
-  const [sortBy, setSortBy] = useState<SortKey>("price_asc");
-  const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([]);
-  const [showFilters, setShowFilters] = useState(false);
-  const [savingId, setSavingId] = useState<string | null>(null);
-  const [results, setResults] = useState<PartResult[]>([]);
-  const [searching, setSearching] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
   const [identifying, setIdentifying] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
-
-  const fetchResults = useCallback(async (q: string) => {
-    if (!q.trim()) return;
-    setSearching(true);
-    setSearchError(null);
-    try {
-      const { data, error } = await supabase.functions.invoke("search-parts", {
-        body: { query: q.trim() },
-      });
-      if (error) throw error;
-      setResults(data?.results || []);
-
-      // Save to search history if user is logged in
-      if (user) {
-        supabase.from("search_history").insert({
-          user_id: user.id,
-          query: q.trim(),
-        }).then(({ error: histErr }) => {
-          if (histErr) console.error("Failed to save search history:", histErr);
-        });
-      }
-    } catch (err: any) {
-      console.error("Search failed:", err);
-      setSearchError(err.message || "Search failed. Please try again.");
-      setResults([]);
-    } finally {
-      setSearching(false);
-    }
-  }, [user]);
-
-  // Search on mount if query param exists
-  useEffect(() => {
-    if (initialQuery) fetchResults(initialQuery);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Derive unique suppliers from results for filter chips
-  const supplierList = useMemo(
-    () => [...new Set(results.map((r) => r.supplier))].sort(),
-    [results]
-  );
-
-  const filtered = useMemo(() => {
-    let items = [...results];
-    if (selectedSuppliers.length > 0) {
-      items = items.filter((r) => selectedSuppliers.includes(r.supplier));
-    }
-    items.sort((a, b) => {
-      switch (sortBy) {
-        case "price_asc": return a.price - b.price;
-        case "price_desc": return b.price - a.price;
-        case "delivery": return a.deliveryDays - b.deliveryDays;
-        case "rating": return b.rating - a.rating;
-        default: return 0;
-      }
-    });
-    return items;
-  }, [results, selectedSuppliers, sortBy]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
-    setActiveQuery(query.trim());
-    setSearchParams({ q: query.trim() });
-    setSelectedSuppliers([]);
-    fetchResults(query.trim());
+    const q = query.trim();
+    setActiveQuery(q);
+    setSearchParams({ q });
+
+    // Save to search history if user is logged in
+    if (user) {
+      supabase.from("search_history").insert({
+        user_id: user.id,
+        query: q,
+      }).then(({ error }) => {
+        if (error) console.error("Failed to save search history:", error);
+      });
+    }
   };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -159,12 +107,10 @@ const SearchResults = () => {
         toast({ title: "Part not recognized", description: data?.details || "Try a clearer photo.", variant: "destructive" });
         return;
       }
-      toast({ title: `Identified: ${partName}`, description: `Searching now...` });
+      toast({ title: `Identified: ${partName}`, description: "Choose a supplier to search." });
       setQuery(partName);
       setActiveQuery(partName);
       setSearchParams({ q: partName });
-      setSelectedSuppliers([]);
-      fetchResults(partName);
     } catch (err: any) {
       toast({ title: "Identification failed", description: err.message || "Try again.", variant: "destructive" });
     } finally {
@@ -173,58 +119,21 @@ const SearchResults = () => {
     }
   };
 
-  const toggleSupplier = (s: string) => {
-    setSelectedSuppliers((prev) =>
-      prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s]
-    );
-  };
-
-  const handleSave = async (part: PartResult) => {
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
-    setSavingId(part.id);
-    const { error } = await supabase.from("saved_parts").insert({
-      user_id: user.id,
-      part_name: part.partName,
-      part_number: part.partNumber,
-      supplier: part.supplier,
-      price: part.price,
-      image_url: part.imageUrl,
-      url: part.url,
-    });
-    setSavingId(null);
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Saved", description: `${part.partName} added to saved parts.` });
-    }
-  };
-
-  const sortOptions: { key: SortKey; label: string }[] = [
-    { key: "price_asc", label: "Price: Low → High" },
-    { key: "price_desc", label: "Price: High → Low" },
-    { key: "delivery", label: "Fastest Delivery" },
-    { key: "rating", label: "Best Rated" },
-  ];
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
 
       {/* Search bar */}
       <div className="border-b border-border bg-card/40 backdrop-blur-lg sticky top-0 z-20 pt-16">
-        <div className="container max-w-6xl py-4 px-4">
+        <div className="container max-w-4xl py-4 px-4">
           <form onSubmit={handleSearch} className="flex items-center gap-2">
             <div className="flex-1 relative">
               <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search car parts..."
+                placeholder="Search car parts... e.g. Volvo XC60 right mirror"
                 className="pl-10 bg-secondary border-border h-11 rounded-xl"
-                disabled={searching}
               />
             </div>
             <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
@@ -234,238 +143,66 @@ const SearchResults = () => {
                 accept="image/*"
                 className="hidden"
                 onChange={handlePhotoUpload}
-                disabled={identifying || searching}
+                disabled={identifying}
               />
               <div className="flex items-center gap-1.5 px-3 h-11 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-sm text-secondary-foreground">
                 {identifying ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
                 <span className="hidden sm:inline">{identifying ? "Identifying..." : "Photo"}</span>
               </div>
             </label>
-            <Button type="submit" className="rounded-xl h-11 px-6" disabled={searching || identifying}>
-              {searching ? <Loader2 size={16} className="animate-spin" /> : "Search"}
+            <Button type="submit" className="rounded-xl h-11 px-6">
+              Search
             </Button>
           </form>
         </div>
       </div>
 
-      <div className="container max-w-6xl flex-1 px-4 py-6">
-        {/* Toolbar */}
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <p className="text-sm text-muted-foreground">
-            {searching ? (
-              <span className="flex items-center gap-2">
-                <Loader2 size={14} className="animate-spin" />
-                Searching suppliers...
-              </span>
-            ) : activeQuery ? (
-              <>
-                <span className="text-foreground font-medium">{filtered.length}</span> results for{" "}
-                <span className="text-foreground font-medium">"{activeQuery}"</span>
-              </>
-            ) : (
-              "Enter a search to find parts"
-            )}
-          </p>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="rounded-xl gap-2"
-              onClick={() => setShowFilters((v) => !v)}
-            >
-              <SlidersHorizontal size={14} />
-              Filters
-              {selectedSuppliers.length > 0 && (
-                <span className="ml-1 w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
-                  {selectedSuppliers.length}
-                </span>
-              )}
-            </Button>
-
-            <div className="relative group">
-              <Button variant="outline" size="sm" className="rounded-xl gap-2">
-                <ArrowUpDown size={14} />
-                Sort
-              </Button>
-              <div className="absolute right-0 top-full mt-1 w-48 rounded-xl bg-card border border-border shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-opacity z-30">
-                {sortOptions.map((opt) => (
-                  <button
-                    key={opt.key}
-                    onClick={() => setSortBy(opt.key)}
-                    className="w-full text-left px-4 py-2.5 text-sm hover:bg-secondary transition-colors first:rounded-t-xl last:rounded-b-xl flex items-center justify-between"
-                  >
-                    {opt.label}
-                    {sortBy === opt.key && <Check size={14} className="text-primary" />}
-                  </button>
-                ))}
-              </div>
+      <div className="container max-w-4xl flex-1 px-4 py-8">
+        {activeQuery ? (
+          <>
+            <div className="text-center mb-8">
+              <h1 className="font-display text-2xl sm:text-3xl font-bold mb-2">
+                Search results for
+              </h1>
+              <p className="text-primary font-display text-xl sm:text-2xl font-semibold">
+                "{activeQuery}"
+              </p>
+              <p className="text-sm text-muted-foreground mt-3">
+                Click any supplier below to search their site directly
+              </p>
             </div>
-          </div>
-        </div>
 
-        {/* Filters panel */}
-        {showFilters && supplierList.length > 0 && (
-          <div className="glass rounded-2xl p-5 mb-6">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold">Suppliers</h3>
-              {selectedSuppliers.length > 0 && (
-                <button
-                  onClick={() => setSelectedSuppliers([])}
-                  className="text-xs text-primary hover:underline"
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {suppliers.map((supplier) => (
+                <a
+                  key={supplier.name}
+                  href={supplier.buildUrl(activeQuery)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group glass rounded-2xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.02]"
                 >
-                  Clear all
-                </button>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {supplierList.map((s) => {
-                const active = selectedSuppliers.includes(s);
-                return (
-                  <button
-                    key={s}
-                    onClick={() => toggleSupplier(s)}
-                    className={`px-3 py-1.5 rounded-full text-xs border transition-colors ${
-                      active
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "border-border hover:border-muted-foreground"
-                    }`}
-                  >
-                    {s}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Error state */}
-        {searchError && (
-          <div className="glass rounded-2xl p-8 text-center mb-6">
-            <AlertCircle size={32} className="text-destructive mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">{searchError}</p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-4 rounded-xl"
-              onClick={() => fetchResults(activeQuery)}
-            >
-              Try again
-            </Button>
-          </div>
-        )}
-
-        {/* Loading state */}
-        {searching && (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="glass rounded-2xl overflow-hidden animate-pulse">
-                <div className="aspect-[4/3] bg-secondary/50" />
-                <div className="p-5 space-y-3">
-                  <div className="h-3 bg-secondary rounded w-1/3" />
-                  <div className="h-4 bg-secondary rounded w-3/4" />
-                  <div className="h-3 bg-secondary rounded w-1/2" />
-                  <div className="h-6 bg-secondary rounded w-1/3" />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Results grid */}
-        {!searching && !searchError && activeQuery && filtered.length > 0 && (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filtered.map((part) => {
-              const avail = availabilityConfig[part.availability];
-              return (
-                <div
-                  key={part.id}
-                  className="glass rounded-2xl overflow-hidden flex flex-col hover:border-primary/30 transition-colors"
-                >
-                  <div className="p-5 flex flex-col flex-1">
-                    <span className={`text-xs font-semibold mb-2 ${supplierColors[part.supplier] || "text-muted-foreground"}`}>
-                      {part.supplier}
+                  <div className={`h-24 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center`}>
+                    <span className="text-white font-display font-bold text-3xl tracking-wide opacity-90 group-hover:opacity-100 transition-opacity">
+                      {supplier.initials}
                     </span>
-
-                    <h3 className="font-display font-semibold text-sm leading-snug mb-2 line-clamp-2">
-                      {part.partName}
+                  </div>
+                  <div className="p-5">
+                    <h3 className="font-display font-semibold text-base mb-1">
+                      {supplier.name}
                     </h3>
-
-                    <p className="text-xs text-muted-foreground mb-3">#{part.partNumber}</p>
-
-                    <div className="flex items-baseline gap-2 mb-3">
-                      <span className="font-display text-xl font-bold text-foreground">
-                        £{part.price.toFixed(2)}
-                      </span>
-                      {part.originalPrice && (
-                        <span className="text-xs text-muted-foreground line-through">
-                          £{part.originalPrice.toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex items-center gap-3 mb-4 text-xs">
-                      <span className={`px-2 py-0.5 rounded-full font-medium ${avail.className}`}>
-                        {avail.label}
-                      </span>
-                      <span className="flex items-center gap-1 text-muted-foreground">
-                        <TruckIcon size={12} />
-                        {part.deliveryDays === 1 ? "Next day" : `${part.deliveryDays} days`}
-                      </span>
-                    </div>
-
-                    <div className="mt-auto flex gap-2">
-                      <Button
-                        size="sm"
-                        className="flex-1 rounded-xl text-xs h-9 gap-1.5"
-                        asChild={part.url !== "#"}
-                      >
-                        {part.url !== "#" ? (
-                          <a href={part.url} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink size={13} />
-                            View
-                          </a>
-                        ) : (
-                          <>
-                            <ExternalLink size={13} />
-                            View
-                          </>
-                        )}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="rounded-xl h-9 w-9 p-0"
-                        onClick={() => handleSave(part)}
-                        disabled={savingId === part.id}
-                      >
-                        {savingId === part.id ? (
-                          <Loader2 size={14} className="animate-spin" />
-                        ) : (
-                          <Bookmark size={14} />
-                        )}
-                      </Button>
+                    <p className="text-xs text-muted-foreground mb-4">
+                      {supplier.description}
+                    </p>
+                    <div className="flex items-center gap-1.5 text-sm text-primary font-medium">
+                      <ExternalLink size={14} />
+                      Search Now
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Empty state after search */}
-        {!searching && !searchError && activeQuery && filtered.length === 0 && results.length > 0 && (
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <SlidersHorizontal size={48} className="text-muted-foreground/20 mb-4" />
-            <h2 className="font-display text-xl font-semibold mb-2">No matching results</h2>
-            <p className="text-sm text-muted-foreground max-w-md">
-              Try adjusting your filters to see more results.
-            </p>
-          </div>
-        )}
-
-        {/* Initial empty state */}
-        {!searching && !searchError && !activeQuery && (
+                </a>
+              ))}
+            </div>
+          </>
+        ) : (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <Search size={48} className="text-muted-foreground/20 mb-4" />
             <h2 className="font-display text-xl font-semibold mb-2">Search for car parts</h2>
