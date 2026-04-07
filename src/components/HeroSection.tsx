@@ -1,16 +1,80 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Camera, Upload } from "lucide-react";
+import { Search, Camera, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const HeroSection = () => {
   const [query, setQuery] = useState("");
+  const [identifying, setIdentifying] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
       navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+    }
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Too large", description: "Image must be under 5MB.", variant: "destructive" });
+      return;
+    }
+
+    setIdentifying(true);
+
+    try {
+      // Convert to base64
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const { data, error } = await supabase.functions.invoke("identify-part", {
+        body: { image: base64 },
+      });
+
+      if (error) throw error;
+
+      const partName = data?.partName || "Unknown car part";
+      const confidence = data?.confidence || "low";
+
+      if (partName === "Unknown car part" || confidence === "low") {
+        toast({
+          title: "Part not recognized",
+          description: data?.details || "Try a clearer photo or search manually.",
+          variant: "destructive",
+        });
+        setIdentifying(false);
+        return;
+      }
+
+      toast({
+        title: `Identified: ${partName}`,
+        description: `Confidence: ${confidence}. Searching now...`,
+      });
+
+      navigate(`/search?q=${encodeURIComponent(partName)}&photo=1`);
+    } catch (err: any) {
+      console.error("Photo identify failed:", err);
+      toast({
+        title: "Identification failed",
+        description: err.message || "Please try again or search manually.",
+        variant: "destructive",
+      });
+    } finally {
+      setIdentifying(false);
+      // Reset file input
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -46,19 +110,39 @@ const HeroSection = () => {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm py-3"
+                disabled={identifying}
               />
             </div>
-            <label className="cursor-pointer shrink-0">
-              <input type="file" accept="image/*" className="hidden" />
+            <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoUpload}
+                disabled={identifying}
+              />
               <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-sm text-secondary-foreground">
-                <Camera size={18} />
-                <span className="hidden sm:inline">Upload Photo</span>
+                {identifying ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    <span className="hidden sm:inline">Identifying...</span>
+                  </>
+                ) : (
+                  <>
+                    <Camera size={18} />
+                    <span className="hidden sm:inline">Photo Search</span>
+                  </>
+                )}
               </div>
             </label>
-            <Button type="submit" className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold">
+            <Button type="submit" className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold" disabled={identifying}>
               Search
             </Button>
           </form>
+          <p className="text-xs text-muted-foreground mt-3">
+            📸 Upload a photo of any car part — our AI will identify it and find the best prices
+          </p>
         </div>
 
         {/* Trust badges */}
