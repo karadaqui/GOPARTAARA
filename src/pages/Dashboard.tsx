@@ -29,7 +29,11 @@ const Dashboard = () => {
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    if (user) fetchProfile();
+    if (user) {
+      fetchProfile();
+      fetchSearchHistory();
+      fetchSavedPartsCount();
+    }
   }, [user]);
 
   const fetchProfile = async () => {
