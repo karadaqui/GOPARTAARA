@@ -1,9 +1,18 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Search, Camera, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const HeroSection = () => {
   const [query, setQuery] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) {
+      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+    }
+  };
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
@@ -28,7 +37,7 @@ const HeroSection = () => {
 
         {/* Search bar */}
         <div className="max-w-2xl mx-auto">
-          <div className="flex items-center gap-2 p-2 rounded-2xl glass glow-red">
+          <form onSubmit={handleSearch} className="flex items-center gap-2 p-2 rounded-2xl glass glow-red">
             <div className="flex-1 flex items-center gap-3 px-4">
               <Search className="text-muted-foreground shrink-0" size={20} />
               <input
@@ -46,10 +55,10 @@ const HeroSection = () => {
                 <span className="hidden sm:inline">Upload Photo</span>
               </div>
             </label>
-            <Button className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold">
+            <Button type="submit" className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold">
               Search
             </Button>
-          </div>
+          </form>
         </div>
 
         {/* Trust badges */}
