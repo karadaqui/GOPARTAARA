@@ -59,6 +59,8 @@ const SearchResults = () => {
   const [results, setResults] = useState<PartResult[]>([]);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
+  const [identifying, setIdentifying] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   const fetchResults = useCallback(async (q: string) => {
     if (!q.trim()) return;
