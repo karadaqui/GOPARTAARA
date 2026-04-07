@@ -9,6 +9,7 @@ import Auth from "./pages/Auth.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import SearchResults from "./pages/SearchResults.tsx";
+import SavedParts from "./pages/SavedParts.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/search" element={<SearchResults />} />
+            <Route path="/saved" element={<SavedParts />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
