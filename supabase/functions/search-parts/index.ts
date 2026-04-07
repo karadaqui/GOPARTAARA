@@ -37,18 +37,19 @@ Deno.serve(async (req) => {
 
     const systemPrompt = `You are a UK car parts search engine. Given a search query for a car part, return a JSON array of realistic search results from real UK car parts suppliers.
 
+IMPORTANT: The search results MUST be relevant to the exact query. If the query mentions a specific vehicle (e.g., "Volvo XC60") and a specific part (e.g., "right side mirror"), ALL results must be for that exact vehicle and part type. Do NOT return unrelated parts.
+
 Each result must have these fields:
-- partName: descriptive name of the part including brand/fitment info
-- partNumber: realistic part number (e.g., "ECP-48291", "GSF-BRK-1205")
+- partName: descriptive name including the vehicle make/model and part type from the query (e.g., "Volvo XC60 Right Wing Mirror Cover - Gloss Black")
+- partNumber: realistic part number (e.g., "31402680", "ECP-48291")
 - supplier: one of these real suppliers: "Euro Car Parts", "GSF Car Parts", "AutoDoc", "eBay Motors", "Car Parts 4 Less", "Halfords"
 - price: price in GBP as a number (realistic UK pricing)
 - originalPrice: original price before discount (null if no discount, number otherwise)  
 - availability: one of "in_stock", "low_stock", "out_of_stock"
 - deliveryDays: 1-5 (integer)
-- url: a realistic URL for that supplier's website (e.g., "https://www.eurocarparts.com/...")
 - rating: number between 3.0 and 5.0 with one decimal
 
-Return exactly 9 results spread across different suppliers with varied pricing. Make part names, numbers, and prices realistic for the UK market. Include a mix of OEM, aftermarket, and budget options.
+Return exactly 9 results spread across different suppliers with varied pricing. Include a mix of OEM, aftermarket, and budget options. All results must match the searched part and vehicle.
 
 IMPORTANT: Return ONLY the JSON array, no markdown, no explanation.`;
 
