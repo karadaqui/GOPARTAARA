@@ -271,12 +271,90 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Plan & stats */}
+        {/* Subscription Management */}
+        <div className="glass rounded-2xl p-8 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display text-lg font-semibold flex items-center gap-2">
+              <CreditCard size={18} className="text-primary" />
+              Subscription
+            </h2>
+          </div>
+
+          {subLoading ? (
+            <div className="flex items-center justify-center py-6">
+              <Loader2 size={20} className="animate-spin text-muted-foreground" />
+            </div>
+          ) : subStatus.subscribed ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Crown size={20} className="text-primary" />
+                </div>
+                <div>
+                  <p className="font-display font-bold text-lg">
+                    {STRIPE_TIERS[subStatus.product_id || ""]?.label || "Active"} Plan
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {STRIPE_TIERS[subStatus.product_id || ""]?.price || ""}
+                    {subStatus.subscription_end && (
+                      <> · Renews {new Date(subStatus.subscription_end).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</>
+                    )}
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-xl gap-2"
+                  onClick={handleManageSubscription}
+                  disabled={portalLoading}
+                >
+                  {portalLoading ? <Loader2 size={14} className="animate-spin" /> : <ExternalLink size={14} />}
+                  Manage Subscription
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-xl gap-2"
+                  onClick={fetchSubscription}
+                >
+                  Refresh Status
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">
+                  <Crown size={20} className="text-muted-foreground" />
+                </div>
+                <div>
+                  <p className="font-display font-bold text-lg">Free Plan</p>
+                  <p className="text-xs text-muted-foreground">5 searches per month</p>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                className="rounded-xl gap-2"
+                onClick={() => navigate("/#pricing")}
+              >
+                Upgrade Plan
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Stats */}
         <div className="grid sm:grid-cols-3 gap-4">
           <div className="glass rounded-2xl p-6 text-center">
             <Crown size={20} className="text-primary mx-auto mb-2" />
             <p className="text-xs text-muted-foreground">Plan</p>
-            <p className="font-display font-bold text-lg">{planLabel[profile?.subscription_plan || "free"]}</p>
+            <p className="font-display font-bold text-lg">
+              {subStatus.subscribed
+                ? (STRIPE_TIERS[subStatus.product_id || ""]?.label || "Active")
+                : planLabel[profile?.subscription_plan || "free"]}
+            </p>
           </div>
           <div className="glass rounded-2xl p-6 text-center">
             <Clock size={20} className="text-primary mx-auto mb-2" />
