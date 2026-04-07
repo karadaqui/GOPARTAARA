@@ -62,6 +62,14 @@ const Dashboard = () => {
     if (!error && data) {
       setProfile(data);
       setDisplayName(data.display_name || "");
+      if (data.avatar_url) {
+        const { data: signedData } = await supabase.storage
+          .from("avatars")
+          .createSignedUrl(data.avatar_url, 3600);
+        setAvatarSignedUrl(signedData?.signedUrl || null);
+      } else {
+        setAvatarSignedUrl(null);
+      }
     }
     setLoading(false);
   };
