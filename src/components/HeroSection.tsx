@@ -96,7 +96,7 @@ const HeroSection = () => {
         </h1>
 
         <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-12">
-          Search across 19 trusted UK and global suppliers. Compare prices, check availability, and order — all in one place.
+          Search across 15+ trusted UK and global suppliers. Compare prices, check availability, and order — all in one place.
         </p>
 
         {/* Search bar */}
@@ -141,7 +141,7 @@ const HeroSection = () => {
             </Button>
           </form>
           <p className="text-xs text-muted-foreground mt-3">
-            📸 Upload a photo of any car part — our AI will identify it and find the best prices
+            📸 Upload a photo of any car part — our advanced system will identify it and find the best prices
           </p>
         </div>
 
