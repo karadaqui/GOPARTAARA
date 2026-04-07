@@ -26,6 +26,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/search" element={<SearchResults />} />
+            <Route path="/saved" element={<SavedParts />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
