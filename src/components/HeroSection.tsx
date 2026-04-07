@@ -141,7 +141,7 @@ const HeroSection = () => {
             </Button>
           </form>
           <p className="text-xs text-muted-foreground mt-3">
-            📸 Upload a photo of any car part — our AI will identify it and find the best prices
+            📸 Upload a photo of any car part — our advanced system will identify it and find the best prices
           </p>
         </div>
 
