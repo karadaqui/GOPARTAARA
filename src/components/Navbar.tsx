@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, LogOut, User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,16 @@ const moreLinks = [
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const moreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleMoreEnter = useCallback(() => {
+    if (moreTimeoutRef.current) clearTimeout(moreTimeoutRef.current);
+    setMoreOpen(true);
+  }, []);
+
+  const handleMoreLeave = useCallback(() => {
+    moreTimeoutRef.current = setTimeout(() => setMoreOpen(false), 250);
+  }, []);
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -64,15 +74,16 @@ const Navbar = () => {
           {/* More dropdown */}
           <div
             className="relative"
-            onMouseEnter={() => setMoreOpen(true)}
-            onMouseLeave={() => setMoreOpen(false)}
+            onMouseEnter={handleMoreEnter}
+            onMouseLeave={handleMoreLeave}
           >
             <button className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
               More
               <ChevronDown size={14} className={`transition-transform ${moreOpen ? "rotate-180" : ""}`} />
             </button>
             {moreOpen && (
-              <div className="absolute top-full right-0 mt-1 w-48 rounded-md border border-border bg-popover p-1 shadow-md animate-in fade-in-0 zoom-in-95">
+              <div className="absolute top-full right-0 pt-2 w-48">
+                <div className="rounded-md border border-border bg-popover p-1 shadow-md animate-in fade-in-0 zoom-in-95">
                 {moreLinks.map((l) => (
                   <button
                     key={l.href}
@@ -82,6 +93,7 @@ const Navbar = () => {
                     {l.label}
                   </button>
                 ))}
+                </div>
               </div>
             )}
           </div>
