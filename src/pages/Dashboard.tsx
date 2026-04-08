@@ -390,6 +390,11 @@ const Dashboard = () => {
           </div>
         )}
 
+        {/* AI Blog Generator */}
+        <div className="mt-6">
+          <BlogGenerateSection />
+        </div>
+
         {/* Search History */}
         <div className="glass rounded-2xl p-8 mt-6">
           <div className="flex items-center justify-between mb-4">
