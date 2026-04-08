@@ -19,6 +19,7 @@ import SearchCounter from "@/components/SearchCounter";
 import PartsComparison, { type ComparePart } from "@/components/PartsComparison";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 const googleSite = (domain: string) => (q: string) =>
   `https://www.google.com/search?q=site:${domain}+${q.replace(/\s+/g, "+")}`;
@@ -91,6 +92,8 @@ const SearchResults = () => {
   const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
+  const [amazonPanelOpen, setAmazonPanelOpen] = useState(false);
+  const [amazonLoading, setAmazonLoading] = useState(false);
 
   useEffect(() => {
     if (urlQuery !== activeQuery) {
@@ -379,11 +382,13 @@ const SearchResults = () => {
             {/* Amazon UK Premium Card */}
             {activeQuery && (
               <div className="mb-8">
-                <a
-                  href={`https://www.amazon.co.uk/s?k=${encodeURIComponent(activeQuery)}&tag=gopartara-21`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group block glass rounded-2xl overflow-hidden border-2 border-orange-500/30 hover:border-orange-400/60 transition-all hover:shadow-lg hover:shadow-orange-500/10"
+                <button
+                  onClick={() => {
+                    setAmazonPanelOpen(true);
+                    setAmazonLoading(true);
+                    setTimeout(() => setAmazonLoading(false), 2000);
+                  }}
+                  className="group w-full text-left glass rounded-2xl overflow-hidden border-2 border-orange-500/30 hover:border-orange-400/60 transition-all hover:shadow-lg hover:shadow-orange-500/10"
                 >
                   <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent">
                     <div className="shrink-0 bg-[#FF9900] rounded-xl p-3 flex items-center justify-center shadow-lg shadow-orange-500/20">
@@ -398,14 +403,85 @@ const SearchResults = () => {
                         Search <span className="font-semibold text-foreground">"{activeQuery}"</span> on Amazon UK — fast delivery, buyer protection & millions of parts
                       </p>
                     </div>
-                    <Button className="shrink-0 rounded-xl h-11 px-6 bg-[#FF9900] hover:bg-[#e88b00] text-[#232F3E] font-bold gap-2 shadow-lg shadow-orange-500/20 border-0">
-                      <ExternalLink size={14} />
+                    <div className="shrink-0 rounded-xl h-11 px-6 bg-[#FF9900] hover:bg-[#e88b00] text-[#232F3E] font-bold gap-2 shadow-lg shadow-orange-500/20 border-0 inline-flex items-center justify-center text-sm">
+                      <Search size={14} />
                       Search on Amazon
-                    </Button>
+                    </div>
                   </div>
-                </a>
+                </button>
               </div>
             )}
+
+            <Sheet open={amazonPanelOpen} onOpenChange={setAmazonPanelOpen}>
+              <SheetContent side="right" className="w-full sm:max-w-md border-l border-orange-500/20 bg-background p-0">
+                <div className="flex flex-col h-full">
+                  <SheetHeader className="p-6 pb-4 border-b border-orange-500/20 bg-gradient-to-r from-orange-500/10 to-transparent">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-[#FF9900] rounded-xl p-2.5 shadow-lg shadow-orange-500/20">
+                        <span className="text-xl font-black text-[#232F3E] tracking-tight" style={{ fontFamily: 'system-ui' }}>a</span>
+                      </div>
+                      <SheetTitle className="text-foreground font-display text-xl">Amazon UK Results</SheetTitle>
+                    </div>
+                  </SheetHeader>
+
+                  <div className="flex-1 flex flex-col items-center justify-center p-8 gap-6">
+                    {amazonLoading ? (
+                      <>
+                        <div className="relative">
+                          <div className="w-16 h-16 rounded-full border-4 border-orange-500/20 border-t-[#FF9900] animate-spin" />
+                        </div>
+                        <div className="text-center space-y-2">
+                          <p className="text-lg font-semibold text-foreground">Searching Amazon...</p>
+                          <p className="text-sm text-muted-foreground">
+                            Finding <span className="font-semibold text-orange-400">"{activeQuery}"</span> on Amazon UK
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="bg-[#FF9900]/10 rounded-2xl p-6 w-full border border-orange-500/20">
+                          <div className="flex items-center gap-3 mb-4">
+                            <div className="bg-[#FF9900] rounded-lg p-2 shadow-md shadow-orange-500/20">
+                              <Search size={18} className="text-[#232F3E]" />
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-muted-foreground">Searching for</p>
+                              <p className="font-bold text-foreground text-lg">{activeQuery}</p>
+                            </div>
+                          </div>
+                          <div className="space-y-2 text-sm text-muted-foreground mb-5">
+                            <div className="flex items-center gap-2">
+                              <Zap size={14} className="text-orange-400" />
+                              <span>Prime delivery available</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Shield size={14} className="text-orange-400" />
+                              <span>Amazon buyer protection</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Star size={14} className="text-orange-400" />
+                              <span>Verified seller ratings</span>
+                            </div>
+                          </div>
+                          <a
+                            href={`https://www.amazon.co.uk/s?k=${encodeURIComponent(activeQuery)}&tag=gopartara-21`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-2 w-full rounded-xl h-12 bg-[#FF9900] hover:bg-[#e88b00] text-[#232F3E] font-bold text-base shadow-lg shadow-orange-500/20 transition-colors"
+                          >
+                            <ExternalLink size={16} />
+                            View Results on Amazon
+                          </a>
+                        </div>
+                        <p className="text-xs text-muted-foreground text-center">
+                          You'll be redirected to Amazon.co.uk to view live results
+                        </p>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
 
             {liveLoading ? (
               <div className="flex flex-col items-center justify-center gap-3 py-16 mb-8">
