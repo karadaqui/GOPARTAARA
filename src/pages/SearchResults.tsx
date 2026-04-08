@@ -61,13 +61,13 @@ const countryFlags: Record<string, string> = {
 
 interface VehicleInfo {
   make: string;
-  yearOfManufacture?: number;
-  colour?: string;
-  fuelType?: string;
-  engineCapacity?: number;
-  motStatus?: string;
-  taxStatus?: string;
-  registrationNumber?: string;
+  yearOfManufacture?: number | null;
+  colour?: string | null;
+  fuelType?: string | null;
+  engineCapacity?: number | null;
+  motStatus?: string | null;
+  taxStatus?: string | null;
+  registrationNumber?: string | null;
 }
 
 const SearchResults = () => {
@@ -92,15 +92,17 @@ const SearchResults = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
 
-  // Sync state with URL params when they change (e.g. new reg plate lookup)
   useEffect(() => {
-    if (urlQuery && urlQuery !== activeQuery) {
+    if (urlQuery !== activeQuery) {
       setQuery(urlQuery);
       setActiveQuery(urlQuery);
       setSelectedCategory(null);
+    }
+
+    if (urlQuery) {
       setSearchMode("text");
     }
-  }, [urlQuery]);
+  }, [urlQuery, activeQuery]);
 
   useEffect(() => {
     const v = searchParams.get("vehicle");
@@ -146,6 +148,36 @@ const SearchResults = () => {
       if (data) setSavedIds(new Set(data.map((d) => d.part_number).filter(Boolean) as string[]));
     });
   }, [user]);
+
+  const handleVehicleLookupStart = () => {
+    setVehicleInfo(null);
+    setQuery("");
+    setActiveQuery("");
+    setSelectedCategory(null);
+    setLiveResults([]);
+    setTotalResults(0);
+    setSearchParams({});
+  };
+
+  const handleVehicleLookupSuccess = (vehicle: VehicleInfo) => {
+    const nextQuery = `${vehicle.make} ${vehicle.yearOfManufacture || ""}`.trim();
+
+    setVehicleInfo(vehicle);
+    setQuery(nextQuery);
+    setActiveQuery(nextQuery);
+    setSelectedCategory(null);
+    setSearchMode("text");
+    setSearchParams({
+      q: nextQuery,
+      vehicle: JSON.stringify(vehicle),
+    });
+
+    if (user) {
+      supabase.from("search_history").insert({ user_id: user.id, query: nextQuery }).then(({ error }) => {
+        if (error) console.error("Failed to save search history:", error);
+      });
+    }
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -276,7 +308,7 @@ const SearchResults = () => {
               </div>
             </div>
           ) : (
-            <VehicleLookup />
+            <VehicleLookup onLookupStart={handleVehicleLookupStart} onVehicleFound={handleVehicleLookupSuccess} />
           )}
         </div>
       </div>
