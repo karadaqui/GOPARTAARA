@@ -191,14 +191,17 @@ const SearchResults = () => {
                 Search
               </Button>
               </form>
-              <VehicleFilterButton
-                onSelect={(vehicleQuery) => {
-                  setQuery((prev) => {
-                    const combined = prev.trim() ? `${vehicleQuery} ${prev.trim()}` : vehicleQuery;
-                    return combined;
-                  });
-                }}
-              />
+              <div className="flex items-center justify-between">
+                <VehicleFilterButton
+                  onSelect={(vehicleQuery) => {
+                    setQuery((prev) => {
+                      const combined = prev.trim() ? `${vehicleQuery} ${prev.trim()}` : vehicleQuery;
+                      return combined;
+                    });
+                  }}
+                />
+                <SearchCounter />
+              </div>
             </div>
           ) : (
             <VehicleLookup />
