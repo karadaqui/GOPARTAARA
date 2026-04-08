@@ -29,15 +29,12 @@ const Blog = () => {
   }, []);
 
   const fetchPosts = async () => {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
     const { data, error } = await supabase
       .from("blog_posts")
       .select("id, title, slug, preview, meta_description, keywords, author, published_at")
       .eq("published", true)
-      .gte("published_at", thirtyDaysAgo.toISOString())
-      .order("published_at", { ascending: false });
+      .order("published_at", { ascending: false })
+      .limit(50);
 
     if (!error && data) setPosts(data as BlogPost[]);
     setLoading(false);
