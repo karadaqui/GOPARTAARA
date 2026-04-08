@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Camera, Save, User, Mail, Crown, Clock, Bookmark, Loader2, Search, X, ExternalLink, CreditCard } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import ReferralSection from "@/components/dashboard/ReferralSection";
+import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
 
 const STRIPE_TIERS: Record<string, { label: string; price: string }> = {
   prod_UI08qGZRqV94r2: { label: "Pro", price: "£9.99/mo" },
@@ -388,6 +389,11 @@ const Dashboard = () => {
             />
           </div>
         )}
+
+        {/* AI Blog Generator */}
+        <div className="mt-6">
+          <BlogGenerateSection />
+        </div>
 
         {/* Search History */}
         <div className="glass rounded-2xl p-8 mt-6">
