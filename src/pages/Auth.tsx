@@ -45,12 +45,28 @@ const Auth = () => {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else if (isLogin) {
+      // Process referral on login too (in case they signed up via OAuth with ref)
+      processReferral();
       navigate("/");
     } else {
       toast({
         title: "Account created",
         description: "Check your email to confirm your account.",
       });
+    }
+  };
+
+  const processReferral = async () => {
+    const storedRef = localStorage.getItem("partara_ref");
+    if (!storedRef) return;
+    try {
+      await supabase.functions.invoke("process-referral", {
+        body: { referral_code: storedRef },
+      });
+    } catch {
+      // silently fail
+    } finally {
+      localStorage.removeItem("partara_ref");
     }
   };
 
