@@ -1,104 +1,323 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Shield } from "lucide-react";
 
 const Privacy = () => (
   <div className="min-h-screen bg-background">
     <Navbar />
     <main className="pt-24 pb-16">
-      <article className="container px-4 max-w-3xl mx-auto prose prose-invert prose-sm prose-headings:font-display">
-        <h1>Privacy Policy</h1>
-        <p className="text-muted-foreground">Last updated: 7 April 2026</p>
+      <div className="container px-4 max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-14">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Shield size={28} />
+          </div>
+          <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">Privacy Policy</h1>
+          <p className="text-muted-foreground">
+            Last updated: 7 April 2026
+          </p>
+        </div>
 
-        <h2>1. Who We Are</h2>
-        <p>
-          Partara Ltd ("we", "us", "our") is a company registered in England and Wales. We operate
-          the website <strong>gopartara.com</strong> and the PARTARA application. Our contact email
-          is <a href="mailto:info@gopartara.com">info@gopartara.com</a>.
-        </p>
+        <article className="space-y-10">
+          {/* 1 */}
+          <Section title="1. Who We Are">
+            <p>
+              PARTARA ("we", "us", "our") is a UK-based car parts search engine operated by
+              Partara Ltd, registered in England and Wales. We operate the website{" "}
+              <strong>gopartara.com</strong> and the PARTARA application.
+            </p>
+            <p>
+              <strong>Data Controller:</strong> Partara Ltd
+              <br />
+              <strong>Contact:</strong>{" "}
+              <a href="mailto:info@gopartara.com" className="text-primary hover:underline">
+                info@gopartara.com
+              </a>
+            </p>
+          </Section>
 
-        <h2>2. What Data We Collect</h2>
-        <ul>
-          <li><strong>Account data</strong> — email address, display name, and avatar when you create an account.</li>
-          <li><strong>Search data</strong> — search queries and uploaded images used to find parts.</li>
-          <li><strong>Saved parts</strong> — parts you choose to save for later.</li>
-          <li><strong>Usage data</strong> — pages visited, browser type, and IP address collected automatically via server logs.</li>
-          <li><strong>Payment data</strong> — processed securely by our payment provider (Stripe). We do not store card details.</li>
-        </ul>
+          {/* 2 */}
+          <Section title="2. Data We Collect">
+            <p>We collect the following categories of personal data:</p>
+            <div className="grid sm:grid-cols-2 gap-4 mt-4">
+              <DataCard
+                label="Account Information"
+                detail="Email address, display name, and profile avatar when you create an account."
+              />
+              <DataCard
+                label="Search &amp; Usage Data"
+                detail="Search queries, uploaded part images, pages visited, browser type, device information, and IP address."
+              />
+              <DataCard
+                label="Saved Parts"
+                detail="Part names, numbers, prices, and supplier details you choose to save."
+              />
+              <DataCard
+                label="Payment Data"
+                detail="Processed securely by Stripe. We never store your card number or CVV."
+              />
+              <DataCard
+                label="Contact Form Data"
+                detail="Your name, email, and message when you contact us via our website."
+              />
+              <DataCard
+                label="Cookies &amp; Analytics"
+                detail="Essential, functional, and (with consent) analytics cookies. See Section 8."
+              />
+            </div>
+          </Section>
 
-        <h2>3. Legal Basis for Processing (UK GDPR)</h2>
-        <p>We process your data under the following lawful bases:</p>
-        <ul>
-          <li><strong>Contract</strong> — to provide the service you signed up for.</li>
-          <li><strong>Legitimate interests</strong> — to improve our service and prevent fraud.</li>
-          <li><strong>Consent</strong> — for optional marketing communications (you can withdraw at any time).</li>
-        </ul>
+          {/* 3 */}
+          <Section title="3. Legal Basis for Processing (UK GDPR)">
+            <p>We process your personal data under the following lawful bases:</p>
+            <ul className="list-disc pl-5 space-y-2 mt-3">
+              <li>
+                <strong>Performance of a contract</strong> — to provide the PARTARA service you signed
+                up for, manage your account, and process subscriptions.
+              </li>
+              <li>
+                <strong>Legitimate interests</strong> — to improve and secure our service, analyse usage
+                patterns, prevent fraud, and respond to enquiries.
+              </li>
+              <li>
+                <strong>Consent</strong> — for optional marketing communications and analytics cookies.
+                You may withdraw consent at any time.
+              </li>
+              <li>
+                <strong>Legal obligation</strong> — to comply with applicable UK laws, regulations, and
+                lawful requests.
+              </li>
+            </ul>
+          </Section>
 
-        <h2>4. How We Use Your Data</h2>
-        <ul>
-          <li>To provide, maintain, and improve the PARTARA service.</li>
-          <li>To process your searches and deliver results.</li>
-          <li>To manage your account and subscription.</li>
-          <li>To communicate service updates and, with consent, promotional content.</li>
-        </ul>
+          {/* 4 */}
+          <Section title="4. How We Use Your Data">
+            <ul className="list-disc pl-5 space-y-2">
+              <li>To provide, maintain, and improve the PARTARA search engine and related features.</li>
+              <li>To process your searches and deliver comparison results from our supplier network.</li>
+              <li>To manage your account, saved parts, and subscription plan.</li>
+              <li>To identify car parts from uploaded photos using image recognition technology.</li>
+              <li>To send transactional emails (e.g., contact confirmations, password resets).</li>
+              <li>To communicate service updates and, with your consent, promotional content.</li>
+              <li>To monitor and improve website security and performance.</li>
+            </ul>
+          </Section>
 
-        <h2>5. Data Sharing</h2>
-        <p>
-          We do not sell your personal data. We share data only with trusted service providers who
-          help us operate (e.g., hosting, payment processing, analytics), and only to the extent
-          necessary. All processors are bound by data processing agreements.
-        </p>
+          {/* 5 */}
+          <Section title="5. Data Sharing &amp; Third Parties">
+            <p>
+              <strong>We do not sell your personal data.</strong> We share data only with trusted
+              service providers who help us operate, and only to the extent necessary:
+            </p>
+            <ul className="list-disc pl-5 space-y-2 mt-3">
+              <li><strong>Hosting &amp; infrastructure</strong> — cloud hosting providers for data storage and processing.</li>
+              <li><strong>Payment processing</strong> — Stripe for secure payment handling.</li>
+              <li><strong>Analytics</strong> — Google Analytics (with consent) to understand usage patterns.</li>
+              <li><strong>Email delivery</strong> — to send transactional and service-related emails.</li>
+            </ul>
+            <p className="mt-3">
+              All third-party processors are bound by data processing agreements and are required to
+              protect your data in accordance with UK GDPR.
+            </p>
+          </Section>
 
-        <h2>6. Data Retention</h2>
-        <p>
-          We retain your account data for as long as your account is active. Search history is
-          retained for 12 months. You can request deletion at any time by contacting us.
-        </p>
+          {/* 6 */}
+          <Section title="6. Data Retention">
+            <ul className="list-disc pl-5 space-y-2">
+              <li>
+                <strong>Account data</strong> — retained for as long as your account is active. Upon
+                deletion, your data is removed within 30 days.
+              </li>
+              <li>
+                <strong>Search history</strong> — retained for 12 months, then automatically deleted.
+              </li>
+              <li>
+                <strong>Contact form submissions</strong> — retained for up to 24 months for support
+                follow-up purposes.
+              </li>
+              <li>
+                <strong>Payment records</strong> — retained as required by UK tax and financial
+                regulations (typically 6 years).
+              </li>
+            </ul>
+            <p className="mt-3">
+              You can request deletion of your data at any time by contacting us.
+            </p>
+          </Section>
 
-        <h2>7. Your Rights</h2>
-        <p>Under UK GDPR you have the right to:</p>
-        <ul>
-          <li>Access the personal data we hold about you.</li>
-          <li>Rectify inaccurate data.</li>
-          <li>Erase your data ("right to be forgotten").</li>
-          <li>Restrict or object to processing.</li>
-          <li>Data portability.</li>
-          <li>Withdraw consent at any time.</li>
-          <li>Lodge a complaint with the Information Commissioner's Office (ICO).</li>
-        </ul>
+          {/* 7 */}
+          <Section title="7. Your Rights Under UK GDPR">
+            <p>You have the following rights regarding your personal data:</p>
+            <div className="grid sm:grid-cols-2 gap-4 mt-4">
+              <RightCard title="Right of Access" desc="Request a copy of the personal data we hold about you." />
+              <RightCard title="Right to Rectification" desc="Request correction of inaccurate or incomplete data." />
+              <RightCard title="Right to Erasure" desc="Request deletion of your data ('right to be forgotten')." />
+              <RightCard title="Right to Restrict Processing" desc="Request that we limit how we use your data." />
+              <RightCard title="Right to Data Portability" desc="Receive your data in a structured, machine-readable format." />
+              <RightCard title="Right to Object" desc="Object to processing based on legitimate interests or direct marketing." />
+              <RightCard title="Right to Withdraw Consent" desc="Withdraw consent at any time where processing is consent-based." />
+              <RightCard
+                title="Right to Complain"
+                desc="Lodge a complaint with the Information Commissioner's Office (ICO) at ico.org.uk."
+              />
+            </div>
+            <p className="mt-4">
+              To exercise any of these rights, contact us at{" "}
+              <a href="mailto:info@gopartara.com" className="text-primary hover:underline">
+                info@gopartara.com
+              </a>
+              . We will respond within one month as required by UK GDPR.
+            </p>
+          </Section>
 
-        <h2>8. Cookies</h2>
-        <p>
-          We use essential cookies to keep you signed in and functional cookies for preferences. We
-          do not use third-party advertising cookies. Analytics cookies are only set with your
-          consent.
-        </p>
+          {/* 8 */}
+          <Section title="8. Cookies">
+            <p>We use the following types of cookies:</p>
+            <div className="mt-4 rounded-xl border border-border overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-card">
+                    <th className="text-left px-4 py-3 font-semibold">Type</th>
+                    <th className="text-left px-4 py-3 font-semibold">Purpose</th>
+                    <th className="text-left px-4 py-3 font-semibold">Consent Required</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  <tr>
+                    <td className="px-4 py-3 font-medium">Essential</td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      Authentication, security, and core functionality. Required for the site to work.
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">No</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-3 font-medium">Functional</td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      Remembering preferences, theme settings, and display options.
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">No</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-3 font-medium">Analytics</td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      Google Analytics — helps us understand how visitors use the site to improve our service.
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">Yes</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-4">
+              We do not use third-party advertising or tracking cookies. You can manage cookie
+              preferences through your browser settings at any time.
+            </p>
+          </Section>
 
-        <h2>9. International Transfers</h2>
-        <p>
-          Some of our service providers may process data outside the UK. Where this happens, we
-          ensure appropriate safeguards are in place (e.g., Standard Contractual Clauses).
-        </p>
+          {/* 9 */}
+          <Section title="9. International Data Transfers">
+            <p>
+              Some of our service providers may process data outside the United Kingdom. Where this
+              occurs, we ensure appropriate safeguards are in place, including:
+            </p>
+            <ul className="list-disc pl-5 space-y-2 mt-3">
+              <li>
+                <strong>UK adequacy decisions</strong> — transfers to countries recognised as providing
+                adequate data protection.
+              </li>
+              <li>
+                <strong>International Data Transfer Agreement (IDTA)</strong> or{" "}
+                <strong>Standard Contractual Clauses (SCCs)</strong> — contractual safeguards approved by
+                the ICO.
+              </li>
+            </ul>
+          </Section>
 
-        <h2>10. Security</h2>
-        <p>
-          We implement industry-standard security measures including encryption in transit (TLS),
-          access controls, and regular security reviews to protect your data.
-        </p>
+          {/* 10 */}
+          <Section title="10. Data Security">
+            <p>
+              We implement appropriate technical and organisational measures to protect your personal
+              data, including:
+            </p>
+            <ul className="list-disc pl-5 space-y-2 mt-3">
+              <li>Encryption in transit (TLS/SSL) and at rest.</li>
+              <li>Access controls and role-based permissions.</li>
+              <li>Regular security reviews and vulnerability assessments.</li>
+              <li>Secure payment processing via PCI DSS-compliant providers.</li>
+            </ul>
+          </Section>
 
-        <h2>11. Changes to This Policy</h2>
-        <p>
-          We may update this policy from time to time. We will notify you of significant changes
-          via email or an in-app notice.
-        </p>
+          {/* 11 */}
+          <Section title="11. Children's Privacy">
+            <p>
+              PARTARA is not directed at individuals under the age of 16. We do not knowingly collect
+              personal data from children. If we become aware that we have collected data from a child
+              under 16, we will take steps to delete it promptly.
+            </p>
+          </Section>
 
-        <h2>12. Contact</h2>
-        <p>
-          For any privacy-related queries, please contact us at{" "}
-          <a href="mailto:info@gopartara.com">info@gopartara.com</a>.
-        </p>
-      </article>
+          {/* 12 */}
+          <Section title="12. Changes to This Policy">
+            <p>
+              We may update this Privacy Policy from time to time to reflect changes in our practices
+              or legal requirements. We will notify you of significant changes via email or a
+              prominent notice on our website. The "Last updated" date at the top indicates when this
+              policy was last revised.
+            </p>
+          </Section>
+
+          {/* 13 */}
+          <Section title="13. Contact Us">
+            <p>
+              If you have any questions about this Privacy Policy, wish to exercise your data rights,
+              or have a complaint, please contact us:
+            </p>
+            <div className="mt-4 rounded-xl border border-border bg-card p-6">
+              <p className="font-semibold mb-1">Partara Ltd</p>
+              <p className="text-sm text-muted-foreground">
+                Email:{" "}
+                <a href="mailto:info@gopartara.com" className="text-primary hover:underline">
+                  info@gopartara.com
+                </a>
+              </p>
+              <p className="text-sm text-muted-foreground mt-2">
+                You also have the right to lodge a complaint with the{" "}
+                <a
+                  href="https://ico.org.uk"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  Information Commissioner's Office (ICO)
+                </a>
+                .
+              </p>
+            </div>
+          </Section>
+        </article>
+      </div>
     </main>
     <Footer />
+  </div>
+);
+
+const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <section>
+    <h2 className="font-display text-xl md:text-2xl font-bold mb-4">{title}</h2>
+    <div className="text-sm text-muted-foreground leading-relaxed space-y-3">{children}</div>
+  </section>
+);
+
+const DataCard = ({ label, detail }: { label: string; detail: string }) => (
+  <div className="rounded-xl border border-border bg-card p-4">
+    <p className="font-semibold text-sm mb-1 text-foreground">{label}</p>
+    <p className="text-xs text-muted-foreground leading-relaxed">{detail}</p>
+  </div>
+);
+
+const RightCard = ({ title, desc }: { title: string; desc: string }) => (
+  <div className="rounded-xl border border-border bg-card p-4">
+    <p className="font-semibold text-sm mb-1 text-foreground">{title}</p>
+    <p className="text-xs text-muted-foreground leading-relaxed">{desc}</p>
   </div>
 );
 
