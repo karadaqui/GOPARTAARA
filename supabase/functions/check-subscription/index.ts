@@ -78,7 +78,21 @@ serve(async (req) => {
     const sub = subscriptions.data[0];
     const productId = sub.items.data[0].price.product as string;
     const plan = PRODUCT_TO_PLAN[productId] || "pro";
-    const subscriptionEnd = new Date(sub.current_period_end * 1000).toISOString();
+
+    // current_period_end can be a unix timestamp (number) or already a date value
+    let subscriptionEnd: string | null = null;
+    try {
+      const endVal = sub.current_period_end;
+      if (typeof endVal === "number" && endVal > 0) {
+        // Unix timestamps < 1e12 are in seconds, otherwise milliseconds
+        const ms = endVal < 1e12 ? endVal * 1000 : endVal;
+        subscriptionEnd = new Date(ms).toISOString();
+      } else if (endVal) {
+        subscriptionEnd = new Date(String(endVal)).toISOString();
+      }
+    } catch {
+      logStep("Could not parse subscription end date", { raw: sub.current_period_end });
+    }
     logStep("Active subscription found", { productId, plan, subscriptionEnd });
 
     // Sync the profile subscription_plan
