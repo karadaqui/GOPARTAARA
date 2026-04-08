@@ -22,6 +22,16 @@ const moreLinks = [
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const moreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleMoreEnter = useCallback(() => {
+    if (moreTimeoutRef.current) clearTimeout(moreTimeoutRef.current);
+    setMoreOpen(true);
+  }, []);
+
+  const handleMoreLeave = useCallback(() => {
+    moreTimeoutRef.current = setTimeout(() => setMoreOpen(false), 250);
+  }, []);
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
