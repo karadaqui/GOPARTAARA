@@ -378,6 +378,17 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Referral Program */}
+        {profile && (
+          <div className="mt-6">
+            <ReferralSection
+              userId={user!.id}
+              referralCode={(profile as any).referral_code || null}
+              bonusSearches={(profile as any).bonus_searches || 0}
+            />
+          </div>
+        )}
+
         {/* Search History */}
         <div className="glass rounded-2xl p-8 mt-6">
           <div className="flex items-center justify-between mb-4">
