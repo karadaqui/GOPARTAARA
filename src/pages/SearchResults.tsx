@@ -83,7 +83,7 @@ const SearchResults = () => {
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [compareParts, setCompareParts] = useState<ComparePart[]>([]);
   const [showCompare, setShowCompare] = useState(false);
-  const [expandedSupplier, setExpandedSupplier] = useState<string | null>(null);
+  
   const [liveResults, setLiveResults] = useState<any[]>([]);
   const [liveLoading, setLiveLoading] = useState(false);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
