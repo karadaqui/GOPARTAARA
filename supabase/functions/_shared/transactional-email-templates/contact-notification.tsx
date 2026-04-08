@@ -41,3 +41,11 @@ export const template = {
   displayName: 'Contact form notification',
   previewData: { name: 'Jane Smith', email: 'jane@example.com', message: 'I need help finding brake pads for my 2019 Ford Focus.' },
 } satisfies TemplateEntry
+
+const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
+const container = { padding: '20px 25px' }
+const h1 = { fontSize: '22px', fontWeight: 'bold' as const, color: '#000000', margin: '0 0 20px' }
+const label = { fontSize: '12px', color: '#999999', margin: '0 0 4px', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }
+const value = { fontSize: '14px', color: '#333333', margin: '0 0 16px', lineHeight: '1.5' }
+const hr = { borderColor: '#eeeeee', margin: '16px 0' }
+const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
