@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, Camera, Loader2, Car } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
@@ -10,6 +11,9 @@ import SearchCounter from "@/components/SearchCounter";
 const HeroSection = () => {
   const [query, setQuery] = useState("");
   const [identifying, setIdentifying] = useState(false);
+  const [regNumber, setRegNumber] = useState("");
+  const [regLoading, setRegLoading] = useState(false);
+  const [regVehicle, setRegVehicle] = useState<{ make: string; yearOfManufacture?: number; colour?: string; engineCapacity?: number } | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -151,28 +155,54 @@ const HeroSection = () => {
           </div>
         </div>
 
-        {/* Vehicle Reg Lookup - Coming Soon */}
+        {/* Vehicle Reg Lookup */}
         <div className="max-w-2xl mx-auto mt-10">
-          <div className="relative rounded-2xl glass border border-border p-5 opacity-60 pointer-events-none select-none">
-            <div className="absolute inset-0 flex items-center justify-center z-20">
-              <span className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold tracking-wide uppercase shadow-lg">
-                Coming Soon
-              </span>
-            </div>
-            <div className="flex items-center gap-2 blur-[1px]">
+          <div className="rounded-2xl glass border border-border p-5">
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const cleaned = regNumber.replace(/\s+/g, "").toUpperCase();
+                if (!cleaned || cleaned.length < 2) {
+                  toast({ title: "Enter a valid registration number", variant: "destructive" });
+                  return;
+                }
+                setRegLoading(true);
+                setRegVehicle(null);
+                try {
+                  const { data, error } = await supabase.functions.invoke("vehicle-lookup", {
+                    body: { registrationNumber: cleaned },
+                  });
+                  if (error) throw error;
+                  if (data?.error) throw new Error(data.error);
+                  const v = data.vehicle;
+                  setRegVehicle(v);
+                  toast({ title: `Found: ${v.make}`, description: `${v.yearOfManufacture || ""} ${v.colour || ""}`.trim() });
+                  // Auto-navigate to search with vehicle info
+                  const q = `${v.make} ${v.yearOfManufacture || ""}`.trim();
+                  navigate(`/search?q=${encodeURIComponent(q)}`);
+                } catch (err: any) {
+                  toast({ title: "Lookup failed", description: err.message || "Please try again.", variant: "destructive" });
+                } finally {
+                  setRegLoading(false);
+                }
+              }}
+              className="flex items-center gap-2"
+            >
               <div className="flex-1 relative">
                 <Car size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  type="text"
+                <Input
+                  value={regNumber}
+                  onChange={(e) => setRegNumber(e.target.value.toUpperCase())}
                   placeholder="Enter reg plate e.g. AB12 CDE"
-                  disabled
-                  className="w-full pl-10 bg-secondary border border-border rounded-xl h-11 text-sm uppercase tracking-widest font-mono font-bold text-muted-foreground"
+                  className="pl-10 bg-secondary border-border h-11 rounded-xl uppercase tracking-widest font-mono font-bold"
+                  maxLength={10}
+                  disabled={regLoading}
                 />
               </div>
-              <div className="shrink-0 rounded-xl h-11 px-6 bg-primary text-primary-foreground flex items-center text-sm font-semibold">
-                Lookup
-              </div>
-            </div>
+              <Button type="submit" className="rounded-xl h-11 px-6" disabled={regLoading || !regNumber.trim()}>
+                {regLoading ? <Loader2 size={16} className="animate-spin" /> : "Lookup"}
+              </Button>
+            </form>
             <p className="text-xs text-muted-foreground mt-2 text-center">
               🚗 Enter your UK number plate to find parts specific to your vehicle
             </p>
