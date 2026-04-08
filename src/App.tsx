@@ -44,6 +44,7 @@ const App = () => (
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPostPage />} />
+            <Route path="/list-your-parts" element={<ListYourParts />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <CookieConsent />
