@@ -74,8 +74,8 @@ const Navbar = () => {
           {/* More dropdown */}
           <div
             className="relative"
-            onMouseEnter={() => setMoreOpen(true)}
-            onMouseLeave={() => setMoreOpen(false)}
+            onMouseEnter={handleMoreEnter}
+            onMouseLeave={handleMoreLeave}
           >
             <button className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
               More
