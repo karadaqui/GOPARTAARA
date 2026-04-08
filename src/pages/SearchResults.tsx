@@ -234,7 +234,123 @@ const SearchResults = () => {
             <div className="text-center mb-8">
               <h1 className="font-display text-2xl sm:text-3xl font-bold mb-2">Search results for</h1>
               <p className="text-primary font-display text-xl sm:text-2xl font-semibold">"{activeQuery}"</p>
-              <p className="text-sm text-muted-foreground mt-3">Click any supplier below to search their site directly</p>
+              <p className="text-sm text-muted-foreground mt-3">Real listings from eBay Motors + supplier search links below</p>
+            </div>
+
+            {/* Live eBay Results */}
+            {liveLoading ? (
+              <div className="flex items-center justify-center gap-2 py-12 mb-8">
+                <Loader2 size={24} className="animate-spin text-primary" />
+                <span className="text-muted-foreground">Searching eBay Motors...</span>
+              </div>
+            ) : liveResults.filter(r => r.source === "ebay_live").length > 0 ? (
+              <div className="mb-10">
+                <div className="flex items-center gap-2 mb-4">
+                  <ShoppingBag size={18} className="text-primary" />
+                  <h2 className="font-display text-lg font-bold">Live eBay Listings</h2>
+                  <Badge variant="secondary" className="text-[10px]">REAL PRICES</Badge>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {liveResults.filter(r => r.source === "ebay_live").map((item) => (
+                    <a
+                      key={item.id}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group glass rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.01] flex flex-col"
+                    >
+                      <div className="aspect-[4/3] bg-secondary overflow-hidden relative">
+                        <img
+                          src={item.imageUrl}
+                          alt={item.partName}
+                          className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform"
+                          loading="lazy"
+                          onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }}
+                        />
+                        {item.condition && (
+                          <Badge className="absolute top-2 left-2 text-[10px] bg-background/80 text-foreground backdrop-blur-sm">
+                            {item.condition}
+                          </Badge>
+                        )}
+                        <Badge className="absolute top-2 right-2 text-[10px] bg-primary/90 text-primary-foreground">
+                          eBay
+                        </Badge>
+                      </div>
+                      <div className="p-3 flex-1 flex flex-col">
+                        <p className="text-sm font-medium line-clamp-2 mb-2 group-hover:text-primary transition-colors">
+                          {item.partName}
+                        </p>
+                        <div className="mt-auto space-y-1.5">
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-lg font-bold text-primary">£{item.price.toFixed(2)}</span>
+                          </div>
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                            {item.freeShipping ? (
+                              <span className="flex items-center gap-1 text-emerald-400">
+                                <Truck size={12} /> Free P&P
+                              </span>
+                            ) : item.shippingCost ? (
+                              <span className="flex items-center gap-1">
+                                <Truck size={12} /> +£{item.shippingCost.toFixed(2)} P&P
+                              </span>
+                            ) : null}
+                            <span className="flex items-center gap-1">
+                              <Star size={12} className="fill-amber-400 text-amber-400" /> {item.rating}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                            <Tag size={10} /> Item #{item.partNumber}
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {/* AI-generated results from other suppliers */}
+            {liveResults.filter(r => r.source === "ai_generated").length > 0 && (
+              <div className="mb-10">
+                <div className="flex items-center gap-2 mb-4">
+                  <Search size={18} className="text-muted-foreground" />
+                  <h2 className="font-display text-lg font-bold">More Results</h2>
+                  <Badge variant="outline" className="text-[10px]">AI SUGGESTED</Badge>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {liveResults.filter(r => r.source === "ai_generated").map((item) => (
+                    <a
+                      key={item.id}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group glass rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.01] flex flex-col"
+                    >
+                      <div className="p-3 flex-1 flex flex-col">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="secondary" className="text-[10px]">{item.supplier}</Badge>
+                        </div>
+                        <p className="text-sm font-medium line-clamp-2 mb-2 group-hover:text-primary transition-colors">
+                          {item.partName}
+                        </p>
+                        <div className="mt-auto flex items-baseline gap-2">
+                          <span className="text-lg font-bold text-primary">£{item.price.toFixed(2)}</span>
+                          {item.originalPrice && (
+                            <span className="text-xs text-muted-foreground line-through">£{item.originalPrice.toFixed(2)}</span>
+                          )}
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-4">
+                <ExternalLink size={18} className="text-muted-foreground" />
+                <h2 className="font-display text-lg font-bold">Search More Suppliers</h2>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
