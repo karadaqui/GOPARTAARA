@@ -145,6 +145,34 @@ const HeroSection = () => {
           </p>
         </div>
 
+        {/* Vehicle Reg Lookup - Coming Soon */}
+        <div className="max-w-2xl mx-auto mt-10">
+          <div className="relative rounded-2xl glass border border-border p-5 opacity-60 pointer-events-none select-none">
+            <div className="absolute inset-0 flex items-center justify-center z-20">
+              <span className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold tracking-wide uppercase shadow-lg">
+                Coming Soon
+              </span>
+            </div>
+            <div className="flex items-center gap-2 blur-[1px]">
+              <div className="flex-1 relative">
+                <Car size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="text"
+                  placeholder="Enter reg plate e.g. AB12 CDE"
+                  disabled
+                  className="w-full pl-10 bg-secondary border border-border rounded-xl h-11 text-sm uppercase tracking-widest font-mono font-bold text-muted-foreground"
+                />
+              </div>
+              <div className="shrink-0 rounded-xl h-11 px-6 bg-primary text-primary-foreground flex items-center text-sm font-semibold">
+                Lookup
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2 text-center">
+              🚗 Enter your UK number plate to find parts specific to your vehicle
+            </p>
+          </div>
+        </div>
+
         {/* Trust badges */}
         <div className="flex flex-wrap items-center justify-center gap-6 mt-12 text-xs text-muted-foreground">
           {["eBay UK", "Amazon UK", "Euro Car Parts", "AutoDoc", "GSF"].map((s) => (
