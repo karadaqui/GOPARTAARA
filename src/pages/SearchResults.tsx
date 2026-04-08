@@ -376,6 +376,37 @@ const SearchResults = () => {
                 <p className="text-sm text-muted-foreground mt-2">{liveResults.length} of {totalResults} eBay listings shown</p>
               )}
             </div>
+            {/* Amazon UK Premium Card */}
+            {activeQuery && (
+              <div className="mb-8">
+                <a
+                  href={`https://www.amazon.co.uk/s?k=${encodeURIComponent(activeQuery)}&tag=gopartara-21`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group block glass rounded-2xl overflow-hidden border-2 border-orange-500/30 hover:border-orange-400/60 transition-all hover:shadow-lg hover:shadow-orange-500/10"
+                >
+                  <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent">
+                    <div className="shrink-0 bg-[#FF9900] rounded-xl p-3 flex items-center justify-center shadow-lg shadow-orange-500/20">
+                      <span className="text-2xl font-black text-[#232F3E] tracking-tight" style={{ fontFamily: 'system-ui' }}>a</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-display font-bold text-lg text-foreground">Amazon UK</h3>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 font-semibold border border-orange-500/30">🇬🇧 Prime Available</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Search <span className="font-semibold text-foreground">"{activeQuery}"</span> on Amazon UK — fast delivery, buyer protection & millions of parts
+                      </p>
+                    </div>
+                    <Button className="shrink-0 rounded-xl h-11 px-6 bg-[#FF9900] hover:bg-[#e88b00] text-[#232F3E] font-bold gap-2 shadow-lg shadow-orange-500/20 border-0">
+                      <ExternalLink size={14} />
+                      Search on Amazon
+                    </Button>
+                  </div>
+                </a>
+              </div>
+            )}
+
             {liveLoading ? (
               <div className="flex flex-col items-center justify-center gap-3 py-16 mb-8">
                 <Loader2 size={32} className="animate-spin text-primary" />
