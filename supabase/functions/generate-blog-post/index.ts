@@ -107,7 +107,7 @@ Return ONLY valid JSON, no markdown code blocks.`,
       preview: post.preview,
       meta_description: post.meta_description,
       keywords: post.keywords,
-      author: "PARTARA Team",
+      author: authorName,
       published: true,
       published_at: new Date().toISOString(),
     })
