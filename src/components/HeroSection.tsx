@@ -22,6 +22,10 @@ const HeroSection = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    if (searchLimit.limitReached) {
+      toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" });
+      return;
+    }
     if (query.trim()) {
       navigate(`/search?q=${encodeURIComponent(query.trim())}`);
     }
