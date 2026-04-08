@@ -322,7 +322,7 @@ const SearchResults = () => {
                       <Scale size={12} /> Compare ({compareParts.length})
                     </Button>
                   )}
-                  <SearchCounter />
+                  <SearchCounter limitData={searchLimit} />
                 </div>
               </div>
             </div>
