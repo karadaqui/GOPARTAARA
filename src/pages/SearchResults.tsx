@@ -78,6 +78,36 @@ const SearchResults = () => {
   const [compareParts, setCompareParts] = useState<ComparePart[]>([]);
   const [showCompare, setShowCompare] = useState(false);
   const [expandedSupplier, setExpandedSupplier] = useState<string | null>(null);
+  const [liveResults, setLiveResults] = useState<any[]>([]);
+  const [liveLoading, setLiveLoading] = useState(false);
+
+  // Fetch live eBay results when activeQuery changes
+  useEffect(() => {
+    if (!activeQuery.trim()) {
+      setLiveResults([]);
+      return;
+    }
+    let cancelled = false;
+    const fetchLive = async () => {
+      setLiveLoading(true);
+      try {
+        const { data, error } = await supabase.functions.invoke("search-parts", {
+          body: { query: activeQuery },
+        });
+        if (error) throw error;
+        if (!cancelled) {
+          setLiveResults(data?.results || []);
+        }
+      } catch (err) {
+        console.error("Live search failed:", err);
+        if (!cancelled) setLiveResults([]);
+      } finally {
+        if (!cancelled) setLiveLoading(false);
+      }
+    };
+    fetchLive();
+    return () => { cancelled = true; };
+  }, [activeQuery]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
