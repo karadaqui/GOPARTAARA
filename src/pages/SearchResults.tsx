@@ -76,7 +76,7 @@ const SearchResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
   const { toast } = useToast();
-
+  const searchLimit = useSearchLimit();
   const urlQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(urlQuery);
   const [activeQuery, setActiveQuery] = useState(urlQuery);
