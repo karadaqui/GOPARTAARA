@@ -159,16 +159,17 @@ const SearchResults = () => {
           </div>
 
           {searchMode === "text" ? (
-            <form onSubmit={handleSearch} className="flex items-center gap-2">
-              <div className="flex-1 relative">
-                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search car parts... e.g. Volvo XC60 right mirror"
-                  className="pl-10 bg-secondary border-border h-11 rounded-xl"
-                />
-              </div>
+            <div className="space-y-2">
+              <form onSubmit={handleSearch} className="flex items-center gap-2">
+                <div className="flex-1 relative">
+                  <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search car parts... e.g. Volvo XC60 right mirror"
+                    className="pl-10 bg-secondary border-border h-11 rounded-xl"
+                  />
+                </div>
               <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
                 <input
                   ref={photoInputRef}
