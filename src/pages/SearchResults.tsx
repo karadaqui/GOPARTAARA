@@ -302,7 +302,17 @@ const SearchResults = () => {
                     <span className="hidden sm:inline">{identifying ? "Identifying..." : "Photo"}</span>
                   </div>
                 </label>
-                <Button type="submit" className="rounded-xl h-11 px-6">Search</Button>
+                {searchLimit.limitReached ? (
+                  <Button type="button" className="rounded-xl h-11 px-6" onClick={() => {
+                    const el = document.getElementById("pricing");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                    else window.location.href = "/#pricing";
+                  }}>
+                    <ArrowUp size={14} className="mr-1" /> Upgrade to Pro
+                  </Button>
+                ) : (
+                  <Button type="submit" className="rounded-xl h-11 px-6">Search</Button>
+                )}
               </form>
               <div className="flex items-center justify-between">
                 <VehicleFilterButton onSelect={(vehicleQuery) => setQuery((prev) => prev.trim() ? `${vehicleQuery} ${prev.trim()}` : vehicleQuery)} />
