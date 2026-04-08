@@ -19,6 +19,10 @@ import Unsubscribe from "./pages/Unsubscribe.tsx";
 import Blog from "./pages/Blog.tsx";
 import BlogPostPage from "./pages/BlogPost.tsx";
 import ListYourParts from "./pages/ListYourParts.tsx";
+import MyMarket from "./pages/MyMarket.tsx";
+import Marketplace from "./pages/Marketplace.tsx";
+import ListingDetail from "./pages/ListingDetail.tsx";
+import SellerProfile from "./pages/SellerProfile.tsx";
 import CookieConsent from "./components/CookieConsent.tsx";
 
 const queryClient = new QueryClient();
