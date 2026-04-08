@@ -187,7 +187,16 @@ const SearchResults = () => {
               <Button type="submit" className="rounded-xl h-11 px-6">
                 Search
               </Button>
-            </form>
+              </form>
+              <VehicleFilterButton
+                onSelect={(vehicleQuery) => {
+                  setQuery((prev) => {
+                    const combined = prev.trim() ? `${vehicleQuery} ${prev.trim()}` : vehicleQuery;
+                    return combined;
+                  });
+                }}
+              />
+            </div>
           ) : (
             <VehicleLookup />
           )}

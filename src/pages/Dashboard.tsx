@@ -392,6 +392,16 @@ const Dashboard = () => {
           </div>
         )}
 
+        {/* My Garage */}
+        {user && (
+          <div className="mt-6">
+            <MyGarageSection
+              userId={user.id}
+              isPro={subStatus.subscribed}
+            />
+          </div>
+        )}
+
         {/* Price Alerts */}
         {user && (
           <div className="mt-6">
