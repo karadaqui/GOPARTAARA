@@ -9,6 +9,7 @@ import { ArrowLeft, Camera, Save, User, Mail, Crown, Clock, Bookmark, Loader2, S
 import type { Tables } from "@/integrations/supabase/types";
 import ReferralSection from "@/components/dashboard/ReferralSection";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
+import PriceAlertsSection from "@/components/dashboard/PriceAlertsSection";
 
 const STRIPE_TIERS: Record<string, { label: string; price: string }> = {
   prod_UI08qGZRqV94r2: { label: "Pro", price: "£9.99/mo" },
@@ -387,6 +388,13 @@ const Dashboard = () => {
               referralCode={(profile as any).referral_code || null}
               bonusSearches={(profile as any).bonus_searches || 0}
             />
+          </div>
+        )}
+
+        {/* Price Alerts */}
+        {user && (
+          <div className="mt-6">
+            <PriceAlertsSection userId={user.id} />
           </div>
         )}
 
