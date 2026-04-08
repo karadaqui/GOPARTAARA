@@ -4,8 +4,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ExternalLink, Loader2, Camera, Car } from "lucide-react";
+import { Search, ExternalLink, Loader2, Camera, Car, Shield } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
 import VehicleLookup from "@/components/VehicleLookup";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,29 +15,49 @@ import { useToast } from "@/hooks/use-toast";
 const googleSite = (domain: string) => (q: string) =>
   `https://www.google.com/search?q=site:${domain}+${q.replace(/\s+/g, "+")}`;
 
-const suppliers = [
+type QualityTier = "oem" | "premium" | "budget";
+
+const tierConfig: Record<QualityTier, { label: string; colors: string; tooltip: string }> = {
+  oem: {
+    label: "OEM",
+    colors: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+    tooltip: "Original Equipment Manufacturer — genuine parts made by or for the vehicle maker. Highest quality & fitment guarantee.",
+  },
+  premium: {
+    label: "Premium",
+    colors: "bg-slate-300/15 text-slate-300 border-slate-400/30",
+    tooltip: "Aftermarket Premium — high-quality parts from reputable brands. Great balance of quality and value.",
+  },
+  budget: {
+    label: "Budget",
+    colors: "bg-orange-700/20 text-orange-400 border-orange-600/30",
+    tooltip: "Budget — affordable parts for cost-conscious buyers. Quality varies; check reviews before purchasing.",
+  },
+};
+
+const suppliers: { name: string; flag: string; gradient: string; tier: QualityTier; buildUrl: (q: string) => string }[] = [
   // 🇬🇧 UK Suppliers
-  { name: "Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-600 to-indigo-700", buildUrl: googleSite("eurocarparts.com") },
-  { name: "GSF Car Parts", flag: "🇬🇧", gradient: "from-emerald-600 to-teal-700", buildUrl: googleSite("gsfcarparts.com") },
-  { name: "Car Parts 4 Less", flag: "🇬🇧", gradient: "from-purple-600 to-purple-800", buildUrl: googleSite("carparts4less.co.uk") },
-  { name: "Halfords", flag: "🇬🇧", gradient: "from-sky-500 to-sky-700", buildUrl: googleSite("halfords.com") },
-  { name: "AutoDoc", flag: "🇬🇧", gradient: "from-cyan-500 to-blue-600", buildUrl: googleSite("autodoc.co.uk") },
-  { name: "eBay UK", flag: "🇬🇧", gradient: "from-red-500 to-yellow-500", buildUrl: (q: string) => `https://www.ebay.co.uk/sch/i.html?_nkw=${q.replace(/\s+/g, "+")}&_sacat=9801&mkcid=1&mkrid=710-53481-19255-0&siteid=3&campid=5339148333&toolid=10001&mkevt=1` },
-  { name: "Amazon UK", flag: "🇬🇧", gradient: "from-orange-500 to-amber-600", buildUrl: (q: string) => `https://www.amazon.co.uk/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara-21` },
-  { name: "Partmaster", flag: "🇬🇧", gradient: "from-slate-600 to-slate-800", buildUrl: googleSite("partmaster.co.uk") },
-  { name: "LKQ Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-500 to-blue-700", buildUrl: googleSite("lkqeurocarparts.com") },
-  { name: "First Line", flag: "🇬🇧", gradient: "from-green-600 to-green-800", buildUrl: googleSite("firstline.co.uk") },
+  { name: "Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-600 to-indigo-700", tier: "premium", buildUrl: googleSite("eurocarparts.com") },
+  { name: "GSF Car Parts", flag: "🇬🇧", gradient: "from-emerald-600 to-teal-700", tier: "premium", buildUrl: googleSite("gsfcarparts.com") },
+  { name: "Car Parts 4 Less", flag: "🇬🇧", gradient: "from-purple-600 to-purple-800", tier: "budget", buildUrl: googleSite("carparts4less.co.uk") },
+  { name: "Halfords", flag: "🇬🇧", gradient: "from-sky-500 to-sky-700", tier: "premium", buildUrl: googleSite("halfords.com") },
+  { name: "AutoDoc", flag: "🇬🇧", gradient: "from-cyan-500 to-blue-600", tier: "budget", buildUrl: googleSite("autodoc.co.uk") },
+  { name: "eBay UK", flag: "🇬🇧", gradient: "from-red-500 to-yellow-500", tier: "budget", buildUrl: (q: string) => `https://www.ebay.co.uk/sch/i.html?_nkw=${q.replace(/\s+/g, "+")}&_sacat=9801&mkcid=1&mkrid=710-53481-19255-0&siteid=3&campid=5339148333&toolid=10001&mkevt=1` },
+  { name: "Amazon UK", flag: "🇬🇧", gradient: "from-orange-500 to-amber-600", tier: "premium", buildUrl: (q: string) => `https://www.amazon.co.uk/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara-21` },
+  { name: "Partmaster", flag: "🇬🇧", gradient: "from-slate-600 to-slate-800", tier: "oem", buildUrl: googleSite("partmaster.co.uk") },
+  { name: "LKQ Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-500 to-blue-700", tier: "oem", buildUrl: googleSite("lkqeurocarparts.com") },
+  { name: "First Line", flag: "🇬🇧", gradient: "from-green-600 to-green-800", tier: "premium", buildUrl: googleSite("firstline.co.uk") },
   // 🇪🇺 European Amazon
-  { name: "Amazon Spain", flag: "🇪🇸", gradient: "from-red-600 to-yellow-500", buildUrl: (q: string) => `https://www.amazon.es/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara06-21` },
-  { name: "Amazon France", flag: "🇫🇷", gradient: "from-blue-600 to-red-500", buildUrl: (q: string) => `https://www.amazon.fr/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara00-21` },
-  { name: "Amazon Germany", flag: "🇩🇪", gradient: "from-gray-800 to-yellow-500", buildUrl: (q: string) => `https://www.amazon.de/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara0c0-21` },
-  { name: "Amazon Italy", flag: "🇮🇹", gradient: "from-green-600 to-red-500", buildUrl: (q: string) => `https://www.amazon.it/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara07-21` },
+  { name: "Amazon Spain", flag: "🇪🇸", gradient: "from-red-600 to-yellow-500", tier: "premium", buildUrl: (q: string) => `https://www.amazon.es/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara06-21` },
+  { name: "Amazon France", flag: "🇫🇷", gradient: "from-blue-600 to-red-500", tier: "premium", buildUrl: (q: string) => `https://www.amazon.fr/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara00-21` },
+  { name: "Amazon Germany", flag: "🇩🇪", gradient: "from-gray-800 to-yellow-500", tier: "premium", buildUrl: (q: string) => `https://www.amazon.de/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara0c0-21` },
+  { name: "Amazon Italy", flag: "🇮🇹", gradient: "from-green-600 to-red-500", tier: "premium", buildUrl: (q: string) => `https://www.amazon.it/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara07-21` },
   // 🌍 International
-  { name: "RockAuto", flag: "🌍", gradient: "from-yellow-600 to-orange-700", buildUrl: googleSite("rockauto.com") },
-  { name: "PartsGeek", flag: "🌍", gradient: "from-red-600 to-red-800", buildUrl: googleSite("partsgeek.com") },
-  { name: "CARiD", flag: "🌍", gradient: "from-indigo-500 to-violet-700", buildUrl: googleSite("carid.com") },
-  { name: "Advance Auto Parts", flag: "🌍", gradient: "from-red-700 to-rose-900", buildUrl: googleSite("advanceautoparts.com") },
-  { name: "AutoZone", flag: "🌍", gradient: "from-amber-600 to-red-600", buildUrl: googleSite("autozone.com") },
+  { name: "RockAuto", flag: "🌍", gradient: "from-yellow-600 to-orange-700", tier: "premium", buildUrl: googleSite("rockauto.com") },
+  { name: "PartsGeek", flag: "🌍", gradient: "from-red-600 to-red-800", tier: "budget", buildUrl: googleSite("partsgeek.com") },
+  { name: "CARiD", flag: "🌍", gradient: "from-indigo-500 to-violet-700", tier: "oem", buildUrl: googleSite("carid.com") },
+  { name: "Advance Auto Parts", flag: "🌍", gradient: "from-red-700 to-rose-900", tier: "premium", buildUrl: googleSite("advanceautoparts.com") },
+  { name: "AutoZone", flag: "🌍", gradient: "from-amber-600 to-red-600", tier: "budget", buildUrl: googleSite("autozone.com") },
 ];
 
 const SearchResults = () => {
@@ -200,10 +221,23 @@ const SearchResults = () => {
                     partQuery={activeQuery}
                     supplierUrl={supplier.buildUrl(activeQuery)}
                   />
-                  <div className={`h-16 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center`}>
+                  <div className={`h-16 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center relative`}>
                     <span className="text-white font-display font-bold text-lg tracking-wide opacity-90 group-hover:opacity-100 transition-opacity">
                       {supplier.flag} {supplier.name}
                     </span>
+                    <TooltipProvider delayDuration={200}>
+                      <Tooltip>
+                        <TooltipTrigger asChild onClick={(e) => e.preventDefault()}>
+                          <span className={`absolute bottom-1.5 right-1.5 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${tierConfig[supplier.tier].colors}`}>
+                            <Shield size={9} />
+                            {tierConfig[supplier.tier].label}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[220px] text-xs">
+                          {tierConfig[supplier.tier].tooltip}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                   <div className="p-3 flex justify-center">
                     <Button size="sm" className="w-full rounded-lg gap-1.5 text-xs h-8" asChild>
