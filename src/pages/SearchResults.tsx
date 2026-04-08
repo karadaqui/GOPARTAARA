@@ -417,13 +417,8 @@ const SearchResults = () => {
                 <div className="flex flex-col h-full">
                   <SheetHeader className="p-6 pb-4 border-b border-orange-500/20 bg-gradient-to-r from-orange-500/10 to-transparent">
                     <div className="flex items-center gap-3">
-                      <div className="bg-white rounded-xl p-2.5 shadow-lg shadow-orange-500/20 flex flex-col items-center justify-center">
-                        <span className="text-lg font-bold text-[#232F3E] tracking-tight leading-none" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.03em' }}>amazon</span>
-                        <svg viewBox="0 0 60 12" className="w-[48px] h-[9px] mt-0.5">
-                          <path d="M4 9 Q15 2, 30 4 Q40 5.5, 48 3" stroke="#FF9900" strokeWidth="2.8" fill="none" strokeLinecap="round" />
-                          <polygon points="46,0 52,4 46,6" fill="#FF9900" />
-                        </svg>
-                        <span className="text-[8px] text-[#232F3E] font-semibold tracking-tight leading-none mt-0.5">.com</span>
+                      <div className="bg-[#FF9900] rounded-xl px-3 py-2 shadow-lg shadow-orange-500/20 flex items-center justify-center">
+                        <span className="text-base font-bold text-white tracking-tight leading-none" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}>amazon.com</span>
                       </div>
                       <SheetTitle className="text-foreground font-display text-xl">Amazon UK Results</SheetTitle>
                     </div>
