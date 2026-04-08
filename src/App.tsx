@@ -41,6 +41,8 @@ const App = () => (
             <Route path="/unsubscribe" element={<Unsubscribe />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <CookieConsent />
+          </Routes>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
