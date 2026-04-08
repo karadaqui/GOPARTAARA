@@ -92,6 +92,8 @@ const SearchResults = () => {
   const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
+  const [amazonPanelOpen, setAmazonPanelOpen] = useState(false);
+  const [amazonLoading, setAmazonLoading] = useState(false);
 
   useEffect(() => {
     if (urlQuery !== activeQuery) {
