@@ -1,15 +1,17 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Camera, Loader2, Car } from "lucide-react";
+import { Search, Camera, Loader2, Car, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
 import SearchCounter from "@/components/SearchCounter";
+import { useSearchLimit } from "@/hooks/useSearchLimit";
 
 const HeroSection = () => {
   const [query, setQuery] = useState("");
+  const searchLimit = useSearchLimit();
   const [identifying, setIdentifying] = useState(false);
   const [regNumber, setRegNumber] = useState("");
   const [regLoading, setRegLoading] = useState(false);
@@ -20,6 +22,10 @@ const HeroSection = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    if (searchLimit.limitReached) {
+      toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" });
+      return;
+    }
     if (query.trim()) {
       navigate(`/search?q=${encodeURIComponent(query.trim())}`);
     }
@@ -143,15 +149,32 @@ const HeroSection = () => {
                 )}
               </div>
             </label>
-            <Button type="submit" className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold" disabled={identifying}>
-              Search
-            </Button>
+            {searchLimit.limitReached ? (
+              <Button
+                type="button"
+                className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold"
+                onClick={() => {
+                  navigate("/");
+                  setTimeout(() => {
+                    const el = document.getElementById("pricing");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }, 100);
+                }}
+              >
+                <ArrowUp size={14} className="mr-1" />
+                Upgrade to Pro
+              </Button>
+            ) : (
+              <Button type="submit" className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold" disabled={identifying}>
+                Search
+              </Button>
+            )}
           </form>
           <div className="flex items-center justify-between mt-3">
             <p className="text-xs text-muted-foreground">
               📸 Upload a photo of any car part — our advanced system will identify it and find the best prices
             </p>
-            <SearchCounter />
+             <SearchCounter limitData={searchLimit} />
           </div>
         </div>
 

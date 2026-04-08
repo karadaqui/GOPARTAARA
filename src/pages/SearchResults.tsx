@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import {
   Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star,
   Truck, Bookmark, BookmarkCheck, MapPin, Clock,
-  Heart, AlertCircle, Zap, Filter as FilterIcon,
+  Heart, AlertCircle, Zap, Filter as FilterIcon, ArrowUp,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -19,6 +19,7 @@ import SearchCounter from "@/components/SearchCounter";
 import PartsComparison, { type ComparePart } from "@/components/PartsComparison";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useSearchLimit } from "@/hooks/useSearchLimit";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 const googleSite = (domain: string) => (q: string) =>
@@ -75,7 +76,7 @@ const SearchResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
   const { toast } = useToast();
-
+  const searchLimit = useSearchLimit();
   const urlQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(urlQuery);
   const [activeQuery, setActiveQuery] = useState(urlQuery);
@@ -185,6 +186,10 @@ const SearchResults = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
+    if (searchLimit.limitReached) {
+      toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" });
+      return;
+    }
     const q = query.trim();
     setActiveQuery(q);
     setSelectedCategory(null);
@@ -193,6 +198,7 @@ const SearchResults = () => {
       supabase.from("search_history").insert({ user_id: user.id, query: q }).then(({ error }) => {
         if (error) console.error("Failed to save search history:", error);
       });
+      searchLimit.refresh();
     }
   };
 
@@ -296,7 +302,17 @@ const SearchResults = () => {
                     <span className="hidden sm:inline">{identifying ? "Identifying..." : "Photo"}</span>
                   </div>
                 </label>
-                <Button type="submit" className="rounded-xl h-11 px-6">Search</Button>
+                {searchLimit.limitReached ? (
+                  <Button type="button" className="rounded-xl h-11 px-6" onClick={() => {
+                    const el = document.getElementById("pricing");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                    else window.location.href = "/#pricing";
+                  }}>
+                    <ArrowUp size={14} className="mr-1" /> Upgrade to Pro
+                  </Button>
+                ) : (
+                  <Button type="submit" className="rounded-xl h-11 px-6">Search</Button>
+                )}
               </form>
               <div className="flex items-center justify-between">
                 <VehicleFilterButton onSelect={(vehicleQuery) => setQuery((prev) => prev.trim() ? `${vehicleQuery} ${prev.trim()}` : vehicleQuery)} />
@@ -306,7 +322,7 @@ const SearchResults = () => {
                       <Scale size={12} /> Compare ({compareParts.length})
                     </Button>
                   )}
-                  <SearchCounter />
+                  <SearchCounter limitData={searchLimit} />
                 </div>
               </div>
             </div>

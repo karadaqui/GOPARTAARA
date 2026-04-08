@@ -1,55 +1,15 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 import { Search, ArrowUp } from "lucide-react";
+import { useSearchLimit } from "@/hooks/useSearchLimit";
+import { useAuth } from "@/contexts/AuthContext";
 
-const FREE_LIMIT = 5;
-
-const SearchCounter = () => {
+const SearchCounter = ({ limitData }: { limitData?: ReturnType<typeof import("@/hooks/useSearchLimit").useSearchLimit> }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [searchCount, setSearchCount] = useState(0);
-  const [bonusSearches, setBonusSearches] = useState(0);
-  const [isPro, setIsPro] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    if (!user) return;
-
-    const fetchData = async () => {
-      // Get current month search count
-      const startOfMonth = new Date();
-      startOfMonth.setDate(1);
-      startOfMonth.setHours(0, 0, 0, 0);
-
-      const [{ count }, { data: profile }, subResult] = await Promise.all([
-        supabase
-          .from("search_history")
-          .select("*", { count: "exact", head: true })
-          .eq("user_id", user.id)
-          .gte("created_at", startOfMonth.toISOString()),
-        supabase
-          .from("profiles")
-          .select("bonus_searches")
-          .eq("user_id", user.id)
-          .single(),
-        supabase.functions.invoke("check-subscription"),
-      ]);
-
-      setSearchCount(count || 0);
-      setBonusSearches(profile?.bonus_searches || 0);
-      setIsPro(!subResult.error && subResult.data?.subscribed);
-      setLoaded(true);
-    };
-
-    fetchData();
-  }, [user]);
+  const ownData = useSearchLimit();
+  const { remaining, isPro, loaded } = limitData || ownData;
 
   if (!user || !loaded || isPro) return null;
-
-  const totalAllowed = FREE_LIMIT + bonusSearches;
-  const remaining = Math.max(0, totalAllowed - searchCount);
 
   if (remaining <= 0) {
     return (
