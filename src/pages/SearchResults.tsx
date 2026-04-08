@@ -393,13 +393,11 @@ const SearchResults = () => {
                   <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent">
                     <div className="shrink-0 bg-white rounded-xl p-3 flex flex-col items-center justify-center shadow-lg shadow-orange-500/20 min-w-[80px]">
                       <span className="text-xl font-bold text-[#232F3E] tracking-tight leading-none" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.03em' }}>amazon</span>
-                      <div className="w-[52px] h-[6px] mt-0.5 relative">
-                        <svg viewBox="0 0 52 8" className="w-full h-full">
-                          <path d="M2 6 C10 2, 20 1, 38 3" stroke="#FF9900" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-                          <path d="M34 1 L39 3.5 L34 4" fill="#FF9900" stroke="none" />
-                        </svg>
-                      </div>
-                      <span className="text-[9px] text-[#232F3E] font-semibold tracking-tight leading-none mt-0.5">.co.uk</span>
+                      <svg viewBox="0 0 60 12" className="w-[56px] h-[10px] mt-0.5">
+                        <path d="M4 9 Q15 2, 30 4 Q40 5.5, 48 3" stroke="#FF9900" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+                        <polygon points="46,0 52,4 46,6" fill="#FF9900" />
+                      </svg>
+                      <span className="text-[9px] text-[#232F3E] font-semibold tracking-tight leading-none mt-0.5">.com</span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
@@ -426,13 +424,11 @@ const SearchResults = () => {
                     <div className="flex items-center gap-3">
                       <div className="bg-white rounded-xl p-2.5 shadow-lg shadow-orange-500/20 flex flex-col items-center justify-center">
                         <span className="text-lg font-bold text-[#232F3E] tracking-tight leading-none" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.03em' }}>amazon</span>
-                        <div className="w-[44px] h-[6px] mt-0.5 relative">
-                          <svg viewBox="0 0 52 8" className="w-full h-full">
-                            <path d="M2 6 C10 2, 20 1, 38 3" stroke="#FF9900" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-                            <path d="M34 1 L39 3.5 L34 4" fill="#FF9900" stroke="none" />
-                          </svg>
-                        </div>
-                        <span className="text-[8px] text-[#232F3E] font-semibold tracking-tight leading-none mt-0.5">.co.uk</span>
+                        <svg viewBox="0 0 60 12" className="w-[48px] h-[9px] mt-0.5">
+                          <path d="M4 9 Q15 2, 30 4 Q40 5.5, 48 3" stroke="#FF9900" strokeWidth="2.8" fill="none" strokeLinecap="round" />
+                          <polygon points="46,0 52,4 46,6" fill="#FF9900" />
+                        </svg>
+                        <span className="text-[8px] text-[#232F3E] font-semibold tracking-tight leading-none mt-0.5">.com</span>
                       </div>
                       <SheetTitle className="text-foreground font-display text-xl">Amazon UK Results</SheetTitle>
                     </div>
