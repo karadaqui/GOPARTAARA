@@ -17,7 +17,12 @@ interface VehicleData {
   taxStatus: string | null;
 }
 
-const VehicleLookup = () => {
+interface VehicleLookupProps {
+  onLookupStart?: () => void;
+  onVehicleFound?: (vehicle: VehicleData) => void;
+}
+
+const VehicleLookup = ({ onLookupStart, onVehicleFound }: VehicleLookupProps) => {
   const [regNumber, setRegNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [vehicle, setVehicle] = useState<VehicleData | null>(null);
@@ -35,14 +40,24 @@ const VehicleLookup = () => {
 
     setLoading(true);
     setVehicle(null);
+    setPartQuery("");
+    onLookupStart?.();
     try {
       const { data, error } = await supabase.functions.invoke("vehicle-lookup", {
         body: { registrationNumber: cleaned },
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setVehicle(data.vehicle);
-      toast({ title: `Found: ${data.vehicle.make}`, description: `${data.vehicle.yearOfManufacture || ""} ${data.vehicle.colour || ""}`.trim() });
+
+      const nextVehicle = data.vehicle as VehicleData;
+      toast({ title: `Found: ${nextVehicle.make}`, description: `${nextVehicle.yearOfManufacture || ""} ${nextVehicle.colour || ""}`.trim() });
+
+      if (onVehicleFound) {
+        onVehicleFound(nextVehicle);
+        return;
+      }
+
+      setVehicle(nextVehicle);
     } catch (err: any) {
       toast({ title: "Lookup failed", description: err.message || "Please try again.", variant: "destructive" });
     } finally {
