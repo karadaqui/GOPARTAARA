@@ -391,6 +391,13 @@ const Dashboard = () => {
           </div>
         )}
 
+        {/* Price Alerts */}
+        {user && (
+          <div className="mt-6">
+            <PriceAlertsSection userId={user.id} />
+          </div>
+        )}
+
         {/* AI Blog Generator */}
         <div className="mt-6">
           <BlogGenerateSection />

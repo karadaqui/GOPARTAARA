@@ -193,8 +193,13 @@ const SearchResults = () => {
                   href={supplier.buildUrl(activeQuery)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group glass rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.02]"
+                  className="group relative glass rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.02]"
                 >
+                  <PriceAlertDialog
+                    supplierName={supplier.name}
+                    partQuery={activeQuery}
+                    supplierUrl={supplier.buildUrl(activeQuery)}
+                  />
                   <div className={`h-16 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center`}>
                     <span className="text-white font-display font-bold text-lg tracking-wide opacity-90 group-hover:opacity-100 transition-opacity">
                       {supplier.flag} {supplier.name}
