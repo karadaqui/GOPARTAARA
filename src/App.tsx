@@ -49,6 +49,10 @@ const App = () => (
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPostPage />} />
             <Route path="/list-your-parts" element={<ListYourParts />} />
+            <Route path="/my-market" element={<MyMarket />} />
+            <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/listing/:id" element={<ListingDetail />} />
+            <Route path="/seller/:id" element={<SellerProfile />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <CookieConsent />
