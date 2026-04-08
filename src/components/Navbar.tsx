@@ -93,6 +93,7 @@ const Navbar = () => {
                     {l.label}
                   </button>
                 ))}
+                </div>
               </div>
             )}
           </div>
