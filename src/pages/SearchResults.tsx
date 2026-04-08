@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star,
-  Truck, Tag, ShoppingBag, Bookmark, BookmarkCheck, MapPin, Clock,
-  Heart, AlertCircle, Wrench, Zap, Filter as FilterIcon,
+  Truck, Bookmark, BookmarkCheck, MapPin, Clock,
+  Heart, AlertCircle, Zap, Filter as FilterIcon,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -16,8 +16,6 @@ import VehicleLookup from "@/components/VehicleLookup";
 import VehicleFilterButton from "@/components/VehicleFilterButton";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
 import SearchCounter from "@/components/SearchCounter";
-import PartReviews from "@/components/PartReviews";
-import PriceHistoryChart from "@/components/PriceHistoryChart";
 import PartsComparison, { type ComparePart } from "@/components/PartsComparison";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
