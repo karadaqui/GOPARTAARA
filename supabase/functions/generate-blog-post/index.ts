@@ -214,7 +214,7 @@ Deno.serve(async (req) => {
 
     for (const topic of selectedTopics) {
       try {
-        const post = await generateSinglePost(supabaseUrl, supabaseServiceKey, lovableApiKey, topic);
+        const post = await generateSinglePost(supabaseUrl, supabaseServiceKey, lovableApiKey, topic, authorName);
         results.push(post);
         console.log(`Generated: ${post.title}`);
       } catch (err) {
