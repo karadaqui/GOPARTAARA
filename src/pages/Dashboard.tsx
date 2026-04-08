@@ -10,6 +10,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import ReferralSection from "@/components/dashboard/ReferralSection";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
 import PriceAlertsSection from "@/components/dashboard/PriceAlertsSection";
+import MyGarageSection from "@/components/dashboard/MyGarageSection";
 
 const STRIPE_TIERS: Record<string, { label: string; price: string }> = {
   prod_UI08qGZRqV94r2: { label: "Pro", price: "£9.99/mo" },
@@ -387,6 +388,16 @@ const Dashboard = () => {
               userId={user!.id}
               referralCode={(profile as any).referral_code || null}
               bonusSearches={(profile as any).bonus_searches || 0}
+            />
+          </div>
+        )}
+
+        {/* My Garage */}
+        {user && (
+          <div className="mt-6">
+            <MyGarageSection
+              userId={user.id}
+              isPro={subStatus.subscribed}
             />
           </div>
         )}

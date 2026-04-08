@@ -326,6 +326,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_vehicles: {
+        Row: {
+          created_at: string
+          engine_size: string | null
+          id: string
+          make: string
+          model: string
+          nickname: string | null
+          registration_number: string | null
+          user_id: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          engine_size?: string | null
+          id?: string
+          make: string
+          model: string
+          nickname?: string | null
+          registration_number?: string | null
+          user_id: string
+          year: number
+        }
+        Update: {
+          created_at?: string
+          engine_size?: string | null
+          id?: string
+          make?: string
+          model?: string
+          nickname?: string | null
+          registration_number?: string | null
+          user_id?: string
+          year?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
