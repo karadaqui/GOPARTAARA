@@ -17,7 +17,7 @@ const ReferralSection = ({ userId, referralCode, bonusSearches }: ReferralSectio
   const [referralCount, setReferralCount] = useState(0);
 
   const referralLink = referralCode
-    ? `${window.location.origin}/auth?ref=${referralCode}`
+    ? `https://gopartara.com/auth?ref=${referralCode}`
     : "";
 
   useEffect(() => {
