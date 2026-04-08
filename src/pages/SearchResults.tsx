@@ -221,10 +221,23 @@ const SearchResults = () => {
                     partQuery={activeQuery}
                     supplierUrl={supplier.buildUrl(activeQuery)}
                   />
-                  <div className={`h-16 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center`}>
+                  <div className={`h-16 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center relative`}>
                     <span className="text-white font-display font-bold text-lg tracking-wide opacity-90 group-hover:opacity-100 transition-opacity">
                       {supplier.flag} {supplier.name}
                     </span>
+                    <TooltipProvider delayDuration={200}>
+                      <Tooltip>
+                        <TooltipTrigger asChild onClick={(e) => e.preventDefault()}>
+                          <span className={`absolute bottom-1.5 right-1.5 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${tierConfig[supplier.tier].colors}`}>
+                            <Shield size={9} />
+                            {tierConfig[supplier.tier].label}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="max-w-[220px] text-xs">
+                          {tierConfig[supplier.tier].tooltip}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                   <div className="p-3 flex justify-center">
                     <Button size="sm" className="w-full rounded-lg gap-1.5 text-xs h-8" asChild>
