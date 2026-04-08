@@ -8,7 +8,9 @@ import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 const DVLA_API_URL = "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles";
 
 const BodySchema = z.object({
-  registrationNumber: z.string().min(2).max(10).transform(v => v.replace(/\s+/g, '').toUpperCase()),
+  registrationNumber: z.string().min(2).max(10)
+    .regex(/^[A-Za-z0-9]+$/, "Registration number must contain only letters and numbers")
+    .transform(v => v.replace(/\s+/g, '').toUpperCase()),
 });
 
 Deno.serve(async (req) => {
@@ -47,16 +49,31 @@ Deno.serve(async (req) => {
 
     if (!dvlaResponse.ok) {
       const status = dvlaResponse.status;
+      let errorDetail = "Failed to look up vehicle. Please try again.";
+      try {
+        const errBody = await dvlaResponse.json();
+        const detail = errBody?.errors?.[0]?.detail;
+        if (detail) errorDetail = detail;
+      } catch {
+        errorDetail = await dvlaResponse.text().catch(() => errorDetail);
+      }
+      
       if (status === 404) {
         return new Response(
           JSON.stringify({ error: "Vehicle not found. Please check the registration number." }),
-          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      console.error("DVLA API error:", status, await dvlaResponse.text());
+      if (status === 400) {
+        return new Response(
+          JSON.stringify({ error: `Invalid registration number format. ${errorDetail}` }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      console.error("DVLA API error:", status, errorDetail);
       return new Response(
-        JSON.stringify({ error: "Failed to look up vehicle. Please try again." }),
-        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: errorDetail }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
