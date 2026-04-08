@@ -186,6 +186,10 @@ const SearchResults = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
+    if (searchLimit.limitReached) {
+      toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" });
+      return;
+    }
     const q = query.trim();
     setActiveQuery(q);
     setSelectedCategory(null);
@@ -194,6 +198,7 @@ const SearchResults = () => {
       supabase.from("search_history").insert({ user_id: user.id, query: q }).then(({ error }) => {
         if (error) console.error("Failed to save search history:", error);
       });
+      searchLimit.refresh();
     }
   };
 
