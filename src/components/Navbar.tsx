@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 const primaryLinks = [
   { label: "Home", href: "/" },
   { label: "Search", href: "/#search" },
+  { label: "Marketplace", href: "/marketplace" },
   { label: "Pricing", href: "/#pricing" },
 ];
 
