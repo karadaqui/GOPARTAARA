@@ -11,6 +11,9 @@ import SearchCounter from "@/components/SearchCounter";
 const HeroSection = () => {
   const [query, setQuery] = useState("");
   const [identifying, setIdentifying] = useState(false);
+  const [regNumber, setRegNumber] = useState("");
+  const [regLoading, setRegLoading] = useState(false);
+  const [regVehicle, setRegVehicle] = useState<{ make: string; yearOfManufacture?: number; colour?: string; engineCapacity?: number } | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
