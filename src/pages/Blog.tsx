@@ -80,7 +80,7 @@ const Blog = () => {
                     })}
                   </span>
                   <span>·</span>
-                  <span>{post.author}</span>
+                  <span>By {post.author}</span>
                 </div>
 
                 <h2 className="font-display text-xl md:text-2xl font-bold mb-3 group-hover:text-primary transition-colors">
