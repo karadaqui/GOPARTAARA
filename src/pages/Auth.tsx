@@ -10,6 +10,7 @@ import ForgotPassword from "@/components/ForgotPassword";
 import { lovable } from "@/integrations/lovable/index";
 
 const Auth = () => {
+  const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
   const [showForgot, setShowForgot] = useState(false);
   const [email, setEmail] = useState("");
@@ -21,6 +22,15 @@ const Auth = () => {
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Capture referral code from URL
+  const refCode = searchParams.get("ref");
+
+  useEffect(() => {
+    if (refCode) {
+      localStorage.setItem("partara_ref", refCode);
+    }
+  }, [refCode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
