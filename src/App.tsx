@@ -15,6 +15,7 @@ import About from "./pages/About.tsx";
 import Contact from "./pages/Contact.tsx";
 import Privacy from "./pages/Privacy.tsx";
 import Terms from "./pages/Terms.tsx";
+import Unsubscribe from "./pages/Unsubscribe.tsx";
 
 const queryClient = new QueryClient();
 
