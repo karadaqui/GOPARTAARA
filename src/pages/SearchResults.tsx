@@ -4,7 +4,11 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star, Truck, Tag, ShoppingBag } from "lucide-react";
+import {
+  Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star,
+  Truck, Tag, ShoppingBag, Bookmark, BookmarkCheck, MapPin, Clock,
+  Heart, AlertCircle, Wrench, Zap, Filter as FilterIcon,
+} from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,7 +21,6 @@ import PriceHistoryChart from "@/components/PriceHistoryChart";
 import PartsComparison, { type ComparePart } from "@/components/PartsComparison";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
 
 const googleSite = (domain: string) => (q: string) =>
   `https://www.google.com/search?q=site:${domain}+${q.replace(/\s+/g, "+")}`;
@@ -25,21 +28,9 @@ const googleSite = (domain: string) => (q: string) =>
 type QualityTier = "oem" | "premium" | "budget";
 
 const tierConfig: Record<QualityTier, { label: string; colors: string; tooltip: string }> = {
-  oem: {
-    label: "OEM",
-    colors: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-    tooltip: "Original Equipment Manufacturer — genuine parts made by or for the vehicle maker.",
-  },
-  premium: {
-    label: "Premium",
-    colors: "bg-slate-300/15 text-slate-300 border-slate-400/30",
-    tooltip: "Aftermarket Premium — high-quality parts from reputable brands.",
-  },
-  budget: {
-    label: "Budget",
-    colors: "bg-orange-700/20 text-orange-400 border-orange-600/30",
-    tooltip: "Budget — affordable parts for cost-conscious buyers.",
-  },
+  oem: { label: "OEM", colors: "bg-amber-500/20 text-amber-400 border-amber-500/30", tooltip: "Original Equipment Manufacturer" },
+  premium: { label: "Premium", colors: "bg-slate-300/15 text-slate-300 border-slate-400/30", tooltip: "Aftermarket Premium" },
+  budget: { label: "Budget", colors: "bg-orange-700/20 text-orange-400 border-orange-600/30", tooltip: "Budget" },
 };
 
 const suppliers: { name: string; flag: string; gradient: string; tier: QualityTier; buildUrl: (q: string) => string }[] = [
@@ -48,21 +39,38 @@ const suppliers: { name: string; flag: string; gradient: string; tier: QualityTi
   { name: "Car Parts 4 Less", flag: "🇬🇧", gradient: "from-purple-600 to-purple-800", tier: "budget", buildUrl: googleSite("carparts4less.co.uk") },
   { name: "Halfords", flag: "🇬🇧", gradient: "from-sky-500 to-sky-700", tier: "premium", buildUrl: googleSite("halfords.com") },
   { name: "AutoDoc", flag: "🇬🇧", gradient: "from-cyan-500 to-blue-600", tier: "budget", buildUrl: googleSite("autodoc.co.uk") },
-  { name: "eBay UK", flag: "🇬🇧", gradient: "from-red-500 to-yellow-500", tier: "budget", buildUrl: (q) => `https://www.ebay.co.uk/sch/i.html?_nkw=${q.replace(/\s+/g, "+")}&_sacat=9801` },
   { name: "Amazon UK", flag: "🇬🇧", gradient: "from-orange-500 to-amber-600", tier: "premium", buildUrl: (q) => `https://www.amazon.co.uk/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara-21` },
   { name: "Partmaster", flag: "🇬🇧", gradient: "from-slate-600 to-slate-800", tier: "oem", buildUrl: googleSite("partmaster.co.uk") },
   { name: "LKQ Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-500 to-blue-700", tier: "oem", buildUrl: googleSite("lkqeurocarparts.com") },
-  { name: "First Line", flag: "🇬🇧", gradient: "from-green-600 to-green-800", tier: "premium", buildUrl: googleSite("firstline.co.uk") },
-  { name: "Amazon Spain", flag: "🇪🇸", gradient: "from-red-600 to-yellow-500", tier: "premium", buildUrl: (q) => `https://www.amazon.es/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara06-21` },
-  { name: "Amazon France", flag: "🇫🇷", gradient: "from-blue-600 to-red-500", tier: "premium", buildUrl: (q) => `https://www.amazon.fr/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara00-21` },
-  { name: "Amazon Germany", flag: "🇩🇪", gradient: "from-gray-800 to-yellow-500", tier: "premium", buildUrl: (q) => `https://www.amazon.de/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara0c0-21` },
-  { name: "Amazon Italy", flag: "🇮🇹", gradient: "from-green-600 to-red-500", tier: "premium", buildUrl: (q) => `https://www.amazon.it/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara07-21` },
   { name: "RockAuto", flag: "🌍", gradient: "from-yellow-600 to-orange-700", tier: "premium", buildUrl: googleSite("rockauto.com") },
   { name: "PartsGeek", flag: "🌍", gradient: "from-red-600 to-red-800", tier: "budget", buildUrl: googleSite("partsgeek.com") },
-  { name: "CARiD", flag: "🌍", gradient: "from-indigo-500 to-violet-700", tier: "oem", buildUrl: googleSite("carid.com") },
-  { name: "Advance Auto Parts", flag: "🌍", gradient: "from-red-700 to-rose-900", tier: "premium", buildUrl: googleSite("advanceautoparts.com") },
-  { name: "AutoZone", flag: "🌍", gradient: "from-amber-600 to-red-600", tier: "budget", buildUrl: googleSite("autozone.com") },
 ];
+
+const PART_CATEGORIES = [
+  { label: "Engine Parts", icon: "⚙️" },
+  { label: "Body Parts", icon: "🚗" },
+  { label: "Brakes", icon: "🛑" },
+  { label: "Suspension", icon: "🔧" },
+  { label: "Electrical", icon: "⚡" },
+  { label: "Filters", icon: "🔍" },
+  { label: "Exhaust", icon: "💨" },
+  { label: "Interior", icon: "🪑" },
+];
+
+const countryFlags: Record<string, string> = {
+  GB: "🇬🇧", US: "🇺🇸", DE: "🇩🇪", CN: "🇨🇳", IT: "🇮🇹", FR: "🇫🇷", ES: "🇪🇸", PL: "🇵🇱", NL: "🇳🇱", JP: "🇯🇵", AU: "🇦🇺",
+};
+
+interface VehicleInfo {
+  make: string;
+  yearOfManufacture?: number;
+  colour?: string;
+  fuelType?: string;
+  engineCapacity?: number;
+  motStatus?: string;
+  taxStatus?: string;
+  registrationNumber?: string;
+}
 
 const SearchResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -80,11 +88,23 @@ const SearchResults = () => {
   const [expandedSupplier, setExpandedSupplier] = useState<string | null>(null);
   const [liveResults, setLiveResults] = useState<any[]>([]);
   const [liveLoading, setLiveLoading] = useState(false);
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [savingId, setSavingId] = useState<string | null>(null);
+  const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [totalResults, setTotalResults] = useState(0);
 
-  // Fetch live eBay results when activeQuery changes
+  useEffect(() => {
+    const v = searchParams.get("vehicle");
+    if (v) {
+      try { setVehicleInfo(JSON.parse(decodeURIComponent(v))); } catch { }
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     if (!activeQuery.trim()) {
       setLiveResults([]);
+      setTotalResults(0);
       return;
     }
     let cancelled = false;
@@ -92,34 +112,47 @@ const SearchResults = () => {
       setLiveLoading(true);
       try {
         const { data, error } = await supabase.functions.invoke("search-parts", {
-          body: { query: activeQuery },
+          body: { query: activeQuery, category: selectedCategory || undefined },
         });
         if (error) throw error;
         if (!cancelled) {
           setLiveResults(data?.results || []);
+          setTotalResults(data?.totalResults || 0);
         }
       } catch (err) {
         console.error("Live search failed:", err);
-        if (!cancelled) setLiveResults([]);
+        if (!cancelled) { setLiveResults([]); setTotalResults(0); }
       } finally {
         if (!cancelled) setLiveLoading(false);
       }
     };
     fetchLive();
     return () => { cancelled = true; };
-  }, [activeQuery]);
+  }, [activeQuery, selectedCategory]);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("saved_parts").select("part_number").eq("user_id", user.id).then(({ data }) => {
+      if (data) setSavedIds(new Set(data.map((d) => d.part_number).filter(Boolean) as string[]));
+    });
+  }, [user]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
     const q = query.trim();
     setActiveQuery(q);
+    setSelectedCategory(null);
     setSearchParams({ q });
     if (user) {
       supabase.from("search_history").insert({ user_id: user.id, query: q }).then(({ error }) => {
         if (error) console.error("Failed to save search history:", error);
       });
     }
+  };
+
+  const handleCategorySelect = (cat: string) => {
+    setSelectedCategory(selectedCategory === cat ? null : cat);
   };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,7 +177,7 @@ const SearchResults = () => {
         toast({ title: "Part not recognized", description: data?.details || "Try a clearer photo.", variant: "destructive" });
         return;
       }
-      toast({ title: `Identified: ${partName}`, description: "Choose a supplier to search." });
+      toast({ title: `Identified: ${partName}`, description: "Searching now..." });
       setQuery(partName);
       setActiveQuery(partName);
       setSearchParams({ q: partName });
@@ -156,43 +189,53 @@ const SearchResults = () => {
     }
   };
 
-  const addToCompare = (supplier: { name: string; tier: QualityTier; buildUrl: (q: string) => string }) => {
-    if (compareParts.length >= 3) {
-      toast({ title: "Max 3 parts", description: "Remove one before adding another.", variant: "destructive" });
+  const handleSave = async (item: any) => {
+    if (!user) {
+      toast({ title: "Sign in required", description: "Create an account to save parts.", variant: "destructive" });
       return;
     }
-    if (compareParts.find((p) => p.supplier === supplier.name)) return;
-    setCompareParts((prev) => [...prev, {
-      name: activeQuery,
-      supplier: supplier.name,
-      tier: tierConfig[supplier.tier].label,
-      url: supplier.buildUrl(activeQuery),
-    }]);
-    toast({ title: "Added to compare", description: `${supplier.name} added. ${3 - compareParts.length - 1} slots remaining.` });
+    setSavingId(item.id);
+    const isSaved = savedIds.has(item.partNumber);
+    try {
+      if (isSaved) {
+        await supabase.from("saved_parts").delete().eq("user_id", user.id).eq("part_number", item.partNumber);
+        setSavedIds((prev) => { const n = new Set(prev); n.delete(item.partNumber); return n; });
+        toast({ title: "Removed from saved" });
+      } else {
+        await supabase.from("saved_parts").insert({
+          user_id: user.id,
+          part_name: item.partName,
+          part_number: item.partNumber,
+          price: item.price,
+          supplier: "eBay Motors",
+          url: item.url,
+          image_url: item.imageUrl,
+        });
+        setSavedIds((prev) => new Set(prev).add(item.partNumber));
+        toast({ title: "Part saved!" });
+      }
+    } catch {
+      toast({ title: "Failed to save", variant: "destructive" });
+    } finally {
+      setSavingId(null);
+    }
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-
-      {/* Search bar */}
       <div className="border-b border-border bg-card/40 backdrop-blur-lg sticky top-0 z-20 pt-16">
-        <div className="container max-w-4xl py-4 px-4">
+        <div className="container max-w-5xl py-4 px-4">
           <div className="flex gap-1 mb-3">
-            <button
-              onClick={() => setSearchMode("text")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${searchMode === "text" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}
-            >
+            <button onClick={() => setSearchMode("text")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${searchMode === "text" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>
               <Search size={14} /> Part Search
             </button>
-            <button
-              onClick={() => setSearchMode("reg")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${searchMode === "reg" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}
-            >
+            <button onClick={() => setSearchMode("reg")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${searchMode === "reg" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>
               <Car size={14} /> Reg Plate Lookup
             </button>
           </div>
-
           {searchMode === "text" ? (
             <div className="space-y-2">
               <form onSubmit={handleSearch} className="flex items-center gap-2">
@@ -227,191 +270,226 @@ const SearchResults = () => {
           )}
         </div>
       </div>
-
-      <div className="container max-w-4xl flex-1 px-4 py-8">
+      <div className="container max-w-5xl flex-1 px-4 py-8">
         {activeQuery ? (
           <>
-            <div className="text-center mb-8">
-              <h1 className="font-display text-2xl sm:text-3xl font-bold mb-2">Search results for</h1>
-              <p className="text-primary font-display text-xl sm:text-2xl font-semibold">"{activeQuery}"</p>
-              <p className="text-sm text-muted-foreground mt-3">Real listings from eBay Motors + supplier search links below</p>
-            </div>
-
-            {/* Live eBay Results */}
-            {liveLoading ? (
-              <div className="flex items-center justify-center gap-2 py-12 mb-8">
-                <Loader2 size={24} className="animate-spin text-primary" />
-                <span className="text-muted-foreground">Searching eBay Motors...</span>
-              </div>
-            ) : liveResults.filter(r => r.source === "ebay_live").length > 0 ? (
-              <div className="mb-10">
-                <div className="flex items-center gap-2 mb-4">
-                  <ShoppingBag size={18} className="text-primary" />
-                  <h2 className="font-display text-lg font-bold">Live eBay Listings</h2>
-                  <Badge variant="secondary" className="text-[10px]">REAL PRICES</Badge>
+            {vehicleInfo && (
+              <div className="mb-6 glass rounded-2xl p-5 border border-primary/20 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="flex items-start gap-4">
+                  <div className="bg-primary/10 rounded-xl p-3 shrink-0">
+                    <Car size={28} className="text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h2 className="font-display font-bold text-xl text-foreground">
+                      {vehicleInfo.make} {vehicleInfo.yearOfManufacture && `(${vehicleInfo.yearOfManufacture})`}
+                    </h2>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {vehicleInfo.colour && <span className="text-xs px-2.5 py-1 rounded-lg bg-secondary text-muted-foreground">{vehicleInfo.colour}</span>}
+                      {vehicleInfo.fuelType && <span className="text-xs px-2.5 py-1 rounded-lg bg-secondary text-muted-foreground">⛽ {vehicleInfo.fuelType}</span>}
+                      {vehicleInfo.engineCapacity && <span className="text-xs px-2.5 py-1 rounded-lg bg-secondary text-muted-foreground">⚙️ {vehicleInfo.engineCapacity}cc</span>}
+                      {vehicleInfo.registrationNumber && <span className="text-xs px-2.5 py-1 rounded-lg bg-secondary font-mono font-bold text-muted-foreground">{vehicleInfo.registrationNumber}</span>}
+                      {vehicleInfo.motStatus && (
+                        <span className={`text-xs px-2.5 py-1 rounded-lg font-medium ${vehicleInfo.motStatus === "Valid" ? "bg-emerald-500/15 text-emerald-400" : "bg-destructive/15 text-destructive"}`}>
+                          MOT: {vehicleInfo.motStatus}
+                        </span>
+                      )}
+                      {vehicleInfo.taxStatus && (
+                        <span className={`text-xs px-2.5 py-1 rounded-lg font-medium ${vehicleInfo.taxStatus === "Taxed" ? "bg-emerald-500/15 text-emerald-400" : "bg-destructive/15 text-destructive"}`}>
+                          Tax: {vehicleInfo.taxStatus}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {liveResults.filter(r => r.source === "ebay_live").map((item) => (
-                    <a
-                      key={item.id}
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group glass rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.01] flex flex-col"
-                    >
-                      <div className="aspect-[4/3] bg-secondary overflow-hidden relative">
-                        <img
-                          src={item.imageUrl}
-                          alt={item.partName}
-                          className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform"
-                          loading="lazy"
-                          onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }}
-                        />
-                        {item.condition && (
-                          <Badge className="absolute top-2 left-2 text-[10px] bg-background/80 text-foreground backdrop-blur-sm">
-                            {item.condition}
-                          </Badge>
-                        )}
-                        <Badge className="absolute top-2 right-2 text-[10px] bg-primary/90 text-primary-foreground">
-                          eBay
-                        </Badge>
+              </div>
+            )}
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <FilterIcon size={14} className="text-muted-foreground" />
+                <span className="text-sm font-medium text-muted-foreground">Filter by category</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {PART_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.label}
+                    onClick={() => handleCategorySelect(cat.label)}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                      selectedCategory === cat.label
+                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                        : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80"
+                    }`}
+                  >
+                    <span>{cat.icon}</span>
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="text-center mb-8">
+              <h1 className="font-display text-2xl sm:text-3xl font-bold mb-2">
+                {selectedCategory ? `${selectedCategory} for` : "Results for"}
+              </h1>
+              <p className="text-primary font-display text-xl sm:text-2xl font-semibold">"{activeQuery}"</p>
+              {totalResults > 0 && !liveLoading && (
+                <p className="text-sm text-muted-foreground mt-2">{liveResults.length} of {totalResults} eBay listings shown</p>
+              )}
+            </div>
+            {liveLoading ? (
+              <div className="flex flex-col items-center justify-center gap-3 py-16 mb-8">
+                <Loader2 size={32} className="animate-spin text-primary" />
+                <span className="text-muted-foreground font-medium">Searching eBay Motors...</span>
+                <span className="text-xs text-muted-foreground">Finding real listings with live prices</span>
+              </div>
+            ) : liveResults.length > 0 ? (
+              <div className="mb-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {liveResults.map((item) => (
+                    <div key={item.id} className="group glass rounded-2xl overflow-hidden hover:border-primary/30 transition-all flex flex-col relative">
+                      <div className="absolute top-3 right-3 z-10 flex gap-1.5">
+                        <button
+                          onClick={() => handleSave(item)}
+                          disabled={savingId === item.id}
+                          className="p-2 rounded-lg bg-background/80 backdrop-blur-sm hover:bg-background transition-colors"
+                        >
+                          {savingId === item.id ? (
+                            <Loader2 size={16} className="animate-spin text-muted-foreground" />
+                          ) : savedIds.has(item.partNumber) ? (
+                            <BookmarkCheck size={16} className="text-primary" />
+                          ) : (
+                            <Bookmark size={16} className="text-muted-foreground" />
+                          )}
+                        </button>
                       </div>
-                      <div className="p-3 flex-1 flex flex-col">
-                        <p className="text-sm font-medium line-clamp-2 mb-2 group-hover:text-primary transition-colors">
-                          {item.partName}
-                        </p>
-                        <div className="mt-auto space-y-1.5">
+                      <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
+                        <div className="aspect-[4/3] bg-secondary/50 overflow-hidden relative">
+                          <img
+                            src={item.imageUrl}
+                            alt={item.partName}
+                            className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
+                            onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }}
+                          />
+                          <span className={`absolute top-3 left-3 text-[10px] font-bold px-2 py-1 rounded-lg backdrop-blur-sm ${
+                            item.condition === "New" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                              : item.condition === "Used" ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                              : "bg-secondary/80 text-muted-foreground border border-border"
+                          }`}>
+                            {item.condition}
+                          </span>
+                          {item.topRatedSeller && (
+                            <span className="absolute bottom-3 left-3 text-[10px] font-bold px-2 py-1 rounded-lg bg-primary/90 text-primary-foreground flex items-center gap-1">
+                              <Shield size={10} /> Top Rated
+                            </span>
+                          )}
+                        </div>
+                      </a>
+                      <div className="p-4 flex-1 flex flex-col">
+                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="block mb-3">
+                          <p className="text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors leading-snug">
+                            {item.partName}
+                          </p>
+                        </a>
+                        <div className="mt-auto space-y-3">
                           <div className="flex items-baseline gap-2">
-                            <span className="text-lg font-bold text-primary">£{item.price.toFixed(2)}</span>
+                            <span className="text-2xl font-bold text-primary">£{item.price.toFixed(2)}</span>
                           </div>
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
                             {item.freeShipping ? (
-                              <span className="flex items-center gap-1 text-emerald-400">
+                              <span className="flex items-center gap-1 text-emerald-400 font-medium">
                                 <Truck size={12} /> Free P&P
                               </span>
-                            ) : item.shippingCost ? (
+                            ) : item.shippingCost > 0 ? (
                               <span className="flex items-center gap-1">
                                 <Truck size={12} /> +£{item.shippingCost.toFixed(2)} P&P
                               </span>
                             ) : null}
-                            <span className="flex items-center gap-1">
-                              <Star size={12} className="fill-amber-400 text-amber-400" /> {item.rating}
-                            </span>
+                            {item.expedited && (
+                              <span className="flex items-center gap-1 text-primary">
+                                <Zap size={11} /> Express
+                              </span>
+                            )}
+                            {item.handlingTime && (
+                              <span className="flex items-center gap-1">
+                                <Clock size={11} /> {item.handlingTime}d handling
+                              </span>
+                            )}
                           </div>
-                          <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                            <Tag size={10} /> Item #{item.partNumber}
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <MapPin size={11} />
+                            <span>{countryFlags[item.itemCountry] || "🌍"} {item.itemLocation}</span>
+                            {item.shipsToUK && item.itemCountry !== "GB" && (
+                              <span className="text-emerald-400 font-medium">• Ships to UK</span>
+                            )}
+                          </div>
+                          <div className="flex items-center justify-between text-xs border-t border-border pt-2.5 mt-1">
+                            <div className="flex items-center gap-1.5 text-muted-foreground">
+                              <span className="font-medium truncate max-w-[120px]">{item.sellerUsername}</span>
+                              <span className="flex items-center gap-0.5 text-amber-400">
+                                <Star size={10} className="fill-amber-400" />
+                                {item.sellerPositivePercent.toFixed(0)}%
+                              </span>
+                              <span className="text-muted-foreground/60">({item.sellerFeedbackScore})</span>
+                            </div>
+                            {item.watchCount > 0 && (
+                              <span className="flex items-center gap-1 text-muted-foreground/60">
+                                <Heart size={10} /> {item.watchCount}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex gap-2 pt-1">
+                            <Button size="sm" className="flex-1 rounded-xl gap-1.5 text-xs h-9" asChild>
+                              <a href={item.url} target="_blank" rel="noopener noreferrer">
+                                <ExternalLink size={13} /> View on eBay
+                              </a>
+                            </Button>
+                            <PriceAlertDialog supplierName="eBay Motors" partQuery={item.partName} supplierUrl={item.url} />
                           </div>
                         </div>
                       </div>
-                    </a>
+                    </div>
                   ))}
                 </div>
+              </div>
+            ) : !liveLoading ? (
+              <div className="flex flex-col items-center justify-center py-12 mb-8">
+                <AlertCircle size={32} className="text-muted-foreground/30 mb-3" />
+                <p className="text-muted-foreground font-medium">No eBay listings found</p>
+                <p className="text-sm text-muted-foreground/60 mt-1">Try a different search term or browse suppliers below</p>
               </div>
             ) : null}
-
-            {/* AI-generated results from other suppliers */}
-            {liveResults.filter(r => r.source === "ai_generated").length > 0 && (
-              <div className="mb-10">
-                <div className="flex items-center gap-2 mb-4">
-                  <Search size={18} className="text-muted-foreground" />
-                  <h2 className="font-display text-lg font-bold">More Results</h2>
-                  <Badge variant="outline" className="text-[10px]">AI SUGGESTED</Badge>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {liveResults.filter(r => r.source === "ai_generated").map((item) => (
-                    <a
-                      key={item.id}
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group glass rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.01] flex flex-col"
-                    >
-                      <div className="p-3 flex-1 flex flex-col">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="secondary" className="text-[10px]">{item.supplier}</Badge>
-                        </div>
-                        <p className="text-sm font-medium line-clamp-2 mb-2 group-hover:text-primary transition-colors">
-                          {item.partName}
-                        </p>
-                        <div className="mt-auto flex items-baseline gap-2">
-                          <span className="text-lg font-bold text-primary">£{item.price.toFixed(2)}</span>
-                          {item.originalPrice && (
-                            <span className="text-xs text-muted-foreground line-through">£{item.originalPrice.toFixed(2)}</span>
-                          )}
-                        </div>
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
             <div className="mb-4">
               <div className="flex items-center gap-2 mb-4">
                 <ExternalLink size={18} className="text-muted-foreground" />
                 <h2 className="font-display text-lg font-bold">Search More Suppliers</h2>
               </div>
             </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {suppliers.map((supplier) => (
-                <div
-                  key={supplier.name}
-                  className="group relative glass rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.02]"
-                >
-                  <PriceAlertDialog supplierName={supplier.name} partQuery={activeQuery} supplierUrl={supplier.buildUrl(activeQuery)} />
+                <div key={supplier.name} className="group relative glass rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.02]">
                   <a href={supplier.buildUrl(activeQuery)} target="_blank" rel="noopener noreferrer">
-                    <div className={`h-16 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center relative`}>
-                      <span className="text-white font-display font-bold text-lg tracking-wide opacity-90 group-hover:opacity-100 transition-opacity">
+                    <div className={`h-14 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center relative`}>
+                      <span className="text-white font-display font-bold text-sm tracking-wide opacity-90 group-hover:opacity-100 transition-opacity text-center px-2">
                         {supplier.flag} {supplier.name}
                       </span>
                       <TooltipProvider delayDuration={200}>
                         <Tooltip>
                           <TooltipTrigger asChild onClick={(e) => e.preventDefault()}>
-                            <span className={`absolute bottom-1.5 right-1.5 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${tierConfig[supplier.tier].colors}`}>
-                              <Shield size={9} />
+                            <span className={`absolute bottom-1 right-1 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${tierConfig[supplier.tier].colors}`}>
+                              <Shield size={8} />
                               {tierConfig[supplier.tier].label}
                             </span>
                           </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-[220px] text-xs">
-                            {tierConfig[supplier.tier].tooltip}
-                          </TooltipContent>
+                          <TooltipContent side="top" className="max-w-[220px] text-xs">{tierConfig[supplier.tier].tooltip}</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
                     </div>
                   </a>
-                  <div className="p-3 space-y-1">
-                    <div className="flex gap-1.5">
-                      <Button size="sm" className="flex-1 rounded-lg gap-1.5 text-xs h-8" asChild>
-                        <a href={supplier.buildUrl(activeQuery)} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink size={13} /> Search Now
-                        </a>
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="rounded-lg text-xs h-8 px-2"
-                        onClick={() => addToCompare(supplier)}
-                        disabled={compareParts.some((p) => p.supplier === supplier.name)}
-                      >
-                        <Scale size={13} />
-                      </Button>
-                    </div>
-
-                    {/* Expandable details */}
-                    <button
-                      onClick={() => setExpandedSupplier(expandedSupplier === supplier.name ? null : supplier.name)}
-                      className="text-[10px] text-muted-foreground hover:text-primary w-full text-left"
-                    >
-                      {expandedSupplier === supplier.name ? "Hide details ▲" : "Reviews & prices ▼"}
-                    </button>
-
-                    {expandedSupplier === supplier.name && (
-                      <div className="space-y-2 pt-1">
-                        <PriceHistoryChart partQuery={activeQuery} supplier={supplier.name} />
-                        <PartReviews partQuery={activeQuery} supplier={supplier.name} />
-                      </div>
-                    )}
+                  <div className="p-2">
+                    <Button size="sm" className="w-full rounded-lg gap-1 text-xs h-7" asChild>
+                      <a href={supplier.buildUrl(activeQuery)} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink size={11} /> Search
+                      </a>
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -427,8 +505,6 @@ const SearchResults = () => {
           </div>
         )}
       </div>
-
-      {/* Compare modal */}
       {showCompare && compareParts.length >= 2 && (
         <PartsComparison
           parts={compareParts}
@@ -436,7 +512,6 @@ const SearchResults = () => {
           onClose={() => setShowCompare(false)}
         />
       )}
-
       <Footer />
     </div>
   );
