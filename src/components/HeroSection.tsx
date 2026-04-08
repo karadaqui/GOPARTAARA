@@ -177,9 +177,9 @@ const HeroSection = () => {
                   const v = data.vehicle;
                   setRegVehicle(v);
                   toast({ title: `Found: ${v.make}`, description: `${v.yearOfManufacture || ""} ${v.colour || ""}`.trim() });
-                  // Auto-navigate to search with vehicle info
                   const q = `${v.make} ${v.yearOfManufacture || ""}`.trim();
-                  navigate(`/search?q=${encodeURIComponent(q)}`);
+                  const vehicleParam = encodeURIComponent(JSON.stringify(v));
+                  navigate(`/search?q=${encodeURIComponent(q)}&vehicle=${vehicleParam}`);
                 } catch (err: any) {
                   toast({ title: "Lookup failed", description: err.message || "Please try again.", variant: "destructive" });
                 } finally {

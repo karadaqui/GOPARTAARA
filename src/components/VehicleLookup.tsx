@@ -54,7 +54,8 @@ const VehicleLookup = () => {
     e.preventDefault();
     if (!vehicle || !partQuery.trim()) return;
     const q = `${vehicle.make} ${vehicle.yearOfManufacture || ""} ${partQuery.trim()}`.trim();
-    navigate(`/search?q=${encodeURIComponent(q)}`);
+    const vehicleParam = encodeURIComponent(JSON.stringify(vehicle));
+    navigate(`/search?q=${encodeURIComponent(q)}&vehicle=${vehicleParam}`);
   };
 
   return (
