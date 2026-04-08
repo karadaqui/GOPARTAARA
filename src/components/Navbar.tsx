@@ -7,11 +7,13 @@ import { useAuth } from "@/contexts/AuthContext";
 const primaryLinks = [
   { label: "Home", href: "/" },
   { label: "Search", href: "/#search" },
+  { label: "Marketplace", href: "/marketplace" },
   { label: "Pricing", href: "/#pricing" },
 ];
 
 const moreLinks = [
   { label: "My Garage", href: "/dashboard#garage" },
+  { label: "My Market", href: "/my-market" },
   { label: "Saved Parts", href: "/saved" },
   { label: "List Your Parts", href: "/list-your-parts" },
   { label: "Blog", href: "/blog" },
