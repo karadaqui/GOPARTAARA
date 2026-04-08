@@ -155,7 +155,8 @@ Deno.serve(async (req) => {
       // No body or invalid JSON — defaults are fine
     }
 
-    // If not a cron call, verify authenticated user
+    // If not a cron call, verify authenticated user and enforce daily limit
+    let authorName = "PARTARA Team";
     if (!isCron) {
       const authHeader = req.headers.get("Authorization");
       if (!authHeader) {
@@ -172,6 +173,32 @@ Deno.serve(async (req) => {
       if (userError || !user) {
         return new Response(JSON.stringify({ error: "Unauthorized" }), {
           status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Get user display name for author
+      const adminClient = createClient(supabaseUrl, supabaseServiceKey);
+      const { data: profileData } = await adminClient
+        .from("profiles")
+        .select("display_name")
+        .eq("user_id", user.id)
+        .single();
+      if (profileData?.display_name) {
+        authorName = profileData.display_name;
+      }
+
+      // Enforce 2 posts per day limit
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const { count: todayCount } = await adminClient
+        .from("blog_posts")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", todayStart.toISOString());
+
+      if ((todayCount || 0) >= 2) {
+        return new Response(JSON.stringify({ error: "Daily limit reached. Maximum 2 blog posts per day." }), {
+          status: 429,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
