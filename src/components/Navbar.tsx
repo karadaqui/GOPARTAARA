@@ -82,7 +82,8 @@ const Navbar = () => {
               <ChevronDown size={14} className={`transition-transform ${moreOpen ? "rotate-180" : ""}`} />
             </button>
             {moreOpen && (
-              <div className="absolute top-full right-0 mt-1 w-48 rounded-md border border-border bg-popover p-1 shadow-md animate-in fade-in-0 zoom-in-95">
+              <div className="absolute top-full right-0 pt-2 w-48">
+                <div className="rounded-md border border-border bg-popover p-1 shadow-md animate-in fade-in-0 zoom-in-95">
                 {moreLinks.map((l) => (
                   <button
                     key={l.href}
