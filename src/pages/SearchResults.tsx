@@ -4,8 +4,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ExternalLink, Loader2, Camera } from "lucide-react";
+import { Search, ExternalLink, Loader2, Camera, Car } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import VehicleLookup from "@/components/VehicleLookup";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -46,6 +47,7 @@ const SearchResults = () => {
   const [query, setQuery] = useState(initialQuery);
   const [activeQuery, setActiveQuery] = useState(initialQuery);
   const [identifying, setIdentifying] = useState(false);
+  const [searchMode, setSearchMode] = useState<"text" | "reg">(initialQuery ? "text" : "text");
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -109,34 +111,62 @@ const SearchResults = () => {
       {/* Search bar */}
       <div className="border-b border-border bg-card/40 backdrop-blur-lg sticky top-0 z-20 pt-16">
         <div className="container max-w-4xl py-4 px-4">
-          <form onSubmit={handleSearch} className="flex items-center gap-2">
-            <div className="flex-1 relative">
-              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search car parts... e.g. Volvo XC60 right mirror"
-                className="pl-10 bg-secondary border-border h-11 rounded-xl"
-              />
-            </div>
-            <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
-              <input
-                ref={photoInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handlePhotoUpload}
-                disabled={identifying}
-              />
-              <div className="flex items-center gap-1.5 px-3 h-11 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-sm text-secondary-foreground">
-                {identifying ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
-                <span className="hidden sm:inline">{identifying ? "Identifying..." : "Photo"}</span>
+          {/* Mode tabs */}
+          <div className="flex gap-1 mb-3">
+            <button
+              onClick={() => setSearchMode("text")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                searchMode === "text"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Search size={14} /> Part Search
+            </button>
+            <button
+              onClick={() => setSearchMode("reg")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                searchMode === "reg"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Car size={14} /> Reg Plate Lookup
+            </button>
+          </div>
+
+          {searchMode === "text" ? (
+            <form onSubmit={handleSearch} className="flex items-center gap-2">
+              <div className="flex-1 relative">
+                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search car parts... e.g. Volvo XC60 right mirror"
+                  className="pl-10 bg-secondary border-border h-11 rounded-xl"
+                />
               </div>
-            </label>
-            <Button type="submit" className="rounded-xl h-11 px-6">
-              Search
-            </Button>
-          </form>
+              <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
+                <input
+                  ref={photoInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handlePhotoUpload}
+                  disabled={identifying}
+                />
+                <div className="flex items-center gap-1.5 px-3 h-11 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-sm text-secondary-foreground">
+                  {identifying ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
+                  <span className="hidden sm:inline">{identifying ? "Identifying..." : "Photo"}</span>
+                </div>
+              </label>
+              <Button type="submit" className="rounded-xl h-11 px-6">
+                Search
+              </Button>
+            </form>
+          ) : (
+            <VehicleLookup />
+          )}
         </div>
       </div>
 
