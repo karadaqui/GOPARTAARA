@@ -12,6 +12,51 @@ const BodySchema = z.object({
   category: z.string().max(100).optional(),
 });
 
+// Simple in-memory cache to avoid hitting eBay rate limits
+const cache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+function getCached(key: string) {
+  const entry = cache.get(key);
+  if (entry && Date.now() - entry.timestamp < CACHE_TTL_MS) {
+    return entry.data;
+  }
+  cache.delete(key);
+  return null;
+}
+
+function setCache(key: string, data: any) {
+  // Limit cache size
+  if (cache.size > 200) {
+    const oldest = cache.keys().next().value;
+    if (oldest) cache.delete(oldest);
+  }
+  cache.set(key, { data, timestamp: Date.now() });
+}
+
+async function fetchWithRetry(url: string, retries = 2, delayMs = 2000): Promise<Response> {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const response = await fetch(url);
+    if (response.ok) return response;
+
+    const text = await response.text();
+
+    // If rate limited, wait and retry
+    if (response.status === 500 && text.includes("RateLimiter") && attempt < retries) {
+      console.warn(`eBay rate limited, retrying in ${delayMs}ms (attempt ${attempt + 1}/${retries})`);
+      await new Promise(r => setTimeout(r, delayMs));
+      delayMs *= 2; // exponential backoff
+      continue;
+    }
+
+    // Non-retryable error
+    console.error("eBay API error:", response.status, text);
+    return new Response(text, { status: response.status, statusText: response.statusText });
+  }
+  // Should not reach here, but just in case
+  return new Response("Max retries exceeded", { status: 503 });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -38,6 +83,17 @@ Deno.serve(async (req) => {
     const { query, category } = parsed.data;
     const searchQuery = category ? `${query} ${category}` : query;
 
+    // Check cache first
+    const cacheKey = searchQuery.toLowerCase().trim();
+    const cached = getCached(cacheKey);
+    if (cached) {
+      console.log("Cache hit for:", cacheKey);
+      return new Response(
+        JSON.stringify(cached),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const params = new URLSearchParams({
       "OPERATION-NAME": "findItemsAdvanced",
       "SERVICE-VERSION": "1.0.0",
@@ -55,10 +111,8 @@ Deno.serve(async (req) => {
       "outputSelector(2)": "PictureURLSuperSize",
     });
 
-    const response = await fetch(`${EBAY_API_URL}?${params.toString()}`);
+    const response = await fetchWithRetry(`${EBAY_API_URL}?${params.toString()}`);
     if (!response.ok) {
-      const errText = await response.text();
-      console.error("eBay API error:", response.status, errText);
       return new Response(
         JSON.stringify({ error: `eBay search failed [${response.status}]`, results: [] }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -82,11 +136,9 @@ Deno.serve(async (req) => {
       const handlingTime = parseInt(shippingInfo.handlingTime?.[0] || "3", 10);
       const expedited = shippingInfo.expeditedShipping?.[0] === "true";
 
-      // Get best image - prefer large/supersize, fallback to gallery
       const pictureURLLarge = item.pictureURLLarge?.[0];
       const pictureURLSuperSize = item.pictureURLSuperSize?.[0];
       const galleryURL = item.galleryURL?.[0] || "";
-      // eBay gallery URLs have s-l140, upgrade to s-l500 for better quality
       const upgradedGallery = galleryURL.replace("s-l140", "s-l500");
       const imageUrl = pictureURLSuperSize || pictureURLLarge || upgradedGallery || "/placeholder.svg";
 
@@ -95,18 +147,15 @@ Deno.serve(async (req) => {
         ? `https://rover.ebay.com/rover/1/710-53481-19255-0/1?campid=${EBAY_AFFILIATE_CAMPID}&toolid=10001&customid=partara&mpre=${encodeURIComponent(viewItemUrl)}`
         : viewItemUrl;
 
-      // Seller info
       const sellerInfo = item.sellerInfo?.[0] || {};
       const sellerUsername = sellerInfo.sellerUserName?.[0] || "Unknown Seller";
       const sellerFeedbackScore = parseInt(sellerInfo.feedbackScore?.[0] || "0", 10);
       const sellerPositivePercent = parseFloat(sellerInfo.positiveFeedbackPercent?.[0] || "0");
       const topRatedSeller = sellerInfo.topRatedSeller?.[0] === "true";
 
-      // Location
       const itemLocation = item.location?.[0] || "Unknown";
       const itemCountry = item.country?.[0] || "GB";
 
-      // Listing type
       const listingType = item.listingInfo?.[0]?.listingType?.[0] || "FixedPrice";
       const endTime = item.listingInfo?.[0]?.endTime?.[0] || null;
       const watchCount = parseInt(item.listingInfo?.[0]?.watchCount?.[0] || "0", 10);
@@ -136,8 +185,13 @@ Deno.serve(async (req) => {
       };
     });
 
+    const responseData = { results, totalResults };
+
+    // Cache successful results
+    setCache(cacheKey, responseData);
+
     return new Response(
-      JSON.stringify({ results, totalResults }),
+      JSON.stringify(responseData),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
