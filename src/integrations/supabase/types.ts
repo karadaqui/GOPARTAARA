@@ -146,6 +146,36 @@ export type Database = {
         }
         Relationships: []
       }
+      part_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          part_query: string
+          rating: number
+          supplier: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          part_query: string
+          rating: number
+          supplier: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          part_query?: string
+          rating?: number
+          supplier?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       price_alerts: {
         Row: {
           active: boolean
@@ -299,6 +329,48 @@ export type Database = {
           image_url?: string | null
           query?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      seller_applications: {
+        Row: {
+          business_address: string | null
+          business_name: string
+          contact_email: string
+          contact_name: string
+          contact_phone: string | null
+          created_at: string
+          id: string
+          parts_description: string
+          status: string
+          tier: string
+          user_id: string | null
+        }
+        Insert: {
+          business_address?: string | null
+          business_name: string
+          contact_email: string
+          contact_name: string
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          parts_description: string
+          status?: string
+          tier?: string
+          user_id?: string | null
+        }
+        Update: {
+          business_address?: string | null
+          business_name?: string
+          contact_email?: string
+          contact_name?: string
+          contact_phone?: string | null
+          created_at?: string
+          id?: string
+          parts_description?: string
+          status?: string
+          tier?: string
+          user_id?: string | null
         }
         Relationships: []
       }
