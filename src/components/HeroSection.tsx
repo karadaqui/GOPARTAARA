@@ -174,7 +174,7 @@ const HeroSection = () => {
             <p className="text-xs text-muted-foreground">
               📸 Upload a photo of any car part — our advanced system will identify it and find the best prices
             </p>
-            <SearchCounter />
+             <SearchCounter limitData={searchLimit} />
           </div>
         </div>
 
