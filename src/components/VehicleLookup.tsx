@@ -59,28 +59,22 @@ const VehicleLookup = () => {
 
   return (
     <div className="w-full">
-      {/* Reg plate input - Coming Soon */}
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center justify-center z-10 rounded-xl">
-          <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold tracking-wide uppercase shadow-lg">
-            Coming Soon
-          </span>
+      <form onSubmit={handleLookup} className="flex items-center gap-2">
+        <div className="flex-1 relative">
+          <Car size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={regNumber}
+            onChange={(e) => setRegNumber(e.target.value.toUpperCase())}
+            placeholder="Enter reg plate e.g. AB12 CDE"
+            className="pl-10 bg-secondary border-border h-11 rounded-xl uppercase tracking-widest font-mono font-bold"
+            maxLength={10}
+            disabled={loading}
+          />
         </div>
-        <form className="flex items-center gap-2 opacity-40 pointer-events-none blur-[1px]">
-          <div className="flex-1 relative">
-            <Car size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              disabled
-              placeholder="Enter reg plate e.g. AB12 CDE"
-              className="pl-10 bg-secondary border-border h-11 rounded-xl uppercase tracking-widest font-mono font-bold"
-              maxLength={10}
-            />
-          </div>
-          <Button type="button" className="rounded-xl h-11 px-6" disabled>
-            Lookup
-          </Button>
-        </form>
-      </div>
+        <Button type="submit" className="rounded-xl h-11 px-6" disabled={loading || !regNumber.trim()}>
+          {loading ? <Loader2 size={16} className="animate-spin" /> : "Lookup"}
+        </Button>
+      </form>
 
       {/* Vehicle details */}
       {vehicle && (
@@ -103,6 +97,16 @@ const VehicleLookup = () => {
                   )}
                   {vehicle.engineCapacity && (
                     <span className="bg-secondary px-2 py-0.5 rounded-md">{vehicle.engineCapacity}cc</span>
+                  )}
+                  {vehicle.motStatus && (
+                    <span className={`px-2 py-0.5 rounded-md ${vehicle.motStatus === "Valid" ? "bg-emerald-500/20 text-emerald-400" : "bg-destructive/20 text-destructive"}`}>
+                      MOT: {vehicle.motStatus}
+                    </span>
+                  )}
+                  {vehicle.taxStatus && (
+                    <span className={`px-2 py-0.5 rounded-md ${vehicle.taxStatus === "Taxed" ? "bg-emerald-500/20 text-emerald-400" : "bg-destructive/20 text-destructive"}`}>
+                      Tax: {vehicle.taxStatus}
+                    </span>
                   )}
                   <span className="bg-secondary px-2 py-0.5 rounded-md">{vehicle.registrationNumber}</span>
                 </div>
