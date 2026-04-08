@@ -143,9 +143,12 @@ const HeroSection = () => {
               Search
             </Button>
           </form>
-          <p className="text-xs text-muted-foreground mt-3">
-            📸 Upload a photo of any car part — our advanced system will identify it and find the best prices
-          </p>
+          <div className="flex items-center justify-between mt-3">
+            <p className="text-xs text-muted-foreground">
+              📸 Upload a photo of any car part — our advanced system will identify it and find the best prices
+            </p>
+            <SearchCounter />
+          </div>
         </div>
 
         {/* Vehicle Reg Lookup - Coming Soon */}
