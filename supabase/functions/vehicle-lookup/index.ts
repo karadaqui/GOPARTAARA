@@ -49,16 +49,31 @@ Deno.serve(async (req) => {
 
     if (!dvlaResponse.ok) {
       const status = dvlaResponse.status;
+      let errorDetail = "Failed to look up vehicle. Please try again.";
+      try {
+        const errBody = await dvlaResponse.json();
+        const detail = errBody?.errors?.[0]?.detail;
+        if (detail) errorDetail = detail;
+      } catch {
+        errorDetail = await dvlaResponse.text().catch(() => errorDetail);
+      }
+      
       if (status === 404) {
         return new Response(
           JSON.stringify({ error: "Vehicle not found. Please check the registration number." }),
-          { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      console.error("DVLA API error:", status, await dvlaResponse.text());
+      if (status === 400) {
+        return new Response(
+          JSON.stringify({ error: `Invalid registration number format. ${errorDetail}` }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      console.error("DVLA API error:", status, errorDetail);
       return new Response(
-        JSON.stringify({ error: "Failed to look up vehicle. Please try again." }),
-        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: errorDetail }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
