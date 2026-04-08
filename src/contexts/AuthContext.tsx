@@ -19,10 +19,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Process referral on first sign-in (after email confirmation)
+      if (event === "SIGNED_IN" && session?.user) {
+        const storedRef = localStorage.getItem("partara_ref");
+        if (storedRef) {
+          try {
+            await supabase.functions.invoke("process-referral", {
+              body: { referral_code: storedRef },
+            });
+          } catch {
+            // silently fail
+          } finally {
+            localStorage.removeItem("partara_ref");
+          }
+        }
+      }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {

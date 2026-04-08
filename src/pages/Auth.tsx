@@ -1,6 +1,7 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, Lock, User, ArrowLeft, Eye, EyeOff } from "lucide-react";
@@ -9,6 +10,7 @@ import ForgotPassword from "@/components/ForgotPassword";
 import { lovable } from "@/integrations/lovable/index";
 
 const Auth = () => {
+  const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
   const [showForgot, setShowForgot] = useState(false);
   const [email, setEmail] = useState("");
@@ -20,6 +22,15 @@ const Auth = () => {
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Capture referral code from URL
+  const refCode = searchParams.get("ref");
+
+  useEffect(() => {
+    if (refCode) {
+      localStorage.setItem("partara_ref", refCode);
+    }
+  }, [refCode]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,12 +45,28 @@ const Auth = () => {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else if (isLogin) {
+      // Process referral on login too (in case they signed up via OAuth with ref)
+      processReferral();
       navigate("/");
     } else {
       toast({
         title: "Account created",
         description: "Check your email to confirm your account.",
       });
+    }
+  };
+
+  const processReferral = async () => {
+    const storedRef = localStorage.getItem("partara_ref");
+    if (!storedRef) return;
+    try {
+      await supabase.functions.invoke("process-referral", {
+        body: { referral_code: storedRef },
+      });
+    } catch {
+      // silently fail
+    } finally {
+      localStorage.removeItem("partara_ref");
     }
   };
 

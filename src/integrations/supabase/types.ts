@@ -104,33 +104,60 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bonus_searches: number
           created_at: string
           display_name: string | null
           email: string | null
           id: string
+          referral_code: string
           subscription_plan: Database["public"]["Enums"]["subscription_plan"]
           updated_at: string
           user_id: string
         }
         Insert: {
           avatar_url?: string | null
+          bonus_searches?: number
           created_at?: string
           display_name?: string | null
           email?: string | null
           id?: string
+          referral_code?: string
           subscription_plan?: Database["public"]["Enums"]["subscription_plan"]
           updated_at?: string
           user_id: string
         }
         Update: {
           avatar_url?: string | null
+          bonus_searches?: number
           created_at?: string
           display_name?: string | null
           email?: string | null
           id?: string
+          referral_code?: string
           subscription_plan?: Database["public"]["Enums"]["subscription_plan"]
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          referred_id: string
+          referrer_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          referred_id: string
+          referrer_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          referred_id?: string
+          referrer_id?: string
         }
         Relationships: []
       }
@@ -239,6 +266,10 @@ export type Database = {
           source_queue: string
         }
         Returns: number
+      }
+      process_referral: {
+        Args: { new_user_id: string; referrer_code: string }
+        Returns: boolean
       }
       read_email_batch: {
         Args: { batch_size: number; queue_name: string; vt: number }

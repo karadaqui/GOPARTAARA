@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Camera, Save, User, Mail, Crown, Clock, Bookmark, Loader2, Search, X, ExternalLink, CreditCard } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import ReferralSection from "@/components/dashboard/ReferralSection";
 
 const STRIPE_TIERS: Record<string, { label: string; price: string }> = {
   prod_UI08qGZRqV94r2: { label: "Pro", price: "£9.99/mo" },
@@ -376,6 +377,17 @@ const Dashboard = () => {
             <p className="font-display font-bold text-lg">{savedPartsCount}</p>
           </div>
         </div>
+
+        {/* Referral Program */}
+        {profile && (
+          <div className="mt-6">
+            <ReferralSection
+              userId={user!.id}
+              referralCode={(profile as any).referral_code || null}
+              bonusSearches={(profile as any).bonus_searches || 0}
+            />
+          </div>
+        )}
 
         {/* Search History */}
         <div className="glass rounded-2xl p-8 mt-6">
