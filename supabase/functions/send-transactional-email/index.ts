@@ -59,6 +59,7 @@ Deno.serve(async (req) => {
   let recipientEmail: string
   let idempotencyKey: string
   let messageId: string
+  let replyTo: string | undefined
   let templateData: Record<string, any> = {}
   try {
     const body = await req.json()
@@ -66,6 +67,7 @@ Deno.serve(async (req) => {
     recipientEmail = body.recipientEmail || body.recipient_email
     messageId = crypto.randomUUID()
     idempotencyKey = body.idempotencyKey || body.idempotency_key || messageId
+    replyTo = body.replyTo || body.reply_to
     if (body.templateData && typeof body.templateData === 'object') {
       templateData = body.templateData
     }
@@ -313,7 +315,7 @@ Deno.serve(async (req) => {
     payload: {
       message_id: messageId,
       to: effectiveRecipient,
-      from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+      from: `PARTARA <hello@${FROM_DOMAIN}>`,
       sender_domain: SENDER_DOMAIN,
       subject: resolvedSubject,
       html,
@@ -323,6 +325,7 @@ Deno.serve(async (req) => {
       idempotency_key: idempotencyKey,
       unsubscribe_token: unsubscribeToken,
       queued_at: new Date().toISOString(),
+      ...(replyTo ? { reply_to: replyTo } : {}),
     },
   })
 
