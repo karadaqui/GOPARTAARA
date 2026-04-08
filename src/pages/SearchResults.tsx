@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import {
   Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star,
   Truck, Bookmark, BookmarkCheck, MapPin, Clock,
-  Heart, AlertCircle, Zap, Filter as FilterIcon,
+  Heart, AlertCircle, Zap, Filter as FilterIcon, ArrowUp,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
