@@ -4,8 +4,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ExternalLink, Loader2, Camera } from "lucide-react";
+import { Search, ExternalLink, Loader2, Camera, Car } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import VehicleLookup from "@/components/VehicleLookup";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
