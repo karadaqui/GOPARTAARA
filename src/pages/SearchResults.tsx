@@ -47,6 +47,7 @@ const SearchResults = () => {
   const [query, setQuery] = useState(initialQuery);
   const [activeQuery, setActiveQuery] = useState(initialQuery);
   const [identifying, setIdentifying] = useState(false);
+  const [searchMode, setSearchMode] = useState<"text" | "reg">(initialQuery ? "text" : "text");
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = (e: React.FormEvent) => {
