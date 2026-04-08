@@ -45,6 +45,7 @@ const Contact = () => {
           templateName: "contact-notification",
           recipientEmail: "info@gopartara.com",
           idempotencyKey: `contact-notify-${submissionId}`,
+          replyTo: result.data.email,
           templateData: {
             name: result.data.name,
             email: result.data.email,
