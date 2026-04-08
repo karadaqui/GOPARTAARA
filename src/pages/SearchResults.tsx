@@ -19,6 +19,7 @@ import SearchCounter from "@/components/SearchCounter";
 import PartsComparison, { type ComparePart } from "@/components/PartsComparison";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useSearchLimit } from "@/hooks/useSearchLimit";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 const googleSite = (domain: string) => (q: string) =>
