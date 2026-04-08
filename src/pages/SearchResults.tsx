@@ -1,10 +1,10 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ExternalLink, Loader2, Camera, Car, Shield, Scale } from "lucide-react";
+import { Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star, Truck, Tag, ShoppingBag } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,6 +17,7 @@ import PriceHistoryChart from "@/components/PriceHistoryChart";
 import PartsComparison, { type ComparePart } from "@/components/PartsComparison";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 
 const googleSite = (domain: string) => (q: string) =>
   `https://www.google.com/search?q=site:${domain}+${q.replace(/\s+/g, "+")}`;
