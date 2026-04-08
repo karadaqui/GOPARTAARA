@@ -13,6 +13,7 @@ const primaryLinks = [
 
 const moreLinks = [
   { label: "My Garage", href: "/dashboard#garage" },
+  { label: "My Market", href: "/my-market" },
   { label: "Saved Parts", href: "/saved" },
   { label: "List Your Parts", href: "/list-your-parts" },
   { label: "Blog", href: "/blog" },
