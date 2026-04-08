@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, LogOut, User, Bookmark } from "lucide-react";
+import { Menu, X, LogOut, User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
-const navLinks = [
+const primaryLinks = [
   { label: "Home", href: "/" },
   { label: "Search", href: "/#search" },
-  { label: "My Garage", href: "/dashboard#garage" },
   { label: "Pricing", href: "/#pricing" },
+];
+
+const moreLinks = [
+  { label: "My Garage", href: "/dashboard#garage" },
+  { label: "Saved Parts", href: "/saved" },
   { label: "List Your Parts", href: "/list-your-parts" },
   { label: "Blog", href: "/blog" },
   { label: "About", href: "/about" },
@@ -17,12 +21,14 @@ const navLinks = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const handleNavClick = (href: string) => {
     setOpen(false);
+    setMoreOpen(false);
     if (href.startsWith("/#")) {
       const id = href.slice(2);
       if (location.pathname === "/") {
@@ -45,7 +51,7 @@ const Navbar = () => {
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((l) => (
+          {primaryLinks.map((l) => (
             <button
               key={l.href}
               onClick={() => handleNavClick(l.href)}
@@ -54,16 +60,35 @@ const Navbar = () => {
               {l.label}
             </button>
           ))}
+
+          {/* More dropdown */}
+          <div
+            className="relative"
+            onMouseEnter={() => setMoreOpen(true)}
+            onMouseLeave={() => setMoreOpen(false)}
+          >
+            <button className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+              More
+              <ChevronDown size={14} className={`transition-transform ${moreOpen ? "rotate-180" : ""}`} />
+            </button>
+            {moreOpen && (
+              <div className="absolute top-full right-0 mt-1 w-48 rounded-md border border-border bg-popover p-1 shadow-md animate-in fade-in-0 zoom-in-95">
+                {moreLinks.map((l) => (
+                  <button
+                    key={l.href}
+                    onClick={() => handleNavClick(l.href)}
+                    className="w-full text-left text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground rounded-sm px-3 py-2 transition-colors"
+                  >
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           {!loading && (
             user ? (
               <div className="flex items-center gap-3">
-                <button
-                  onClick={() => navigate("/saved")}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
-                >
-                  <Bookmark size={14} />
-                  Saved Parts
-                </button>
                 <button
                   onClick={() => navigate("/dashboard")}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
@@ -94,7 +119,7 @@ const Navbar = () => {
       {open && (
         <div className="md:hidden glass border-t border-border pb-4">
           <div className="container flex flex-col gap-3 pt-3">
-            {navLinks.map((l) => (
+            {primaryLinks.map((l) => (
               <button
                 key={l.href}
                 onClick={() => handleNavClick(l.href)}
@@ -103,16 +128,21 @@ const Navbar = () => {
                 {l.label}
               </button>
             ))}
+            <div className="border-t border-border pt-2 mt-1">
+              <span className="text-xs text-muted-foreground uppercase tracking-wider px-0 pb-1 block">More</span>
+              {moreLinks.map((l) => (
+                <button
+                  key={l.href}
+                  onClick={() => handleNavClick(l.href)}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2 text-left w-full"
+                >
+                  {l.label}
+                </button>
+              ))}
+            </div>
             {!loading && (
               user ? (
-                <div className="flex flex-col gap-2">
-                  <button
-                    onClick={() => { setOpen(false); navigate("/saved"); }}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 py-2"
-                  >
-                    <Bookmark size={14} />
-                    Saved Parts
-                  </button>
+                <div className="flex flex-col gap-2 border-t border-border pt-2 mt-1">
                   <button
                     onClick={() => { setOpen(false); navigate("/dashboard"); }}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 py-2"
