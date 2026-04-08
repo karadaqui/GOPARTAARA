@@ -23,6 +23,7 @@ async function generateSinglePost(
   supabaseServiceKey: string,
   lovableApiKey: string,
   topic: string,
+  authorName: string = "PARTARA Team",
 ) {
   const today = new Date().toISOString().split("T")[0];
 
@@ -106,7 +107,7 @@ Return ONLY valid JSON, no markdown code blocks.`,
       preview: post.preview,
       meta_description: post.meta_description,
       keywords: post.keywords,
-      author: "PARTARA Team",
+      author: authorName,
       published: true,
       published_at: new Date().toISOString(),
     })
@@ -155,7 +156,8 @@ Deno.serve(async (req) => {
       // No body or invalid JSON — defaults are fine
     }
 
-    // If not a cron call, verify authenticated user
+    // If not a cron call, verify authenticated user and enforce daily limit
+    let authorName = "PARTARA Team";
     if (!isCron) {
       const authHeader = req.headers.get("Authorization");
       if (!authHeader) {
@@ -175,6 +177,32 @@ Deno.serve(async (req) => {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
+
+      // Get user display name for author
+      const adminClient = createClient(supabaseUrl, supabaseServiceKey);
+      const { data: profileData } = await adminClient
+        .from("profiles")
+        .select("display_name")
+        .eq("user_id", user.id)
+        .single();
+      if (profileData?.display_name) {
+        authorName = profileData.display_name;
+      }
+
+      // Enforce 2 posts per day limit
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const { count: todayCount } = await adminClient
+        .from("blog_posts")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", todayStart.toISOString());
+
+      if ((todayCount || 0) >= 2) {
+        return new Response(JSON.stringify({ error: "Daily limit reached. Maximum 2 blog posts per day." }), {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     // Pick unique topics for the batch
@@ -186,7 +214,7 @@ Deno.serve(async (req) => {
 
     for (const topic of selectedTopics) {
       try {
-        const post = await generateSinglePost(supabaseUrl, supabaseServiceKey, lovableApiKey, topic);
+        const post = await generateSinglePost(supabaseUrl, supabaseServiceKey, lovableApiKey, topic, authorName);
         results.push(post);
         console.log(`Generated: ${post.title}`);
       } catch (err) {

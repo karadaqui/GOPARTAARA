@@ -9,18 +9,22 @@ const BlogGenerateSection = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [generating, setGenerating] = useState(false);
+  const [lastTitle, setLastTitle] = useState<string | null>(null);
 
   const handleGenerate = async () => {
     setGenerating(true);
+    setLastTitle(null);
     try {
       const { data, error } = await supabase.functions.invoke("generate-blog-post");
 
       if (error) throw error;
 
       if (data?.success) {
+        const title = data.posts?.[0]?.title || data.post?.title || "New post";
+        setLastTitle(title);
         toast({
           title: "Blog post published!",
-          description: `"${data.post?.title}" is now live.`,
+          description: `"${title}" is now live.`,
         });
       } else {
         throw new Error(data?.error || "Failed to generate post");
@@ -43,8 +47,15 @@ const BlogGenerateSection = () => {
         Blog Generator
       </h2>
       <p className="text-sm text-muted-foreground mb-4">
-        Generate a new blog post about car parts, maintenance tips, or price guides.
+        Generate a new blog post about car parts, maintenance tips, or price guides. Max 2 per day.
       </p>
+
+      {lastTitle && (
+        <div className="mb-4 p-3 rounded-xl bg-primary/10 border border-primary/20">
+          <p className="text-sm font-medium text-foreground">✅ Published: "{lastTitle}"</p>
+        </div>
+      )}
+
       <div className="flex gap-2">
         <Button
           onClick={handleGenerate}
@@ -66,7 +77,7 @@ const BlogGenerateSection = () => {
           onClick={() => navigate("/blog")}
         >
           <ExternalLink size={14} />
-          View Blog
+          See Blog
         </Button>
       </div>
     </div>

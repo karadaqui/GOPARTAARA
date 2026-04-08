@@ -10,6 +10,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { useAuth } from "@/contexts/AuthContext";
 import VehicleLookup from "@/components/VehicleLookup";
 import VehicleFilterButton from "@/components/VehicleFilterButton";
+import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
+import SearchCounter from "@/components/SearchCounter";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -161,13 +163,14 @@ const SearchResults = () => {
           {searchMode === "text" ? (
             <div className="space-y-2">
               <form onSubmit={handleSearch} className="flex items-center gap-2">
-                <div className="flex-1 relative">
-                  <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <div className="flex-1 relative flex items-center">
+                  <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
+                  <Search size={18} className="absolute left-8 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search car parts... e.g. Volvo XC60 right mirror"
-                    className="pl-10 bg-secondary border-border h-11 rounded-xl"
+                    className="pl-14 bg-secondary border-border h-11 rounded-xl"
                   />
                 </div>
               <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
@@ -188,14 +191,17 @@ const SearchResults = () => {
                 Search
               </Button>
               </form>
-              <VehicleFilterButton
-                onSelect={(vehicleQuery) => {
-                  setQuery((prev) => {
-                    const combined = prev.trim() ? `${vehicleQuery} ${prev.trim()}` : vehicleQuery;
-                    return combined;
-                  });
-                }}
-              />
+              <div className="flex items-center justify-between">
+                <VehicleFilterButton
+                  onSelect={(vehicleQuery) => {
+                    setQuery((prev) => {
+                      const combined = prev.trim() ? `${vehicleQuery} ${prev.trim()}` : vehicleQuery;
+                      return combined;
+                    });
+                  }}
+                />
+                <SearchCounter />
+              </div>
             </div>
           ) : (
             <VehicleLookup />

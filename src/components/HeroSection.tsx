@@ -4,6 +4,8 @@ import { Search, Camera, Loader2, Car } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
+import SearchCounter from "@/components/SearchCounter";
 
 const HeroSection = () => {
   const [query, setQuery] = useState("");
@@ -103,6 +105,7 @@ const HeroSection = () => {
         <div className="max-w-2xl mx-auto">
           <form onSubmit={handleSearch} className="flex items-center gap-2 p-2 rounded-2xl glass glow-red">
             <div className="flex-1 flex items-center gap-3 px-4">
+              <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
               <Search className="text-muted-foreground shrink-0" size={20} />
               <input
                 type="text"
@@ -140,9 +143,12 @@ const HeroSection = () => {
               Search
             </Button>
           </form>
-          <p className="text-xs text-muted-foreground mt-3">
-            📸 Upload a photo of any car part — our advanced system will identify it and find the best prices
-          </p>
+          <div className="flex items-center justify-between mt-3">
+            <p className="text-xs text-muted-foreground">
+              📸 Upload a photo of any car part — our advanced system will identify it and find the best prices
+            </p>
+            <SearchCounter />
+          </div>
         </div>
 
         {/* Vehicle Reg Lookup - Coming Soon */}

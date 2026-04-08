@@ -29,15 +29,12 @@ const Blog = () => {
   }, []);
 
   const fetchPosts = async () => {
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
     const { data, error } = await supabase
       .from("blog_posts")
       .select("id, title, slug, preview, meta_description, keywords, author, published_at")
       .eq("published", true)
-      .gte("published_at", thirtyDaysAgo.toISOString())
-      .order("published_at", { ascending: false });
+      .order("published_at", { ascending: false })
+      .limit(50);
 
     if (!error && data) setPosts(data as BlogPost[]);
     setLoading(false);
@@ -83,7 +80,7 @@ const Blog = () => {
                     })}
                   </span>
                   <span>·</span>
-                  <span>{post.author}</span>
+                  <span>By {post.author}</span>
                 </div>
 
                 <h2 className="font-display text-xl md:text-2xl font-bold mb-3 group-hover:text-primary transition-colors">
