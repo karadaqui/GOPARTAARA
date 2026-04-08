@@ -47,6 +47,45 @@ const Dashboard = () => {
     }
   }, [user, authLoading, navigate]);
 
+  // Post-checkout polling: detect ?checkout=success and poll until subscription is active
+  useEffect(() => {
+    if (!user) return;
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("checkout") !== "success") return;
+
+    // Clean up URL
+    window.history.replaceState({}, "", "/dashboard");
+
+    let cancelled = false;
+    let attempts = 0;
+
+    const poll = async () => {
+      while (!cancelled && attempts < 15) {
+        attempts++;
+        try {
+          const { data, error } = await supabase.functions.invoke("check-subscription");
+          if (!error && data?.subscribed) {
+            setSubStatus(data);
+            setSubLoading(false);
+            fetchProfile(); // refresh profile with updated plan
+            toast({ title: "Welcome to Pro! 🎉", description: "Your subscription is now active." });
+            return;
+          }
+        } catch {}
+        await new Promise((r) => setTimeout(r, 2000));
+      }
+      if (!cancelled) {
+        fetchSubscription();
+        toast({ title: "Checking subscription…", description: "It may take a moment. Try refreshing." });
+      }
+    };
+
+    setSubLoading(true);
+    poll();
+    return () => { cancelled = true; };
+  }, [user]);
+
   useEffect(() => {
     if (user) {
       fetchProfile();
