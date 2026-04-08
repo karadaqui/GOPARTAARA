@@ -9,6 +9,7 @@ import { ArrowLeft, Camera, Save, User, Mail, Crown, Clock, Bookmark, Loader2, S
 import type { Tables } from "@/integrations/supabase/types";
 import ReferralSection from "@/components/dashboard/ReferralSection";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
+import PriceAlertsSection from "@/components/dashboard/PriceAlertsSection";
 
 const STRIPE_TIERS: Record<string, { label: string; price: string }> = {
   prod_UI08qGZRqV94r2: { label: "Pro", price: "£9.99/mo" },
