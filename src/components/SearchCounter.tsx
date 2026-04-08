@@ -54,7 +54,13 @@ const SearchCounter = () => {
   if (remaining <= 0) {
     return (
       <button
-        onClick={() => navigate("/#pricing")}
+        onClick={() => {
+          navigate("/");
+          setTimeout(() => {
+            const el = document.getElementById("pricing");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+          }, 100);
+        }}
         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
       >
         <ArrowUp size={12} />
