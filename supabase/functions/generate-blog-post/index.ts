@@ -1,5 +1,9 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
-import { corsHeaders } from "https://esm.sh/@supabase/supabase-js@2.49.4/cors";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 const TOPICS = [
   "Most searched car parts this week and why demand is surging",
@@ -14,21 +18,115 @@ const TOPICS = [
   "Understanding car part compatibility across different makes and models",
 ];
 
+async function generateSinglePost(
+  supabaseUrl: string,
+  supabaseServiceKey: string,
+  lovableApiKey: string,
+  topic: string,
+) {
+  const today = new Date().toISOString().split("T")[0];
+
+  const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${lovableApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "google/gemini-3-flash-preview",
+      messages: [
+        {
+          role: "system",
+          content: `You are an expert automotive content writer for PARTARA, a car parts search engine. Write SEO-optimized blog posts that are informative, engaging, and helpful for car owners and mechanics. Always include practical advice and mention specific car parts. Today's date is ${today}.`,
+        },
+        {
+          role: "user",
+          content: `Write a blog post about: "${topic}"
+
+Return a JSON object with these exact fields:
+- title: SEO-optimized title (50-60 chars)
+- slug: URL-friendly slug using only lowercase letters, numbers, and hyphens
+- content: Full blog post in markdown format (800-1200 words). Use ## for subheadings. Include practical tips, specific car part names, and helpful information.
+- preview: 2-3 sentence preview/excerpt (under 200 chars)
+- meta_description: SEO meta description (under 160 chars)
+- keywords: Array of 5-8 relevant keywords about car parts and maintenance
+
+Return ONLY valid JSON, no markdown code blocks.`,
+        },
+      ],
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: "create_blog_post",
+            description: "Create a structured blog post",
+            parameters: {
+              type: "object",
+              properties: {
+                title: { type: "string" },
+                slug: { type: "string" },
+                content: { type: "string" },
+                preview: { type: "string" },
+                meta_description: { type: "string" },
+                keywords: { type: "array", items: { type: "string" } },
+              },
+              required: ["title", "slug", "content", "preview", "meta_description", "keywords"],
+              additionalProperties: false,
+            },
+          },
+        },
+      ],
+      tool_choice: { type: "function", function: { name: "create_blog_post" } },
+    }),
+  });
+
+  if (!aiResponse.ok) {
+    const errText = await aiResponse.text();
+    console.error("AI gateway error:", aiResponse.status, errText);
+    throw new Error(`AI error ${aiResponse.status}`);
+  }
+
+  const aiData = await aiResponse.json();
+  const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
+
+  if (!toolCall?.function?.arguments) {
+    throw new Error("AI did not return structured data");
+  }
+
+  const post = JSON.parse(toolCall.function.arguments);
+  const uniqueSlug = `${post.slug}-${today}-${Math.random().toString(36).slice(2, 6)}`;
+
+  const adminClient = createClient(supabaseUrl, supabaseServiceKey);
+  const { data: insertedPost, error: insertError } = await adminClient
+    .from("blog_posts")
+    .insert({
+      title: post.title,
+      slug: uniqueSlug,
+      content: post.content,
+      preview: post.preview,
+      meta_description: post.meta_description,
+      keywords: post.keywords,
+      author: "PARTARA Team",
+      published: true,
+      published_at: new Date().toISOString(),
+    })
+    .select()
+    .single();
+
+  if (insertError) {
+    console.error("Insert error:", insertError);
+    throw new Error(insertError.message);
+  }
+
+  return insertedPost;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
   try {
-    // Verify authenticated user
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -41,142 +139,76 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Verify user
-    const userClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: { user }, error: userError } = await userClient.auth.getUser();
-    if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    // Parse request body for optional params
+    let count = 1;
+    let isCron = false;
+
+    try {
+      const body = await req.json();
+      if (body.count && typeof body.count === "number" && body.count > 0 && body.count <= 10) {
+        count = body.count;
+      }
+      if (body.cron === true) {
+        isCron = true;
+      }
+    } catch {
+      // No body or invalid JSON — defaults are fine
     }
 
-    // Pick a random topic
-    const topic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
-    const today = new Date().toISOString().split("T")[0];
+    // If not a cron call, verify authenticated user
+    if (!isCron) {
+      const authHeader = req.headers.get("Authorization");
+      if (!authHeader) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
-    // Generate blog post via Lovable AI
-    const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${lovableApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          {
-            role: "system",
-            content: `You are an expert automotive content writer for PARTARA, a car parts search engine. Write SEO-optimized blog posts that are informative, engaging, and helpful for car owners and mechanics. Always include practical advice and mention specific car parts. Today's date is ${today}.`,
-          },
-          {
-            role: "user",
-            content: `Write a blog post about: "${topic}"
+      const userClient = createClient(supabaseUrl, supabaseAnonKey, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: { user }, error: userError } = await userClient.auth.getUser();
+      if (userError || !user) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
 
-Return a JSON object with these exact fields:
-- title: SEO-optimized title (50-60 chars)
-- slug: URL-friendly slug using only lowercase letters, numbers, and hyphens
-- content: Full blog post in markdown format (800-1200 words). Use ## for subheadings. Include practical tips, specific car part names, and helpful information.
-- preview: 2-3 sentence preview/excerpt (under 200 chars)
-- meta_description: SEO meta description (under 160 chars)
-- keywords: Array of 5-8 relevant keywords about car parts and maintenance
+    // Pick unique topics for the batch
+    const shuffled = [...TOPICS].sort(() => Math.random() - 0.5);
+    const selectedTopics = shuffled.slice(0, count);
 
-Return ONLY valid JSON, no markdown code blocks.`,
-          },
-        ],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "create_blog_post",
-              description: "Create a structured blog post",
-              parameters: {
-                type: "object",
-                properties: {
-                  title: { type: "string" },
-                  slug: { type: "string" },
-                  content: { type: "string" },
-                  preview: { type: "string" },
-                  meta_description: { type: "string" },
-                  keywords: { type: "array", items: { type: "string" } },
-                },
-                required: ["title", "slug", "content", "preview", "meta_description", "keywords"],
-                additionalProperties: false,
-              },
-            },
-          },
-        ],
-        tool_choice: { type: "function", function: { name: "create_blog_post" } },
+    const results = [];
+    const errors = [];
+
+    for (const topic of selectedTopics) {
+      try {
+        const post = await generateSinglePost(supabaseUrl, supabaseServiceKey, lovableApiKey, topic);
+        results.push(post);
+        console.log(`Generated: ${post.title}`);
+      } catch (err) {
+        console.error(`Failed topic "${topic}":`, err.message);
+        errors.push({ topic, error: err.message });
+      }
+      // Small delay between posts to avoid rate limits
+      if (selectedTopics.length > 1) {
+        await new Promise((r) => setTimeout(r, 2000));
+      }
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        generated: results.length,
+        failed: errors.length,
+        posts: results,
+        errors: errors.length > 0 ? errors : undefined,
       }),
-    });
-
-    if (!aiResponse.ok) {
-      const errText = await aiResponse.text();
-      console.error("AI gateway error:", aiResponse.status, errText);
-      if (aiResponse.status === 429) {
-        return new Response(JSON.stringify({ error: "AI rate limit exceeded. Try again in a minute." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (aiResponse.status === 402) {
-        return new Response(JSON.stringify({ error: "AI credits exhausted. Please add funds." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      return new Response(JSON.stringify({ error: "Failed to generate blog post" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const aiData = await aiResponse.json();
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
-
-    if (!toolCall?.function?.arguments) {
-      console.error("No tool call in response:", JSON.stringify(aiData));
-      return new Response(JSON.stringify({ error: "AI did not return structured data" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const post = JSON.parse(toolCall.function.arguments);
-
-    // Ensure unique slug by appending date
-    const uniqueSlug = `${post.slug}-${today}`;
-
-    // Insert into database using service role
-    const adminClient = createClient(supabaseUrl, supabaseServiceKey);
-    const { data: insertedPost, error: insertError } = await adminClient
-      .from("blog_posts")
-      .insert({
-        title: post.title,
-        slug: uniqueSlug,
-        content: post.content,
-        preview: post.preview,
-        meta_description: post.meta_description,
-        keywords: post.keywords,
-        published: true,
-        published_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
-
-    if (insertError) {
-      console.error("Insert error:", insertError);
-      return new Response(JSON.stringify({ error: insertError.message }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    return new Response(JSON.stringify({ success: true, post: insertedPost }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
   } catch (err) {
     console.error("generate-blog-post error:", err);
     return new Response(JSON.stringify({ error: err.message }), {
