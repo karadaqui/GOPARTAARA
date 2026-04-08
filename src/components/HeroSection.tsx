@@ -208,9 +208,6 @@ const HeroSection = () => {
             </p>
           </div>
         </div>
-            </p>
-          </div>
-        </div>
 
         {/* Trust badges */}
         <div className="flex flex-wrap items-center justify-center gap-6 mt-12 text-xs text-muted-foreground">
