@@ -75,9 +75,9 @@ const SearchResults = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const initialQuery = searchParams.get("q") || "";
-  const [query, setQuery] = useState(initialQuery);
-  const [activeQuery, setActiveQuery] = useState(initialQuery);
+  const urlQuery = searchParams.get("q") || "";
+  const [query, setQuery] = useState(urlQuery);
+  const [activeQuery, setActiveQuery] = useState(urlQuery);
   const [identifying, setIdentifying] = useState(false);
   const [searchMode, setSearchMode] = useState<"text" | "reg">("text");
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -92,10 +92,22 @@ const SearchResults = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
 
+  // Sync state with URL params when they change (e.g. new reg plate lookup)
+  useEffect(() => {
+    if (urlQuery && urlQuery !== activeQuery) {
+      setQuery(urlQuery);
+      setActiveQuery(urlQuery);
+      setSelectedCategory(null);
+      setSearchMode("text");
+    }
+  }, [urlQuery]);
+
   useEffect(() => {
     const v = searchParams.get("vehicle");
     if (v) {
       try { setVehicleInfo(JSON.parse(decodeURIComponent(v))); } catch { }
+    } else {
+      setVehicleInfo(null);
     }
   }, [searchParams]);
 
