@@ -105,6 +105,7 @@ const HeroSection = () => {
         <div className="max-w-2xl mx-auto">
           <form onSubmit={handleSearch} className="flex items-center gap-2 p-2 rounded-2xl glass glow-red">
             <div className="flex-1 flex items-center gap-3 px-4">
+              <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
               <Search className="text-muted-foreground shrink-0" size={20} />
               <input
                 type="text"
