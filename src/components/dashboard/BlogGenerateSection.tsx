@@ -40,10 +40,10 @@ const BlogGenerateSection = () => {
     <div className="glass rounded-2xl p-8">
       <h2 className="font-display text-lg font-semibold flex items-center gap-2 mb-3">
         <Sparkles size={18} className="text-primary" />
-        AI Blog Generator
+        Blog Generator
       </h2>
       <p className="text-sm text-muted-foreground mb-4">
-        Generate an AI-powered blog post about car parts, maintenance tips, or price guides.
+        Generate a new blog post about car parts, maintenance tips, or price guides.
       </p>
       <div className="flex gap-2">
         <Button

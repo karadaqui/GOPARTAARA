@@ -53,7 +53,7 @@ const Blog = () => {
             <span className="text-primary">PART</span>ARA Blog
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Expert advice on car parts, maintenance tips, and industry insights — powered by AI.
+            Expert advice on car parts, maintenance tips, and industry insights — by our expert automotive team.
           </p>
         </div>
 
