@@ -1,0 +1,553 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import {
+  Plus, Pencil, Trash2, ImagePlus, Eye, Bookmark, ExternalLink,
+  Loader2, Package, BarChart3, Store, X, Save, Upload
+} from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
+interface SellerProfile {
+  id: string;
+  business_name: string;
+  description: string | null;
+  logo_url: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  website_url: string | null;
+  seller_tier: string;
+  approved: boolean;
+}
+
+interface Listing {
+  id: string;
+  title: string;
+  description: string;
+  price: number | null;
+  category: string | null;
+  compatible_vehicles: string[];
+  tags: string[];
+  photos: string[];
+  external_link: string | null;
+  active: boolean;
+  view_count: number;
+  save_count: number;
+  created_at: string;
+}
+
+const CATEGORIES = [
+  "Engine Parts", "Brakes", "Suspension", "Electrical", "Body Panels",
+  "Interior", "Exhaust", "Transmission", "Filters", "Lighting", "Wheels & Tyres", "Other"
+];
+
+const MyMarket = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const [profile, setProfile] = useState<SellerProfile | null>(null);
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [listingDialog, setListingDialog] = useState(false);
+  const [editingListing, setEditingListing] = useState<Listing | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingPhotos, setUploadingPhotos] = useState(false);
+
+  const [profileForm, setProfileForm] = useState({
+    business_name: "", description: "", contact_email: "", contact_phone: "", website_url: ""
+  });
+
+  const [listingForm, setListingForm] = useState({
+    title: "", description: "", price: "", category: "",
+    compatible_vehicles: "", tags: "", external_link: "", photos: [] as string[]
+  });
+
+  useEffect(() => {
+    if (!user) { navigate("/auth"); return; }
+    loadData();
+  }, [user]);
+
+  const loadData = async () => {
+    setLoading(true);
+    const { data: sp } = await supabase
+      .from("seller_profiles")
+      .select("*")
+      .eq("user_id", user!.id)
+      .maybeSingle();
+
+    if (sp) {
+      setProfile(sp as SellerProfile);
+      setProfileForm({
+        business_name: sp.business_name,
+        description: sp.description || "",
+        contact_email: sp.contact_email || "",
+        contact_phone: sp.contact_phone || "",
+        website_url: sp.website_url || "",
+      });
+
+      const { data: ls } = await supabase
+        .from("seller_listings")
+        .select("*")
+        .eq("seller_id", sp.id)
+        .order("created_at", { ascending: false });
+      setListings((ls as Listing[]) || []);
+    }
+    setLoading(false);
+  };
+
+  const handleCreateProfile = async () => {
+    if (!profileForm.business_name.trim()) {
+      toast({ title: "Business name required", variant: "destructive" });
+      return;
+    }
+    setSaving(true);
+    const { error } = await supabase.from("seller_profiles").insert({
+      user_id: user!.id,
+      business_name: profileForm.business_name,
+      description: profileForm.description || null,
+      contact_email: profileForm.contact_email || null,
+      contact_phone: profileForm.contact_phone || null,
+      website_url: profileForm.website_url || null,
+    } as any);
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Profile created!" });
+      setEditingProfile(false);
+      await loadData();
+    }
+    setSaving(false);
+  };
+
+  const handleUpdateProfile = async () => {
+    if (!profile) return;
+    setSaving(true);
+    const { error } = await supabase.from("seller_profiles")
+      .update({
+        business_name: profileForm.business_name,
+        description: profileForm.description || null,
+        contact_email: profileForm.contact_email || null,
+        contact_phone: profileForm.contact_phone || null,
+        website_url: profileForm.website_url || null,
+      } as any)
+      .eq("id", profile.id);
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Profile updated!" });
+      setEditingProfile(false);
+      await loadData();
+    }
+    setSaving(false);
+  };
+
+  const handleUploadLogo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.[0] || !profile) return;
+    setUploadingLogo(true);
+    const file = e.target.files[0];
+    const path = `${user!.id}/logo-${Date.now()}.${file.name.split('.').pop()}`;
+    const { error } = await supabase.storage.from("seller-logos").upload(path, file);
+    if (error) {
+      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+    } else {
+      const { data: urlData } = supabase.storage.from("seller-logos").getPublicUrl(path);
+      await supabase.from("seller_profiles")
+        .update({ logo_url: urlData.publicUrl } as any)
+        .eq("id", profile.id);
+      await loadData();
+      toast({ title: "Logo uploaded!" });
+    }
+    setUploadingLogo(false);
+  };
+
+  const openListingForm = (listing?: Listing) => {
+    if (listing) {
+      setEditingListing(listing);
+      setListingForm({
+        title: listing.title,
+        description: listing.description,
+        price: listing.price?.toString() || "",
+        category: listing.category || "",
+        compatible_vehicles: listing.compatible_vehicles.join(", "),
+        tags: listing.tags.join(", "),
+        external_link: listing.external_link || "",
+        photos: listing.photos,
+      });
+    } else {
+      setEditingListing(null);
+      setListingForm({ title: "", description: "", price: "", category: "", compatible_vehicles: "", tags: "", external_link: "", photos: [] });
+    }
+    setListingDialog(true);
+  };
+
+  const handleUploadPhotos = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.length) return;
+    setUploadingPhotos(true);
+    const urls: string[] = [];
+    for (const file of Array.from(e.target.files)) {
+      const path = `${user!.id}/${Date.now()}-${file.name}`;
+      const { error } = await supabase.storage.from("listing-photos").upload(path, file);
+      if (!error) {
+        const { data: urlData } = supabase.storage.from("listing-photos").getPublicUrl(path);
+        urls.push(urlData.publicUrl);
+      }
+    }
+    setListingForm(f => ({ ...f, photos: [...f.photos, ...urls] }));
+    setUploadingPhotos(false);
+  };
+
+  const removePhoto = (idx: number) => {
+    setListingForm(f => ({ ...f, photos: f.photos.filter((_, i) => i !== idx) }));
+  };
+
+  const handleSaveListing = async () => {
+    if (!profile || !listingForm.title.trim()) {
+      toast({ title: "Title required", variant: "destructive" });
+      return;
+    }
+    setSaving(true);
+    const payload = {
+      seller_id: profile.id,
+      title: listingForm.title,
+      description: listingForm.description,
+      price: listingForm.price ? parseFloat(listingForm.price) : null,
+      category: listingForm.category || null,
+      compatible_vehicles: listingForm.compatible_vehicles.split(",").map(s => s.trim()).filter(Boolean),
+      tags: listingForm.tags.split(",").map(s => s.trim()).filter(Boolean),
+      photos: listingForm.photos,
+      external_link: listingForm.external_link || null,
+    };
+
+    let error;
+    if (editingListing) {
+      ({ error } = await supabase.from("seller_listings").update(payload as any).eq("id", editingListing.id));
+    } else {
+      ({ error } = await supabase.from("seller_listings").insert(payload as any));
+    }
+
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: editingListing ? "Listing updated!" : "Listing created!" });
+      setListingDialog(false);
+      await loadData();
+    }
+    setSaving(false);
+  };
+
+  const handleDeleteListing = async (id: string) => {
+    const { error } = await supabase.from("seller_listings").delete().eq("id", id);
+    if (!error) {
+      setListings(l => l.filter(x => x.id !== id));
+      toast({ title: "Listing deleted" });
+    }
+  };
+
+  const handleToggleActive = async (listing: Listing) => {
+    await supabase.from("seller_listings")
+      .update({ active: !listing.active } as any)
+      .eq("id", listing.id);
+    await loadData();
+  };
+
+  if (!user) return null;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container py-24 flex justify-center">
+          <Loader2 className="animate-spin text-primary" size={32} />
+        </div>
+      </div>
+    );
+  }
+
+  // No seller profile yet
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container max-w-lg py-24 px-4">
+          <div className="glass rounded-2xl p-8 text-center">
+            <Store size={48} className="text-primary mx-auto mb-4" />
+            <h1 className="font-display text-2xl font-bold mb-2">Set Up Your Seller Profile</h1>
+            <p className="text-muted-foreground mb-6">Create your seller profile to start listing parts on PARTARA.</p>
+            <div className="space-y-4 text-left">
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1">Business Name *</label>
+                <Input value={profileForm.business_name} onChange={e => setProfileForm(f => ({ ...f, business_name: e.target.value }))} className="bg-secondary border-border rounded-xl" />
+              </div>
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1">Description</label>
+                <Textarea value={profileForm.description} onChange={e => setProfileForm(f => ({ ...f, description: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="Tell customers about your business..." />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm text-muted-foreground block mb-1">Email</label>
+                  <Input value={profileForm.contact_email} onChange={e => setProfileForm(f => ({ ...f, contact_email: e.target.value }))} className="bg-secondary border-border rounded-xl" />
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground block mb-1">Phone</label>
+                  <Input value={profileForm.contact_phone} onChange={e => setProfileForm(f => ({ ...f, contact_phone: e.target.value }))} className="bg-secondary border-border rounded-xl" />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1">Website</label>
+                <Input value={profileForm.website_url} onChange={e => setProfileForm(f => ({ ...f, website_url: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="https://..." />
+              </div>
+              <Button onClick={handleCreateProfile} disabled={saving} className="w-full rounded-xl gap-2">
+                {saving ? <Loader2 size={16} className="animate-spin" /> : <Store size={16} />}
+                Create Seller Profile
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground mt-4">
+              Want a premium listing? <button onClick={() => navigate("/list-your-parts")} className="text-primary hover:underline">View seller plans</button>
+            </p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  const totalViews = listings.reduce((s, l) => s + l.view_count, 0);
+  const totalSaves = listings.reduce((s, l) => s + l.save_count, 0);
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <div className="container max-w-5xl py-20 px-4">
+        {/* Header with analytics */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            {profile.logo_url ? (
+              <img src={profile.logo_url} alt={profile.business_name} className="w-14 h-14 rounded-xl object-cover border border-border" />
+            ) : (
+              <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center">
+                <Store size={24} className="text-muted-foreground" />
+              </div>
+            )}
+            <div>
+              <h1 className="font-display text-2xl font-bold">{profile.business_name}</h1>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge variant={profile.approved ? "default" : "secondary"}>
+                  {profile.approved ? "Approved" : "Pending Approval"}
+                </Badge>
+                <Badge variant="outline" className="capitalize">{profile.seller_tier} seller</Badge>
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={() => setEditingProfile(true)} className="rounded-xl gap-1.5">
+              <Pencil size={14} /> Edit Profile
+            </Button>
+            <label className="cursor-pointer">
+              <Button size="sm" variant="outline" className="rounded-xl gap-1.5" asChild>
+                <span>{uploadingLogo ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />} Logo</span>
+              </Button>
+              <input type="file" accept="image/*" className="hidden" onChange={handleUploadLogo} />
+            </label>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="glass rounded-xl p-4 text-center">
+            <Package size={20} className="text-primary mx-auto mb-1" />
+            <p className="font-display text-2xl font-bold">{listings.length}</p>
+            <p className="text-xs text-muted-foreground">Listings</p>
+          </div>
+          <div className="glass rounded-xl p-4 text-center">
+            <Eye size={20} className="text-primary mx-auto mb-1" />
+            <p className="font-display text-2xl font-bold">{totalViews}</p>
+            <p className="text-xs text-muted-foreground">Total Views</p>
+          </div>
+          <div className="glass rounded-xl p-4 text-center">
+            <Bookmark size={20} className="text-primary mx-auto mb-1" />
+            <p className="font-display text-2xl font-bold">{totalSaves}</p>
+            <p className="text-xs text-muted-foreground">Total Saves</p>
+          </div>
+        </div>
+
+        {/* Add listing */}
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="font-display text-xl font-bold">My Listings</h2>
+          <Button onClick={() => openListingForm()} className="rounded-xl gap-1.5">
+            <Plus size={16} /> Add Listing
+          </Button>
+        </div>
+
+        {/* Listings grid */}
+        {listings.length === 0 ? (
+          <div className="glass rounded-2xl p-12 text-center">
+            <Package size={48} className="text-muted-foreground mx-auto mb-4" />
+            <h3 className="font-display text-lg font-bold mb-2">No listings yet</h3>
+            <p className="text-muted-foreground mb-4">Add your first part listing to start selling.</p>
+            <Button onClick={() => openListingForm()} className="rounded-xl gap-1.5">
+              <Plus size={16} /> Add Your First Listing
+            </Button>
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {listings.map(listing => (
+              <div key={listing.id} className={`glass rounded-xl overflow-hidden ${!listing.active ? 'opacity-60' : ''}`}>
+                {listing.photos[0] ? (
+                  <img src={listing.photos[0]} alt={listing.title} className="w-full h-40 object-cover" />
+                ) : (
+                  <div className="w-full h-40 bg-secondary flex items-center justify-center">
+                    <ImagePlus size={32} className="text-muted-foreground" />
+                  </div>
+                )}
+                <div className="p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-display font-bold text-sm line-clamp-1">{listing.title}</h3>
+                    {listing.price && <span className="text-primary font-bold text-sm">£{listing.price.toFixed(2)}</span>}
+                  </div>
+                  {listing.category && <Badge variant="outline" className="text-xs mb-2">{listing.category}</Badge>}
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+                    <span className="flex items-center gap-1"><Eye size={12} /> {listing.view_count}</span>
+                    <span className="flex items-center gap-1"><Bookmark size={12} /> {listing.save_count}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => openListingForm(listing)} className="rounded-lg flex-1 gap-1 text-xs">
+                      <Pencil size={12} /> Edit
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => handleToggleActive(listing)} className="rounded-lg text-xs">
+                      {listing.active ? "Pause" : "Activate"}
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => handleDeleteListing(listing.id)} className="rounded-lg text-xs text-destructive hover:text-destructive">
+                      <Trash2 size={12} />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Edit profile dialog */}
+      <Dialog open={editingProfile} onOpenChange={setEditingProfile}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="font-display">Edit Seller Profile</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm text-muted-foreground block mb-1">Business Name</label>
+              <Input value={profileForm.business_name} onChange={e => setProfileForm(f => ({ ...f, business_name: e.target.value }))} className="bg-secondary border-border rounded-xl" />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground block mb-1">Description</label>
+              <Textarea value={profileForm.description} onChange={e => setProfileForm(f => ({ ...f, description: e.target.value }))} className="bg-secondary border-border rounded-xl" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1">Email</label>
+                <Input value={profileForm.contact_email} onChange={e => setProfileForm(f => ({ ...f, contact_email: e.target.value }))} className="bg-secondary border-border rounded-xl" />
+              </div>
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1">Phone</label>
+                <Input value={profileForm.contact_phone} onChange={e => setProfileForm(f => ({ ...f, contact_phone: e.target.value }))} className="bg-secondary border-border rounded-xl" />
+              </div>
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground block mb-1">Website</label>
+              <Input value={profileForm.website_url} onChange={e => setProfileForm(f => ({ ...f, website_url: e.target.value }))} className="bg-secondary border-border rounded-xl" />
+            </div>
+            <Button onClick={handleUpdateProfile} disabled={saving} className="w-full rounded-xl gap-2">
+              {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+              Save Changes
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Listing form dialog */}
+      <Dialog open={listingDialog} onOpenChange={setListingDialog}>
+        <DialogContent className="bg-card border-border max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-display">{editingListing ? "Edit Listing" : "New Listing"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm text-muted-foreground block mb-1">Title *</label>
+              <Input value={listingForm.title} onChange={e => setListingForm(f => ({ ...f, title: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="e.g. Brake Pads for BMW 3 Series" />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground block mb-1">Description</label>
+              <Textarea value={listingForm.description} onChange={e => setListingForm(f => ({ ...f, description: e.target.value }))} className="bg-secondary border-border rounded-xl min-h-[80px]" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1">Price (£)</label>
+                <Input type="number" step="0.01" value={listingForm.price} onChange={e => setListingForm(f => ({ ...f, price: e.target.value }))} className="bg-secondary border-border rounded-xl" />
+              </div>
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1">Category</label>
+                <select
+                  value={listingForm.category}
+                  onChange={e => setListingForm(f => ({ ...f, category: e.target.value }))}
+                  className="w-full h-10 px-3 rounded-xl bg-secondary border border-border text-foreground text-sm"
+                >
+                  <option value="">Select...</option>
+                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground block mb-1">Compatible Vehicles (comma-separated)</label>
+              <Input value={listingForm.compatible_vehicles} onChange={e => setListingForm(f => ({ ...f, compatible_vehicles: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="BMW 3 Series 2015-2020, BMW 4 Series" />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground block mb-1">Tags (comma-separated)</label>
+              <Input value={listingForm.tags} onChange={e => setListingForm(f => ({ ...f, tags: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="OEM, performance, budget" />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground block mb-1">External Link</label>
+              <Input value={listingForm.external_link} onChange={e => setListingForm(f => ({ ...f, external_link: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="https://yourshop.com/part" />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground block mb-1">Photos</label>
+              <div className="flex flex-wrap gap-2 mb-2">
+                {listingForm.photos.map((url, i) => (
+                  <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border">
+                    <img src={url} alt="" className="w-full h-full object-cover" />
+                    <button onClick={() => removePhoto(i)} className="absolute top-0.5 right-0.5 bg-background/80 rounded-full p-0.5">
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+                <label className="w-20 h-20 rounded-lg border border-dashed border-border flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
+                  {uploadingPhotos ? <Loader2 size={16} className="animate-spin" /> : <ImagePlus size={20} className="text-muted-foreground" />}
+                  <input type="file" accept="image/*" multiple className="hidden" onChange={handleUploadPhotos} />
+                </label>
+              </div>
+            </div>
+            <Button onClick={handleSaveListing} disabled={saving} className="w-full rounded-xl gap-2">
+              {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+              {editingListing ? "Update Listing" : "Create Listing"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default MyMarket;
