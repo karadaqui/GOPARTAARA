@@ -149,9 +149,26 @@ const HeroSection = () => {
                 )}
               </div>
             </label>
-            <Button type="submit" className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold" disabled={identifying}>
-              Search
-            </Button>
+            {searchLimit.limitReached ? (
+              <Button
+                type="button"
+                className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold"
+                onClick={() => {
+                  navigate("/");
+                  setTimeout(() => {
+                    const el = document.getElementById("pricing");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }, 100);
+                }}
+              >
+                <ArrowUp size={14} className="mr-1" />
+                Upgrade to Pro
+              </Button>
+            ) : (
+              <Button type="submit" className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold" disabled={identifying}>
+                Search
+              </Button>
+            )}
           </form>
           <div className="flex items-center justify-between mt-3">
             <p className="text-xs text-muted-foreground">
