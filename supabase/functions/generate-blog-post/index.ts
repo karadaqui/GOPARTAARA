@@ -23,6 +23,7 @@ async function generateSinglePost(
   supabaseServiceKey: string,
   lovableApiKey: string,
   topic: string,
+  authorName: string = "PARTARA Team",
 ) {
   const today = new Date().toISOString().split("T")[0];
 
