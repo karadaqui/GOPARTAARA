@@ -8,7 +8,9 @@ import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 const DVLA_API_URL = "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles";
 
 const BodySchema = z.object({
-  registrationNumber: z.string().min(2).max(10).transform(v => v.replace(/\s+/g, '').toUpperCase()),
+  registrationNumber: z.string().min(2).max(10)
+    .regex(/^[A-Za-z0-9]+$/, "Registration number must contain only letters and numbers")
+    .transform(v => v.replace(/\s+/g, '').toUpperCase()),
 });
 
 Deno.serve(async (req) => {
