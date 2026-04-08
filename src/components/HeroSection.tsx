@@ -1,15 +1,17 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Camera, Loader2, Car } from "lucide-react";
+import { Search, Camera, Loader2, Car, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
 import SearchCounter from "@/components/SearchCounter";
+import { useSearchLimit } from "@/hooks/useSearchLimit";
 
 const HeroSection = () => {
   const [query, setQuery] = useState("");
+  const searchLimit = useSearchLimit();
   const [identifying, setIdentifying] = useState(false);
   const [regNumber, setRegNumber] = useState("");
   const [regLoading, setRegLoading] = useState(false);
