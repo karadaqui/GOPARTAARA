@@ -409,36 +409,39 @@ const SearchResults = () => {
                 <p className="text-sm text-muted-foreground mt-2">{liveResults.length} of {totalResults} eBay listings shown</p>
               )}
             </div>
-            {/* BMW OEM Catalog Card */}
-            {activeQuery && /bmw/i.test(activeQuery) && (
-              <div className="mb-8">
-                <a
-                  href={`https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(activeQuery.replace(/bmw\s*/i, "").trim() || activeQuery)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group block w-full text-left glass rounded-2xl overflow-hidden border-2 border-blue-500/30 hover:border-blue-400/60 transition-all hover:shadow-lg hover:shadow-blue-500/10"
-                >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-4 sm:p-5 bg-gradient-to-r from-blue-600/10 via-blue-500/5 to-transparent">
-                    <div className="shrink-0 bg-[#1C69D4] rounded-xl px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                      <span className="text-base sm:text-xl font-bold text-white tracking-tight leading-none" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}>BMW</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <h3 className="font-display font-bold text-base sm:text-lg text-foreground">BMW OEM Catalog</h3>
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-semibold border border-blue-500/30">Genuine Parts</span>
+            {/* OEM Brand Catalog Cards */}
+            {activeQuery && oemBrands.filter((b) => b.pattern.test(activeQuery)).map((b) => {
+              const oemQuery = getOemSearchQuery(activeQuery, b.pattern);
+              return (
+                <div key={b.brand} className="mb-8">
+                  <a
+                    href={b.url(oemQuery)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`group block w-full text-left glass rounded-2xl overflow-hidden border-2 ${b.border} transition-all hover:shadow-lg`}
+                  >
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-4 sm:p-5">
+                      <div className="shrink-0 rounded-xl px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-center shadow-lg" style={{ backgroundColor: b.bg }}>
+                        <span className="text-base sm:text-xl font-bold text-white tracking-tight leading-none" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}>{b.brand}</span>
                       </div>
-                      <p className="text-xs sm:text-sm text-muted-foreground">
-                        Find genuine OEM part numbers and diagrams for <span className="font-semibold text-foreground">"{activeQuery}"</span> on RealOEM
-                      </p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <h3 className="font-display font-bold text-base sm:text-lg text-foreground">{b.label}</h3>
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${b.badgeBg} ${b.badgeText} ${b.badgeBorder}`}>Genuine Parts</span>
+                        </div>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          Find genuine OEM parts for <span className="font-semibold text-foreground">"{activeQuery}"</span>
+                        </p>
+                      </div>
+                      <div className="shrink-0 rounded-xl h-10 sm:h-11 px-4 sm:px-6 font-bold gap-2 border-0 inline-flex items-center justify-center text-xs sm:text-sm w-full sm:w-auto text-white shadow-lg" style={{ backgroundColor: b.bg }}>
+                        <ExternalLink size={14} />
+                        View OEM Parts
+                      </div>
                     </div>
-                    <div className="shrink-0 rounded-xl h-10 sm:h-11 px-4 sm:px-6 bg-[#1C69D4] hover:bg-[#1559b8] text-white font-bold gap-2 shadow-lg shadow-blue-500/20 border-0 inline-flex items-center justify-center text-xs sm:text-sm w-full sm:w-auto">
-                      <ExternalLink size={14} />
-                      View OEM Parts
-                    </div>
-                  </div>
-                </a>
-              </div>
-            )}
+                  </a>
+                </div>
+              );
+            })}
 
             {/* Amazon UK Premium Card */}
             {activeQuery && (
