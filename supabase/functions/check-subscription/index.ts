@@ -28,6 +28,8 @@ serve(async (req) => {
     { auth: { persistSession: false } }
   );
 
+  const SELLER_PLANS = ["basic_seller", "featured_seller", "pro_seller"];
+
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header");
@@ -38,6 +40,21 @@ serve(async (req) => {
     const user = userData.user;
     if (!user?.email) throw new Error("User not authenticated");
     logStep("User authenticated", { userId: user.id, email: user.email });
+
+    // Check current plan — if it's a seller plan, skip Stripe sync entirely
+    const { data: profileData } = await supabaseClient
+      .from("profiles")
+      .select("subscription_plan")
+      .eq("user_id", user.id)
+      .single();
+
+    const currentPlan = profileData?.subscription_plan;
+    if (currentPlan && SELLER_PLANS.includes(currentPlan)) {
+      logStep("User has seller plan, skipping Stripe sync", { currentPlan });
+      return new Response(JSON.stringify({ subscribed: true, plan: currentPlan, seller_plan: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
