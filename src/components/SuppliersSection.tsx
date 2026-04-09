@@ -15,7 +15,7 @@ const SuppliersSection = () => (
           Trusted Suppliers
         </span>
         <h2 className="font-display text-2xl md:text-3xl font-bold">
-          We Search Across 15+ Suppliers
+          We Search Across 6+ Suppliers
         </h2>
       </div>
       <div className="flex flex-wrap items-center justify-center gap-3 max-w-4xl mx-auto">
