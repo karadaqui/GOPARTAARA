@@ -351,8 +351,8 @@ const SearchResults = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      <div className="border-b border-border bg-card/40 backdrop-blur-lg sticky top-0 z-20 pt-16">
-         <div className="container max-w-5xl py-4 px-4">
+      <div className="border-b border-border bg-card/40 backdrop-blur-lg sticky top-0 z-20 pt-14 sm:pt-16">
+         <div className="container max-w-5xl py-2 sm:py-4 px-3 sm:px-4">
           <div className="flex gap-1 mb-3">
             <button onClick={() => setSearchMode("text")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${searchMode === "text" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>
@@ -409,7 +409,7 @@ const SearchResults = () => {
           )}
         </div>
       </div>
-      <div className="container max-w-5xl flex-1 px-4 py-8">
+      <div className="container max-w-5xl flex-1 px-3 sm:px-4 py-4 sm:py-8">
         {activeQuery ? (
           <>
             {vehicleInfo && (
@@ -548,17 +548,17 @@ const SearchResults = () => {
                 </div>
               </div>
             )}
-            <div className="mb-6">
-              <div className="flex items-center gap-2 mb-3">
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center gap-2 mb-2 sm:mb-3">
                 <FilterIcon size={14} className="text-muted-foreground" />
-                <span className="text-sm font-medium text-muted-foreground">Filter by category</span>
+                <span className="text-xs sm:text-sm font-medium text-muted-foreground">Filter by category</span>
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-nowrap overflow-x-auto sm:flex-wrap gap-1.5 sm:gap-2 pb-1 -mx-3 px-3 sm:mx-0 sm:px-0">
                 {PART_CATEGORIES.map((cat) => (
-                  <button
+                    <button
                     key={cat.label}
                     onClick={() => handleCategorySelect(cat.label)}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                    className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
                       selectedCategory === cat.label
                         ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
                         : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80"
@@ -570,13 +570,13 @@ const SearchResults = () => {
                 ))}
               </div>
             </div>
-            <div className="text-center mb-8">
-              <h1 className="font-display text-2xl sm:text-3xl font-bold mb-2">
+            <div className="text-center mb-4 sm:mb-8">
+              <h1 className="font-display text-xl sm:text-2xl md:text-3xl font-bold mb-1 sm:mb-2">
                 {selectedCategory ? `${selectedCategory} for` : "Results for"}
               </h1>
-              <p className="text-primary font-display text-xl sm:text-2xl font-semibold">"{activeQuery}"</p>
+              <p className="text-primary font-display text-lg sm:text-xl md:text-2xl font-semibold">"{activeQuery}"</p>
               {totalResults > 0 && !liveLoading && (
-                <p className="text-sm text-muted-foreground mt-2">
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1 sm:mt-2">
                   Showing {startItem.toLocaleString()}-{endItem.toLocaleString()} of {totalResults.toLocaleString()} eBay listings
                 </p>
               )}
