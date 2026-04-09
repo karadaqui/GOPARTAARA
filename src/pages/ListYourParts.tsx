@@ -43,10 +43,42 @@ const SELLER_TIERS = {
   },
 };
 
+const SELLER_PLANS = ["basic_seller", "featured_seller", "pro_seller"];
+
 const ListYourParts = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [checkingPlan, setCheckingPlan] = useState(true);
+
+  // Redirect seller plan users directly to /my-market
+  useState(() => {
+    if (!user) { setCheckingPlan(false); return; }
+    supabase
+      .from("profiles")
+      .select("subscription_plan")
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        if (data && SELLER_PLANS.includes(data.subscription_plan)) {
+          navigate("/my-market", { replace: true });
+        } else {
+          setCheckingPlan(false);
+        }
+      })
+      .catch(() => setCheckingPlan(false));
+  });
+
+  if (checkingPlan) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container py-24 flex justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        </div>
+      </div>
+    );
+  }
   const [selectedTier, setSelectedTier] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);

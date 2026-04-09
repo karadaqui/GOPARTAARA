@@ -14,6 +14,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import VehicleSelector from "@/components/VehicleSelector";
+import CategoryTagSelector from "@/components/CategoryTagSelector";
 
 interface SellerProfile {
   id: string;
