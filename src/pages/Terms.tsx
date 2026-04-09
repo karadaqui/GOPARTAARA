@@ -19,19 +19,18 @@ const Terms = () => (
           <Section title="1. Introduction">
             <p>
               These Terms of Service ("Terms") govern your access to and use of the PARTARA website
-              (<strong>gopartara.com</strong>) and application, operated by Partara Ltd, a company
-              registered in England and Wales ("we", "us", "our").
+              (<strong>gopartara.com</strong>) and application, operated by PARTARA ("we", "us", "our").
             </p>
             <p>
               By accessing or using PARTARA, you agree to be bound by these Terms. If you do not
               agree, you must not use our service. These Terms constitute a legally binding agreement
-              between you and Partara Ltd.
+              between you and PARTARA.
             </p>
           </Section>
 
           <Section title="2. Service Description">
             <p>
-              PARTARA is a car parts search, comparison, and marketplace platform. We aggregate listings from 15+
+              PARTARA is a car parts search, comparison, and marketplace platform. We aggregate listings from
               trusted UK and global suppliers, and host a seller marketplace to help you find, compare, and purchase car parts.
             </p>
             <p><strong>Important:</strong></p>
@@ -100,8 +99,6 @@ const Terms = () => (
                 features={[
                   "Everything in Pro",
                   "Priority support",
-                  "API access",
-                  "Team management",
                 ]}
               />
             </div>
@@ -293,7 +290,7 @@ const Terms = () => (
           <Section title="9. Intellectual Property">
             <p>
               All content, design, branding, code, and technology comprising the PARTARA platform is
-              owned by or licensed to Partara Ltd and is protected by UK and international
+              owned by or licensed to PARTARA and is protected by UK and international
               intellectual property laws.
             </p>
             <p>
@@ -340,7 +337,7 @@ const Terms = () => (
           <Section title="11. Limitation of Liability">
             <div className="rounded-xl border border-border bg-card p-6">
               <p>
-                To the maximum extent permitted by applicable law, Partara Ltd, its directors,
+                To the maximum extent permitted by applicable law, PARTARA, its directors,
                 employees, and agents shall not be liable for:
               </p>
               <ul className="list-disc pl-5 space-y-2 mt-3">
@@ -387,7 +384,7 @@ const Terms = () => (
 
           <Section title="12. Indemnification">
             <p>
-              You agree to indemnify and hold harmless Partara Ltd and its officers, directors,
+              You agree to indemnify and hold harmless PARTARA and its officers, directors,
               employees, and agents from any claims, losses, damages, liabilities, and expenses
               (including reasonable legal fees) arising from:
             </p>
@@ -470,7 +467,7 @@ const Terms = () => (
           <Section title="18. Contact Us">
             <p>If you have questions about these Terms, please contact us:</p>
             <div className="mt-4 rounded-xl border border-border bg-card p-6">
-              <p className="font-semibold mb-1">Partara Ltd</p>
+              <p className="font-semibold mb-1">PARTARA</p>
               <p className="text-sm text-muted-foreground">
                 Email:{" "}
                 <a href="mailto:info@gopartara.com" className="text-primary hover:underline">
