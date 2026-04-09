@@ -48,14 +48,17 @@ const Marketplace = () => {
 
   const loadListings = async () => {
     setLoading(true);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("seller_listings")
-      .select("*, seller_profiles!inner(id, business_name, logo_url, seller_tier)")
+      .select("*, seller_profiles(id, business_name, logo_url, seller_tier, approved)")
       .eq("active", true)
-      .eq("seller_profiles.approved", true)
       .order("created_at", { ascending: false });
 
-    setListings((data as unknown as ListingWithSeller[]) || []);
+    // Filter client-side to include only approved sellers (avoids inner join issues)
+    const filtered = ((data as unknown as (ListingWithSeller & { seller_profiles: ListingWithSeller['seller_profiles'] & { approved: boolean } })[]) || [])
+      .filter(l => l.seller_profiles?.approved);
+
+    setListings(filtered as unknown as ListingWithSeller[]);
     setLoading(false);
   };
 
