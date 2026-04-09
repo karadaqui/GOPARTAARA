@@ -23,6 +23,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { X as XIcon } from "lucide-react";
 
 const googleSite = (domain: string) => (q: string) =>
   `https://www.google.com/search?q=site:${domain}+${q.replace(/\s+/g, "+")}`;
@@ -394,7 +396,7 @@ const SearchResults = () => {
               </form>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                 <VehicleFilterButton onSelect={(vehicleQuery) => setQuery((prev) => prev.trim() ? `${vehicleQuery} ${prev.trim()}` : vehicleQuery)} />
-                <div className="flex items-center gap-2">
+                <div className="hidden sm:flex items-center gap-2">
                   {compareParts.length > 0 && (
                     <Button size="sm" variant="outline" className="rounded-lg gap-1.5 text-xs h-7" onClick={() => setShowCompare(true)}>
                       <Scale size={12} /> Compare ({compareParts.length})
@@ -402,6 +404,10 @@ const SearchResults = () => {
                   )}
                   <SearchCounter limitData={searchLimit} />
                 </div>
+              </div>
+              {/* Mobile: centered search counter */}
+              <div className="sm:hidden flex justify-center mt-1">
+                <SearchCounter limitData={searchLimit} />
               </div>
             </div>
           ) : (
@@ -549,25 +555,44 @@ const SearchResults = () => {
               </div>
             )}
             <div className="mb-4 sm:mb-6">
-              <div className="flex items-center gap-2 mb-2 sm:mb-3">
-                <FilterIcon size={14} className="text-muted-foreground" />
-                <span className="text-xs sm:text-sm font-medium text-muted-foreground">Filter by category</span>
-              </div>
-              <div className="flex flex-nowrap overflow-x-auto sm:flex-wrap gap-1.5 sm:gap-2 pb-1 -mx-3 px-3 sm:mx-0 sm:px-0">
-                {PART_CATEGORIES.map((cat) => (
-                    <button
-                    key={cat.label}
-                    onClick={() => handleCategorySelect(cat.label)}
-                    className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
-                      selectedCategory === cat.label
-                        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                        : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80"
-                    }`}
+              <div className="flex items-center gap-2 flex-wrap">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="rounded-xl gap-1.5 text-xs sm:text-sm h-9">
+                      <FilterIcon size={14} />
+                      Filter by Category
+                      <ChevronDown size={14} />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[280px] sm:w-[340px] p-3" align="start">
+                    <p className="text-xs font-medium text-muted-foreground mb-2">Select a category</p>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {PART_CATEGORIES.map((cat) => (
+                        <button
+                          key={cat.label}
+                          onClick={() => { handleCategorySelect(cat.label); }}
+                          className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-left ${
+                            selectedCategory === cat.label
+                              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                              : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80"
+                          }`}
+                        >
+                          <span>{cat.icon}</span>
+                          {cat.label}
+                        </button>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+                {selectedCategory && (
+                  <button
+                    onClick={() => { setSelectedCategory(null); setCurrentPage(1); }}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                   >
-                    <span>{cat.icon}</span>
-                    {cat.label}
+                    {selectedCategory}
+                    <XIcon size={12} />
                   </button>
-                ))}
+                )}
               </div>
             </div>
             <div className="text-center mb-4 sm:mb-8">
@@ -590,7 +615,7 @@ const SearchResults = () => {
               </div>
             ) : liveResults.length > 0 ? (
               <div className="mb-10">
-              <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-5">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-5">
                   {(() => {
                     // Group items by extracted part-type keywords for fair price comparison
                     const extractPartType = (title: string): string => {
