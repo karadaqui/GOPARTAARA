@@ -631,7 +631,7 @@ const SearchResults = () => {
                 <h2 className="font-display text-lg font-bold">Search More Suppliers</h2>
               </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {suppliers.map((supplier) => (
                 <div key={supplier.name} className="group relative glass rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.02]">
                   <a href={supplier.buildUrl(activeQuery)} target="_blank" rel="noopener noreferrer">
