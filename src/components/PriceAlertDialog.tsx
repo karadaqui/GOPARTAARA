@@ -54,6 +54,10 @@ const PriceAlertDialog = ({ supplierName, partQuery, supplierUrl, ebayItemId, cu
       toast({ title: "Invalid price", description: "Enter a valid target price.", variant: "destructive" });
       return;
     }
+    if (currentPrice && price >= currentPrice) {
+      toast({ title: "Target too high", description: `Your target price must be lower than the current price of £${currentPrice.toFixed(2)}. Set a lower target to get notified when the price drops.`, variant: "destructive" });
+      return;
+    }
     if (!email.trim() || !email.includes("@")) {
       toast({ title: "Invalid email", description: "Enter a valid email address.", variant: "destructive" });
       return;
