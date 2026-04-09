@@ -231,6 +231,7 @@ const Dashboard = () => {
     basic_seller: { label: "Basic Seller", price: "£9.99/mo" },
     featured_seller: { label: "Featured Seller", price: "£24.99/mo" },
     pro_seller: { label: "Pro Seller", price: "£49.99/mo" },
+    admin: { label: "Admin", price: "N/A" },
   };
   const currentPlan = profile?.subscription_plan || "free";
   const currentPlanInfo = PLAN_INFO[currentPlan] || PLAN_INFO.free;

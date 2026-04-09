@@ -22,7 +22,7 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const SELLER_PLANS = ["basic_seller", "featured_seller", "pro_seller"];
+  const SELLER_PLANS = ["basic_seller", "featured_seller", "pro_seller", "admin"];
 
   try {
     const authHeader = req.headers.get("Authorization");

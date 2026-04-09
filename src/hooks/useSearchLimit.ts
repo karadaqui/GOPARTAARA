@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
 const FREE_LIMIT = 5;
-const PAID_PLANS = ["pro", "business", "basic_seller", "featured_seller", "pro_seller"];
+const PAID_PLANS = ["pro", "business", "basic_seller", "featured_seller", "pro_seller", "admin"];
 
 export const useSearchLimit = () => {
   const { user } = useAuth();
