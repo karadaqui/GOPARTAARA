@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Menu, X, LogOut, User, ChevronDown } from "lucide-react";
+import { Menu, X, LogOut, User, ChevronDown, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -20,6 +20,7 @@ const moreLinks = [
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
+const ADMIN_EMAIL = "info@gopartara.com";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -103,6 +104,15 @@ const Navbar = () => {
           {!loading && (
             user ? (
               <div className="flex items-center gap-3">
+                {user.email === ADMIN_EMAIL && (
+                  <button
+                    onClick={() => navigate("/admin")}
+                    className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5 font-medium"
+                  >
+                    <Shield size={14} />
+                    Admin
+                  </button>
+                )}
                 <button
                   onClick={() => navigate("/dashboard")}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
@@ -157,6 +167,15 @@ const Navbar = () => {
             {!loading && (
               user ? (
                 <div className="flex flex-col gap-2 border-t border-border pt-2 mt-1">
+                  {user.email === ADMIN_EMAIL && (
+                    <button
+                      onClick={() => { setOpen(false); navigate("/admin"); }}
+                      className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5 py-2 font-medium"
+                    >
+                      <Shield size={14} />
+                      Admin
+                    </button>
+                  )}
                   <button
                     onClick={() => { setOpen(false); navigate("/dashboard"); }}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 py-2"
