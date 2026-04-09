@@ -7,13 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
-  Plus, Pencil, Trash2, ImagePlus, Eye, Bookmark, ExternalLink,
-  Loader2, Package, BarChart3, Store, X, Save, Upload
+  Plus, Pencil, Trash2, ImagePlus, Eye, Bookmark,
+  Loader2, Package, Store, X, Save, Upload
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import VehicleSelector from "@/components/VehicleSelector";
+import CategoryTagSelector from "@/components/CategoryTagSelector";
 
 interface SellerProfile {
   id: string;
@@ -44,8 +46,9 @@ interface Listing {
 }
 
 const CATEGORIES = [
-  "Engine Parts", "Brakes", "Suspension", "Electrical", "Body Panels",
-  "Interior", "Exhaust", "Transmission", "Filters", "Lighting", "Wheels & Tyres", "Other"
+  "Engine Parts", "Body Parts", "Brakes", "Suspension", "Electrical",
+  "Filters", "Exhaust", "Interior", "Cooling", "Transmission",
+  "Body Panels", "Lighting", "Wheels & Tyres", "Other"
 ];
 
 const MyMarket = () => {
@@ -69,7 +72,8 @@ const MyMarket = () => {
 
   const [listingForm, setListingForm] = useState({
     title: "", description: "", price: "", category: "",
-    compatible_vehicles: "", tags: "", external_link: "", photos: [] as string[]
+    compatible_vehicles: [] as string[], compatible_vehicles_text: "",
+    tags: [] as string[], external_link: "", photos: [] as string[]
   });
 
   useEffect(() => {
@@ -180,14 +184,15 @@ const MyMarket = () => {
         description: listing.description,
         price: listing.price?.toString() || "",
         category: listing.category || "",
-        compatible_vehicles: listing.compatible_vehicles.join(", "),
-        tags: listing.tags.join(", "),
+        compatible_vehicles: listing.compatible_vehicles,
+        compatible_vehicles_text: "",
+        tags: listing.tags,
         external_link: listing.external_link || "",
         photos: listing.photos,
       });
     } else {
       setEditingListing(null);
-      setListingForm({ title: "", description: "", price: "", category: "", compatible_vehicles: "", tags: "", external_link: "", photos: [] });
+      setListingForm({ title: "", description: "", price: "", category: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
     }
     setListingDialog(true);
   };
@@ -218,14 +223,17 @@ const MyMarket = () => {
       return;
     }
     setSaving(true);
+    const extraVehicles = listingForm.compatible_vehicles_text
+      .split(",").map(s => s.trim()).filter(Boolean);
+    const allVehicles = [...listingForm.compatible_vehicles, ...extraVehicles];
     const payload = {
       seller_id: profile.id,
       title: listingForm.title,
       description: listingForm.description,
       price: listingForm.price ? parseFloat(listingForm.price) : null,
       category: listingForm.category || null,
-      compatible_vehicles: listingForm.compatible_vehicles.split(",").map(s => s.trim()).filter(Boolean),
-      tags: listingForm.tags.split(",").map(s => s.trim()).filter(Boolean),
+      compatible_vehicles: allVehicles,
+      tags: listingForm.tags,
       photos: listingForm.photos,
       external_link: listingForm.external_link || null,
     };
@@ -508,14 +516,18 @@ const MyMarket = () => {
                 </select>
               </div>
             </div>
+            <VehicleSelector
+              vehicles={listingForm.compatible_vehicles}
+              onChange={v => setListingForm(f => ({ ...f, compatible_vehicles: v }))}
+            />
             <div>
-              <label className="text-sm text-muted-foreground block mb-1">Compatible Vehicles (comma-separated)</label>
-              <Input value={listingForm.compatible_vehicles} onChange={e => setListingForm(f => ({ ...f, compatible_vehicles: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="BMW 3 Series 2015-2020, BMW 4 Series" />
+              <label className="text-sm text-muted-foreground block mb-1">Additional Compatible Vehicles (comma-separated)</label>
+              <Input value={listingForm.compatible_vehicles_text} onChange={e => setListingForm(f => ({ ...f, compatible_vehicles_text: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="BMW 3 Series 2015-2020, BMW 4 Series" />
             </div>
-            <div>
-              <label className="text-sm text-muted-foreground block mb-1">Tags (comma-separated)</label>
-              <Input value={listingForm.tags} onChange={e => setListingForm(f => ({ ...f, tags: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="OEM, performance, budget" />
-            </div>
+            <CategoryTagSelector
+              selected={listingForm.tags}
+              onChange={tags => setListingForm(f => ({ ...f, tags }))}
+            />
             <div>
               <label className="text-sm text-muted-foreground block mb-1">External Link</label>
               <Input value={listingForm.external_link} onChange={e => setListingForm(f => ({ ...f, external_link: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="https://yourshop.com/part" />

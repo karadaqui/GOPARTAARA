@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -43,10 +43,13 @@ const SELLER_TIERS = {
   },
 };
 
+const SELLER_PLANS = ["basic_seller", "featured_seller", "pro_seller"];
+
 const ListYourParts = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [checkingPlan, setCheckingPlan] = useState(true);
   const [selectedTier, setSelectedTier] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -58,6 +61,34 @@ const ListYourParts = () => {
     business_address: "",
     parts_description: "",
   });
+
+  // Redirect seller plan users directly to /my-market
+  useEffect(() => {
+    if (!user) { setCheckingPlan(false); return; }
+    supabase
+      .from("profiles")
+      .select("subscription_plan")
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        if (data && SELLER_PLANS.includes(data.subscription_plan)) {
+          navigate("/my-market", { replace: true });
+        } else {
+          setCheckingPlan(false);
+        }
+      });
+  }, [user, navigate]);
+
+  if (checkingPlan) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container py-24 flex justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
