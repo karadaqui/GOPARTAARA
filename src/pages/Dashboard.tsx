@@ -343,7 +343,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-center py-6">
               <Loader2 size={20} className="animate-spin text-muted-foreground" />
             </div>
-          ) : subStatus.subscribed ? (
+          ) : currentPlan !== "free" ? (
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -351,10 +351,10 @@ const Dashboard = () => {
                 </div>
                 <div>
                   <p className="font-display font-bold text-lg">
-                    {STRIPE_TIERS[subStatus.product_id || ""]?.label || "Active"} Plan
+                    {currentPlanInfo.label} Plan
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {STRIPE_TIERS[subStatus.product_id || ""]?.price || ""}
+                    {currentPlanInfo.price}
                     {subStatus.subscription_end && (
                       <> · Renews {new Date(subStatus.subscription_end).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</>
                     )}
@@ -390,7 +390,7 @@ const Dashboard = () => {
                 </div>
                 <div>
                   <p className="font-display font-bold text-lg">Free Plan</p>
-                  <p className="text-xs text-muted-foreground">5 searches per month</p>
+                  <p className="text-xs text-muted-foreground">£0/mo · 5 searches per month</p>
                 </div>
               </div>
               <Button
