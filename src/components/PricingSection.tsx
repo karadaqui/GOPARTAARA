@@ -9,12 +9,12 @@ import { useState } from "react";
 // Stripe product/price mapping
 const STRIPE_TIERS = {
   pro: {
-    price_id: "price_1TJQ7xAc5QcTT3aLA5yFkiuf",
-    product_id: "prod_UI08qGZRqV94r2",
+    price_id: "price_1TK5ccAc5QcTT3aL7jb3xTlb",
+    product_id: "prod_UIh0f2c2pqB75Q",
   },
   business: {
-    price_id: "price_1TJbSAAc5QcTT3aLlmsw3kGS",
-    product_id: "prod_UIBpaMM0bdRgJ9",
+    price_id: "price_1TK5dsAc5QcTT3aLm5ehKiRg",
+    product_id: "prod_UIh1yZXp6AzrxY",
   },
 };
 
