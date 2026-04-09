@@ -4,8 +4,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Store, Crown, Star, Globe, Mail, Phone, Package, Eye, Loader2 } from "lucide-react";
+import { Store, Crown, Star, Globe, Mail, Phone, Package, Eye, Loader2, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface SellerFull {
   id: string;
