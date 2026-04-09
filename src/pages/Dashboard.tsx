@@ -224,7 +224,16 @@ const Dashboard = () => {
     }
   };
 
-  const planLabel: Record<string, string> = { free: "Free", pro: "Pro", business: "Business" };
+  const PLAN_INFO: Record<string, { label: string; price: string }> = {
+    free: { label: "Free", price: "£0/mo" },
+    pro: { label: "Pro", price: "£9.99/mo" },
+    business: { label: "Business", price: "£24.99/mo" },
+    basic_seller: { label: "Basic Seller", price: "£9.99/mo" },
+    featured_seller: { label: "Featured Seller", price: "£24.99/mo" },
+    pro_seller: { label: "Pro Seller", price: "£49.99/mo" },
+  };
+  const currentPlan = profile?.subscription_plan || "free";
+  const currentPlanInfo = PLAN_INFO[currentPlan] || PLAN_INFO.free;
 
   if (authLoading || loading) {
     return (
@@ -334,7 +343,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-center py-6">
               <Loader2 size={20} className="animate-spin text-muted-foreground" />
             </div>
-          ) : subStatus.subscribed ? (
+          ) : currentPlan !== "free" ? (
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -342,10 +351,10 @@ const Dashboard = () => {
                 </div>
                 <div>
                   <p className="font-display font-bold text-lg">
-                    {STRIPE_TIERS[subStatus.product_id || ""]?.label || "Active"} Plan
+                    {currentPlanInfo.label} Plan
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {STRIPE_TIERS[subStatus.product_id || ""]?.price || ""}
+                    {currentPlanInfo.price}
                     {subStatus.subscription_end && (
                       <> · Renews {new Date(subStatus.subscription_end).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</>
                     )}
@@ -381,7 +390,7 @@ const Dashboard = () => {
                 </div>
                 <div>
                   <p className="font-display font-bold text-lg">Free Plan</p>
-                  <p className="text-xs text-muted-foreground">5 searches per month</p>
+                  <p className="text-xs text-muted-foreground">£0/mo · 5 searches per month</p>
                 </div>
               </div>
               <Button
@@ -401,9 +410,7 @@ const Dashboard = () => {
             <Crown size={20} className="text-primary mx-auto mb-2" />
             <p className="text-xs text-muted-foreground">Plan</p>
             <p className="font-display font-bold text-lg">
-              {subStatus.subscribed
-                ? (STRIPE_TIERS[subStatus.product_id || ""]?.label || "Active")
-                : planLabel[profile?.subscription_plan || "free"]}
+              {currentPlanInfo.label}
             </p>
           </div>
           <div className="glass rounded-2xl p-6 text-center">
