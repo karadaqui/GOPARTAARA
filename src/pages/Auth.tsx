@@ -74,8 +74,9 @@ const Auth = () => {
   const handleOAuth = async (provider: "google" | "apple") => {
     setOauthLoading(provider);
     try {
+      const redirectTo = searchParams.get("redirect") || "/";
       const result = await lovable.auth.signInWithOAuth(provider, {
-        redirect_uri: window.location.origin,
+        redirect_uri: `${window.location.origin}${redirectTo}`,
       });
       if (result.error) {
         toast({ title: "Error", description: String(result.error), variant: "destructive" });
