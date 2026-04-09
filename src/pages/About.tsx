@@ -11,7 +11,7 @@ const steps = [
   {
     icon: Search,
     title: "Search",
-    desc: "Type a part name, snap a photo, or enter your UK reg plate. We search 15+ trusted suppliers in seconds.",
+    desc: "Type a part name, snap a photo, or enter your UK reg plate. We search 6+ trusted suppliers in seconds.",
   },
   {
     icon: BarChart3,
