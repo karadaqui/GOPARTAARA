@@ -4,16 +4,16 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, X } from "lucide-react";
 
 const VEHICLE_MAKES: Record<string, string[]> = {
-  "BMW": ["1 Series", "2 Series", "3 Series", "4 Series", "5 Series", "6 Series", "7 Series", "X1", "X3", "X5", "X6", "Z4", "M3", "M5"],
-  "Mercedes": ["A-Class", "B-Class", "C-Class", "E-Class", "S-Class", "GLA", "GLC", "GLE", "GLS", "CLA", "CLS", "AMG GT"],
-  "Audi": ["A1", "A3", "A4", "A5", "A6", "A7", "A8", "Q2", "Q3", "Q5", "Q7", "Q8", "TT", "R8", "RS3", "RS6"],
-  "Ford": ["Fiesta", "Focus", "Mondeo", "Puma", "Kuga", "EcoSport", "Mustang", "Ranger", "Transit", "Galaxy", "S-Max"],
-  "Vauxhall": ["Corsa", "Astra", "Insignia", "Mokka", "Crossland", "Grandland", "Adam", "Viva", "Zafira"],
-  "Toyota": ["Yaris", "Corolla", "Camry", "C-HR", "RAV4", "Hilux", "Land Cruiser", "Supra", "Aygo", "Prius"],
-  "Volkswagen": ["Polo", "Golf", "Passat", "Tiguan", "T-Roc", "T-Cross", "Touareg", "Arteon", "ID.3", "ID.4", "Up"],
-  "Honda": ["Civic", "Jazz", "CR-V", "HR-V", "Accord", "NSX", "e"],
-  "Nissan": ["Micra", "Juke", "Qashqai", "X-Trail", "Leaf", "Navara", "GT-R", "370Z"],
-  "Volvo": ["XC40", "XC60", "XC90", "S60", "S90", "V40", "V60", "V90", "C40"],
+  "BMW": ["1 Series", "2 Series", "3 Series", "4 Series", "5 Series", "6 Series", "7 Series", "8 Series", "X1", "X2", "X3", "X4", "X5", "X6", "X7", "M3", "M4", "M5", "E46", "E90", "E92", "F30", "F10"],
+  "Mercedes": ["A Class", "B Class", "C Class", "E Class", "S Class", "GLA", "GLB", "GLC", "GLE", "GLS", "CLA", "CLS", "AMG"],
+  "Audi": ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "Q2", "Q3", "Q5", "Q7", "Q8", "TT", "R8", "RS3", "RS4", "RS6"],
+  "Ford": ["Fiesta", "Focus", "Mondeo", "Kuga", "Puma", "EcoSport", "Galaxy", "S-Max", "Mustang", "Transit"],
+  "Vauxhall": ["Corsa", "Astra", "Insignia", "Mokka", "Grandland", "Crossland", "Zafira", "Vectra"],
+  "Toyota": ["Yaris", "Corolla", "Camry", "RAV4", "C-HR", "Aygo", "Hilux", "Land Cruiser", "Prius"],
+  "Volkswagen": ["Polo", "Golf", "Passat", "Tiguan", "T-Roc", "T-Cross", "Touareg", "Arteon", "ID.3", "ID.4"],
+  "Honda": ["Civic", "Jazz", "CR-V", "HR-V", "Accord", "FR-V"],
+  "Nissan": ["Micra", "Juke", "Qashqai", "X-Trail", "Leaf", "370Z", "GT-R"],
+  "Volvo": ["S60", "S90", "V40", "V60", "V90", "XC40", "XC60", "XC90"],
 };
 
 const currentYear = new Date().getFullYear();
