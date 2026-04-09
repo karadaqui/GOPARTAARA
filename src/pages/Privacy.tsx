@@ -18,12 +18,11 @@ const Privacy = () => (
         <article className="space-y-10">
           <Section title="1. Who We Are">
             <p>
-              PARTARA ("we", "us", "our") is a UK-based car parts search engine operated by
-              Partara Ltd, registered in England and Wales. We operate the website{" "}
+              PARTARA ("we", "us", "our") is a UK-based car parts search engine. We operate the website{" "}
               <strong>gopartara.com</strong> and the PARTARA application.
             </p>
             <p>
-              <strong>Data Controller:</strong> Partara Ltd
+              <strong>Data Controller:</strong> PARTARA
               <br />
               <strong>Contact:</strong>{" "}
               <a href="mailto:info@gopartara.com" className="text-primary hover:underline">
@@ -121,7 +120,7 @@ const Privacy = () => (
               <li><strong>Affiliate networks</strong> — eBay Partner Network and Amazon Associates receive click and referral data when you follow affiliate links. These networks set their own cookies subject to their privacy policies.</li>
               <li><strong>Email delivery</strong> — to send transactional, price alert, and service-related emails.</li>
               <li><strong>Hosting &amp; infrastructure</strong> — cloud hosting providers for data storage and processing.</li>
-              <li><strong>AI services</strong> — for image-based part identification and automated listing moderation. No personal data is shared beyond the content being analysed.</li>
+              <li><strong>Automated systems</strong> — for image-based part identification and automated listing moderation. No personal data is shared beyond the content being analysed.</li>
             </ul>
             <p className="mt-3">
               All third-party processors are bound by data processing agreements and are required to
@@ -279,9 +278,9 @@ const Privacy = () => (
 
           <Section title="11. Children's Privacy">
             <p>
-              PARTARA is not directed at individuals under the age of 16. We do not knowingly collect
+              PARTARA is not directed at individuals under the age of 13. We do not knowingly collect
               personal data from children. If we become aware that we have collected data from a child
-              under 16, we will take steps to delete it promptly.
+              under 13, we will take steps to delete it promptly.
             </p>
           </Section>
 
@@ -300,7 +299,7 @@ const Privacy = () => (
               or have a complaint, please contact us:
             </p>
             <div className="mt-4 rounded-xl border border-border bg-card p-6">
-              <p className="font-semibold mb-1">Partara Ltd</p>
+              <p className="font-semibold mb-1">PARTARA</p>
               <p className="text-sm text-muted-foreground">
                 Email:{" "}
                 <a href="mailto:info@gopartara.com" className="text-primary hover:underline">
