@@ -27,6 +27,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       // Process referral on first sign-in (after email confirmation)
       if (event === "SIGNED_IN" && session?.user) {
+        // Handle post-OAuth redirect
+        const pendingRedirect = localStorage.getItem("partara_auth_redirect");
+        if (pendingRedirect) {
+          localStorage.removeItem("partara_auth_redirect");
+          // Use setTimeout to ensure state is settled before navigating
+          setTimeout(() => navigate(pendingRedirect), 0);
+        }
+
         const storedRef = localStorage.getItem("partara_ref");
         if (storedRef) {
           try {
