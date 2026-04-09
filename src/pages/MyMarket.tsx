@@ -70,6 +70,9 @@ const MyMarket = () => {
   const [saving, setSaving] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [undoListing, setUndoListing] = useState<Listing | null>(null);
+  const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [profileForm, setProfileForm] = useState({
     business_name: "", description: "", contact_email: "", contact_phone: "", website_url: ""
