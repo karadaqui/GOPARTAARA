@@ -276,7 +276,7 @@ const SearchResults = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <div className="border-b border-border bg-card/40 backdrop-blur-lg sticky top-0 z-20 pt-16">
-        <div className="container max-w-5xl py-4 px-4">
+         <div className="container max-w-5xl py-4 px-4">
           <div className="flex gap-1 mb-3">
             <button onClick={() => setSearchMode("text")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${searchMode === "text" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>
@@ -284,37 +284,39 @@ const SearchResults = () => {
             </button>
             <button onClick={() => setSearchMode("reg")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${searchMode === "reg" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>
-              <Car size={14} /> Reg Plate Lookup
+              <Car size={14} /> Reg Plate
             </button>
           </div>
           {searchMode === "text" ? (
             <div className="space-y-2">
-              <form onSubmit={handleSearch} className="flex items-center gap-2">
+              <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <div className="flex-1 relative flex items-center">
                   <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
                   <Search size={18} className="absolute left-8 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search car parts..." className="pl-14 bg-secondary border-border h-11 rounded-xl" />
                 </div>
-                <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
-                  <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={identifying} />
-                  <div className="flex items-center gap-1.5 px-3 h-11 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-sm text-secondary-foreground">
-                    {identifying ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
-                    <span className="hidden sm:inline">{identifying ? "Identifying..." : "Photo"}</span>
-                  </div>
-                </label>
-                {searchLimit.limitReached ? (
-                  <Button type="button" className="rounded-xl h-11 px-6" onClick={() => {
-                    const el = document.getElementById("pricing");
-                    if (el) el.scrollIntoView({ behavior: "smooth" });
-                    else window.location.href = "/#pricing";
-                  }}>
-                    <ArrowUp size={14} className="mr-1" /> Upgrade to Pro
-                  </Button>
-                ) : (
-                  <Button type="submit" className="rounded-xl h-11 px-6">Search</Button>
-                )}
+                <div className="flex items-center gap-2">
+                  <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
+                    <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={identifying} />
+                    <div className="flex items-center gap-1.5 px-3 h-11 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-sm text-secondary-foreground">
+                      {identifying ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
+                      <span>{identifying ? "Identifying..." : "Photo"}</span>
+                    </div>
+                  </label>
+                  {searchLimit.limitReached ? (
+                    <Button type="button" className="rounded-xl h-11 px-4 sm:px-6 flex-1 sm:flex-none" onClick={() => {
+                      const el = document.getElementById("pricing");
+                      if (el) el.scrollIntoView({ behavior: "smooth" });
+                      else window.location.href = "/#pricing";
+                    }}>
+                      <ArrowUp size={14} className="mr-1" /> Upgrade
+                    </Button>
+                  ) : (
+                    <Button type="submit" className="rounded-xl h-11 px-4 sm:px-6 flex-1 sm:flex-none">Search</Button>
+                  )}
+                </div>
               </form>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                 <VehicleFilterButton onSelect={(vehicleQuery) => setQuery((prev) => prev.trim() ? `${vehicleQuery} ${prev.trim()}` : vehicleQuery)} />
                 <div className="flex items-center gap-2">
                   {compareParts.length > 0 && (
@@ -325,6 +327,7 @@ const SearchResults = () => {
                   <SearchCounter limitData={searchLimit} />
                 </div>
               </div>
+            </div>
             </div>
           ) : (
             <VehicleLookup onLookupStart={handleVehicleLookupStart} onVehicleFound={handleVehicleLookupSuccess} />
