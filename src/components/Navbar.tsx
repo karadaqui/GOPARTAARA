@@ -104,6 +104,15 @@ const Navbar = () => {
           {!loading && (
             user ? (
               <div className="flex items-center gap-3">
+                {user.email === ADMIN_EMAIL && (
+                  <button
+                    onClick={() => navigate("/admin")}
+                    className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5 font-medium"
+                  >
+                    <Shield size={14} />
+                    Admin
+                  </button>
+                )}
                 <button
                   onClick={() => navigate("/dashboard")}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
