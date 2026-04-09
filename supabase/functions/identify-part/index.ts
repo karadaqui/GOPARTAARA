@@ -121,7 +121,12 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  try {
+    // Rate limit
+    const clientId = req.headers.get("Authorization")?.slice(-20) || req.headers.get("x-forwarded-for") || "anonymous";
+    const { allowed } = await checkRateLimit(clientId, "identify-part");
+    if (!allowed) return rateLimitResponse(corsHeaders);
+
+
     const body = await req.json();
     const parsed = BodySchema.safeParse(body);
     if (!parsed.success) {

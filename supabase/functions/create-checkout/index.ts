@@ -20,10 +20,14 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization")!;
+    if (!authHeader) throw new Error("User not authenticated");
+
+    // Rate limit
+    const { allowed } = await checkRateLimit(authHeader.slice(-20), "create-checkout");
+    if (!allowed) return rateLimitResponse(corsHeaders);
+
     const token = authHeader.replace("Bearer ", "");
     const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated");
 
     const { priceId } = await req.json();
     if (!priceId) throw new Error("Missing priceId");
