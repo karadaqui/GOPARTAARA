@@ -508,7 +508,7 @@ const SearchResults = () => {
                 )}
 
                 {/* Details grid */}
-                <div className="px-5 py-3 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-1">
+                <div className="px-3 sm:px-5 py-2 sm:py-3 grid grid-cols-2 sm:grid-cols-3 gap-x-3 sm:gap-x-6 gap-y-0.5 sm:gap-y-1">
                   {vehicleInfo.yearOfManufacture && (
                     <div className="flex items-center gap-2.5 py-2">
                       <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"><Calendar size={15} className="text-primary" /></div>
@@ -877,29 +877,29 @@ const SearchResults = () => {
             ) : null}
 
             {/* Supplier Row */}
-            <div className="mb-4 mt-2">
-              <div className="flex items-center gap-2 mb-4">
-                <ExternalLink size={18} className="text-muted-foreground" />
+            <div className="mb-3 sm:mb-4 mt-2">
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <ExternalLink size={16} className="sm:w-[18px] sm:h-[18px] text-muted-foreground" />
                 <h2 className="font-display text-lg font-bold">Search More Suppliers</h2>
               </div>
             </div>
-            <ScrollArea className="w-full pb-4">
-              <div className="flex gap-3 pb-2">
+            <ScrollArea className="w-full pb-2 sm:pb-4">
+              <div className="flex gap-2 sm:gap-3 pb-2">
                 {suppliers.map((supplier) => (
                   <a
                     key={supplier.name}
                     href={supplier.buildUrl(activeQuery)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="shrink-0 w-[140px] group glass rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.02] flex flex-col"
+                    className="shrink-0 w-[100px] sm:w-[140px] group glass rounded-lg sm:rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.02] flex flex-col"
                   >
-                    <div className={`h-16 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center px-2`}>
-                      <span className="text-white font-display font-bold text-xs tracking-wide text-center leading-tight">
+                    <div className={`h-12 sm:h-16 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center px-1.5 sm:px-2`}>
+                      <span className="text-white font-display font-bold text-[10px] sm:text-xs tracking-wide text-center leading-tight">
                         {supplier.flag} {supplier.name}
                       </span>
                     </div>
-                    <div className="p-2">
-                      <span className="flex items-center justify-center gap-1 w-full rounded-lg text-xs h-7 bg-primary text-primary-foreground font-medium">
+                    <div className="p-1.5 sm:p-2">
+                      <span className="flex items-center justify-center gap-0.5 sm:gap-1 w-full rounded-md sm:rounded-lg text-[10px] sm:text-xs h-6 sm:h-7 bg-primary text-primary-foreground font-medium">
                         <ExternalLink size={11} /> Search
                       </span>
                     </div>
