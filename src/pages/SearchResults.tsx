@@ -590,7 +590,7 @@ const SearchResults = () => {
               </div>
             ) : liveResults.length > 0 ? (
               <div className="mb-10">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-5">
                   {(() => {
                     // Group items by extracted part-type keywords for fair price comparison
                     const extractPartType = (title: string): string => {

@@ -72,3 +72,16 @@
     @apply bg-card/60 backdrop-blur-xl border border-border/50;
   }
 }
+
+/* Mobile typography scaling */
+@media (max-width: 428px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 429px) and (max-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+}
