@@ -32,6 +32,7 @@ interface Listing {
 const SellerProfile = () => {
   const { id } = useParams<{ id: string }>();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [seller, setSeller] = useState<SellerFull | null>(null);
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
