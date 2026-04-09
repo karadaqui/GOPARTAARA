@@ -470,6 +470,7 @@ export type Database = {
       seller_listings: {
         Row: {
           active: boolean
+          approval_status: string
           category: string | null
           compatible_vehicles: string[]
           created_at: string
@@ -488,6 +489,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          approval_status?: string
           category?: string | null
           compatible_vehicles?: string[]
           created_at?: string
@@ -506,6 +508,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          approval_status?: string
           category?: string | null
           compatible_vehicles?: string[]
           created_at?: string
