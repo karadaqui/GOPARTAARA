@@ -28,7 +28,8 @@ serve(async (req) => {
 
     const token = authHeader.replace("Bearer ", "");
     const { data } = await supabaseClient.auth.getUser(token);
-
+    const user = data.user;
+    if (!user?.email) throw new Error("User not authenticated");
     const { priceId } = await req.json();
     if (!priceId) throw new Error("Missing priceId");
 
