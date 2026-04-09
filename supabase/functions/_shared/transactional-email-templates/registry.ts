@@ -14,6 +14,7 @@ import { template as contactConfirmation } from './contact-confirmation.tsx'
 import { template as listingApproved } from './listing-approved.tsx'
 import { template as listingRejected } from './listing-rejected.tsx'
 import { template as listingSaved } from './listing-saved.tsx'
+import { template as priceAlertSeller } from './price-alert-seller.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'contact-notification': contactNotification,
@@ -21,4 +22,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'listing-approved': listingApproved,
   'listing-rejected': listingRejected,
   'listing-saved': listingSaved,
+  'price-alert-seller': priceAlertSeller,
 }
