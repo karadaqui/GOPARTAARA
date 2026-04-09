@@ -224,7 +224,16 @@ const Dashboard = () => {
     }
   };
 
-  const planLabel: Record<string, string> = { free: "Free", pro: "Pro", business: "Business" };
+  const PLAN_INFO: Record<string, { label: string; price: string }> = {
+    free: { label: "Free", price: "£0/mo" },
+    pro: { label: "Pro", price: "£9.99/mo" },
+    business: { label: "Business", price: "£24.99/mo" },
+    basic_seller: { label: "Basic Seller", price: "£9.99/mo" },
+    featured_seller: { label: "Featured Seller", price: "£24.99/mo" },
+    pro_seller: { label: "Pro Seller", price: "£49.99/mo" },
+  };
+  const currentPlan = profile?.subscription_plan || "free";
+  const currentPlanInfo = PLAN_INFO[currentPlan] || PLAN_INFO.free;
 
   if (authLoading || loading) {
     return (
