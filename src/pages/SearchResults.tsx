@@ -706,28 +706,31 @@ const SearchResults = () => {
                   </div>
                 </div>
               ))}
-              {/bmw/i.test(activeQuery) && (
-                <div className="group relative glass rounded-xl overflow-hidden hover:border-blue-500/30 transition-all hover:scale-[1.02]">
-                  <a href={`https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(activeQuery.replace(/bmw\s*/i, "").trim() || activeQuery)}`} target="_blank" rel="noopener noreferrer">
-                    <div className="h-14 bg-gradient-to-br from-[#1C69D4] to-[#0A3D91] flex items-center justify-center relative">
-                      <span className="text-white font-display font-bold text-sm tracking-wide opacity-90 group-hover:opacity-100 transition-opacity text-center px-2">
-                        🔵 BMW OEM Catalog
-                      </span>
-                      <span className="absolute bottom-1 right-1 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border bg-blue-500/20 text-blue-300 border-blue-400/30">
-                        <Shield size={8} />
-                        OEM
-                      </span>
+              {oemBrands.filter((b) => b.pattern.test(activeQuery)).map((b) => {
+                const oemQuery = getOemSearchQuery(activeQuery, b.pattern);
+                return (
+                  <div key={b.brand} className="group relative glass rounded-xl overflow-hidden transition-all hover:scale-[1.02]">
+                    <a href={b.url(oemQuery)} target="_blank" rel="noopener noreferrer">
+                      <div className={`h-14 bg-gradient-to-br ${b.gradient} flex items-center justify-center relative`}>
+                        <span className="text-white font-display font-bold text-sm tracking-wide opacity-90 group-hover:opacity-100 transition-opacity text-center px-2">
+                          {b.brand} OEM
+                        </span>
+                        <span className={`absolute bottom-1 right-1 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${b.badgeBg} ${b.badgeText} ${b.badgeBorder}`}>
+                          <Shield size={8} />
+                          OEM
+                        </span>
+                      </div>
+                    </a>
+                    <div className="p-2">
+                      <Button size="sm" className="w-full rounded-lg gap-1 text-xs h-7 text-white" style={{ backgroundColor: b.bg }} asChild>
+                        <a href={b.url(oemQuery)} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink size={11} /> Search
+                        </a>
+                      </Button>
                     </div>
-                  </a>
-                  <div className="p-2">
-                    <Button size="sm" className="w-full rounded-lg gap-1 text-xs h-7 bg-[#1C69D4] hover:bg-[#1559b8] text-white" asChild>
-                      <a href={`https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(activeQuery.replace(/bmw\s*/i, "").trim() || activeQuery)}`} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink size={11} /> Search
-                      </a>
-                    </Button>
                   </div>
-                </div>
-              )}
+                );
+              })}
             </div>
           </>
         ) : (
