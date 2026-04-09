@@ -54,6 +54,7 @@ const App = () => (
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/listing/:id" element={<ListingDetail />} />
             <Route path="/seller/:id" element={<SellerProfile />} />
+            <Route path="/pricing" element={<Pricing />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <CookieConsent />
