@@ -56,6 +56,7 @@ const App = () => (
             <Route path="/listing/:id" element={<ListingDetail />} />
             <Route path="/seller/:id" element={<SellerProfile />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <CookieConsent />
