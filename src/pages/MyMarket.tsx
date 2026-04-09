@@ -251,8 +251,18 @@ const MyMarket = () => {
     const oldPrice = editingListing?.price ?? null;
     
     if (editingListing) {
-      // Editing resets to pending for re-approval
-      ({ error } = await supabase.from("seller_listings").update({ ...payload, approval_status: "pending" } as any).eq("id", editingListing.id));
+      // Check if content fields changed (requiring re-moderation) vs price-only change
+      const contentChanged =
+        payload.title !== editingListing.title ||
+        payload.description !== editingListing.description ||
+        payload.category !== editingListing.category ||
+        JSON.stringify(payload.photos) !== JSON.stringify(editingListing.photos);
+
+      const updatePayload = contentChanged
+        ? { ...payload, approval_status: "pending" }
+        : { ...payload, approval_status: editingListing.approval_status };
+
+      ({ error } = await supabase.from("seller_listings").update(updatePayload as any).eq("id", editingListing.id));
       
       // If price was reduced, trigger price drop notifications
       if (!error && oldPrice !== null && newPrice !== null && newPrice < oldPrice) {
@@ -260,18 +270,31 @@ const MyMarket = () => {
           body: { listing_id: editingListing.id, action: "price_drop", target_price: newPrice.toString() },
         }).catch(() => {});
       }
+
+      // Run moderation only if content changed
+      if (!error && contentChanged) {
+        try {
+          const { data: modResult } = await supabase.functions.invoke("moderate-listing", {
+            body: { listing_id: editingListing.id },
+          });
+          if (modResult?.status === "approved") {
+            toast({ title: "✅ Listing updated & approved!", description: "Your changes are now live." });
+          } else {
+            toast({
+              title: "🔍 Listing under review",
+              description: modResult?.reason || "Our team will review your changes shortly.",
+            });
+          }
+        } catch {
+          toast({ title: "Listing updated", description: "Pending re-approval." });
+        }
+      } else if (!error) {
+        toast({ title: "Listing updated!" });
+      }
     } else {
       ({ error } = await supabase.from("seller_listings").insert({ ...payload, approval_status: "pending" } as any).select().single());
-    }
 
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      setListingDialog(false);
-
-      // Trigger moderation for new listings (not edits - edits go to pending for admin review)
-      if (!editingListing && !error) {
-        // Get the newly created listing ID
+      if (!error) {
         const { data: newListings } = await supabase
           .from("seller_listings")
           .select("id")
@@ -298,8 +321,6 @@ const MyMarket = () => {
             toast({ title: "Listing submitted", description: "Pending manual approval." });
           }
         }
-      } else {
-        toast({ title: "Listing updated! Pending re-approval." });
       }
 
       await loadData();
