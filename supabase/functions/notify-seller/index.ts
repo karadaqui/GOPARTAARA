@@ -65,8 +65,8 @@ Deno.serve(async (req) => {
     const sellerUserId = listing.seller_profiles.user_id;
     const sellerEmail = listing.seller_profiles.contact_email;
 
-    // Don't notify seller about their own actions
-    if (sellerUserId === userData.user.id) {
+    // Don't notify seller about their own actions (except price_drop which notifies buyers)
+    if (sellerUserId === userData.user.id && action !== "price_drop") {
       console.log("[NOTIFY-SELLER] Skipping self-notification");
       return new Response(JSON.stringify({ ok: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
