@@ -11,6 +11,7 @@ const EBAY_AFFILIATE_CAMPID = "5339148333";
 const BodySchema = z.object({
   query: z.string().min(1).max(500),
   category: z.string().max(100).optional(),
+  offset: z.number().int().min(0).max(10000).optional(),
 });
 
 // --- OAuth 2.0 token cache ---
@@ -96,9 +97,9 @@ Deno.serve(async (req) => {
       return json({ error: parsed.error.flatten().fieldErrors, results: [] }, 400);
     }
 
-    const { query, category } = parsed.data;
+    const { query, category, offset } = parsed.data;
     const searchQuery = category ? `${query} ${category}` : query;
-    const cacheKey = searchQuery.toLowerCase().trim();
+    const cacheKey = `${searchQuery.toLowerCase().trim()}:${offset || 0}`;
     console.log("[search-parts] Query:", searchQuery);
 
     const cached = getCached(cacheKey);
@@ -122,6 +123,7 @@ Deno.serve(async (req) => {
       q: searchQuery,
       category_ids: "6030",
       limit: "12",
+      offset: String(offset || 0),
       fieldgroups: "MATCHING_ITEMS",
     });
 

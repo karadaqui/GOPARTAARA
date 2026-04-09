@@ -8,9 +8,9 @@ import {
   Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star,
   Truck, Bookmark, BookmarkCheck, MapPin, Clock,
   Heart, AlertCircle, Zap, Filter as FilterIcon, ArrowUp,
+  ChevronLeft, ChevronRight,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
 import VehicleLookup from "@/components/VehicleLookup";
 import VehicleFilterButton from "@/components/VehicleFilterButton";
@@ -20,30 +20,23 @@ import PartsComparison, { type ComparePart } from "@/components/PartsComparison"
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const googleSite = (domain: string) => (q: string) =>
   `https://www.google.com/search?q=site:${domain}+${q.replace(/\s+/g, "+")}`;
 
-type QualityTier = "oem" | "premium" | "budget";
-
-const tierConfig: Record<QualityTier, { label: string; colors: string; tooltip: string }> = {
-  oem: { label: "OEM", colors: "bg-amber-500/20 text-amber-400 border-amber-500/30", tooltip: "Original Equipment Manufacturer" },
-  premium: { label: "Premium", colors: "bg-slate-300/15 text-slate-300 border-slate-400/30", tooltip: "Aftermarket Premium" },
-  budget: { label: "Budget", colors: "bg-orange-700/20 text-orange-400 border-orange-600/30", tooltip: "Budget" },
-};
-
-const suppliers: { name: string; flag: string; gradient: string; tier: QualityTier; buildUrl: (q: string) => string }[] = [
-  { name: "Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-600 to-indigo-700", tier: "premium", buildUrl: googleSite("eurocarparts.com") },
-  { name: "GSF Car Parts", flag: "🇬🇧", gradient: "from-emerald-600 to-teal-700", tier: "premium", buildUrl: googleSite("gsfcarparts.com") },
-  { name: "Car Parts 4 Less", flag: "🇬🇧", gradient: "from-purple-600 to-purple-800", tier: "budget", buildUrl: googleSite("carparts4less.co.uk") },
-  { name: "Halfords", flag: "🇬🇧", gradient: "from-sky-500 to-sky-700", tier: "premium", buildUrl: googleSite("halfords.com") },
-  { name: "AutoDoc", flag: "🇬🇧", gradient: "from-cyan-500 to-blue-600", tier: "budget", buildUrl: googleSite("autodoc.co.uk") },
-  { name: "Amazon UK", flag: "🇬🇧", gradient: "from-orange-500 to-amber-600", tier: "premium", buildUrl: (q) => `https://www.amazon.co.uk/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara-21` },
-  { name: "Partmaster", flag: "🇬🇧", gradient: "from-slate-600 to-slate-800", tier: "oem", buildUrl: googleSite("partmaster.co.uk") },
-  { name: "LKQ Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-500 to-blue-700", tier: "oem", buildUrl: googleSite("lkqeurocarparts.com") },
-  { name: "RockAuto", flag: "🌍", gradient: "from-yellow-600 to-orange-700", tier: "premium", buildUrl: googleSite("rockauto.com") },
-  { name: "PartsGeek", flag: "🌍", gradient: "from-red-600 to-red-800", tier: "budget", buildUrl: googleSite("partsgeek.com") },
+const suppliers: { name: string; flag: string; gradient: string; buildUrl: (q: string) => string }[] = [
+  { name: "Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-600 to-indigo-700", buildUrl: googleSite("eurocarparts.com") },
+  { name: "GSF Car Parts", flag: "🇬🇧", gradient: "from-emerald-600 to-teal-700", buildUrl: googleSite("gsfcarparts.com") },
+  { name: "Car Parts 4 Less", flag: "🇬🇧", gradient: "from-purple-600 to-purple-800", buildUrl: googleSite("carparts4less.co.uk") },
+  { name: "Halfords", flag: "🇬🇧", gradient: "from-sky-500 to-sky-700", buildUrl: googleSite("halfords.com") },
+  { name: "AutoDoc", flag: "🇬🇧", gradient: "from-cyan-500 to-blue-600", buildUrl: googleSite("autodoc.co.uk") },
+  { name: "Amazon UK", flag: "🇬🇧", gradient: "from-orange-500 to-amber-600", buildUrl: (q) => `https://www.amazon.co.uk/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara-21` },
+  { name: "Partmaster", flag: "🇬🇧", gradient: "from-slate-600 to-slate-800", buildUrl: googleSite("partmaster.co.uk") },
+  { name: "LKQ Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-500 to-blue-700", buildUrl: googleSite("lkqeurocarparts.com") },
+  { name: "RockAuto", flag: "🌍", gradient: "from-yellow-600 to-orange-700", buildUrl: googleSite("rockauto.com") },
+  { name: "PartsGeek", flag: "🌍", gradient: "from-red-600 to-red-800", buildUrl: googleSite("partsgeek.com") },
 ];
 
 const PART_CATEGORIES = [
@@ -57,14 +50,14 @@ const PART_CATEGORIES = [
   { label: "Interior", icon: "🪑" },
 ];
 
-const oemBrands: { brand: string; pattern: RegExp; label: string; url: (q: string) => string; bg: string; bgHover: string; text: string; border: string; badgeBg: string; badgeText: string; badgeBorder: string; gradient: string; shadow: string }[] = [
-  { brand: "BMW", pattern: /bmw/i, label: "BMW OEM Catalog", url: (q) => `https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(q)}`, bg: "#1C69D4", bgHover: "#1559b8", text: "white", border: "border-blue-500/30 hover:border-blue-400/60", badgeBg: "bg-blue-500/20", badgeText: "text-blue-400", badgeBorder: "border-blue-500/30", gradient: "from-[#1C69D4] to-[#0A3D91]", shadow: "shadow-blue-500/20" },
-  { brand: "Mercedes", pattern: /mercedes|merc|benz/i, label: "Mercedes Parts", url: (q) => `https://www.mercedes-benz-parts.com/search?q=${encodeURIComponent(q)}`, bg: "#1A1A1A", bgHover: "#333", text: "white", border: "border-slate-500/30 hover:border-slate-400/60", badgeBg: "bg-slate-500/20", badgeText: "text-slate-300", badgeBorder: "border-slate-400/30", gradient: "from-[#1A1A1A] to-[#333]", shadow: "shadow-slate-500/20" },
-  { brand: "Audi", pattern: /audi/i, label: "Audi Parts", url: (q) => `https://www.audi-shopping.com/search?q=${encodeURIComponent(q)}`, bg: "#1A1A1A", bgHover: "#333", text: "white", border: "border-slate-500/30 hover:border-slate-400/60", badgeBg: "bg-slate-500/20", badgeText: "text-slate-300", badgeBorder: "border-slate-400/30", gradient: "from-[#1A1A1A] to-[#444]", shadow: "shadow-slate-500/20" },
-  { brand: "Ford", pattern: /ford/i, label: "Ford Parts", url: (q) => `https://www.fordparts.com/search?q=${encodeURIComponent(q)}`, bg: "#003478", bgHover: "#002a63", text: "white", border: "border-blue-500/30 hover:border-blue-400/60", badgeBg: "bg-blue-500/20", badgeText: "text-blue-400", badgeBorder: "border-blue-500/30", gradient: "from-[#003478] to-[#001f4d]", shadow: "shadow-blue-500/20" },
-  { brand: "Vauxhall", pattern: /vauxhall|opel/i, label: "Vauxhall Parts", url: (q) => `https://www.vauxhall.co.uk/services/parts/search?q=${encodeURIComponent(q)}`, bg: "#C4122F", bgHover: "#a8102a", text: "white", border: "border-red-500/30 hover:border-red-400/60", badgeBg: "bg-red-500/20", badgeText: "text-red-400", badgeBorder: "border-red-500/30", gradient: "from-[#C4122F] to-[#8B0D22]", shadow: "shadow-red-500/20" },
-  { brand: "Toyota", pattern: /toyota/i, label: "Toyota Parts", url: (q) => `https://www.toyotaparts.co.uk/search?q=${encodeURIComponent(q)}`, bg: "#EB0A1E", bgHover: "#cc0919", text: "white", border: "border-red-500/30 hover:border-red-400/60", badgeBg: "bg-red-500/20", badgeText: "text-red-400", badgeBorder: "border-red-500/30", gradient: "from-[#EB0A1E] to-[#9B0714]", shadow: "shadow-red-500/20" },
-  { brand: "Volkswagen", pattern: /volkswagen|vw/i, label: "VW Parts", url: (q) => `https://www.vwparts.co.uk/search?q=${encodeURIComponent(q)}`, bg: "#001E50", bgHover: "#001540", text: "white", border: "border-blue-500/30 hover:border-blue-400/60", badgeBg: "bg-blue-500/20", badgeText: "text-blue-400", badgeBorder: "border-blue-500/30", gradient: "from-[#001E50] to-[#00122F]", shadow: "shadow-blue-500/20" },
+const oemBrands: { brand: string; pattern: RegExp; label: string; url: (q: string) => string; gradient: string }[] = [
+  { brand: "BMW", pattern: /bmw/i, label: "BMW OEM Catalog", url: (q) => `https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(q)}`, gradient: "from-[#1C69D4] to-[#0A3D91]" },
+  { brand: "Mercedes", pattern: /mercedes|merc|benz/i, label: "Mercedes Parts", url: (q) => `https://www.mercedes-benz-parts.com/search?q=${encodeURIComponent(q)}`, gradient: "from-[#1A1A1A] to-[#333]" },
+  { brand: "Audi", pattern: /audi/i, label: "Audi Parts", url: (q) => `https://www.audi-shopping.com/search?q=${encodeURIComponent(q)}`, gradient: "from-[#1A1A1A] to-[#444]" },
+  { brand: "Ford", pattern: /ford/i, label: "Ford Parts", url: (q) => `https://www.fordparts.com/search?q=${encodeURIComponent(q)}`, gradient: "from-[#003478] to-[#001f4d]" },
+  { brand: "Vauxhall", pattern: /vauxhall|opel/i, label: "Vauxhall Parts", url: (q) => `https://www.vauxhall.co.uk/services/parts/search?q=${encodeURIComponent(q)}`, gradient: "from-[#C4122F] to-[#8B0D22]" },
+  { brand: "Toyota", pattern: /toyota/i, label: "Toyota Parts", url: (q) => `https://www.toyotaparts.co.uk/search?q=${encodeURIComponent(q)}`, gradient: "from-[#EB0A1E] to-[#9B0714]" },
+  { brand: "Volkswagen", pattern: /volkswagen|vw/i, label: "VW Parts", url: (q) => `https://www.vwparts.co.uk/search?q=${encodeURIComponent(q)}`, gradient: "from-[#001E50] to-[#00122F]" },
 ];
 
 const getOemSearchQuery = (query: string, pattern: RegExp) => query.replace(pattern, "").replace(/\s+/g, " ").trim() || query;
@@ -72,6 +65,8 @@ const getOemSearchQuery = (query: string, pattern: RegExp) => query.replace(patt
 const countryFlags: Record<string, string> = {
   GB: "🇬🇧", US: "🇺🇸", DE: "🇩🇪", CN: "🇨🇳", IT: "🇮🇹", FR: "🇫🇷", ES: "🇪🇸", PL: "🇵🇱", NL: "🇳🇱", JP: "🇯🇵", AU: "🇦🇺",
 };
+
+const ITEMS_PER_PAGE = 12;
 
 interface VehicleInfo {
   make: string;
@@ -105,15 +100,15 @@ const SearchResults = () => {
   const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
-  const [amazonPanelOpen, setAmazonPanelOpen] = useState(false);
-  const [amazonLoading, setAmazonLoading] = useState(false);
   const [ebayFallback, setEbayFallback] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     if (urlQuery !== activeQuery) {
       setQuery(urlQuery);
       setActiveQuery(urlQuery);
       setSelectedCategory(null);
+      setCurrentPage(1);
     }
 
     if (urlQuery) {
@@ -142,8 +137,9 @@ const SearchResults = () => {
       setLiveLoading(true);
       setEbayFallback(false);
       try {
+        const offset = (currentPage - 1) * ITEMS_PER_PAGE;
         const { data, error } = await supabase.functions.invoke("search-parts", {
-          body: { query: activeQuery, category: selectedCategory || undefined },
+          body: { query: activeQuery, category: selectedCategory || undefined, offset },
         });
         if (error) throw error;
         if (!cancelled) {
@@ -165,7 +161,7 @@ const SearchResults = () => {
     };
     fetchLive();
     return () => { cancelled = true; };
-  }, [activeQuery, selectedCategory]);
+  }, [activeQuery, selectedCategory, currentPage]);
 
   useEffect(() => {
     if (!user) return;
@@ -191,6 +187,7 @@ const SearchResults = () => {
     setQuery(nextQuery);
     setActiveQuery(nextQuery);
     setSelectedCategory(null);
+    setCurrentPage(1);
     setSearchMode("text");
     setSearchParams({
       q: nextQuery,
@@ -214,6 +211,7 @@ const SearchResults = () => {
     const q = query.trim();
     setActiveQuery(q);
     setSelectedCategory(null);
+    setCurrentPage(1);
     setSearchParams({ q });
     if (user) {
       supabase.from("search_history").insert({ user_id: user.id, query: q }).then(({ error }) => {
@@ -225,6 +223,7 @@ const SearchResults = () => {
 
   const handleCategorySelect = (cat: string) => {
     setSelectedCategory(selectedCategory === cat ? null : cat);
+    setCurrentPage(1);
   };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -252,6 +251,7 @@ const SearchResults = () => {
       toast({ title: `Identified: ${partName}`, description: "Searching now..." });
       setQuery(partName);
       setActiveQuery(partName);
+      setCurrentPage(1);
       setSearchParams({ q: partName });
     } catch (err: any) {
       toast({ title: "Identification failed", description: err.message || "Try again.", variant: "destructive" });
@@ -292,6 +292,34 @@ const SearchResults = () => {
       setSavingId(null);
     }
   };
+
+  const totalPages = Math.ceil(totalResults / ITEMS_PER_PAGE);
+  const startItem = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+  const endItem = Math.min(currentPage * ITEMS_PER_PAGE, totalResults);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const getPageNumbers = () => {
+    const pages: (number | "...")[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currentPage > 3) pages.push("...");
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (currentPage < totalPages - 2) pages.push("...");
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
+  // Build combined supplier list (includes OEM brands + Amazon already in suppliers)
+  const matchedOemBrands = activeQuery ? oemBrands.filter((b) => b.pattern.test(activeQuery)) : [];
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -415,146 +443,11 @@ const SearchResults = () => {
               </h1>
               <p className="text-primary font-display text-xl sm:text-2xl font-semibold">"{activeQuery}"</p>
               {totalResults > 0 && !liveLoading && (
-                <p className="text-sm text-muted-foreground mt-2">{liveResults.length} of {totalResults} eBay listings shown</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Showing {startItem.toLocaleString()}-{endItem.toLocaleString()} of {totalResults.toLocaleString()} eBay listings
+                </p>
               )}
             </div>
-            {/* OEM Brand Catalog Cards */}
-            {activeQuery && oemBrands.filter((b) => b.pattern.test(activeQuery)).map((b) => {
-              const oemQuery = getOemSearchQuery(activeQuery, b.pattern);
-              return (
-                <div key={b.brand} className="mb-8">
-                  <a
-                    href={b.url(oemQuery)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`group block w-full text-left glass rounded-2xl overflow-hidden border-2 ${b.border} transition-all hover:shadow-lg`}
-                  >
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-4 sm:p-5">
-                      <div className="shrink-0 rounded-xl px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-center shadow-lg" style={{ backgroundColor: b.bg }}>
-                        <span className="text-base sm:text-xl font-bold text-white tracking-tight leading-none" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}>{b.brand}</span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <h3 className="font-display font-bold text-base sm:text-lg text-foreground">{b.label}</h3>
-                          <span className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${b.badgeBg} ${b.badgeText} ${b.badgeBorder}`}>Genuine Parts</span>
-                        </div>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
-                          Find genuine OEM parts for <span className="font-semibold text-foreground">"{activeQuery}"</span>
-                        </p>
-                      </div>
-                      <div className="shrink-0 rounded-xl h-10 sm:h-11 px-4 sm:px-6 font-bold gap-2 border-0 inline-flex items-center justify-center text-xs sm:text-sm w-full sm:w-auto text-white shadow-lg" style={{ backgroundColor: b.bg }}>
-                        <ExternalLink size={14} />
-                        View OEM Parts
-                      </div>
-                    </div>
-                  </a>
-                </div>
-              );
-            })}
-
-            {/* Amazon UK Premium Card */}
-            {activeQuery && (
-              <div className="mb-8">
-                <button
-                  onClick={() => {
-                    setAmazonPanelOpen(true);
-                    setAmazonLoading(true);
-                    setTimeout(() => setAmazonLoading(false), 2000);
-                  }}
-                  className="group w-full text-left glass rounded-2xl overflow-hidden border-2 border-orange-500/30 hover:border-orange-400/60 transition-all hover:shadow-lg hover:shadow-orange-500/10"
-                >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-4 sm:p-5 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent">
-                    <div className="shrink-0 bg-[#FF9900] rounded-xl px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-center shadow-lg shadow-orange-500/20">
-                      <span className="text-base sm:text-xl font-bold text-white tracking-tight leading-none" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}>amazon.com</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <h3 className="font-display font-bold text-base sm:text-lg text-foreground">Amazon UK</h3>
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 font-semibold border border-orange-500/30">🇬🇧 Prime</span>
-                      </div>
-                      <p className="text-xs sm:text-sm text-muted-foreground">
-                        Search <span className="font-semibold text-foreground">"{activeQuery}"</span> on Amazon UK
-                      </p>
-                    </div>
-                    <div className="shrink-0 rounded-xl h-10 sm:h-11 px-4 sm:px-6 bg-[#FF9900] hover:bg-[#e88b00] text-[#232F3E] font-bold gap-2 shadow-lg shadow-orange-500/20 border-0 inline-flex items-center justify-center text-xs sm:text-sm w-full sm:w-auto">
-                      <Search size={14} />
-                      Search on Amazon
-                    </div>
-                  </div>
-                </button>
-              </div>
-            )}
-
-            <Sheet open={amazonPanelOpen} onOpenChange={setAmazonPanelOpen}>
-              <SheetContent side="right" className="w-full sm:max-w-md border-l border-orange-500/20 bg-background p-0">
-                <div className="flex flex-col h-full">
-                  <SheetHeader className="p-6 pb-4 border-b border-orange-500/20 bg-gradient-to-r from-orange-500/10 to-transparent">
-                    <div className="flex items-center gap-3">
-                      <div className="bg-[#FF9900] rounded-xl px-3 py-2 shadow-lg shadow-orange-500/20 flex items-center justify-center">
-                        <span className="text-base font-bold text-white tracking-tight leading-none" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}>amazon.com</span>
-                      </div>
-                      <SheetTitle className="text-foreground font-display text-xl">Amazon UK Results</SheetTitle>
-                    </div>
-                  </SheetHeader>
-
-                  <div className="flex-1 flex flex-col items-center justify-center p-8 gap-6">
-                    {amazonLoading ? (
-                      <>
-                        <div className="relative">
-                          <div className="w-16 h-16 rounded-full border-4 border-orange-500/20 border-t-[#FF9900] animate-spin" />
-                        </div>
-                        <div className="text-center space-y-2">
-                          <p className="text-lg font-semibold text-foreground">Searching Amazon...</p>
-                          <p className="text-sm text-muted-foreground">
-                            Finding <span className="font-semibold text-orange-400">"{activeQuery}"</span> on Amazon UK
-                          </p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="bg-[#FF9900]/10 rounded-2xl p-6 w-full border border-orange-500/20">
-                          <div className="flex items-center gap-3 mb-4">
-                            <div className="bg-[#FF9900] rounded-lg p-2 shadow-md shadow-orange-500/20">
-                              <Search size={18} className="text-[#232F3E]" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-muted-foreground">Searching for</p>
-                              <p className="font-bold text-foreground text-lg">{activeQuery}</p>
-                            </div>
-                          </div>
-                          <div className="space-y-2 text-sm text-muted-foreground mb-5">
-                            <div className="flex items-center gap-2">
-                              <Zap size={14} className="text-orange-400" />
-                              <span>Prime delivery available</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Shield size={14} className="text-orange-400" />
-                              <span>Amazon buyer protection</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Star size={14} className="text-orange-400" />
-                              <span>Verified seller ratings</span>
-                            </div>
-                          </div>
-                          <a
-                            href={`https://www.amazon.co.uk/s?k=${encodeURIComponent(activeQuery)}&tag=gopartara-21`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 w-full rounded-xl h-12 bg-[#FF9900] hover:bg-[#e88b00] text-[#232F3E] font-bold text-base shadow-lg shadow-orange-500/20 transition-colors"
-                          >
-                            <ExternalLink size={16} />
-                            View Results on Amazon
-                          </a>
-                        </div>
-                        <p className="text-xs text-muted-foreground text-center">
-                          You'll be redirected to Amazon.co.uk to view live results
-                        </p>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
 
             {liveLoading ? (
               <div className="flex flex-col items-center justify-center gap-3 py-16 mb-8">
@@ -566,15 +459,10 @@ const SearchResults = () => {
               <div className="mb-10">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                   {(() => {
-                    // Compute average price for price indicator
                     const prices = liveResults.map((r: any) => r.price).filter((p: number) => p > 0);
                     const avgPrice = prices.length > 0 ? prices.reduce((a: number, b: number) => a + b, 0) / prices.length : 0;
 
-                    const getFlag = (code: string) => {
-                      const flag = countryFlags[code];
-                      if (!flag) return "🌍";
-                      return flag;
-                    };
+                    const getFlag = (code: string) => countryFlags[code] || "🌍";
 
                     const getPriceBadge = (price: number) => {
                       if (avgPrice === 0) return null;
@@ -627,7 +515,6 @@ const SearchResults = () => {
                               <div className="flex items-baseline gap-2">
                                 <span className="text-2xl font-bold text-primary">£{item.price.toFixed(2)}</span>
                               </div>
-                              {/* Stock info */}
                               {item.quantityAvailable != null && item.quantityAvailable > 0 && item.quantityAvailable <= 5 && (
                                 <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-400">
                                   <AlertCircle size={11} /> Only {item.quantityAvailable} left
@@ -711,6 +598,43 @@ const SearchResults = () => {
                     });
                   })()}
                 </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-1 mt-8">
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-secondary hover:bg-secondary/80 text-foreground"
+                    >
+                      <ChevronLeft size={14} /> Previous
+                    </button>
+                    {getPageNumbers().map((page, i) =>
+                      page === "..." ? (
+                        <span key={`ellipsis-${i}`} className="px-2 py-2 text-sm text-muted-foreground">...</span>
+                      ) : (
+                        <button
+                          key={page}
+                          onClick={() => handlePageChange(page as number)}
+                          className={`min-w-[36px] h-9 rounded-lg text-sm font-medium transition-colors ${
+                            currentPage === page
+                              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                              : "bg-secondary hover:bg-secondary/80 text-foreground"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      )
+                    )}
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-secondary hover:bg-secondary/80 text-foreground"
+                    >
+                      Next <ChevronRight size={14} />
+                    </button>
+                  </div>
+                )}
               </div>
             ) : !liveLoading ? (
               <div className="flex flex-col items-center justify-center py-12 mb-8">
@@ -744,68 +668,62 @@ const SearchResults = () => {
                 )}
               </div>
             ) : null}
-            <div className="mb-4">
+
+            {/* Supplier Row */}
+            <div className="mb-4 mt-2">
               <div className="flex items-center gap-2 mb-4">
                 <ExternalLink size={18} className="text-muted-foreground" />
                 <h2 className="font-display text-lg font-bold">Search More Suppliers</h2>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-              {suppliers.map((supplier) => (
-                <div key={supplier.name} className="group relative glass rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.02]">
-                  <a href={supplier.buildUrl(activeQuery)} target="_blank" rel="noopener noreferrer">
-                    <div className={`h-14 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center relative`}>
-                      <span className="text-white font-display font-bold text-sm tracking-wide opacity-90 group-hover:opacity-100 transition-opacity text-center px-2">
+            <ScrollArea className="w-full pb-4">
+              <div className="flex gap-3 pb-2">
+                {suppliers.map((supplier) => (
+                  <a
+                    key={supplier.name}
+                    href={supplier.buildUrl(activeQuery)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 w-[140px] group glass rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.02] flex flex-col"
+                  >
+                    <div className={`h-16 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center px-2`}>
+                      <span className="text-white font-display font-bold text-xs tracking-wide text-center leading-tight">
                         {supplier.flag} {supplier.name}
                       </span>
-                      <TooltipProvider delayDuration={200}>
-                        <Tooltip>
-                          <TooltipTrigger asChild onClick={(e) => e.preventDefault()}>
-                            <span className={`absolute bottom-1 right-1 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${tierConfig[supplier.tier].colors}`}>
-                              <Shield size={8} />
-                              {tierConfig[supplier.tier].label}
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-[220px] text-xs">{tierConfig[supplier.tier].tooltip}</TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                    </div>
+                    <div className="p-2">
+                      <span className="flex items-center justify-center gap-1 w-full rounded-lg text-xs h-7 bg-primary text-primary-foreground font-medium">
+                        <ExternalLink size={11} /> Search
+                      </span>
                     </div>
                   </a>
-                  <div className="p-2">
-                    <Button size="sm" className="w-full rounded-lg gap-1 text-xs h-7" asChild>
-                      <a href={supplier.buildUrl(activeQuery)} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink size={11} /> Search
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              ))}
-              {oemBrands.filter((b) => b.pattern.test(activeQuery)).map((b) => {
-                const oemQuery = getOemSearchQuery(activeQuery, b.pattern);
-                return (
-                  <div key={b.brand} className="group relative glass rounded-xl overflow-hidden transition-all hover:scale-[1.02]">
-                    <a href={b.url(oemQuery)} target="_blank" rel="noopener noreferrer">
-                      <div className={`h-14 bg-gradient-to-br ${b.gradient} flex items-center justify-center relative`}>
-                        <span className="text-white font-display font-bold text-sm tracking-wide opacity-90 group-hover:opacity-100 transition-opacity text-center px-2">
+                ))}
+                {matchedOemBrands.map((b) => {
+                  const oemQuery = getOemSearchQuery(activeQuery, b.pattern);
+                  return (
+                    <a
+                      key={b.brand}
+                      href={b.url(oemQuery)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0 w-[140px] group glass rounded-xl overflow-hidden transition-all hover:scale-[1.02] flex flex-col"
+                    >
+                      <div className={`h-16 bg-gradient-to-br ${b.gradient} flex items-center justify-center px-2`}>
+                        <span className="text-white font-display font-bold text-xs tracking-wide text-center leading-tight">
                           {b.brand} OEM
                         </span>
-                        <span className={`absolute bottom-1 right-1 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${b.badgeBg} ${b.badgeText} ${b.badgeBorder}`}>
-                          <Shield size={8} />
-                          OEM
+                      </div>
+                      <div className="p-2">
+                        <span className="flex items-center justify-center gap-1 w-full rounded-lg text-xs h-7 bg-primary text-primary-foreground font-medium">
+                          <ExternalLink size={11} /> Search
                         </span>
                       </div>
                     </a>
-                    <div className="p-2">
-                      <Button size="sm" className="w-full rounded-lg gap-1 text-xs h-7 text-white" style={{ backgroundColor: b.bg }} asChild>
-                        <a href={b.url(oemQuery)} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink size={11} /> Search
-                        </a>
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
           </>
         ) : (
           <div className="flex flex-col items-center justify-center py-24 text-center">
