@@ -57,6 +57,18 @@ const PART_CATEGORIES = [
   { label: "Interior", icon: "🪑" },
 ];
 
+const oemBrands: { brand: string; pattern: RegExp; label: string; url: (q: string) => string; bg: string; bgHover: string; text: string; border: string; badgeBg: string; badgeText: string; badgeBorder: string; gradient: string; shadow: string }[] = [
+  { brand: "BMW", pattern: /bmw/i, label: "BMW OEM Catalog", url: (q) => `https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(q)}`, bg: "#1C69D4", bgHover: "#1559b8", text: "white", border: "border-blue-500/30 hover:border-blue-400/60", badgeBg: "bg-blue-500/20", badgeText: "text-blue-400", badgeBorder: "border-blue-500/30", gradient: "from-[#1C69D4] to-[#0A3D91]", shadow: "shadow-blue-500/20" },
+  { brand: "Mercedes", pattern: /mercedes|merc|benz/i, label: "Mercedes Parts", url: (q) => `https://www.mercedes-benz-parts.com/search?q=${encodeURIComponent(q)}`, bg: "#1A1A1A", bgHover: "#333", text: "white", border: "border-slate-500/30 hover:border-slate-400/60", badgeBg: "bg-slate-500/20", badgeText: "text-slate-300", badgeBorder: "border-slate-400/30", gradient: "from-[#1A1A1A] to-[#333]", shadow: "shadow-slate-500/20" },
+  { brand: "Audi", pattern: /audi/i, label: "Audi Parts", url: (q) => `https://www.audi-shopping.com/search?q=${encodeURIComponent(q)}`, bg: "#1A1A1A", bgHover: "#333", text: "white", border: "border-slate-500/30 hover:border-slate-400/60", badgeBg: "bg-slate-500/20", badgeText: "text-slate-300", badgeBorder: "border-slate-400/30", gradient: "from-[#1A1A1A] to-[#444]", shadow: "shadow-slate-500/20" },
+  { brand: "Ford", pattern: /ford/i, label: "Ford Parts", url: (q) => `https://www.fordparts.com/search?q=${encodeURIComponent(q)}`, bg: "#003478", bgHover: "#002a63", text: "white", border: "border-blue-500/30 hover:border-blue-400/60", badgeBg: "bg-blue-500/20", badgeText: "text-blue-400", badgeBorder: "border-blue-500/30", gradient: "from-[#003478] to-[#001f4d]", shadow: "shadow-blue-500/20" },
+  { brand: "Vauxhall", pattern: /vauxhall|opel/i, label: "Vauxhall Parts", url: (q) => `https://www.vauxhall.co.uk/services/parts/search?q=${encodeURIComponent(q)}`, bg: "#C4122F", bgHover: "#a8102a", text: "white", border: "border-red-500/30 hover:border-red-400/60", badgeBg: "bg-red-500/20", badgeText: "text-red-400", badgeBorder: "border-red-500/30", gradient: "from-[#C4122F] to-[#8B0D22]", shadow: "shadow-red-500/20" },
+  { brand: "Toyota", pattern: /toyota/i, label: "Toyota Parts", url: (q) => `https://www.toyotaparts.co.uk/search?q=${encodeURIComponent(q)}`, bg: "#EB0A1E", bgHover: "#cc0919", text: "white", border: "border-red-500/30 hover:border-red-400/60", badgeBg: "bg-red-500/20", badgeText: "text-red-400", badgeBorder: "border-red-500/30", gradient: "from-[#EB0A1E] to-[#9B0714]", shadow: "shadow-red-500/20" },
+  { brand: "Volkswagen", pattern: /volkswagen|vw/i, label: "VW Parts", url: (q) => `https://www.vwparts.co.uk/search?q=${encodeURIComponent(q)}`, bg: "#001E50", bgHover: "#001540", text: "white", border: "border-blue-500/30 hover:border-blue-400/60", badgeBg: "bg-blue-500/20", badgeText: "text-blue-400", badgeBorder: "border-blue-500/30", gradient: "from-[#001E50] to-[#00122F]", shadow: "shadow-blue-500/20" },
+];
+
+const getOemSearchQuery = (query: string, pattern: RegExp) => query.replace(pattern, "").replace(/\s+/g, " ").trim() || query;
+
 const countryFlags: Record<string, string> = {
   GB: "🇬🇧", US: "🇺🇸", DE: "🇩🇪", CN: "🇨🇳", IT: "🇮🇹", FR: "🇫🇷", ES: "🇪🇸", PL: "🇵🇱", NL: "🇳🇱", JP: "🇯🇵", AU: "🇦🇺",
 };
