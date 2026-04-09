@@ -608,38 +608,59 @@ const SearchResults = () => {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-1 mt-8">
-                    <button
-                      onClick={() => handlePageChange(currentPage - 1)}
-                      disabled={currentPage === 1}
-                      className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-secondary hover:bg-secondary/80 text-foreground"
-                    >
-                      <ChevronLeft size={14} /> Previous
-                    </button>
-                    {getPageNumbers().map((page, i) =>
-                      page === "..." ? (
-                        <span key={`ellipsis-${i}`} className="px-2 py-2 text-sm text-muted-foreground">...</span>
-                      ) : (
+                  <div className="flex flex-col items-center gap-3 mt-8">
+                    <p className="text-xs text-muted-foreground">
+                      Pages {chunkStart}-{chunkEnd} of {totalPages.toLocaleString()}
+                    </p>
+                    <div className="flex items-center gap-1 flex-wrap justify-center">
+                      {currentChunk > 0 && (
                         <button
-                          key={page}
-                          onClick={() => handlePageChange(page as number)}
-                          className={`min-w-[36px] h-9 rounded-lg text-sm font-medium transition-colors ${
-                            currentPage === page
-                              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
-                              : "bg-secondary hover:bg-secondary/80 text-foreground"
-                          }`}
+                          onClick={() => handlePageChange((currentChunk - 1) * PAGES_PER_CHUNK + 1)}
+                          className="flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium bg-secondary hover:bg-secondary/80 text-foreground transition-colors"
                         >
-                          {page}
+                          <ChevronLeft size={12} /> Prev 50
                         </button>
-                      )
-                    )}
-                    <button
-                      onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
-                      className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-secondary hover:bg-secondary/80 text-foreground"
-                    >
-                      Next <ChevronRight size={14} />
-                    </button>
+                      )}
+                      <button
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-secondary hover:bg-secondary/80 text-foreground"
+                      >
+                        <ChevronLeft size={14} /> Prev
+                      </button>
+                      {getPageNumbers().map((page, i) =>
+                        page === "..." ? (
+                          <span key={`ellipsis-${i}`} className="px-2 py-2 text-sm text-muted-foreground">...</span>
+                        ) : (
+                          <button
+                            key={page}
+                            onClick={() => handlePageChange(page as number)}
+                            className={`min-w-[36px] h-9 rounded-lg text-sm font-medium transition-colors ${
+                              currentPage === page
+                                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
+                                : "bg-secondary hover:bg-secondary/80 text-foreground"
+                            }`}
+                          >
+                            {page}
+                          </button>
+                        )
+                      )}
+                      <button
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-secondary hover:bg-secondary/80 text-foreground"
+                      >
+                        Next <ChevronRight size={14} />
+                      </button>
+                      {chunkEnd < totalPages && (
+                        <button
+                          onClick={() => handlePageChange((currentChunk + 1) * PAGES_PER_CHUNK + 1)}
+                          className="flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium bg-secondary hover:bg-secondary/80 text-foreground transition-colors"
+                        >
+                          Next 50 <ChevronRight size={12} />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
