@@ -473,19 +473,34 @@ const MyMarket = () => {
                     <h3 className="font-display font-bold text-sm line-clamp-1">{listing.title}</h3>
                     {listing.price && <span className="text-primary font-bold text-sm">£{listing.price.toFixed(2)}</span>}
                   </div>
-                  {listing.category && <Badge variant="outline" className="text-xs mb-2">{listing.category}</Badge>}
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
-                    <span className="flex items-center gap-1"><Eye size={12} /> {listing.view_count}</span>
-                    <span className="flex items-center gap-1"><Bookmark size={12} /> {listing.save_count}</span>
+                  <div className="flex items-center gap-2 mb-2">
+                    {listing.category && <Badge variant="outline" className="text-xs">{listing.category}</Badge>}
+                    <Badge
+                      variant={
+                        listing.approval_status === "approved" ? "default" :
+                        listing.approval_status === "rejected" ? "destructive" : "secondary"
+                      }
+                      className="text-xs capitalize"
+                    >
+                      {listing.approval_status}
+                    </Badge>
+                    {!listing.active && <Badge variant="secondary" className="text-xs">Paused</Badge>}
                   </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => openListingForm(listing)} className="rounded-lg flex-1 gap-1 text-xs">
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+                    <span className="flex items-center gap-1"><Eye size={12} /> {listing.view_count} views</span>
+                    <span className="flex items-center gap-1"><Bookmark size={12} /> {listing.save_count} saves</span>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    <Button size="sm" variant="outline" onClick={() => navigate(`/listing/${listing.id}`)} className="rounded-lg gap-1 text-xs">
+                      <Eye size={12} /> View
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => openListingForm(listing)} className="rounded-lg gap-1 text-xs">
                       <Pencil size={12} /> Edit
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleToggleActive(listing)} className="rounded-lg text-xs">
-                      {listing.active ? "Pause" : "Activate"}
+                    <Button size="sm" variant="outline" onClick={() => handleToggleActive(listing)} className="rounded-lg gap-1 text-xs">
+                      {listing.active ? <><Pause size={12} /> Pause</> : <><Play size={12} /> Activate</>}
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleDeleteListing(listing.id)} className="rounded-lg text-xs text-destructive hover:text-destructive">
+                    <Button size="sm" variant="outline" onClick={() => setDeleteConfirmId(listing.id)} className="rounded-lg text-xs text-destructive hover:text-destructive">
                       <Trash2 size={12} />
                     </Button>
                   </div>
