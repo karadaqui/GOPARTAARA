@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Bell, Trash2, ExternalLink, Loader2 } from "lucide-react";
+import { Bell, Trash2, ExternalLink, Loader2, CheckCircle2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -9,9 +9,13 @@ interface PriceAlert {
   part_name: string;
   supplier: string | null;
   target_price: number;
+  current_price: number | null;
   email: string;
   url: string | null;
   active: boolean;
+  triggered: boolean;
+  triggered_at: string | null;
+  last_checked_at: string | null;
   created_at: string;
 }
 
@@ -27,7 +31,7 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
-    if (!error && data) setAlerts(data as PriceAlert[]);
+    if (!error && data) setAlerts(data as unknown as PriceAlert[]);
     setLoading(false);
   };
 
@@ -45,6 +49,9 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
     }
   };
 
+  const activeAlerts = alerts.filter((a) => a.active && !a.triggered);
+  const triggeredAlerts = alerts.filter((a) => a.triggered);
+
   return (
     <div className="glass rounded-2xl p-8">
       <div className="flex items-center justify-between mb-4">
@@ -52,7 +59,12 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
           <Bell size={18} className="text-primary" />
           Price Alerts
         </h2>
-        <span className="text-xs text-muted-foreground">{alerts.length} active</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">{activeAlerts.length} active</span>
+          {triggeredAlerts.length > 0 && (
+            <span className="text-xs text-emerald-400">{triggeredAlerts.length} triggered</span>
+          )}
+        </div>
       </div>
 
       {loading ? (
@@ -68,10 +80,20 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
           {alerts.map((alert) => (
             <div
               key={alert.id}
-              className="flex items-start gap-3 p-3 rounded-xl bg-secondary/30 border border-border group"
+              className={`flex items-start gap-3 p-3 rounded-xl border group ${
+                alert.triggered
+                  ? "bg-emerald-500/5 border-emerald-500/20"
+                  : "bg-secondary/30 border-border"
+              }`}
             >
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                <Bell size={14} className="text-primary" />
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                alert.triggered ? "bg-emerald-500/15" : "bg-primary/10"
+              }`}>
+                {alert.triggered ? (
+                  <CheckCircle2 size={14} className="text-emerald-400" />
+                ) : (
+                  <Bell size={14} className="text-primary" />
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">{alert.part_name}</p>
@@ -82,9 +104,30 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
                   <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-md font-medium">
                     Target: £{Number(alert.target_price).toFixed(2)}
                   </span>
-                  <span className="text-[10px]">
-                    {new Date(alert.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
-                  </span>
+                  {alert.current_price != null && (
+                    <span className={`px-2 py-0.5 rounded-md font-medium ${
+                      alert.current_price <= alert.target_price
+                        ? "bg-emerald-500/15 text-emerald-400"
+                        : "bg-secondary text-muted-foreground"
+                    }`}>
+                      Now: £{Number(alert.current_price).toFixed(2)}
+                    </span>
+                  )}
+                  {alert.triggered && alert.triggered_at && (
+                    <span className="text-emerald-400 text-[10px] flex items-center gap-0.5">
+                      <CheckCircle2 size={10} /> Triggered {new Date(alert.triggered_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                    </span>
+                  )}
+                  {!alert.triggered && alert.last_checked_at && (
+                    <span className="text-[10px] flex items-center gap-0.5">
+                      <Clock size={10} /> Checked {new Date(alert.last_checked_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                  )}
+                  {!alert.triggered && !alert.last_checked_at && (
+                    <span className="text-[10px]">
+                      Set {new Date(alert.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-1 shrink-0">
@@ -111,7 +154,7 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
       )}
 
       <p className="text-xs text-muted-foreground mt-4 text-center">
-        🔔 Automated price checking coming soon — your alerts are saved and ready!
+        🔔 Prices are checked every 6 hours. You'll receive an email when a price drops below your target.
       </p>
     </div>
   );
