@@ -153,6 +153,11 @@ const ListYourParts = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="List Your Parts | PARTARA"
+        description="Sell your car parts on PARTARA. Reach thousands of UK buyers searching for parts daily. Choose from Basic, Featured, or Pro seller plans."
+        path="/list-your-parts"
+      />
       <Navbar />
 
       <div className="container max-w-5xl py-20 px-4">
@@ -348,6 +353,7 @@ const ListYourParts = () => {
       </div>
 
       <Footer />
+      <BackToTop />
     </div>
   );
 };

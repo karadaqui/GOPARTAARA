@@ -87,6 +87,18 @@ const Marketplace = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Parts Marketplace | PARTARA"
+        description="Browse and buy car parts from verified UK sellers on the PARTARA marketplace. Compare prices, read reviews, and find the perfect part for your vehicle."
+        path="/marketplace"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": "PARTARA Parts Marketplace",
+          "url": "https://car-part-search.lovable.app/marketplace",
+          "description": "Browse and buy car parts from verified UK sellers."
+        }}
+      />
       <Navbar />
       <div className="container max-w-6xl py-20 px-4">
         <div className="text-center mb-10">
@@ -205,6 +217,7 @@ const Marketplace = () => {
         </div>
       </div>
       <Footer />
+      <BackToTop />
     </div>
   );
 };

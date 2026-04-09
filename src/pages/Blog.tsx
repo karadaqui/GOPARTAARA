@@ -44,6 +44,18 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Blog | PARTARA"
+        description="Expert advice on car parts, maintenance tips, and industry insights from the PARTARA team. Stay informed about the UK automotive parts market."
+        path="/blog"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Blog",
+          "name": "PARTARA Blog",
+          "url": "https://car-part-search.lovable.app/blog",
+          "description": "Expert advice on car parts, maintenance tips, and industry insights."
+        }}
+      />
       <Navbar />
 
       <div className="container max-w-4xl py-20 px-4">
@@ -116,6 +128,7 @@ const Blog = () => {
       </div>
 
       <Footer />
+      <BackToTop />
     </div>
   );
 };
