@@ -8,7 +8,6 @@ import {
   Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star,
   Truck, Bookmark, BookmarkCheck, MapPin, Clock,
   Heart, AlertCircle, Zap, Filter as FilterIcon, ArrowUp,
-  Eye, TrendingDown, TrendingUp, Minus, Bell, Package,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
