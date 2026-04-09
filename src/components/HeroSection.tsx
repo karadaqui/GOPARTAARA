@@ -175,7 +175,7 @@ const HeroSection = () => {
           {/* Tab content */}
           {activeTab === "part" ? (
             <>
-              <form onSubmit={handleSearch} className="flex items-center gap-2 p-2 rounded-2xl glass glow-red">
+              <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2 rounded-2xl glass glow-red">
                 <div className="flex-1 flex items-center gap-3 px-4">
                   <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
                   <Search className="text-muted-foreground shrink-0" size={20} />
@@ -188,53 +188,56 @@ const HeroSection = () => {
                     disabled={identifying}
                   />
                 </div>
-                <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handlePhotoUpload}
-                    disabled={identifying}
-                  />
-                  <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-sm text-secondary-foreground">
-                    {identifying ? (
-                      <>
-                        <Loader2 size={18} className="animate-spin" />
-                        <span className="hidden sm:inline">Identifying...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Camera size={18} />
-                        <span className="hidden sm:inline">Photo Search</span>
-                      </>
-                    )}
-                  </div>
-                </label>
-                {searchLimit.limitReached ? (
-                  <Button
-                    type="button"
-                    className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold"
-                    onClick={() => {
-                      navigate("/");
-                      setTimeout(() => {
-                        const el = document.getElementById("pricing");
-                        if (el) el.scrollIntoView({ behavior: "smooth" });
-                      }, 100);
-                    }}
-                  >
-                    <ArrowUp size={14} className="mr-1" />
-                    Upgrade to Pro
-                  </Button>
-                ) : (
-                  <Button type="submit" className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold" disabled={identifying}>
-                    Search
-                  </Button>
-                )}
+                <div className="flex items-center gap-2">
+                  <label className={`cursor-pointer shrink-0 flex-1 sm:flex-none ${identifying ? "pointer-events-none opacity-60" : ""}`}>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handlePhotoUpload}
+                      disabled={identifying}
+                    />
+                    <div className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-sm text-secondary-foreground">
+                      {identifying ? (
+                        <>
+                          <Loader2 size={18} className="animate-spin" />
+                          <span>Identifying...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Camera size={18} />
+                          <span className="sm:hidden">Photo</span>
+                          <span className="hidden sm:inline">Photo Search</span>
+                        </>
+                      )}
+                    </div>
+                  </label>
+                  {searchLimit.limitReached ? (
+                    <Button
+                      type="button"
+                      className="shrink-0 flex-1 sm:flex-none rounded-xl px-6 py-3 h-auto text-sm font-semibold"
+                      onClick={() => {
+                        navigate("/");
+                        setTimeout(() => {
+                          const el = document.getElementById("pricing");
+                          if (el) el.scrollIntoView({ behavior: "smooth" });
+                        }, 100);
+                      }}
+                    >
+                      <ArrowUp size={14} className="mr-1" />
+                      Upgrade
+                    </Button>
+                  ) : (
+                    <Button type="submit" className="shrink-0 flex-1 sm:flex-none rounded-xl px-6 py-3 h-auto text-sm font-semibold" disabled={identifying}>
+                      Search
+                    </Button>
+                  )}
+                </div>
               </form>
-              <div className="flex items-center justify-between mt-3">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-3 gap-2">
                 <p className="text-xs text-muted-foreground">
-                  📸 Upload a photo of any car part — our advanced system will identify it and find the best prices
+                  📸 Upload a photo of any car part — our system will identify it and find the best prices
                 </p>
                 <SearchCounter limitData={searchLimit} />
               </div>
