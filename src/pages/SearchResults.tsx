@@ -8,8 +8,8 @@ import {
   Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star,
   Truck, Bookmark, BookmarkCheck, MapPin, Clock,
   Heart, AlertCircle, Zap, Filter as FilterIcon, ArrowUp,
-  ChevronLeft, ChevronRight, Pencil, Calendar, Palette, Fuel, Gauge,
-  ShieldCheck, Receipt, Check,
+  ChevronLeft, ChevronRight, ChevronDown, Pencil, Calendar, Palette, Fuel, Gauge,
+  ShieldCheck, Receipt, Check, X as XIcon,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { useAuth } from "@/contexts/AuthContext";
@@ -24,7 +24,6 @@ import { useSearchLimit } from "@/hooks/useSearchLimit";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { X as XIcon } from "lucide-react";
 
 const googleSite = (domain: string) => (q: string) =>
   `https://www.google.com/search?q=site:${domain}+${q.replace(/\s+/g, "+")}`;
