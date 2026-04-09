@@ -293,7 +293,8 @@ const SearchResults = () => {
     }
   };
 
-  const totalPages = Math.ceil(totalResults / ITEMS_PER_PAGE);
+  const maxPages = Math.floor(10000 / ITEMS_PER_PAGE);
+  const totalPages = Math.min(Math.ceil(totalResults / ITEMS_PER_PAGE), maxPages);
   const startItem = (currentPage - 1) * ITEMS_PER_PAGE + 1;
   const endItem = Math.min(currentPage * ITEMS_PER_PAGE, totalResults);
 
