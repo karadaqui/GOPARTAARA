@@ -84,12 +84,12 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
-    // Rate limit by IP or auth header
-    const clientId = req.headers.get("Authorization")?.slice(-20) || req.headers.get("x-forwarded-for") || "anonymous";
-    const { allowed } = await checkRateLimit(clientId, "search-parts");
-    if (!allowed) return rateLimitResponse(corsHeaders);
+  // Rate limit by IP or auth header
+  const clientId = req.headers.get("Authorization")?.slice(-20) || req.headers.get("x-forwarded-for") || "anonymous";
+  const { allowed } = await checkRateLimit(clientId, "search-parts");
+  if (!allowed) return rateLimitResponse(corsHeaders);
 
-
+  try {
     const EBAY_APP_ID = Deno.env.get("EBAY_APP_ID");
     const EBAY_CERT_ID = Deno.env.get("EBAY_CERT_ID");
     if (!EBAY_APP_ID || !EBAY_CERT_ID) {
