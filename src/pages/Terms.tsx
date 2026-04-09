@@ -7,13 +7,12 @@ const Terms = () => (
     <Navbar />
     <main className="pt-24 pb-16">
       <div className="container px-4 max-w-4xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-14">
           <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <FileText size={28} />
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">Terms of Service</h1>
-          <p className="text-muted-foreground">Last updated: 7 April 2026</p>
+          <p className="text-muted-foreground">Last updated: 9 April 2026</p>
         </div>
 
         <article className="space-y-10">
@@ -32,26 +31,27 @@ const Terms = () => (
 
           <Section title="2. Service Description">
             <p>
-              PARTARA is a car parts search and comparison engine. We aggregate listings from 15+
-              trusted UK and global suppliers to help you find, compare, and purchase car parts.
+              PARTARA is a car parts search, comparison, and marketplace platform. We aggregate listings from 15+
+              trusted UK and global suppliers, and host a seller marketplace to help you find, compare, and purchase car parts.
             </p>
             <p><strong>Important:</strong></p>
             <ul className="list-disc pl-5 space-y-2 mt-2">
               <li>
-                We do <strong>not</strong> sell car parts directly. We are a search and comparison
-                platform that connects you with third-party suppliers.
+                For search results from external suppliers, we act as a <strong>comparison platform</strong> — all purchases are made directly with the supplier. We are not a party to transactions between you and external suppliers.
               </li>
               <li>
-                All purchases are made directly with the supplier. We are not a party to any
-                transaction between you and a supplier.
+                The <strong>PARTARA Marketplace</strong> connects independent sellers with buyers. Transactions for marketplace listings are between you and the seller.
               </li>
               <li>
                 We make reasonable efforts to display accurate information, but pricing, availability,
-                and product details are sourced from suppliers and may change without notice.
+                and product details are sourced from suppliers and sellers, and may change without notice.
               </li>
               <li>
                 Photo-based part identification uses advanced image recognition and is provided as a
                 convenience. Results should be verified before purchasing.
+              </li>
+              <li>
+                Vehicle registration lookups use the DVLA API to provide vehicle details for accurate part matching. This data is queried in real time and not stored.
               </li>
             </ul>
           </Section>
@@ -76,7 +76,7 @@ const Terms = () => (
           </Section>
 
           <Section title="4. Subscription Plans &amp; Payments">
-            <p>PARTARA offers the following subscription tiers:</p>
+            <p>PARTARA offers the following subscription tiers for users:</p>
             <div className="grid sm:grid-cols-3 gap-4 mt-4">
               <PlanCard
                 name="Free"
@@ -91,6 +91,7 @@ const Terms = () => (
                   "Photo-based part identification",
                   "Unlimited saved parts",
                   "Search history",
+                  "Price alerts",
                 ]}
               />
               <PlanCard
@@ -104,15 +105,51 @@ const Terms = () => (
                 ]}
               />
             </div>
-            <div className="mt-4 space-y-2">
+
+            <p className="mt-6 font-semibold text-foreground">Seller Plans</p>
+            <p className="mt-1">For sellers listing on the PARTARA Marketplace:</p>
+            <div className="grid sm:grid-cols-3 gap-4 mt-4">
+              <PlanCard
+                name="Basic Seller"
+                price="£9.99/mo"
+                features={["Up to 20 listings", "Basic analytics", "Standard visibility"]}
+              />
+              <PlanCard
+                name="Featured Seller"
+                price="£24.99/mo"
+                features={[
+                  "Up to 100 listings",
+                  "Featured placement",
+                  "Advanced analytics",
+                  "Priority moderation",
+                ]}
+              />
+              <PlanCard
+                name="Pro Seller"
+                price="£49.99/mo"
+                features={[
+                  "Unlimited listings",
+                  "Top placement",
+                  "Full analytics suite",
+                  "Priority support",
+                  "Verified seller badge",
+                ]}
+              />
+            </div>
+
+            <div className="mt-6 space-y-2">
               <p>
-                <strong>Billing:</strong> Paid subscriptions are billed monthly via Stripe. By
+                <strong>Billing:</strong> All paid subscriptions are billed monthly via Stripe. By
                 subscribing, you authorise us to charge your payment method on a recurring basis.
+                Your card details are processed and stored securely by Stripe — we never have access to your full card number or CVV.
               </p>
               <p>
-                <strong>Cancellation:</strong> You may cancel your subscription at any time. Access
+                <strong>Cancellation:</strong> You may cancel your subscription at any time through your dashboard or the Stripe Customer Portal. Access
                 to paid features continues until the end of your current billing period. No
                 partial-month refunds are given for cancellations.
+              </p>
+              <p>
+                <strong>Downgrade:</strong> When you cancel a paid plan, your account reverts to the Free tier at the end of the billing period. Saved data exceeding Free tier limits will be retained for 30 days.
               </p>
               <p>
                 <strong>Price changes:</strong> We may adjust subscription pricing with at least 30
@@ -133,13 +170,71 @@ const Terms = () => (
             </div>
           </Section>
 
-          <Section title="5. Affiliate Disclosure">
+          <Section title="5. Marketplace Rules">
+            <div className="rounded-xl border border-border bg-card p-6">
+              <p className="font-semibold text-foreground mb-3">Seller Obligations</p>
+              <p>By listing items on the PARTARA Marketplace, sellers agree to:</p>
+              <ul className="list-disc pl-5 space-y-2 mt-2">
+                <li>List only genuine automotive parts and accessories.</li>
+                <li>Provide accurate descriptions, pricing, condition details, and clear photographs.</li>
+                <li>Respond to buyer enquiries in a timely manner.</li>
+                <li>Comply with all applicable UK consumer protection and trading standards laws.</li>
+                <li>Not list counterfeit, stolen, recalled, or prohibited items.</li>
+                <li>Accept that all listings are subject to automated and manual moderation before publication.</li>
+              </ul>
+
+              <p className="font-semibold text-foreground mt-5 mb-3">Prohibited Listings</p>
+              <p>The following items may not be listed on the PARTARA Marketplace:</p>
+              <ul className="list-disc pl-5 space-y-2 mt-2">
+                <li>Counterfeit or replica parts marketed as genuine.</li>
+                <li>Stolen goods or items without proof of ownership.</li>
+                <li>Items subject to product recalls or safety bans.</li>
+                <li>Non-automotive items or services unrelated to vehicle parts.</li>
+                <li>Items that violate any applicable law or regulation.</li>
+              </ul>
+
+              <p className="font-semibold text-foreground mt-5 mb-3">Moderation</p>
+              <p>
+                All listings undergo automated moderation before publication. Listings that are flagged as suspicious are held for manual review. We reserve the right to reject or remove any listing at our sole discretion. Sellers will be notified of rejections with reasons provided.
+              </p>
+              <p className="mt-2">
+                Edits to listing content (title, description, category, or photos) trigger re-moderation. Price-only updates are published immediately.
+              </p>
+            </div>
+          </Section>
+
+          <Section title="6. User Content &amp; Reviews">
+            <p>Users may submit content including reviews, ratings, and comments. By submitting content, you:</p>
+            <ul className="list-disc pl-5 space-y-2 mt-2">
+              <li>Retain ownership of your original content.</li>
+              <li>
+                Grant PARTARA a non-exclusive, worldwide, royalty-free licence to use, display, reproduce, and distribute your content in connection with operating the platform.
+              </li>
+              <li>Confirm that your content is truthful, not defamatory, and does not infringe third-party rights.</li>
+              <li>Acknowledge that we may remove content that violates these Terms or is reported as inappropriate.</li>
+            </ul>
+            <p className="mt-3">
+              Seller listings remain the intellectual property of the seller. Upon account deletion, listing content is removed within 30 days.
+            </p>
+          </Section>
+
+          <Section title="7. Affiliate Disclosure">
             <div className="rounded-xl border border-border bg-card p-6">
               <p>
-                <strong>PARTARA may earn affiliate commissions</strong> when you click through to a
-                supplier's website and make a purchase. This means some of the links on our platform
-                are affiliate links.
+                <strong>PARTARA earns affiliate commissions</strong> when you click through to a
+                supplier's website and make a purchase. We participate in the following affiliate programmes:
               </p>
+              <ul className="list-disc pl-5 space-y-2 mt-3">
+                <li>
+                  <strong>eBay Partner Network</strong> — we earn commissions on qualifying purchases made through eBay links on our platform. eBay sets tracking cookies when you click these links.
+                </li>
+                <li>
+                  <strong>Amazon Associates Programme</strong> — as an Amazon Associate, we earn from qualifying purchases made through Amazon links. Amazon sets its own tracking cookies.
+                </li>
+                <li>
+                  <strong>Other supplier affiliates</strong> — we may participate in additional affiliate programmes with automotive parts suppliers.
+                </li>
+              </ul>
               <p className="mt-3">
                 <strong>How this affects you:</strong>
               </p>
@@ -159,12 +254,12 @@ const Terms = () => (
               </ul>
               <p className="mt-3 text-xs">
                 This disclosure is made in compliance with the UK Consumer Protection from Unfair
-                Trading Regulations 2008 and ASA CAP Code.
+                Trading Regulations 2008, ASA CAP Code, and the Amazon Associates Programme Operating Agreement.
               </p>
             </div>
           </Section>
 
-          <Section title="6. Acceptable Use">
+          <Section title="8. Acceptable Use">
             <p>You agree not to:</p>
             <ul className="list-disc pl-5 space-y-2 mt-2">
               <li>Use the service for any unlawful purpose or in violation of any applicable law.</li>
@@ -185,6 +280,9 @@ const Terms = () => (
               <li>
                 Use PARTARA to engage in price manipulation, fraudulent activity, or misrepresentation.
               </li>
+              <li>
+                Submit false reviews, fake listings, or misleading marketplace content.
+              </li>
             </ul>
             <p className="mt-3">
               Violation of these rules may result in immediate suspension or termination of your
@@ -192,7 +290,7 @@ const Terms = () => (
             </p>
           </Section>
 
-          <Section title="7. Intellectual Property">
+          <Section title="9. Intellectual Property">
             <p>
               All content, design, branding, code, and technology comprising the PARTARA platform is
               owned by or licensed to Partara Ltd and is protected by UK and international
@@ -209,7 +307,7 @@ const Terms = () => (
             </p>
           </Section>
 
-          <Section title="8. Disclaimer of Warranties">
+          <Section title="10. Disclaimer of Warranties">
             <p>
               PARTARA is provided on an <strong>"as is"</strong> and <strong>"as available"</strong>{" "}
               basis. To the fullest extent permitted by law, we disclaim all warranties, express or
@@ -224,11 +322,14 @@ const Terms = () => (
               </li>
               <li>
                 Any warranty regarding the accuracy, reliability, or completeness of information
-                provided by third-party suppliers, including pricing, availability, and product
+                provided by third-party suppliers or marketplace sellers, including pricing, availability, and product
                 specifications.
               </li>
               <li>
-                Any warranty that photo-based part identification will be accurate or complete.
+                Any warranty that photo-based part identification or DVLA vehicle lookups will be accurate or complete.
+              </li>
+              <li>
+                Any warranty regarding the accuracy of price alert notifications or the timeliness of price tracking.
               </li>
             </ul>
             <p className="mt-3">
@@ -236,7 +337,7 @@ const Terms = () => (
             </p>
           </Section>
 
-          <Section title="9. Limitation of Liability">
+          <Section title="11. Limitation of Liability">
             <div className="rounded-xl border border-border bg-card p-6">
               <p>
                 To the maximum extent permitted by applicable law, Partara Ltd, its directors,
@@ -249,15 +350,18 @@ const Terms = () => (
                 </li>
                 <li>
                   Any loss arising from your <strong>reliance on information</strong> displayed on our
-                  platform, including pricing, availability, or product details sourced from suppliers.
+                  platform, including pricing, availability, or product details sourced from suppliers or marketplace sellers.
                 </li>
                 <li>
-                  Any loss arising from <strong>transactions with third-party suppliers</strong>,
+                  Any loss arising from <strong>transactions with third-party suppliers or marketplace sellers</strong>,
                   including defective products, delivery issues, or payment disputes.
                 </li>
                 <li>
                   Any loss arising from <strong>unauthorised access</strong> to your account due to
                   your failure to maintain credential security.
+                </li>
+                <li>
+                  Any loss arising from <strong>price alert inaccuracies</strong>, missed notifications, or delayed tracking.
                 </li>
                 <li>
                   Service interruptions, downtime, or data loss caused by circumstances beyond our
@@ -281,7 +385,7 @@ const Terms = () => (
             </div>
           </Section>
 
-          <Section title="10. Indemnification">
+          <Section title="12. Indemnification">
             <p>
               You agree to indemnify and hold harmless Partara Ltd and its officers, directors,
               employees, and agents from any claims, losses, damages, liabilities, and expenses
@@ -291,10 +395,11 @@ const Terms = () => (
               <li>Your use of or conduct on the PARTARA platform.</li>
               <li>Your breach of these Terms or any applicable law.</li>
               <li>Your violation of any third party's rights.</li>
+              <li>Content you submit, including reviews, listings, and marketplace content.</li>
             </ul>
           </Section>
 
-          <Section title="11. Termination">
+          <Section title="13. Termination">
             <p>
               <strong>By you:</strong> You may delete your account at any time by contacting us at{" "}
               <a href="mailto:info@gopartara.com" className="text-primary hover:underline">
@@ -304,29 +409,29 @@ const Terms = () => (
             </p>
             <p>
               <strong>By us:</strong> We may suspend or terminate your account immediately if you
-              breach these Terms, engage in fraudulent activity, or if we are required to do so by
+              breach these Terms, engage in fraudulent activity, violate marketplace rules, or if we are required to do so by
               law. We will provide notice where reasonably practicable.
             </p>
             <p>
-              Upon termination, your right to use PARTARA ceases immediately. Provisions that by
+              Upon termination, your right to use PARTARA ceases immediately. Active marketplace listings will be removed. Provisions that by
               their nature should survive termination (including limitation of liability,
               indemnification, and governing law) shall remain in effect.
             </p>
           </Section>
 
-          <Section title="12. Third-Party Links &amp; Services">
+          <Section title="14. Third-Party Links &amp; Services">
             <p>
-              PARTARA contains links to third-party supplier websites. We are not responsible for the
+              PARTARA contains links to third-party supplier websites, including eBay and Amazon. We are not responsible for the
               content, accuracy, privacy practices, or policies of these external sites. Your use of
               third-party websites is governed by their own terms and conditions.
             </p>
             <p>
               We do not endorse, warrant, or guarantee any products or services offered by third-party
-              suppliers displayed on our platform.
+              suppliers or marketplace sellers displayed on our platform.
             </p>
           </Section>
 
-          <Section title="13. Governing Law &amp; Jurisdiction">
+          <Section title="15. Governing Law &amp; Jurisdiction">
             <div className="rounded-xl border border-border bg-card p-6">
               <p>
                 These Terms shall be governed by and construed in accordance with the{" "}
@@ -344,7 +449,7 @@ const Terms = () => (
             </div>
           </Section>
 
-          <Section title="14. Severability">
+          <Section title="16. Severability">
             <p>
               If any provision of these Terms is found to be invalid, illegal, or unenforceable by a
               court of competent jurisdiction, that provision shall be modified to the minimum extent
@@ -353,7 +458,7 @@ const Terms = () => (
             </p>
           </Section>
 
-          <Section title="15. Changes to These Terms">
+          <Section title="17. Changes to These Terms">
             <p>
               We reserve the right to modify these Terms at any time. Material changes will be
               communicated via email or a prominent notice on our website at least 30 days before
@@ -362,7 +467,7 @@ const Terms = () => (
             </p>
           </Section>
 
-          <Section title="16. Contact Us">
+          <Section title="18. Contact Us">
             <p>If you have questions about these Terms, please contact us:</p>
             <div className="mt-4 rounded-xl border border-border bg-card p-6">
               <p className="font-semibold mb-1">Partara Ltd</p>
