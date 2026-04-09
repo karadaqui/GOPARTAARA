@@ -7,19 +7,15 @@ const Privacy = () => (
     <Navbar />
     <main className="pt-24 pb-16">
       <div className="container px-4 max-w-4xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-14">
           <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <Shield size={28} />
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">Privacy Policy</h1>
-          <p className="text-muted-foreground">
-            Last updated: 7 April 2026
-          </p>
+          <p className="text-muted-foreground">Last updated: 9 April 2026</p>
         </div>
 
         <article className="space-y-10">
-          {/* 1 */}
           <Section title="1. Who We Are">
             <p>
               PARTARA ("we", "us", "our") is a UK-based car parts search engine operated by
@@ -36,7 +32,6 @@ const Privacy = () => (
             </p>
           </Section>
 
-          {/* 2 */}
           <Section title="2. Data We Collect">
             <p>We collect the following categories of personal data:</p>
             <div className="grid sm:grid-cols-2 gap-4 mt-4">
@@ -49,12 +44,20 @@ const Privacy = () => (
                 detail="Search queries, uploaded part images, pages visited, browser type, device information, and IP address."
               />
               <DataCard
-                label="Saved Parts"
-                detail="Part names, numbers, prices, and supplier details you choose to save."
+                label="Saved Parts &amp; Price Alerts"
+                detail="Part names, numbers, prices, supplier details you save, and email addresses provided for price drop notifications."
               />
               <DataCard
                 label="Payment Data"
-                detail="Processed securely by Stripe. We never store your card number or CVV."
+                detail="Processed securely by Stripe. We never store your card number, CVV, or full payment details on our servers. Stripe may store tokenised payment methods for recurring billing."
+              />
+              <DataCard
+                label="Vehicle Data"
+                detail="Vehicle registration numbers submitted for lookup via the DVLA API. Registration data is used for real-time queries only and is not permanently stored."
+              />
+              <DataCard
+                label="Marketplace &amp; Seller Data"
+                detail="Business name, contact details, listing content, photos, and pricing submitted by sellers on the PARTARA Marketplace."
               />
               <DataCard
                 label="Contact Form Data"
@@ -62,26 +65,25 @@ const Privacy = () => (
               />
               <DataCard
                 label="Cookies &amp; Analytics"
-                detail="Essential, functional, and (with consent) analytics cookies. See Section 8."
+                detail="Essential, functional, affiliate tracking, and (with consent) analytics cookies. See Section 8."
               />
             </div>
           </Section>
 
-          {/* 3 */}
           <Section title="3. Legal Basis for Processing (UK GDPR)">
             <p>We process your personal data under the following lawful bases:</p>
             <ul className="list-disc pl-5 space-y-2 mt-3">
               <li>
                 <strong>Performance of a contract</strong> — to provide the PARTARA service you signed
-                up for, manage your account, and process subscriptions.
+                up for, manage your account, process subscriptions via Stripe, and deliver price alert notifications.
               </li>
               <li>
                 <strong>Legitimate interests</strong> — to improve and secure our service, analyse usage
-                patterns, prevent fraud, and respond to enquiries.
+                patterns via Google Analytics, prevent fraud, moderate marketplace listings, and respond to enquiries.
               </li>
               <li>
-                <strong>Consent</strong> — for optional marketing communications and analytics cookies.
-                You may withdraw consent at any time.
+                <strong>Consent</strong> — for optional marketing communications, analytics cookies, and
+                affiliate tracking cookies (eBay, Amazon). You may withdraw consent at any time.
               </li>
               <li>
                 <strong>Legal obligation</strong> — to comply with applicable UK laws, regulations, and
@@ -90,30 +92,36 @@ const Privacy = () => (
             </ul>
           </Section>
 
-          {/* 4 */}
           <Section title="4. How We Use Your Data">
             <ul className="list-disc pl-5 space-y-2">
               <li>To provide, maintain, and improve the PARTARA search engine and related features.</li>
               <li>To process your searches and deliver comparison results from our supplier network.</li>
               <li>To manage your account, saved parts, and subscription plan.</li>
               <li>To identify car parts from uploaded photos using image recognition technology.</li>
-              <li>To send transactional emails (e.g., contact confirmations, password resets).</li>
+              <li>To look up vehicle details using registration numbers via the DVLA API for accurate part matching.</li>
+              <li>To send price alert notifications when tracked parts drop below your target price.</li>
+              <li>To process subscription payments and manage billing through Stripe.</li>
+              <li>To operate the PARTARA Marketplace, including listing moderation, seller verification, and buyer notifications.</li>
+              <li>To send transactional emails (e.g., contact confirmations, password resets, listing approvals).</li>
+              <li>To track affiliate referrals through eBay Partner Network and Amazon Associates when you click through to make purchases.</li>
               <li>To communicate service updates and, with your consent, promotional content.</li>
               <li>To monitor and improve website security and performance.</li>
             </ul>
           </Section>
 
-          {/* 5 */}
           <Section title="5. Data Sharing &amp; Third Parties">
             <p>
               <strong>We do not sell your personal data.</strong> We share data only with trusted
               service providers who help us operate, and only to the extent necessary:
             </p>
             <ul className="list-disc pl-5 space-y-2 mt-3">
+              <li><strong>Payment processing</strong> — Stripe processes all payments securely. Your card details are handled entirely by Stripe and never touch our servers. Stripe is PCI DSS Level 1 certified.</li>
+              <li><strong>Vehicle data</strong> — the DVLA API is used for vehicle registration lookups. Registration numbers are sent to the DVLA for real-time queries only; we do not store this data.</li>
+              <li><strong>Analytics</strong> — Google Analytics (with consent) to understand visitor behaviour and usage patterns. We use anonymised IP addresses where possible.</li>
+              <li><strong>Affiliate networks</strong> — eBay Partner Network and Amazon Associates receive click and referral data when you follow affiliate links. These networks set their own cookies subject to their privacy policies.</li>
+              <li><strong>Email delivery</strong> — to send transactional, price alert, and service-related emails.</li>
               <li><strong>Hosting &amp; infrastructure</strong> — cloud hosting providers for data storage and processing.</li>
-              <li><strong>Payment processing</strong> — Stripe for secure payment handling.</li>
-              <li><strong>Analytics</strong> — Google Analytics (with consent) to understand usage patterns.</li>
-              <li><strong>Email delivery</strong> — to send transactional and service-related emails.</li>
+              <li><strong>AI services</strong> — for image-based part identification and automated listing moderation. No personal data is shared beyond the content being analysed.</li>
             </ul>
             <p className="mt-3">
               All third-party processors are bound by data processing agreements and are required to
@@ -121,7 +129,6 @@ const Privacy = () => (
             </p>
           </Section>
 
-          {/* 6 */}
           <Section title="6. Data Retention">
             <ul className="list-disc pl-5 space-y-2">
               <li>
@@ -130,6 +137,15 @@ const Privacy = () => (
               </li>
               <li>
                 <strong>Search history</strong> — retained for 12 months, then automatically deleted.
+              </li>
+              <li>
+                <strong>Price alerts</strong> — retained while active. Triggered or deactivated alerts are retained for 6 months for reference, then deleted.
+              </li>
+              <li>
+                <strong>Marketplace listings</strong> — seller listings and associated data are retained while the seller account is active. Removed listings are deleted within 30 days.
+              </li>
+              <li>
+                <strong>Vehicle lookup data</strong> — registration numbers are used for real-time DVLA queries only and are not permanently stored.
               </li>
               <li>
                 <strong>Contact form submissions</strong> — retained for up to 24 months for support
@@ -145,7 +161,6 @@ const Privacy = () => (
             </p>
           </Section>
 
-          {/* 7 */}
           <Section title="7. Your Rights Under UK GDPR">
             <p>You have the following rights regarding your personal data:</p>
             <div className="grid sm:grid-cols-2 gap-4 mt-4">
@@ -170,7 +185,6 @@ const Privacy = () => (
             </p>
           </Section>
 
-          {/* 8 */}
           <Section title="8. Cookies">
             <p>We use the following types of cookies:</p>
             <div className="mt-4 rounded-xl border border-border overflow-hidden">
@@ -200,20 +214,33 @@ const Privacy = () => (
                   <tr>
                     <td className="px-4 py-3 font-medium">Analytics</td>
                     <td className="px-4 py-3 text-muted-foreground">
-                      Google Analytics — helps us understand how visitors use the site to improve our service.
+                      Google Analytics (ID: G-YRZ3243HF0) — helps us understand how visitors use the site to improve our service. IP addresses are anonymised.
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">Yes</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-3 font-medium">Affiliate</td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      eBay Partner Network and Amazon Associates cookies used to track referrals when you click through to purchase parts. These cookies are set by the respective affiliate networks.
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">Yes</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-3 font-medium">Payment</td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      Stripe uses cookies for fraud prevention and secure payment processing.
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">No</td>
                   </tr>
                 </tbody>
               </table>
             </div>
             <p className="mt-4">
-              We do not use third-party advertising or tracking cookies. You can manage cookie
-              preferences through your browser settings at any time.
+              We do not use third-party advertising or behavioural targeting cookies. You can manage cookie
+              preferences through your browser settings or our cookie consent banner at any time.
             </p>
           </Section>
 
-          {/* 9 */}
           <Section title="9. International Data Transfers">
             <p>
               Some of our service providers may process data outside the United Kingdom. Where this
@@ -230,9 +257,11 @@ const Privacy = () => (
                 the ICO.
               </li>
             </ul>
+            <p className="mt-3">
+              Stripe (US), Google Analytics (US), eBay (US), and Amazon (US) all maintain appropriate data transfer mechanisms as required by UK GDPR.
+            </p>
           </Section>
 
-          {/* 10 */}
           <Section title="10. Data Security">
             <p>
               We implement appropriate technical and organisational measures to protect your personal
@@ -242,11 +271,12 @@ const Privacy = () => (
               <li>Encryption in transit (TLS/SSL) and at rest.</li>
               <li>Access controls and role-based permissions.</li>
               <li>Regular security reviews and vulnerability assessments.</li>
-              <li>Secure payment processing via PCI DSS-compliant providers.</li>
+              <li>Secure payment processing via PCI DSS-compliant Stripe.</li>
+              <li>Automated content moderation for marketplace listings.</li>
+              <li>Row-level security on database tables to ensure users can only access their own data.</li>
             </ul>
           </Section>
 
-          {/* 11 */}
           <Section title="11. Children's Privacy">
             <p>
               PARTARA is not directed at individuals under the age of 16. We do not knowingly collect
@@ -255,7 +285,6 @@ const Privacy = () => (
             </p>
           </Section>
 
-          {/* 12 */}
           <Section title="12. Changes to This Policy">
             <p>
               We may update this Privacy Policy from time to time to reflect changes in our practices
@@ -265,7 +294,6 @@ const Privacy = () => (
             </p>
           </Section>
 
-          {/* 13 */}
           <Section title="13. Contact Us">
             <p>
               If you have any questions about this Privacy Policy, wish to exercise your data rights,
