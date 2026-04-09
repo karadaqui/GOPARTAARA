@@ -11,7 +11,7 @@ const EBAY_AFFILIATE_CAMPID = "5339148333";
 const BodySchema = z.object({
   query: z.string().min(1).max(500),
   category: z.string().max(100).optional(),
-  offset: z.number().int().min(0).max(10000).optional(),
+  offset: z.number().int().min(0).optional().default(0).transform((v) => Math.min(v, 9999)),
 });
 
 // --- OAuth 2.0 token cache ---
