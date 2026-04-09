@@ -50,6 +50,17 @@ const ListYourParts = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [checkingPlan, setCheckingPlan] = useState(true);
+  const [selectedTier, setSelectedTier] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm] = useState({
+    business_name: "",
+    contact_name: "",
+    contact_email: "",
+    contact_phone: "",
+    business_address: "",
+    parts_description: "",
+  });
 
   // Redirect seller plan users directly to /my-market
   useEffect(() => {
@@ -78,17 +89,6 @@ const ListYourParts = () => {
       </div>
     );
   }
-  const [selectedTier, setSelectedTier] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({
-    business_name: "",
-    contact_name: "",
-    contact_email: "",
-    contact_phone: "",
-    business_address: "",
-    parts_description: "",
-  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
