@@ -779,7 +779,7 @@ const SearchResults = () => {
                               </div>
                               {/* Buttons */}
                               <div className="flex gap-1 sm:gap-2 pt-0.5 sm:pt-1">
-                                <Button size="sm" className="flex-1 rounded-lg sm:rounded-xl gap-1 sm:gap-1.5 text-[9px] sm:text-xs h-6 sm:h-9 px-1 sm:px-3" asChild>
+                                <Button size="sm" className="flex-1 rounded-lg sm:rounded-xl gap-1 sm:gap-1.5 text-[9px] sm:text-xs h-7 sm:h-9 px-1.5 sm:px-3" asChild>
                                   <a href={item.url} target="_blank" rel="noopener noreferrer">
                                     <ExternalLink size={10} className="sm:w-[13px] sm:h-[13px]" /> <span className="hidden sm:inline">View on eBay</span><span className="sm:hidden">View</span>
                                   </a>
@@ -787,7 +787,7 @@ const SearchResults = () => {
                                 <button
                                   onClick={() => handleSave(item)}
                                   disabled={savingId === item.id}
-                                  className="h-6 w-6 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl border border-border bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors shrink-0"
+                                  className="h-7 w-7 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl border border-border bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors shrink-0"
                                 >
                                   {savingId === item.id ? (
                                     <Loader2 size={10} className="sm:w-[14px] sm:h-[14px] animate-spin text-muted-foreground" />
@@ -797,9 +797,7 @@ const SearchResults = () => {
                                     <Bookmark size={10} className="sm:w-[14px] sm:h-[14px] text-muted-foreground" />
                                   )}
                                 </button>
-                                <div className="hidden sm:block">
-                                  <PriceAlertDialog supplierName="eBay Motors" partQuery={item.partName} supplierUrl={item.url} ebayItemId={item.id} currentPrice={item.price} />
-                                </div>
+                                <PriceAlertDialog supplierName="eBay Motors" partQuery={item.partName} supplierUrl={item.url} ebayItemId={item.id} currentPrice={item.price} />
                               </div>
                             </div>
                           </div>

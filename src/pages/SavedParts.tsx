@@ -84,7 +84,7 @@ const SavedParts = () => {
       <div className="container max-w-5xl flex-1 px-4 py-24">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="font-display text-3xl font-bold">Saved Parts</h1>
+            <h1 className="font-display text-2xl sm:text-3xl font-bold">Saved Parts</h1>
             <p className="text-sm text-muted-foreground mt-1">
               {parts.length} {parts.length === 1 ? "part" : "parts"} saved
             </p>
@@ -97,7 +97,7 @@ const SavedParts = () => {
               onClick={handleClearAll}
             >
               <Trash2 size={14} />
-              Clear All
+              <span className="hidden sm:inline">Clear All</span>
             </Button>
           )}
         </div>
@@ -119,50 +119,58 @@ const SavedParts = () => {
             {parts.map((part) => (
               <div
                 key={part.id}
-                className="glass rounded-2xl p-5 flex items-center gap-5 hover:border-primary/30 transition-colors"
+                className="glass rounded-2xl p-3 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5 hover:border-primary/30 transition-colors"
               >
-                {/* Icon */}
-                <div className="w-16 h-16 rounded-xl bg-secondary/50 flex items-center justify-center shrink-0">
-                  {part.image_url && part.image_url !== "/placeholder.svg" ? (
-                    <img
-                      src={part.image_url}
-                      alt={part.part_name}
-                      className="w-full h-full object-cover rounded-xl"
-                    />
-                  ) : (
-                    <Package size={24} className="text-muted-foreground/30" />
-                  )}
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-display font-semibold text-sm leading-snug truncate">
-                    {part.part_name}
-                  </h3>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                    {part.supplier && <span>{part.supplier}</span>}
-                    {part.part_number && <span>#{part.part_number}</span>}
+                {/* Top row on mobile: image + info */}
+                <div className="flex items-start gap-3 sm:gap-5 w-full sm:w-auto sm:flex-1 min-w-0">
+                  {/* Icon */}
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-secondary/50 flex items-center justify-center shrink-0">
+                    {part.image_url && part.image_url !== "/placeholder.svg" ? (
+                      <img
+                        src={part.image_url}
+                        alt={part.part_name}
+                        className="w-full h-full object-cover rounded-xl"
+                      />
+                    ) : (
+                      <Package size={20} className="sm:w-6 sm:h-6 text-muted-foreground/30" />
+                    )}
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-1">
-                    Saved {new Date(part.created_at).toLocaleDateString("en-GB", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </p>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-display font-semibold text-sm leading-snug line-clamp-2">
+                      {part.part_name}
+                    </h3>
+                    <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground flex-wrap">
+                      {part.supplier && <span className="truncate max-w-[120px]">{part.supplier}</span>}
+                      {part.part_number && <span>#{part.part_number}</span>}
+                    </div>
+                    {part.price != null && (
+                      <p className="font-display text-base sm:text-lg font-bold mt-1 sm:hidden">
+                        £{Number(part.price).toFixed(2)}
+                      </p>
+                    )}
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      Saved {new Date(part.created_at).toLocaleDateString("en-GB", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Price */}
+                {/* Price - desktop only */}
                 {part.price != null && (
-                  <span className="font-display text-lg font-bold shrink-0">
+                  <span className="hidden sm:block font-display text-lg font-bold shrink-0">
                     £{Number(part.price).toFixed(2)}
                   </span>
                 )}
 
                 {/* Actions */}
-                <div className="flex gap-2 shrink-0">
+                <div className="flex gap-2 sm:shrink-0">
                   {part.url && part.url !== "#" && (
-                    <Button size="sm" className="rounded-xl h-9 gap-1.5 text-xs" asChild>
+                    <Button size="sm" className="rounded-xl h-9 gap-1.5 text-xs flex-1 sm:flex-none" asChild>
                       <a href={part.url} target="_blank" rel="noopener noreferrer">
                         <ExternalLink size={13} />
                         View
@@ -172,7 +180,7 @@ const SavedParts = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="rounded-xl h-9 w-9 p-0 text-muted-foreground hover:text-destructive hover:border-destructive"
+                    className="rounded-xl h-9 w-9 p-0 text-muted-foreground hover:text-destructive hover:border-destructive shrink-0"
                     onClick={() => handleDelete(part.id)}
                     disabled={deletingId === part.id}
                   >
