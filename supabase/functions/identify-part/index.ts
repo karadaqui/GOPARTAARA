@@ -1,4 +1,5 @@
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -120,6 +121,11 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  // Rate limit
+  const clientId = req.headers.get("Authorization")?.slice(-20) || req.headers.get("x-forwarded-for") || "anonymous";
+  const { allowed } = await checkRateLimit(clientId, "identify-part");
+  if (!allowed) return rateLimitResponse(corsHeaders);
+
   try {
     const body = await req.json();
     const parsed = BodySchema.safeParse(body);
@@ -197,9 +203,8 @@ Deno.serve(async (req) => {
     );
   } catch (error) {
     console.error("Identify error:", error);
-    const msg = error instanceof Error ? error.message : "Unknown error";
     return new Response(
-      JSON.stringify({ error: msg }),
+      JSON.stringify({ error: "Failed to identify part. Please try again." }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

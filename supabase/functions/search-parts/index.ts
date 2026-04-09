@@ -3,6 +3,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limiter.ts";
 
 const EBAY_BROWSE_API_URL = "https://api.ebay.com/buy/browse/v1/item_summary/search";
 const EBAY_OAUTH_URL = "https://api.ebay.com/identity/v1/oauth2/token";
@@ -82,6 +83,11 @@ Deno.serve(async (req) => {
       status,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+
+  // Rate limit by IP or auth header
+  const clientId = req.headers.get("Authorization")?.slice(-20) || req.headers.get("x-forwarded-for") || "anonymous";
+  const { allowed } = await checkRateLimit(clientId, "search-parts");
+  if (!allowed) return rateLimitResponse(corsHeaders);
 
   try {
     const EBAY_APP_ID = Deno.env.get("EBAY_APP_ID");

@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -19,11 +20,16 @@ serve(async (req) => {
 
   try {
     const authHeader = req.headers.get("Authorization")!;
+    if (!authHeader) throw new Error("User not authenticated");
+
+    // Rate limit
+    const { allowed } = await checkRateLimit(authHeader.slice(-20), "create-checkout");
+    if (!allowed) return rateLimitResponse(corsHeaders);
+
     const token = authHeader.replace("Bearer ", "");
     const { data } = await supabaseClient.auth.getUser(token);
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated");
-
     const { priceId } = await req.json();
     if (!priceId) throw new Error("Missing priceId");
 
@@ -51,10 +57,12 @@ serve(async (req) => {
       status: 200,
     });
   } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error);
-    return new Response(JSON.stringify({ error: msg }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    console.error("[create-checkout] Error:", error);
+    const isAuthError = error instanceof Error && 
+      (error.message.includes("not authenticated") || error.message.includes("Missing priceId"));
+    return new Response(
+      JSON.stringify({ error: isAuthError ? error.message : "An error occurred processing your request." }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: isAuthError ? 401 : 500 }
+    );
   }
 });
