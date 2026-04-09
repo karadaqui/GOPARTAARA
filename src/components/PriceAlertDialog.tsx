@@ -17,9 +17,11 @@ interface PriceAlertDialogProps {
   supplierName: string;
   partQuery: string;
   supplierUrl: string;
+  ebayItemId?: string;
+  currentPrice?: number;
 }
 
-const PriceAlertDialog = ({ supplierName, partQuery, supplierUrl }: PriceAlertDialogProps) => {
+const PriceAlertDialog = ({ supplierName, partQuery, supplierUrl, ebayItemId, currentPrice }: PriceAlertDialogProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
@@ -39,7 +41,7 @@ const PriceAlertDialog = ({ supplierName, partQuery, supplierUrl }: PriceAlertDi
     setOpen(isOpen);
     if (isOpen) {
       setEmail(user?.email || "");
-      setTargetPrice("");
+      setTargetPrice(currentPrice ? (currentPrice * 0.9).toFixed(2) : "");
     }
   };
 
@@ -65,13 +67,15 @@ const PriceAlertDialog = ({ supplierName, partQuery, supplierUrl }: PriceAlertDi
       target_price: price,
       email: email.trim(),
       url: supplierUrl,
-    });
+      ebay_item_id: ebayItemId || null,
+      current_price: currentPrice || null,
+    } as any);
     setSaving(false);
 
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Alert set!", description: `We'll notify you when ${partQuery} drops below £${price.toFixed(2)} at ${supplierName}.` });
+      toast({ title: "Price alert set!", description: `We'll email you when this part drops below £${price.toFixed(2)}.` });
       setOpen(false);
     }
   };
@@ -80,11 +84,11 @@ const PriceAlertDialog = ({ supplierName, partQuery, supplierUrl }: PriceAlertDi
     <Dialog open={open} onOpenChange={handleOpen}>
       <DialogTrigger asChild>
         <button
-          className="absolute top-2 right-2 z-10 w-7 h-7 rounded-full bg-background/80 backdrop-blur-sm border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 transition-colors opacity-0 group-hover:opacity-100"
+          className="h-9 w-9 rounded-xl border border-border bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors shrink-0"
           title="Set price alert"
           onClick={(e) => e.stopPropagation()}
         >
-          <Bell size={13} />
+          <Bell size={14} className="text-muted-foreground" />
         </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -103,8 +107,14 @@ const PriceAlertDialog = ({ supplierName, partQuery, supplierUrl }: PriceAlertDi
             <label className="text-sm text-muted-foreground mb-1.5 block">Supplier</label>
             <Input value={supplierName} disabled className="bg-secondary/50 border-border rounded-xl opacity-70" />
           </div>
+          {currentPrice && (
+            <div>
+              <label className="text-sm text-muted-foreground mb-1.5 block">Current Price</label>
+              <Input value={`£${currentPrice.toFixed(2)}`} disabled className="bg-secondary/50 border-border rounded-xl opacity-70" />
+            </div>
+          )}
           <div>
-            <label className="text-sm text-muted-foreground mb-1.5 block">Target Price (£)</label>
+            <label className="text-sm text-muted-foreground mb-1.5 block">Alert me when price drops below (£)</label>
             <Input
               type="number"
               step="0.01"
@@ -129,10 +139,10 @@ const PriceAlertDialog = ({ supplierName, partQuery, supplierUrl }: PriceAlertDi
           </div>
           <Button type="submit" className="w-full rounded-xl gap-2" disabled={saving}>
             {saving ? <Loader2 size={16} className="animate-spin" /> : <Bell size={16} />}
-            Set Alert
+            Set Price Alert
           </Button>
           <p className="text-xs text-muted-foreground text-center">
-            Price checking coming soon — your alert will be saved and ready when automated checks are enabled.
+            We check eBay prices every 6 hours and email you when the price drops below your target.
           </p>
         </form>
       </DialogContent>

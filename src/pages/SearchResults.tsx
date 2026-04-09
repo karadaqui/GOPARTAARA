@@ -589,21 +589,6 @@ const SearchResults = () => {
                       const priceBadge = getPriceBadge(item.price);
                       return (
                         <div key={item.id} className="group glass rounded-2xl overflow-hidden hover:border-primary/30 transition-all flex flex-col relative">
-                          <div className="absolute top-3 right-3 z-10 flex gap-1.5">
-                            <button
-                              onClick={() => handleSave(item)}
-                              disabled={savingId === item.id}
-                              className="p-2 rounded-lg bg-background/80 backdrop-blur-sm hover:bg-background transition-colors"
-                            >
-                              {savingId === item.id ? (
-                                <Loader2 size={16} className="animate-spin text-muted-foreground" />
-                              ) : savedIds.has(item.partNumber) ? (
-                                <BookmarkCheck size={16} className="text-primary" />
-                              ) : (
-                                <Bookmark size={16} className="text-muted-foreground" />
-                              )}
-                            </button>
-                          </div>
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
                             <div className="aspect-[4/3] bg-secondary/50 overflow-hidden relative">
                               <img
@@ -717,7 +702,7 @@ const SearchResults = () => {
                                     <Bookmark size={14} className="text-muted-foreground" />
                                   )}
                                 </button>
-                                <PriceAlertDialog supplierName="eBay Motors" partQuery={item.partName} supplierUrl={item.url} />
+                                <PriceAlertDialog supplierName="eBay Motors" partQuery={item.partName} supplierUrl={item.url} ebayItemId={item.id} currentPrice={item.price} />
                               </div>
                             </div>
                           </div>
