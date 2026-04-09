@@ -18,9 +18,11 @@ let oauthToken: { token: string; expiresAt: number } | null = null;
 
 async function getOAuthToken(appId: string, certId: string): Promise<string> {
   if (oauthToken && Date.now() < oauthToken.expiresAt - 60_000) {
+    console.log("[OAuth] Using cached token");
     return oauthToken.token;
   }
 
+  console.log("[OAuth] Requesting new token...");
   const credentials = btoa(`${appId}:${certId}`);
   const response = await fetch(EBAY_OAUTH_URL, {
     method: "POST",
@@ -31,13 +33,16 @@ async function getOAuthToken(appId: string, certId: string): Promise<string> {
     body: "grant_type=client_credentials&scope=https%3A%2F%2Fapi.ebay.com%2Foauth%2Fapi_scope",
   });
 
+  const text = await response.text();
+  console.log("[OAuth] Response status:", response.status);
+
   if (!response.ok) {
-    const text = await response.text();
-    console.error("OAuth token error:", response.status, text);
-    throw new Error(`Failed to get OAuth token: ${response.status}`);
+    console.error("[OAuth] Token error body:", text);
+    throw new Error(`Failed to get OAuth token: ${response.status} - ${text}`);
   }
 
-  const data = await response.json();
+  const data = JSON.parse(text);
+  console.log("[OAuth] Token obtained, expires_in:", data.expires_in);
   oauthToken = {
     token: data.access_token,
     expiresAt: Date.now() + (data.expires_in * 1000),
@@ -66,36 +71,6 @@ function setCache(key: string, data: any) {
   cache.set(key, { data, timestamp: Date.now() });
 }
 
-// --- Fetch with retry for rate limits ---
-async function fetchWithRetry(
-  url: string,
-  headers: Record<string, string>,
-  retries = 2,
-  delayMs = 2000
-): Promise<{ response: Response | null; rateLimited: boolean }> {
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    const response = await fetch(url, { headers });
-    if (response.ok) return { response, rateLimited: false };
-
-    if (response.status === 429 && attempt < retries) {
-      console.warn(`eBay rate limited, retrying in ${delayMs}ms (attempt ${attempt + 1}/${retries})`);
-      await new Promise((r) => setTimeout(r, delayMs));
-      delayMs *= 2;
-      continue;
-    }
-
-    if (response.status === 429) {
-      console.error("eBay rate limited after all retries");
-      return { response: null, rateLimited: true };
-    }
-
-    const text = await response.text();
-    console.error("eBay Browse API error:", response.status, text);
-    return { response: null, rateLimited: false };
-  }
-  return { response: null, rateLimited: true };
-}
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -111,6 +86,7 @@ Deno.serve(async (req) => {
     const EBAY_APP_ID = Deno.env.get("EBAY_APP_ID");
     const EBAY_CERT_ID = Deno.env.get("EBAY_CERT_ID");
     if (!EBAY_APP_ID || !EBAY_CERT_ID) {
+      console.error("[search-parts] Missing credentials - APP_ID:", !!EBAY_APP_ID, "CERT_ID:", !!EBAY_CERT_ID);
       return json({ error: "eBay credentials not configured", results: [], fallback: true });
     }
 
@@ -123,10 +99,11 @@ Deno.serve(async (req) => {
     const { query, category } = parsed.data;
     const searchQuery = category ? `${query} ${category}` : query;
     const cacheKey = searchQuery.toLowerCase().trim();
+    console.log("[search-parts] Query:", searchQuery);
 
     const cached = getCached(cacheKey);
     if (cached) {
-      console.log("Cache hit for:", cacheKey);
+      console.log("[search-parts] Cache hit for:", cacheKey);
       return json(cached);
     }
 
@@ -135,99 +112,85 @@ Deno.serve(async (req) => {
     try {
       token = await getOAuthToken(EBAY_APP_ID, EBAY_CERT_ID);
     } catch (e) {
-      console.error("OAuth error:", e);
+      console.error("[search-parts] OAuth error:", e);
       return json({ error: "SERVICE_AUTH_FAILED", results: [], fallback: true });
     }
 
-    // Build Browse API URL
+    // Build Browse API URL - use category 6030 (Car Parts & Accessories)
+    // and also try without category restriction for broader results
     const params = new URLSearchParams({
       q: searchQuery,
-      category_ids: "9801",
+      category_ids: "6030",
       limit: "12",
-      sort: "BEST_MATCH",
       fieldgroups: "MATCHING_ITEMS",
     });
 
     const apiUrl = `${EBAY_BROWSE_API_URL}?${params.toString()}`;
+    console.log("[search-parts] Request URL:", apiUrl);
+
     const requestHeaders: Record<string, string> = {
       "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json",
       "X-EBAY-C-MARKETPLACE-ID": "EBAY_GB",
       "X-EBAY-C-ENDUSERCTX": `affiliateCampaignId=${EBAY_AFFILIATE_CAMPID},affiliateReferenceId=partara`,
     };
 
-    const { response, rateLimited } = await fetchWithRetry(apiUrl, requestHeaders);
+    // Direct fetch with full logging instead of fetchWithRetry
+    const apiResponse = await fetch(apiUrl, { headers: requestHeaders });
+    const responseText = await apiResponse.text();
+    console.log("[search-parts] API status:", apiResponse.status);
+    console.log("[search-parts] API response (first 500 chars):", responseText.substring(0, 500));
 
-    if (!response) {
-      const fallbackData = {
+    if (!apiResponse.ok) {
+      console.error("[search-parts] API error full response:", responseText);
+      
+      // If category 6030 fails, try without category
+      if (apiResponse.status === 400 || apiResponse.status === 404) {
+        console.log("[search-parts] Retrying without category restriction...");
+        const fallbackParams = new URLSearchParams({
+          q: searchQuery,
+          limit: "12",
+          fieldgroups: "MATCHING_ITEMS",
+          filter: "categoryIds:{6030|6028|33612|174016}",
+        });
+        const fallbackUrl = `${EBAY_BROWSE_API_URL}?${fallbackParams.toString()}`;
+        console.log("[search-parts] Fallback URL:", fallbackUrl);
+        
+        const fallbackResponse = await fetch(fallbackUrl, { headers: requestHeaders });
+        const fallbackText = await fallbackResponse.text();
+        console.log("[search-parts] Fallback status:", fallbackResponse.status);
+        console.log("[search-parts] Fallback response (first 500 chars):", fallbackText.substring(0, 500));
+        
+        if (!fallbackResponse.ok) {
+          return json({
+            results: [],
+            totalResults: 0,
+            fallback: true,
+            error: "SERVICE_UNAVAILABLE",
+            debug: { status: fallbackResponse.status, message: fallbackText.substring(0, 200) },
+          });
+        }
+        
+        const fallbackData = JSON.parse(fallbackText);
+        return processAndReturn(fallbackData, cacheKey, json);
+      }
+
+      if (apiResponse.status === 429) {
+        return json({ results: [], totalResults: 0, fallback: true, error: "SERVICE_RATE_LIMITED" });
+      }
+
+      return json({
         results: [],
         totalResults: 0,
         fallback: true,
-        error: rateLimited ? "SERVICE_RATE_LIMITED" : "SERVICE_UNAVAILABLE",
-      };
-      cache.set(cacheKey, { data: fallbackData, timestamp: Date.now() - (CACHE_TTL_MS - 2 * 60 * 1000) });
-      return json(fallbackData);
+        error: "SERVICE_UNAVAILABLE",
+        debug: { status: apiResponse.status, message: responseText.substring(0, 200) },
+      });
     }
 
-    const data = await response.json();
-    const items = data?.itemSummaries || [];
-    const totalResults = data?.total || 0;
-
-    const results = items.map((item: any, i: number) => {
-      const price = parseFloat(item.price?.value || "0");
-      const condition = item.condition || "Not specified";
-      const imageUrl = item.image?.imageUrl || item.thumbnailImages?.[0]?.imageUrl || "/placeholder.svg";
-
-      // Shipping info
-      const shippingCost = parseFloat(item.shippingOptions?.[0]?.shippingCost?.value || "0");
-      const shippingType = item.shippingOptions?.[0]?.shippingCostType || "";
-      const freeShipping = shippingCost === 0 || shippingType === "FIXED" && shippingCost === 0;
-
-      // The Browse API enriches URLs with affiliate info via X-EBAY-C-ENDUSERCTX header
-      const itemUrl = item.itemAffiliateWebUrl || item.itemWebUrl || "";
-
-      // Seller info
-      const sellerUsername = item.seller?.username || "Unknown Seller";
-      const sellerFeedbackScore = item.seller?.feedbackScore || 0;
-      const sellerPositivePercent = parseFloat(item.seller?.feedbackPercentage || "0");
-      const topRatedSeller = item.topRatedBuyingExperience === true;
-
-      const itemLocation = item.itemLocation?.city || item.itemLocation?.country || "Unknown";
-      const itemCountry = item.itemLocation?.country || "GB";
-
-      const listingType = item.buyingOptions?.includes("AUCTION") ? "Auction" : "FixedPrice";
-      const watchCount = 0; // Not available in Browse API summary
-
-      return {
-        id: item.itemId || `ebay-${i}-${Date.now()}`,
-        partName: item.title || "Unknown Part",
-        partNumber: item.itemId || `EBAY-${i}`,
-        price,
-        condition,
-        imageUrl,
-        url: itemUrl,
-        freeShipping,
-        shippingCost: freeShipping ? 0 : shippingCost,
-        shipsToUK: true, // Filtered by marketplace header
-        handlingTime: 3,
-        expedited: false,
-        sellerUsername,
-        sellerFeedbackScore,
-        sellerPositivePercent,
-        topRatedSeller,
-        itemLocation,
-        itemCountry,
-        listingType,
-        endTime: null,
-        watchCount,
-      };
-    });
-
-    const responseData = { results, totalResults };
-    setCache(cacheKey, responseData);
-    return json(responseData);
+    const data = JSON.parse(responseText);
+    return processAndReturn(data, cacheKey, json);
   } catch (error) {
-    console.error("Search error:", error);
+    console.error("[search-parts] Unhandled error:", error);
     return json({
       error: "SERVICE_FAILED",
       fallback: true,
@@ -236,3 +199,63 @@ Deno.serve(async (req) => {
     });
   }
 });
+
+function processAndReturn(
+  data: any,
+  cacheKey: string,
+  json: (data: any, status?: number) => Response
+): Response {
+  const items = data?.itemSummaries || [];
+  const totalResults = data?.total || 0;
+  console.log("[search-parts] Items found:", items.length, "Total:", totalResults);
+
+  const results = items.map((item: any, i: number) => {
+    const price = parseFloat(item.price?.value || "0");
+    const condition = item.condition || "Not specified";
+    const imageUrl = item.image?.imageUrl || item.thumbnailImages?.[0]?.imageUrl || "/placeholder.svg";
+
+    const shippingCost = parseFloat(item.shippingOptions?.[0]?.shippingCost?.value || "0");
+    const shippingType = item.shippingOptions?.[0]?.shippingCostType || "";
+    const freeShipping = shippingCost === 0 || (shippingType === "FIXED" && shippingCost === 0);
+
+    const itemUrl = item.itemAffiliateWebUrl || item.itemWebUrl || "";
+
+    const sellerUsername = item.seller?.username || "Unknown Seller";
+    const sellerFeedbackScore = item.seller?.feedbackScore || 0;
+    const sellerPositivePercent = parseFloat(item.seller?.feedbackPercentage || "0");
+    const topRatedSeller = item.topRatedBuyingExperience === true;
+
+    const itemLocation = item.itemLocation?.city || item.itemLocation?.country || "Unknown";
+    const itemCountry = item.itemLocation?.country || "GB";
+
+    const listingType = item.buyingOptions?.includes("AUCTION") ? "Auction" : "FixedPrice";
+
+    return {
+      id: item.itemId || `ebay-${i}-${Date.now()}`,
+      partName: item.title || "Unknown Part",
+      partNumber: item.itemId || `EBAY-${i}`,
+      price,
+      condition,
+      imageUrl,
+      url: itemUrl,
+      freeShipping,
+      shippingCost: freeShipping ? 0 : shippingCost,
+      shipsToUK: true,
+      handlingTime: 3,
+      expedited: false,
+      sellerUsername,
+      sellerFeedbackScore,
+      sellerPositivePercent,
+      topRatedSeller,
+      itemLocation,
+      itemCountry,
+      listingType,
+      endTime: null,
+      watchCount: 0,
+    };
+  });
+
+  const responseData = { results, totalResults };
+  setCache(cacheKey, responseData);
+  return json(responseData);
+}
