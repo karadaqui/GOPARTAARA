@@ -23,6 +23,7 @@ import MyMarket from "./pages/MyMarket.tsx";
 import Marketplace from "./pages/Marketplace.tsx";
 import ListingDetail from "./pages/ListingDetail.tsx";
 import SellerProfile from "./pages/SellerProfile.tsx";
+import Pricing from "./pages/Pricing.tsx";
 import CookieConsent from "./components/CookieConsent.tsx";
 
 const queryClient = new QueryClient();
