@@ -30,7 +30,7 @@ const SearchCounter = ({ limitData }: { limitData?: ReturnType<typeof import("@/
   }
 
   return (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-secondary text-muted-foreground border border-border">
+    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-destructive/15 text-destructive border border-destructive/30">
       <Search size={12} />
       {remaining} search{remaining !== 1 ? "es" : ""} remaining
     </span>
