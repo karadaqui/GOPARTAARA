@@ -47,7 +47,8 @@ const Auth = () => {
     } else if (isLogin) {
       // Process referral on login too (in case they signed up via OAuth with ref)
       processReferral();
-      navigate("/");
+      const redirectTo = searchParams.get("redirect") || "/";
+      navigate(redirectTo);
     } else {
       toast({
         title: "Account created",
@@ -73,15 +74,16 @@ const Auth = () => {
   const handleOAuth = async (provider: "google" | "apple") => {
     setOauthLoading(provider);
     try {
+      const redirectTo = searchParams.get("redirect") || "/";
       const result = await lovable.auth.signInWithOAuth(provider, {
-        redirect_uri: window.location.origin,
+        redirect_uri: `${window.location.origin}${redirectTo}`,
       });
       if (result.error) {
         toast({ title: "Error", description: String(result.error), variant: "destructive" });
       } else if (result.redirected) {
         return;
       } else {
-        navigate("/");
+        navigate(redirectTo);
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message || "OAuth sign in failed", variant: "destructive" });
