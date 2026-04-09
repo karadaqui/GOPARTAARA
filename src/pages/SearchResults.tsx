@@ -8,7 +8,8 @@ import {
   Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star,
   Truck, Bookmark, BookmarkCheck, MapPin, Clock,
   Heart, AlertCircle, Zap, Filter as FilterIcon, ArrowUp,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, Pencil, Calendar, Palette, Fuel, Gauge,
+  ShieldCheck, Receipt, Check,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { useAuth } from "@/contexts/AuthContext";
@@ -70,6 +71,7 @@ const ITEMS_PER_PAGE = 12;
 
 interface VehicleInfo {
   make: string;
+  model?: string | null;
   yearOfManufacture?: number | null;
   colour?: string | null;
   fuelType?: string | null;
