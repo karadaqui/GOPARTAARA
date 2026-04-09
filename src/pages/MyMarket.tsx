@@ -502,6 +502,15 @@ const MyMarket = () => {
                     </Badge>
                     {!listing.active && <Badge variant="secondary" className="text-xs">Paused</Badge>}
                   </div>
+                  {listing.approval_status === "rejected" && (
+                    <div className="bg-destructive/10 border border-destructive/30 rounded-md p-3 mb-3">
+                      <p className="text-xs text-destructive font-medium mb-1">This listing was flagged by our review system.</p>
+                      <p className="text-xs text-muted-foreground mb-2">Edit the listing to address the issue and resubmit, or contact support if you believe this was a mistake.</p>
+                      <Button size="sm" variant="outline" onClick={() => navigate("/contact")} className="text-xs h-7 rounded-md gap-1">
+                        Contact Support
+                      </Button>
+                    </div>
+                  )}
                   <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
                     <span className="flex items-center gap-1"><Eye size={12} /> {listing.view_count} views</span>
                     <span className="flex items-center gap-1"><Bookmark size={12} /> {listing.save_count} saves</span>
