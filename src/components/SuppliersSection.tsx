@@ -2,18 +2,9 @@ const suppliers = [
   "eBay UK",
   "Amazon UK",
   "Euro Car Parts",
-  "AutoDoc",
   "GSF Car Parts",
-  "CarParts4Less",
-  "Halfords",
-  "TPS (Toyota)",
-  "BMW Parts Direct",
-  "Mercedes Parts",
-  "Audi Parts",
-  "Volkswagen Parts",
-  "Ford Parts",
-  "Vauxhall Parts",
-  "Parts Gateway",
+  "Car Parts 4 Less",
+  "Autodoc",
 ];
 
 const SuppliersSection = () => (
@@ -24,7 +15,7 @@ const SuppliersSection = () => (
           Trusted Suppliers
         </span>
         <h2 className="font-display text-2xl md:text-3xl font-bold">
-          We Search Across 15+ Suppliers
+          We Search Across 6+ Suppliers
         </h2>
       </div>
       <div className="flex flex-wrap items-center justify-center gap-3 max-w-4xl mx-auto">

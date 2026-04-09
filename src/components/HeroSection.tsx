@@ -135,7 +135,7 @@ const HeroSection = () => {
         </h1>
 
         <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-12">
-          Search across 15+ trusted UK and global suppliers. Compare prices, check availability, and order — all in one place.
+          Search across 6+ trusted UK and global suppliers. Compare prices, check availability, and order — all in one place.
         </p>
 
         {/* Search section with tabs */}
@@ -269,12 +269,11 @@ const HeroSection = () => {
 
         {/* Trust badges */}
         <div className="flex flex-wrap items-center justify-center gap-6 mt-12 text-xs text-muted-foreground">
-          {["eBay UK", "Amazon UK", "Euro Car Parts", "AutoDoc", "GSF"].map((s) => (
+          {["eBay UK", "Amazon UK", "Euro Car Parts", "GSF Car Parts", "Car Parts 4 Less", "Autodoc"].map((s) => (
             <span key={s} className="px-3 py-1.5 rounded-full border border-border bg-secondary/30">
               {s}
             </span>
           ))}
-          <span className="text-primary font-medium">+10 more</span>
         </div>
       </div>
     </section>
