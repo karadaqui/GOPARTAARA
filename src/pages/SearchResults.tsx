@@ -100,6 +100,8 @@ const SearchResults = () => {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [savingId, setSavingId] = useState<string | null>(null);
   const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo | null>(null);
+  const [vehicleModelInput, setVehicleModelInput] = useState("");
+  const [vehicleModelConfirmed, setVehicleModelConfirmed] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
   const [ebayFallback, setEbayFallback] = useState(false);
@@ -186,6 +188,8 @@ const SearchResults = () => {
     const nextQuery = `${vehicle.make} ${vehicle.yearOfManufacture || ""}`.trim();
 
     setVehicleInfo(vehicle);
+    setVehicleModelInput("");
+    setVehicleModelConfirmed(!!vehicle.model);
     setQuery(nextQuery);
     setActiveQuery(nextQuery);
     setSelectedCategory(null);
