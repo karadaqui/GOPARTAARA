@@ -20,6 +20,7 @@ const moreLinks = [
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
+const ADMIN_EMAIL = "info@gopartara.com";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
