@@ -46,8 +46,9 @@ interface Listing {
 }
 
 const CATEGORIES = [
-  "Engine Parts", "Brakes", "Suspension", "Electrical", "Body Panels",
-  "Interior", "Exhaust", "Transmission", "Filters", "Lighting", "Wheels & Tyres", "Other"
+  "Engine Parts", "Body Parts", "Brakes", "Suspension", "Electrical",
+  "Filters", "Exhaust", "Interior", "Cooling", "Transmission",
+  "Body Panels", "Lighting", "Wheels & Tyres", "Other"
 ];
 
 const MyMarket = () => {
