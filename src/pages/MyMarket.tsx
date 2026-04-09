@@ -183,14 +183,15 @@ const MyMarket = () => {
         description: listing.description,
         price: listing.price?.toString() || "",
         category: listing.category || "",
-        compatible_vehicles: listing.compatible_vehicles.join(", "),
-        tags: listing.tags.join(", "),
+        compatible_vehicles: listing.compatible_vehicles,
+        compatible_vehicles_text: "",
+        tags: listing.tags,
         external_link: listing.external_link || "",
         photos: listing.photos,
       });
     } else {
       setEditingListing(null);
-      setListingForm({ title: "", description: "", price: "", category: "", compatible_vehicles: "", tags: "", external_link: "", photos: [] });
+      setListingForm({ title: "", description: "", price: "", category: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
     }
     setListingDialog(true);
   };
