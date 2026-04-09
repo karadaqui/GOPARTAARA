@@ -410,9 +410,7 @@ const Dashboard = () => {
             <Crown size={20} className="text-primary mx-auto mb-2" />
             <p className="text-xs text-muted-foreground">Plan</p>
             <p className="font-display font-bold text-lg">
-              {subStatus.subscribed
-                ? (STRIPE_TIERS[subStatus.product_id || ""]?.label || "Active")
-                : planLabel[profile?.subscription_plan || "free"]}
+              {currentPlanInfo.label}
             </p>
           </div>
           <div className="glass rounded-2xl p-6 text-center">
