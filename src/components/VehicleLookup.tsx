@@ -9,6 +9,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 
+const MODEL_EXAMPLES: Record<string, string> = {
+  VAUXHALL: "e.g. Astra, Corsa, Insignia, Mokka, Grandland",
+  BMW: "e.g. 3 Series, 5 Series, X5, 1 Series, X3",
+  MERCEDES: "e.g. C Class, E Class, A Class, GLC, S Class",
+  AUDI: "e.g. A3, A4, Q5, A6, TT",
+  FORD: "e.g. Focus, Fiesta, Kuga, Mondeo, Puma",
+  TOYOTA: "e.g. Corolla, RAV4, Yaris, C-HR, Aygo",
+  VOLKSWAGEN: "e.g. Golf, Polo, Tiguan, Passat, T-Roc",
+  HONDA: "e.g. Civic, CR-V, Jazz, HR-V",
+  NISSAN: "e.g. Qashqai, Juke, Micra, X-Trail",
+  VOLVO: "e.g. XC60, XC90, V40, S60",
+};
+const getModelPlaceholder = (make?: string) => MODEL_EXAMPLES[make?.toUpperCase() || ""] || "e.g. enter your model name";
+
 interface VehicleData {
   registrationNumber: string;
   make: string;
@@ -199,7 +213,7 @@ const VehicleLookup = ({ onLookupStart, onVehicleFound }: VehicleLookupProps) =>
                     <Input
                       value={modelInput}
                       onChange={(e) => setModelInput(e.target.value)}
-                      placeholder="e.g. Astra, Corsa, Insignia..."
+                      placeholder={getModelPlaceholder(vehicle?.make)}
                       className="bg-secondary border-border h-11 rounded-xl text-sm font-medium"
                       onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleModelConfirm(); } }}
                       autoFocus
