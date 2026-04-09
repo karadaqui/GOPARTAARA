@@ -397,6 +397,37 @@ const SearchResults = () => {
                 <p className="text-sm text-muted-foreground mt-2">{liveResults.length} of {totalResults} eBay listings shown</p>
               )}
             </div>
+            {/* BMW OEM Catalog Card */}
+            {activeQuery && /bmw/i.test(activeQuery) && (
+              <div className="mb-8">
+                <a
+                  href={`https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(activeQuery.replace(/bmw\s*/i, "").trim() || activeQuery)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group block w-full text-left glass rounded-2xl overflow-hidden border-2 border-blue-500/30 hover:border-blue-400/60 transition-all hover:shadow-lg hover:shadow-blue-500/10"
+                >
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-4 sm:p-5 bg-gradient-to-r from-blue-600/10 via-blue-500/5 to-transparent">
+                    <div className="shrink-0 bg-[#1C69D4] rounded-xl px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                      <span className="text-base sm:text-xl font-bold text-white tracking-tight leading-none" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}>BMW</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h3 className="font-display font-bold text-base sm:text-lg text-foreground">BMW OEM Catalog</h3>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-semibold border border-blue-500/30">Genuine Parts</span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        Find genuine OEM part numbers and diagrams for <span className="font-semibold text-foreground">"{activeQuery}"</span> on RealOEM
+                      </p>
+                    </div>
+                    <div className="shrink-0 rounded-xl h-10 sm:h-11 px-4 sm:px-6 bg-[#1C69D4] hover:bg-[#1559b8] text-white font-bold gap-2 shadow-lg shadow-blue-500/20 border-0 inline-flex items-center justify-center text-xs sm:text-sm w-full sm:w-auto">
+                      <ExternalLink size={14} />
+                      View OEM Parts
+                    </div>
+                  </div>
+                </a>
+              </div>
+            )}
+
             {/* Amazon UK Premium Card */}
             {activeQuery && (
               <div className="mb-8">
@@ -660,6 +691,28 @@ const SearchResults = () => {
                   </div>
                 </div>
               ))}
+              {/bmw/i.test(activeQuery) && (
+                <div className="group relative glass rounded-xl overflow-hidden hover:border-blue-500/30 transition-all hover:scale-[1.02]">
+                  <a href={`https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(activeQuery.replace(/bmw\s*/i, "").trim() || activeQuery)}`} target="_blank" rel="noopener noreferrer">
+                    <div className="h-14 bg-gradient-to-br from-[#1C69D4] to-[#0A3D91] flex items-center justify-center relative">
+                      <span className="text-white font-display font-bold text-sm tracking-wide opacity-90 group-hover:opacity-100 transition-opacity text-center px-2">
+                        🔵 BMW OEM Catalog
+                      </span>
+                      <span className="absolute bottom-1 right-1 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border bg-blue-500/20 text-blue-300 border-blue-400/30">
+                        <Shield size={8} />
+                        OEM
+                      </span>
+                    </div>
+                  </a>
+                  <div className="p-2">
+                    <Button size="sm" className="w-full rounded-lg gap-1 text-xs h-7 bg-[#1C69D4] hover:bg-[#1559b8] text-white" asChild>
+                      <a href={`https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(activeQuery.replace(/bmw\s*/i, "").trim() || activeQuery)}`} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink size={11} /> Search
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </>
         ) : (
