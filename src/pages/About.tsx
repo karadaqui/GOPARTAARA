@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import BackToTop from "@/components/BackToTop";
 import {
   Search, Camera, Car, Bookmark, Bell, Store, Star, Shield,
   Users, Clock, TrendingUp, BarChart3, ShoppingCart,
@@ -59,6 +61,18 @@ const reasons = [
 
 const About = () => (
   <div className="min-h-screen bg-background">
+    <SEOHead
+      title="About PARTARA"
+      description="Learn how PARTARA is revolutionising car part search in the UK. Compare prices across 15+ suppliers instantly with photo search and reg plate lookup."
+      path="/about"
+      jsonLd={{
+        "@context": "https://schema.org",
+        "@type": "AboutPage",
+        "name": "About PARTARA",
+        "url": "https://car-part-search.lovable.app/about",
+        "description": "Learn how PARTARA is revolutionising car part search in the UK."
+      }}
+    />
     <Navbar />
     <main className="pt-24 pb-16">
       {/* Our Story */}

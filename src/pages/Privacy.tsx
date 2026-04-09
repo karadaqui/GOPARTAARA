@@ -1,5 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import BackToTop from "@/components/BackToTop";
 import { Shield } from "lucide-react";
 
 const Privacy = () => (
