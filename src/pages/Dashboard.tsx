@@ -456,7 +456,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* AI Blog Generator */}
+        {/* Blog Generator */}
         <div className="mt-6">
           <BlogGenerateSection />
         </div>

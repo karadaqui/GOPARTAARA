@@ -259,7 +259,7 @@ const MyMarket = () => {
     } else {
       setListingDialog(false);
 
-      // Trigger AI moderation for new listings (not edits - edits go to pending for admin review)
+      // Trigger moderation for new listings (not edits - edits go to pending for admin review)
       if (!editingListing && !error) {
         // Get the newly created listing ID
         const { data: newListings } = await supabase
@@ -271,7 +271,7 @@ const MyMarket = () => {
 
         const newId = newListings?.[0]?.id;
         if (newId) {
-          toast({ title: "Listing created! Running AI review..." });
+          toast({ title: "Listing created! Running review..." });
           try {
             const { data: modResult } = await supabase.functions.invoke("moderate-listing", {
               body: { listing_id: newId },
