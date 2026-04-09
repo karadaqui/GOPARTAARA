@@ -97,9 +97,9 @@ Deno.serve(async (req) => {
       return json({ error: parsed.error.flatten().fieldErrors, results: [] }, 400);
     }
 
-    const { query, category } = parsed.data;
+    const { query, category, offset } = parsed.data;
     const searchQuery = category ? `${query} ${category}` : query;
-    const cacheKey = searchQuery.toLowerCase().trim();
+    const cacheKey = `${searchQuery.toLowerCase().trim()}:${offset || 0}`;
     console.log("[search-parts] Query:", searchQuery);
 
     const cached = getCached(cacheKey);
