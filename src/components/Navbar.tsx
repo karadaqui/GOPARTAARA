@@ -167,6 +167,15 @@ const Navbar = () => {
             {!loading && (
               user ? (
                 <div className="flex flex-col gap-2 border-t border-border pt-2 mt-1">
+                  {user.email === ADMIN_EMAIL && (
+                    <button
+                      onClick={() => { setOpen(false); navigate("/admin"); }}
+                      className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5 py-2 font-medium"
+                    >
+                      <Shield size={14} />
+                      Admin
+                    </button>
+                  )}
                   <button
                     onClick={() => { setOpen(false); navigate("/dashboard"); }}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 py-2"
