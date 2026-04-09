@@ -11,7 +11,6 @@ import {
   ChevronLeft, ChevronRight,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/contexts/AuthContext";
 import VehicleLookup from "@/components/VehicleLookup";
 import VehicleFilterButton from "@/components/VehicleFilterButton";
@@ -21,7 +20,7 @@ import PartsComparison, { type ComparePart } from "@/components/PartsComparison"
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 const googleSite = (domain: string) => (q: string) =>
@@ -101,8 +100,6 @@ const SearchResults = () => {
   const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
-  const [amazonPanelOpen, setAmazonPanelOpen] = useState(false);
-  const [amazonLoading, setAmazonLoading] = useState(false);
   const [ebayFallback, setEbayFallback] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
