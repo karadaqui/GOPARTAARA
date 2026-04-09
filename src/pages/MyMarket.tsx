@@ -259,23 +259,19 @@ const MyMarket = () => {
     } else {
       toast({ title: editingListing ? "Listing updated! Pending approval." : "Listing created! Pending approval." });
       setListingDialog(false);
-      // Send email notification for approval
-      try {
-        await supabase.functions.invoke("send-transactional-email", {
-          body: {
-            templateName: "contact-notification",
-            recipientEmail: "info@gopartara.com",
-            idempotencyKey: `listing-approval-${Date.now()}`,
-            templateData: {
-              name: profile.business_name,
-              email: profile.contact_email || "",
-              message: `New listing "${listingForm.title}" needs approval. Log in to the admin panel at /admin to review.`,
-            },
+      // Send email notification for approval (fire-and-forget, don't block UI)
+      supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "contact-notification",
+          recipientEmail: "info@gopartara.com",
+          idempotencyKey: `listing-approval-${Date.now()}`,
+          templateData: {
+            name: profile.business_name,
+            email: profile.contact_email || "",
+            message: `New listing "${listingForm.title}" needs approval. Log in to the admin panel at /admin to review.`,
           },
-        });
-      } catch (e) {
-        // Silent fail - notification is best-effort
-      }
+        },
+      }).catch(() => { /* best-effort notification */ });
       await loadData();
     }
     setSaving(false);
