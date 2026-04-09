@@ -222,14 +222,17 @@ const MyMarket = () => {
       return;
     }
     setSaving(true);
+    const extraVehicles = listingForm.compatible_vehicles_text
+      .split(",").map(s => s.trim()).filter(Boolean);
+    const allVehicles = [...listingForm.compatible_vehicles, ...extraVehicles];
     const payload = {
       seller_id: profile.id,
       title: listingForm.title,
       description: listingForm.description,
       price: listingForm.price ? parseFloat(listingForm.price) : null,
       category: listingForm.category || null,
-      compatible_vehicles: listingForm.compatible_vehicles.split(",").map(s => s.trim()).filter(Boolean),
-      tags: listingForm.tags.split(",").map(s => s.trim()).filter(Boolean),
+      compatible_vehicles: allVehicles,
+      tags: listingForm.tags,
       photos: listingForm.photos,
       external_link: listingForm.external_link || null,
     };
