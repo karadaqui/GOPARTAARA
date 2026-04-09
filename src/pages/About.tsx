@@ -1,28 +1,37 @@
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Search, Zap, Shield, Globe, CheckCircle2, Users, Clock, TrendingUp } from "lucide-react";
+import {
+  Search, Camera, Car, Bookmark, Bell, Store, Star, Shield,
+  Users, Clock, TrendingUp, BarChart3, ShoppingCart,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const steps = [
   {
     icon: Search,
-    title: "Search or Snap",
-    desc: "Type your part name, vehicle reg, or upload a photo of the part you need. Our advanced system handles the rest.",
+    title: "Search",
+    desc: "Type a part name, snap a photo, or enter your UK reg plate. We search 15+ trusted suppliers in seconds.",
   },
   {
-    icon: Zap,
-    title: "Instant Comparison",
-    desc: "We scan 15+ trusted UK and global suppliers simultaneously, pulling real-time prices and availability.",
+    icon: BarChart3,
+    title: "Compare",
+    desc: "See real-time prices, ratings, and availability side by side. Filter by price, supplier, or vehicle compatibility.",
   },
   {
-    icon: Shield,
-    title: "Choose with Confidence",
-    desc: "Compare results by price, quality rating, delivery speed, and supplier reputation — all in one view.",
+    icon: ShoppingCart,
+    title: "Save & Buy",
+    desc: "Save parts for later, set price alerts, or buy directly from your chosen supplier. No middleman, no markup.",
   },
-  {
-    icon: Globe,
-    title: "Order Direct",
-    desc: "Click through to your chosen supplier and complete your purchase. No middleman, no markup.",
-  },
+];
+
+const features = [
+  { icon: Car, title: "UK Plate Lookup", desc: "Enter your registration number to find parts specific to your exact vehicle via DVLA data." },
+  { icon: Camera, title: "Photo Search", desc: "Upload a photo of any car part and we'll identify it and search for the best prices." },
+  { icon: Store, title: "Marketplace", desc: "Browse verified UK seller listings with moderated quality checks on every part." },
+  { icon: Bell, title: "Price Alerts", desc: "Set your target price and get notified the moment a part drops to what you want to pay." },
+  { icon: Bookmark, title: "My Garage", desc: "Save your vehicles and instantly filter every search to compatible parts." },
+  { icon: Star, title: "Community Reviews", desc: "Real ratings from real buyers help you pick the best parts and suppliers." },
 ];
 
 const reasons = [
@@ -52,7 +61,7 @@ const About = () => (
   <div className="min-h-screen bg-background">
     <Navbar />
     <main className="pt-24 pb-16">
-      {/* Hero / Our Story */}
+      {/* Our Story */}
       <section className="container px-4 mb-24 max-w-4xl mx-auto text-center">
         <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary mb-4">
           Our Story
@@ -68,8 +77,9 @@ const About = () => (
         </p>
         <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
           We built PARTARA to fix that. As a UK-based team of car enthusiasts and engineers, we
-          created a single search engine that aggregates results from trusted suppliers — so you
-          can find, compare, and buy the right part in minutes, not hours.
+          created a platform that lets you search by part name, vehicle reg plate, or even a photo —
+          then compare prices across 15+ suppliers, browse a verified marketplace, set price alerts,
+          and manage your garage — all in one place.
         </p>
       </section>
 
@@ -90,9 +100,9 @@ const About = () => (
               deserves fast access to the right part at a fair price.
             </p>
             <p>
-              We're building the most comprehensive parts search engine in the UK, connecting you
-              to a growing network of 15+ trusted suppliers. Transparent pricing, real availability,
-              and zero hidden fees — that's the PARTARA promise.
+              We're building the most comprehensive parts platform in the UK, connecting buyers
+              to trusted suppliers and verified sellers. Transparent pricing, real availability,
+              community reviews, and zero hidden fees — that's the PARTARA promise.
             </p>
           </div>
         </div>
@@ -105,18 +115,18 @@ const About = () => (
             How It Works
           </span>
           <h2 className="font-display text-3xl md:text-4xl font-bold">
-            Four Steps to the Right Part
+            Three Simple Steps
           </h2>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           {steps.map((s, i) => (
             <div
               key={s.title}
               className="group relative rounded-2xl border border-border bg-card p-8 text-center transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
             >
-              <div className="absolute top-4 right-4 text-[3rem] font-black text-muted/30 leading-none select-none">
+              <span className="absolute top-4 right-4 text-[3rem] font-black text-muted/30 leading-none select-none">
                 {i + 1}
-              </div>
+              </span>
               <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                 <s.icon size={26} />
               </div>
@@ -127,7 +137,35 @@ const About = () => (
         </div>
       </section>
 
-      {/* Why choose us */}
+      {/* Why Choose Us — unique selling points */}
+      <section className="container px-4 mb-24">
+        <div className="text-center mb-12">
+          <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary mb-4">
+            What Sets Us Apart
+          </span>
+          <h2 className="font-display text-3xl md:text-4xl font-bold">
+            Features Built for Real Drivers
+          </h2>
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {features.map((f) => (
+            <div
+              key={f.title}
+              className="flex gap-4 rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-primary/20"
+            >
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <f.icon size={22} />
+              </div>
+              <div>
+                <h3 className="font-semibold mb-1">{f.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Why PARTARA */}
       <section className="container px-4 mb-16 max-w-5xl mx-auto">
         <div className="text-center mb-12">
           <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary mb-4">
@@ -164,12 +202,11 @@ const About = () => (
           <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
             Join thousands of drivers and mechanics who save time and money with PARTARA.
           </p>
-          <a
-            href="/#search"
-            className="inline-flex items-center justify-center rounded-xl bg-primary px-8 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Start Searching
-          </a>
+          <Link to="/">
+            <Button size="lg" className="rounded-xl px-8">
+              Start Searching
+            </Button>
+          </Link>
         </div>
       </section>
     </main>
