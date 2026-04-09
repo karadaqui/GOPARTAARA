@@ -57,7 +57,7 @@ const plans = [
       "UK + global suppliers",
       "Photo search",
       "Bulk ordering",
-      "API access",
+      
       "Priority support",
       "Dedicated account manager",
     ],
