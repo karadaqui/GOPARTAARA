@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -8,12 +8,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Plus, Pencil, Trash2, ImagePlus, Eye, Bookmark,
-  Loader2, Package, Store, X, Save, Upload
+  Loader2, Package, Store, X, Save, Upload, Pause, Play
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle
+} from "@/components/ui/alert-dialog";
 import VehicleSelector from "@/components/VehicleSelector";
 import CategoryTagSelector from "@/components/CategoryTagSelector";
 
@@ -40,6 +44,7 @@ interface Listing {
   photos: string[];
   external_link: string | null;
   active: boolean;
+  approval_status: string;
   view_count: number;
   save_count: number;
   created_at: string;
@@ -65,6 +70,9 @@ const MyMarket = () => {
   const [saving, setSaving] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [undoListing, setUndoListing] = useState<Listing | null>(null);
+  const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [profileForm, setProfileForm] = useState({
     business_name: "", description: "", contact_email: "", contact_phone: "", website_url: ""
@@ -240,27 +248,68 @@ const MyMarket = () => {
 
     let error;
     if (editingListing) {
-      ({ error } = await supabase.from("seller_listings").update(payload as any).eq("id", editingListing.id));
+      // Editing resets to pending for re-approval
+      ({ error } = await supabase.from("seller_listings").update({ ...payload, approval_status: "pending" } as any).eq("id", editingListing.id));
     } else {
-      ({ error } = await supabase.from("seller_listings").insert(payload as any));
+      ({ error } = await supabase.from("seller_listings").insert({ ...payload, approval_status: "pending" } as any));
     }
 
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: editingListing ? "Listing updated!" : "Listing created!" });
+      toast({ title: editingListing ? "Listing updated! Pending approval." : "Listing created! Pending approval." });
       setListingDialog(false);
+      // Send email notification for approval
+      try {
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "contact-notification",
+            recipientEmail: "info@gopartara.com",
+            idempotencyKey: `listing-approval-${Date.now()}`,
+            templateData: {
+              name: profile.business_name,
+              email: profile.contact_email || "",
+              message: `New listing "${listingForm.title}" needs approval. Log in to the admin panel at /admin to review.`,
+            },
+          },
+        });
+      } catch (e) {
+        // Silent fail - notification is best-effort
+      }
       await loadData();
     }
     setSaving(false);
   };
 
   const handleDeleteListing = async (id: string) => {
+    const listingToDelete = listings.find(l => l.id === id);
     const { error } = await supabase.from("seller_listings").delete().eq("id", id);
     if (!error) {
       setListings(l => l.filter(x => x.id !== id));
-      toast({ title: "Listing deleted" });
+      setDeleteConfirmId(null);
+
+      // Show undo toast
+      if (listingToDelete) {
+        setUndoListing(listingToDelete);
+        if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+        undoTimerRef.current = setTimeout(() => setUndoListing(null), 5000);
+      }
     }
+  };
+
+  const handleUndoDelete = async () => {
+    if (!undoListing || !profile) return;
+    if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+    const { id: _id, ...rest } = undoListing;
+    const { error } = await supabase.from("seller_listings").insert({
+      ...rest,
+      seller_id: profile.id,
+    } as any);
+    if (!error) {
+      toast({ title: "Listing restored!" });
+      await loadData();
+    }
+    setUndoListing(null);
   };
 
   const handleToggleActive = async (listing: Listing) => {
@@ -424,19 +473,34 @@ const MyMarket = () => {
                     <h3 className="font-display font-bold text-sm line-clamp-1">{listing.title}</h3>
                     {listing.price && <span className="text-primary font-bold text-sm">£{listing.price.toFixed(2)}</span>}
                   </div>
-                  {listing.category && <Badge variant="outline" className="text-xs mb-2">{listing.category}</Badge>}
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
-                    <span className="flex items-center gap-1"><Eye size={12} /> {listing.view_count}</span>
-                    <span className="flex items-center gap-1"><Bookmark size={12} /> {listing.save_count}</span>
+                  <div className="flex items-center gap-2 mb-2">
+                    {listing.category && <Badge variant="outline" className="text-xs">{listing.category}</Badge>}
+                    <Badge
+                      variant={
+                        listing.approval_status === "approved" ? "default" :
+                        listing.approval_status === "rejected" ? "destructive" : "secondary"
+                      }
+                      className="text-xs capitalize"
+                    >
+                      {listing.approval_status}
+                    </Badge>
+                    {!listing.active && <Badge variant="secondary" className="text-xs">Paused</Badge>}
                   </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => openListingForm(listing)} className="rounded-lg flex-1 gap-1 text-xs">
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
+                    <span className="flex items-center gap-1"><Eye size={12} /> {listing.view_count} views</span>
+                    <span className="flex items-center gap-1"><Bookmark size={12} /> {listing.save_count} saves</span>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    <Button size="sm" variant="outline" onClick={() => navigate(`/listing/${listing.id}`)} className="rounded-lg gap-1 text-xs">
+                      <Eye size={12} /> View
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => openListingForm(listing)} className="rounded-lg gap-1 text-xs">
                       <Pencil size={12} /> Edit
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleToggleActive(listing)} className="rounded-lg text-xs">
-                      {listing.active ? "Pause" : "Activate"}
+                    <Button size="sm" variant="outline" onClick={() => handleToggleActive(listing)} className="rounded-lg gap-1 text-xs">
+                      {listing.active ? <><Pause size={12} /> Pause</> : <><Play size={12} /> Activate</>}
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleDeleteListing(listing.id)} className="rounded-lg text-xs text-destructive hover:text-destructive">
+                    <Button size="sm" variant="outline" onClick={() => setDeleteConfirmId(listing.id)} className="rounded-lg text-xs text-destructive hover:text-destructive">
                       <Trash2 size={12} />
                     </Button>
                   </div>
@@ -556,6 +620,37 @@ const MyMarket = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
+        <AlertDialogContent className="bg-card border-border">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display">Delete Listing</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this listing? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => deleteConfirmId && handleDeleteListing(deleteConfirmId)}
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Undo delete banner */}
+      {undoListing && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 glass rounded-xl px-6 py-3 flex items-center gap-4 shadow-lg border border-border">
+          <span className="text-sm">Listing deleted</span>
+          <Button size="sm" variant="default" onClick={handleUndoDelete} className="rounded-xl">
+            Undo
+          </Button>
+        </div>
+      )}
 
       <Footer />
     </div>

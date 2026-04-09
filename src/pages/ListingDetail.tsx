@@ -4,15 +4,18 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import {
   Star, Store, ExternalLink, Bookmark, BookmarkCheck, Eye, Crown,
-  ChevronLeft, Loader2, Send
+  ChevronLeft, Loader2, Send, Bell
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle
+} from "@/components/ui/dialog";
 
 interface ListingFull {
   id: string;
@@ -64,6 +67,12 @@ const ListingDetail = () => {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [userReview, setUserReview] = useState<Review | null>(null);
 
+  // Price alert state
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertPrice, setAlertPrice] = useState("");
+  const [alertEmail, setAlertEmail] = useState("");
+  const [alertSaving, setAlertSaving] = useState(false);
+
   useEffect(() => {
     if (id) loadListing();
   }, [id]);
@@ -80,13 +89,11 @@ const ListingDetail = () => {
     if (data) {
       setListing(data as unknown as ListingFull);
 
-      // Track view
       await supabase.rpc("increment_listing_view", {
         p_listing_id: id!,
         p_viewer_id: user?.id || null,
       });
 
-      // Load reviews
       const { data: revs } = await supabase
         .from("listing_reviews")
         .select("*")
@@ -98,7 +105,6 @@ const ListingDetail = () => {
         const existing = (revs as Review[])?.find(r => r.user_id === user.id);
         if (existing) setUserReview(existing);
 
-        // Check if saved
         const { data: saveData } = await supabase
           .from("listing_saves")
           .select("id")
@@ -115,13 +121,43 @@ const ListingDetail = () => {
     if (!user) { navigate("/auth"); return; }
     if (saved) {
       await supabase.from("listing_saves").delete().eq("listing_id", id!).eq("user_id", user.id);
-      // Decrement save count
       await supabase.from("seller_listings").update({ save_count: Math.max(0, (listing?.save_count || 1) - 1) } as any).eq("id", id!);
       setSaved(false);
+      toast({ title: "Removed from saved" });
     } else {
       await supabase.from("listing_saves").insert({ listing_id: id!, user_id: user.id } as any);
       await supabase.from("seller_listings").update({ save_count: (listing?.save_count || 0) + 1 } as any).eq("id", id!);
       setSaved(true);
+      toast({ title: "Part saved!" });
+    }
+  };
+
+  const handleSetAlert = async () => {
+    if (!user) { navigate("/auth"); return; }
+    const price = parseFloat(alertPrice);
+    if (isNaN(price) || price <= 0) {
+      toast({ title: "Enter a valid target price", variant: "destructive" });
+      return;
+    }
+    if (!alertEmail.includes("@")) {
+      toast({ title: "Enter a valid email", variant: "destructive" });
+      return;
+    }
+    setAlertSaving(true);
+    const { error } = await supabase.from("price_alerts").insert({
+      user_id: user.id,
+      part_name: listing?.title || "",
+      supplier: listing?.seller_profiles?.business_name || "",
+      target_price: price,
+      email: alertEmail.trim(),
+      url: listing?.external_link || null,
+    });
+    setAlertSaving(false);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Price alert set!" });
+      setAlertOpen(false);
     }
   };
 
@@ -257,17 +293,30 @@ const ListingDetail = () => {
               </div>
             )}
 
-            <div className="flex gap-3 mb-6">
+            {/* Action buttons */}
+            <div className="flex flex-wrap gap-3 mb-6">
               {listing.external_link && (
                 <Button asChild className="rounded-xl gap-2 flex-1">
                   <a href={listing.external_link} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink size={16} /> View / Buy
+                    <ExternalLink size={16} /> Buy Now
                   </a>
                 </Button>
               )}
               <Button variant="outline" onClick={handleSave} className="rounded-xl gap-2">
                 {saved ? <BookmarkCheck size={16} className="text-primary" /> : <Bookmark size={16} />}
-                {saved ? "Saved" : "Save"}
+                {saved ? "Saved" : "Save Part"}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  if (!user) { navigate("/auth"); return; }
+                  setAlertEmail(user.email || "");
+                  setAlertPrice(listing.price ? (listing.price * 0.9).toFixed(2) : "");
+                  setAlertOpen(true);
+                }}
+                className="rounded-xl gap-2"
+              >
+                <Bell size={16} /> Set Price Alert
               </Button>
             </div>
 
@@ -302,7 +351,6 @@ const ListingDetail = () => {
         <div className="mt-12">
           <h2 className="font-display text-xl font-bold mb-6">Reviews</h2>
 
-          {/* Submit review */}
           {user && !userReview && listing.seller_profiles.user_id !== user.id && (
             <div className="glass rounded-xl p-4 mb-6">
               <h3 className="text-sm font-medium mb-3">Leave a Review</h3>
@@ -349,6 +397,51 @@ const ListingDetail = () => {
           )}
         </div>
       </div>
+
+      {/* Price Alert Dialog */}
+      <Dialog open={alertOpen} onOpenChange={setAlertOpen}>
+        <DialogContent className="sm:max-w-md bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2">
+              <Bell size={18} className="text-primary" />
+              Set Price Alert
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div>
+              <label className="text-sm text-muted-foreground mb-1.5 block">Part</label>
+              <Input value={listing?.title || ""} disabled className="bg-secondary/50 border-border rounded-xl opacity-70" />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1.5 block">Target Price (£)</label>
+              <Input
+                type="number"
+                step="0.01"
+                min="0.01"
+                value={alertPrice}
+                onChange={e => setAlertPrice(e.target.value)}
+                placeholder="e.g. 25.00"
+                className="bg-secondary border-border rounded-xl"
+              />
+            </div>
+            <div>
+              <label className="text-sm text-muted-foreground mb-1.5 block">Email for notification</label>
+              <Input
+                type="email"
+                value={alertEmail}
+                onChange={e => setAlertEmail(e.target.value)}
+                placeholder="your@email.com"
+                className="bg-secondary border-border rounded-xl"
+              />
+            </div>
+            <Button onClick={handleSetAlert} disabled={alertSaving} className="w-full rounded-xl gap-2">
+              {alertSaving ? <Loader2 size={16} className="animate-spin" /> : <Bell size={16} />}
+              Set Alert
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Footer />
     </div>
   );
