@@ -677,7 +677,13 @@ export type Database = {
       }
     }
     Enums: {
-      subscription_plan: "free" | "pro" | "business"
+      subscription_plan:
+        | "free"
+        | "pro"
+        | "business"
+        | "basic_seller"
+        | "featured_seller"
+        | "pro_seller"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -805,7 +811,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      subscription_plan: ["free", "pro", "business"],
+      subscription_plan: [
+        "free",
+        "pro",
+        "business",
+        "basic_seller",
+        "featured_seller",
+        "pro_seller",
+      ],
     },
   },
 } as const
