@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    const { listing_id, action } = await req.json();
+    const { listing_id, action, target_price } = await req.json();
     if (!listing_id || !action) {
       return new Response(JSON.stringify({ error: "Missing listing_id or action" }), {
         status: 400,
@@ -94,6 +94,31 @@ Deno.serve(async (req) => {
           });
         } catch (e) {
           console.log("[NOTIFY-SELLER] Email failed", e);
+        }
+      }
+    }
+
+    if (action === "price_alert" && target_price) {
+      await supabase.from("notifications").insert({
+        user_id: sellerUserId,
+        type: "price_alert_set",
+        title: "Price alert set on your listing 🔔",
+        message: `Someone set a price alert of £${parseFloat(target_price).toFixed(2)} on your listing "${listing.title}".`,
+        link: `/listing/${listing_id}`,
+      });
+
+      if (sellerEmail) {
+        try {
+          await supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "price-alert-seller",
+              recipientEmail: sellerEmail,
+              idempotencyKey: `price-alert-seller-${listing_id}-${userData.user.id}-${Date.now()}`,
+              templateData: { listingTitle: listing.title, targetPrice: parseFloat(target_price).toFixed(2) },
+            },
+          });
+        } catch (e) {
+          console.log("[NOTIFY-SELLER] Price alert email failed", e);
         }
       }
     }
