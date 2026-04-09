@@ -26,7 +26,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Use anon key + user's token to validate the JWT
     const userClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_ANON_KEY")!,
@@ -44,7 +43,6 @@ Deno.serve(async (req) => {
 
     log("User authenticated", { userId: userData.user.id });
 
-    // Service role client for DB operations
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -61,7 +59,6 @@ Deno.serve(async (req) => {
 
     log("Moderating listing", { listing_id });
 
-    // Fetch listing
     const { data: listing, error: listingErr } = await supabase
       .from("seller_listings")
       .select("*, seller_profiles(id, business_name, contact_email, approved, user_id)")
@@ -76,7 +73,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Verify ownership
     if (listing.seller_profiles?.user_id !== userData.user.id) {
       return new Response(JSON.stringify({ error: "Not your listing" }), {
         status: 403,
@@ -84,7 +80,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Call AI for moderation
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       log("LOVABLE_API_KEY not configured, defaulting to pending");
@@ -116,7 +111,7 @@ RESPOND WITH EXACTLY ONE OF:
 APPROVED - if the listing passes all checks
 FLAGGED: [reason] - if the listing needs manual review, with a brief reason`;
 
-    log("Calling AI gateway");
+    log("Calling moderation gateway");
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -134,7 +129,7 @@ FLAGGED: [reason] - if the listing needs manual review, with a brief reason`;
 
     if (!aiResponse.ok) {
       const errText = await aiResponse.text();
-      log("AI gateway error", { status: aiResponse.status, body: errText });
+      log("Gateway error", { status: aiResponse.status, body: errText });
       return new Response(JSON.stringify({ status: "pending", reason: "Moderation temporarily unavailable" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -142,22 +137,42 @@ FLAGGED: [reason] - if the listing needs manual review, with a brief reason`;
 
     const aiData = await aiResponse.json();
     const aiDecision = aiData.choices?.[0]?.message?.content?.trim() || "";
-    log("AI decision", { decision: aiDecision });
+    log("Decision", { decision: aiDecision });
+
+    const sellerUserId = listing.seller_profiles?.user_id;
+    const sellerEmail = listing.seller_profiles?.contact_email || userData.user.email;
 
     if (aiDecision.startsWith("APPROVED")) {
-      // Auto-approve listing
-      await supabase
-        .from("seller_listings")
-        .update({ approval_status: "approved" })
-        .eq("id", listing_id);
+      await supabase.from("seller_listings").update({ approval_status: "approved" }).eq("id", listing_id);
 
-      // Also auto-approve seller profile if not yet approved
       if (!listing.seller_profiles?.approved) {
-        await supabase
-          .from("seller_profiles")
-          .update({ approved: true })
-          .eq("id", listing.seller_profiles.id);
+        await supabase.from("seller_profiles").update({ approved: true }).eq("id", listing.seller_profiles.id);
         log("Auto-approved seller profile", { seller_id: listing.seller_profiles.id });
+      }
+
+      // Create notification
+      if (sellerUserId) {
+        await supabase.from("notifications").insert({
+          user_id: sellerUserId,
+          type: "listing_approved",
+          title: "Listing Approved! ✅",
+          message: `Your listing "${listing.title}" is now live on the marketplace.`,
+          link: `/listing/${listing_id}`,
+        });
+      }
+
+      // Send email
+      if (sellerEmail) {
+        try {
+          await supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "listing-approved",
+              recipientEmail: sellerEmail,
+              idempotencyKey: `listing-approved-${listing_id}`,
+              templateData: { listingTitle: listing.title },
+            },
+          });
+        } catch (e) { log("Email send failed", { error: e }); }
       }
 
       log("Listing auto-approved", { listing_id });
@@ -165,10 +180,37 @@ FLAGGED: [reason] - if the listing needs manual review, with a brief reason`;
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     } else {
-      // Flagged - keep as pending
       const reason = aiDecision.replace(/^FLAGGED:\s*/i, "").trim() || "Content flagged for manual review";
 
-      // Send notification email to admin
+      await supabase.from("seller_listings").update({ approval_status: "rejected" }).eq("id", listing_id);
+
+      // Create notification
+      if (sellerUserId) {
+        await supabase.from("notifications").insert({
+          user_id: sellerUserId,
+          type: "listing_rejected",
+          title: "Listing Needs Changes",
+          message: `Your listing "${listing.title}" was flagged: ${reason}`,
+          link: "/my-market",
+          metadata: { reason },
+        });
+      }
+
+      // Send rejection email
+      if (sellerEmail) {
+        try {
+          await supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "listing-rejected",
+              recipientEmail: sellerEmail,
+              idempotencyKey: `listing-rejected-${listing_id}`,
+              templateData: { listingTitle: listing.title, reason },
+            },
+          });
+        } catch (e) { log("Email send failed", { error: e }); }
+      }
+
+      // Notify admin
       try {
         await supabase.functions.invoke("send-transactional-email", {
           body: {
@@ -183,11 +225,11 @@ FLAGGED: [reason] - if the listing needs manual review, with a brief reason`;
           },
         });
       } catch (emailErr) {
-        log("Email notification failed", { emailErr });
+        log("Admin email notification failed", { emailErr });
       }
 
       log("Listing flagged", { listing_id, reason });
-      return new Response(JSON.stringify({ status: "pending", reason }), {
+      return new Response(JSON.stringify({ status: "rejected", reason }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
