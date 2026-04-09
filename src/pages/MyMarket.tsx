@@ -71,7 +71,8 @@ const MyMarket = () => {
 
   const [listingForm, setListingForm] = useState({
     title: "", description: "", price: "", category: "",
-    compatible_vehicles: "", tags: "", external_link: "", photos: [] as string[]
+    compatible_vehicles: [] as string[], compatible_vehicles_text: "",
+    tags: [] as string[], external_link: "", photos: [] as string[]
   });
 
   useEffect(() => {
