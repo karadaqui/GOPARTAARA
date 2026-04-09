@@ -47,7 +47,8 @@ const Auth = () => {
     } else if (isLogin) {
       // Process referral on login too (in case they signed up via OAuth with ref)
       processReferral();
-      navigate("/");
+      const redirectTo = searchParams.get("redirect") || "/";
+      navigate(redirectTo);
     } else {
       toast({
         title: "Account created",
