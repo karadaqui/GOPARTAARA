@@ -13,6 +13,7 @@ const HeroSection = () => {
   const [query, setQuery] = useState("");
   const searchLimit = useSearchLimit();
   const [identifying, setIdentifying] = useState(false);
+  const [activeTab, setActiveTab] = useState<"part" | "plate">("part");
   const [regNumber, setRegNumber] = useState("");
   const [regLoading, setRegLoading] = useState(false);
   const [regVehicle, setRegVehicle] = useState<{ make: string; yearOfManufacture?: number; colour?: string; engineCapacity?: number } | null>(null);
@@ -43,7 +44,6 @@ const HeroSection = () => {
     setIdentifying(true);
 
     try {
-      // Convert to base64
       const reader = new FileReader();
       const base64 = await new Promise<string>((resolve, reject) => {
         reader.onload = () => resolve(reader.result as string);
@@ -85,8 +85,35 @@ const HeroSection = () => {
       });
     } finally {
       setIdentifying(false);
-      // Reset file input
       if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const handleRegLookup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleaned = regNumber.replace(/\s+/g, "").toUpperCase();
+    if (!cleaned || cleaned.length < 2) {
+      toast({ title: "Enter a valid registration number", variant: "destructive" });
+      return;
+    }
+    setRegLoading(true);
+    setRegVehicle(null);
+    try {
+      const { data, error } = await supabase.functions.invoke("vehicle-lookup", {
+        body: { registrationNumber: cleaned },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      const v = data.vehicle;
+      setRegVehicle(v);
+      toast({ title: `Found: ${v.make}`, description: `${v.yearOfManufacture || ""} ${v.colour || ""}`.trim() });
+      const q = `${v.make} ${v.yearOfManufacture || ""}`.trim();
+      const vehicleParam = encodeURIComponent(JSON.stringify(v));
+      navigate(`/search?q=${encodeURIComponent(q)}&vehicle=${vehicleParam}`);
+    } catch (err: any) {
+      toast({ title: "Lookup failed", description: err.message || "Please try again.", variant: "destructive" });
+    } finally {
+      setRegLoading(false);
     }
   };
 
@@ -111,125 +138,130 @@ const HeroSection = () => {
           Search across 15+ trusted UK and global suppliers. Compare prices, check availability, and order — all in one place.
         </p>
 
-        {/* Search bar */}
+        {/* Search section with tabs */}
         <div id="search" className="max-w-2xl mx-auto">
-          <form onSubmit={handleSearch} className="flex items-center gap-2 p-2 rounded-2xl glass glow-red">
-            <div className="flex-1 flex items-center gap-3 px-4">
-              <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
-              <Search className="text-muted-foreground shrink-0" size={20} />
-              <input
-                type="text"
-                placeholder="Search parts... e.g. BMW E46 bumper"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm py-3"
-                disabled={identifying}
-              />
-            </div>
-            <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handlePhotoUpload}
-                disabled={identifying}
-              />
-              <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-sm text-secondary-foreground">
-                {identifying ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" />
-                    <span className="hidden sm:inline">Identifying...</span>
-                  </>
-                ) : (
-                  <>
-                    <Camera size={18} />
-                    <span className="hidden sm:inline">Photo Search</span>
-                  </>
-                )}
-              </div>
-            </label>
-            {searchLimit.limitReached ? (
-              <Button
-                type="button"
-                className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold"
-                onClick={() => {
-                  navigate("/");
-                  setTimeout(() => {
-                    const el = document.getElementById("pricing");
-                    if (el) el.scrollIntoView({ behavior: "smooth" });
-                  }, 100);
-                }}
-              >
-                <ArrowUp size={14} className="mr-1" />
-                Upgrade to Pro
-              </Button>
-            ) : (
-              <Button type="submit" className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold" disabled={identifying}>
-                Search
-              </Button>
-            )}
-          </form>
-          <div className="flex items-center justify-between mt-3">
-            <p className="text-xs text-muted-foreground">
-              📸 Upload a photo of any car part — our advanced system will identify it and find the best prices
-            </p>
-             <SearchCounter limitData={searchLimit} />
-          </div>
-        </div>
-
-        {/* Vehicle Reg Lookup */}
-        <div className="max-w-2xl mx-auto mt-10">
-          <div className="rounded-2xl glass border border-border p-5">
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                const cleaned = regNumber.replace(/\s+/g, "").toUpperCase();
-                if (!cleaned || cleaned.length < 2) {
-                  toast({ title: "Enter a valid registration number", variant: "destructive" });
-                  return;
-                }
-                setRegLoading(true);
-                setRegVehicle(null);
-                try {
-                  const { data, error } = await supabase.functions.invoke("vehicle-lookup", {
-                    body: { registrationNumber: cleaned },
-                  });
-                  if (error) throw error;
-                  if (data?.error) throw new Error(data.error);
-                  const v = data.vehicle;
-                  setRegVehicle(v);
-                  toast({ title: `Found: ${v.make}`, description: `${v.yearOfManufacture || ""} ${v.colour || ""}`.trim() });
-                  const q = `${v.make} ${v.yearOfManufacture || ""}`.trim();
-                  const vehicleParam = encodeURIComponent(JSON.stringify(v));
-                  navigate(`/search?q=${encodeURIComponent(q)}&vehicle=${vehicleParam}`);
-                } catch (err: any) {
-                  toast({ title: "Lookup failed", description: err.message || "Please try again.", variant: "destructive" });
-                } finally {
-                  setRegLoading(false);
-                }
-              }}
-              className="flex items-center gap-2"
+          {/* Tabs */}
+          <div className="flex items-center justify-center gap-1 mb-4">
+            <button
+              onClick={() => setActiveTab("part")}
+              className={`relative px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                activeTab === "part"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
             >
-              <div className="flex-1 relative">
-                <Car size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={regNumber}
-                  onChange={(e) => setRegNumber(e.target.value.toUpperCase())}
-                  placeholder="Enter reg plate e.g. AB12 CDE"
-                  className="pl-10 bg-secondary border-border h-11 rounded-xl uppercase tracking-widest font-mono font-bold"
-                  maxLength={10}
-                  disabled={regLoading}
-                />
-              </div>
-              <Button type="submit" className="rounded-xl h-11 px-6" disabled={regLoading || !regNumber.trim()}>
-                {regLoading ? <Loader2 size={16} className="animate-spin" /> : "Lookup"}
-              </Button>
-            </form>
-            <p className="text-xs text-muted-foreground mt-2 text-center">
-              🚗 Enter your UK number plate to find parts specific to your vehicle
-            </p>
+              <Search size={14} className="inline-block mr-1.5 -mt-0.5" />
+              Search by Part
+              {activeTab === "part" && (
+                <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab("plate")}
+              className={`relative px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                activeTab === "plate"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Car size={14} className="inline-block mr-1.5 -mt-0.5" />
+              Search by Plate
+              {activeTab === "plate" && (
+                <span className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full" />
+              )}
+            </button>
           </div>
+
+          {/* Tab content */}
+          {activeTab === "part" ? (
+            <>
+              <form onSubmit={handleSearch} className="flex items-center gap-2 p-2 rounded-2xl glass glow-red">
+                <div className="flex-1 flex items-center gap-3 px-4">
+                  <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
+                  <Search className="text-muted-foreground shrink-0" size={20} />
+                  <input
+                    type="text"
+                    placeholder="Search parts... e.g. BMW E46 bumper"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm py-3"
+                    disabled={identifying}
+                  />
+                </div>
+                <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePhotoUpload}
+                    disabled={identifying}
+                  />
+                  <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-sm text-secondary-foreground">
+                    {identifying ? (
+                      <>
+                        <Loader2 size={18} className="animate-spin" />
+                        <span className="hidden sm:inline">Identifying...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Camera size={18} />
+                        <span className="hidden sm:inline">Photo Search</span>
+                      </>
+                    )}
+                  </div>
+                </label>
+                {searchLimit.limitReached ? (
+                  <Button
+                    type="button"
+                    className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold"
+                    onClick={() => {
+                      navigate("/");
+                      setTimeout(() => {
+                        const el = document.getElementById("pricing");
+                        if (el) el.scrollIntoView({ behavior: "smooth" });
+                      }, 100);
+                    }}
+                  >
+                    <ArrowUp size={14} className="mr-1" />
+                    Upgrade to Pro
+                  </Button>
+                ) : (
+                  <Button type="submit" className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold" disabled={identifying}>
+                    Search
+                  </Button>
+                )}
+              </form>
+              <div className="flex items-center justify-between mt-3">
+                <p className="text-xs text-muted-foreground">
+                  📸 Upload a photo of any car part — our advanced system will identify it and find the best prices
+                </p>
+                <SearchCounter limitData={searchLimit} />
+              </div>
+            </>
+          ) : (
+            <>
+              <form onSubmit={handleRegLookup} className="flex items-center gap-2 p-2 rounded-2xl glass glow-red">
+                <div className="flex-1 relative">
+                  <Car size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    value={regNumber}
+                    onChange={(e) => setRegNumber(e.target.value.toUpperCase())}
+                    placeholder="Enter reg plate e.g. AB12 CDE"
+                    className="pl-11 bg-transparent border-0 h-12 rounded-xl uppercase tracking-widest font-mono font-bold text-foreground placeholder:text-muted-foreground focus-visible:ring-0"
+                    maxLength={10}
+                    disabled={regLoading}
+                  />
+                </div>
+                <Button type="submit" className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold" disabled={regLoading || !regNumber.trim()}>
+                  {regLoading ? <Loader2 size={16} className="animate-spin" /> : "Lookup"}
+                </Button>
+              </form>
+              <p className="text-xs text-muted-foreground mt-3">
+                🚗 Enter your UK number plate to find parts specific to your vehicle
+              </p>
+            </>
+          )}
         </div>
 
         {/* Trust badges */}
