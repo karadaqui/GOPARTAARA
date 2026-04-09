@@ -235,8 +235,8 @@ const HeroSection = () => {
                   )}
                 </div>
               </form>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-3 gap-2">
-                <p className="text-xs text-muted-foreground">
+              <div className="flex flex-col items-center sm:flex-row sm:items-center sm:justify-between mt-3 gap-2">
+                <p className="text-xs text-muted-foreground text-center sm:text-left">
                   📸 Upload a photo of any car part — our system will identify it and find the best prices
                 </p>
                 <SearchCounter limitData={searchLimit} />
