@@ -31,7 +31,7 @@ interface Listing {
 
 const SellerProfile = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const [seller, setSeller] = useState<SellerFull | null>(null);
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
@@ -112,13 +112,21 @@ const SellerProfile = () => {
                 <p className="text-secondary-foreground mt-2">{seller.description}</p>
               )}
               <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-muted-foreground">
-                {seller.contact_email && (
-                  <a href={`mailto:${seller.contact_email}`} className="flex items-center gap-1.5 hover:text-foreground transition-colors">
-                    <Mail size={14} /> {seller.contact_email}
-                  </a>
-                )}
-                {seller.contact_phone && (
-                  <span className="flex items-center gap-1.5"><Phone size={14} /> {seller.contact_phone}</span>
+                {user ? (
+                  <>
+                    {seller.contact_email && (
+                      <a href={`mailto:${seller.contact_email}`} className="flex items-center gap-1.5 hover:text-foreground transition-colors">
+                        <Mail size={14} /> {seller.contact_email}
+                      </a>
+                    )}
+                    {seller.contact_phone && (
+                      <span className="flex items-center gap-1.5"><Phone size={14} /> {seller.contact_phone}</span>
+                    )}
+                  </>
+                ) : (
+                  <span className="flex items-center gap-1.5 text-muted-foreground/60">
+                    <Lock size={14} /> Sign in to view contact details
+                  </span>
                 )}
                 {seller.website_url && (
                   <a href={seller.website_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-foreground transition-colors">
