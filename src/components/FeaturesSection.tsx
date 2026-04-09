@@ -34,7 +34,7 @@ const features = [
   {
     icon: BarChart3,
     title: "Price Comparison",
-    desc: "Compare prices across 15+ suppliers side by side in a single search.",
+    desc: "Compare prices across 6+ suppliers side by side in a single search.",
   },
   {
     icon: Gift,
