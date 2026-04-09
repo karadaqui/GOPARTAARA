@@ -107,6 +107,7 @@ const SearchResults = () => {
   const [totalResults, setTotalResults] = useState(0);
   const [amazonPanelOpen, setAmazonPanelOpen] = useState(false);
   const [amazonLoading, setAmazonLoading] = useState(false);
+  const [ebayFallback, setEbayFallback] = useState(false);
 
   useEffect(() => {
     if (urlQuery !== activeQuery) {
@@ -133,23 +134,31 @@ const SearchResults = () => {
     if (!activeQuery.trim()) {
       setLiveResults([]);
       setTotalResults(0);
+      setEbayFallback(false);
       return;
     }
     let cancelled = false;
     const fetchLive = async () => {
       setLiveLoading(true);
+      setEbayFallback(false);
       try {
         const { data, error } = await supabase.functions.invoke("search-parts", {
           body: { query: activeQuery, category: selectedCategory || undefined },
         });
         if (error) throw error;
         if (!cancelled) {
-          setLiveResults(data?.results || []);
-          setTotalResults(data?.totalResults || 0);
+          if (data?.fallback) {
+            setEbayFallback(true);
+            setLiveResults([]);
+            setTotalResults(0);
+          } else {
+            setLiveResults(data?.results || []);
+            setTotalResults(data?.totalResults || 0);
+          }
         }
       } catch (err) {
         console.error("Live search failed:", err);
-        if (!cancelled) { setLiveResults([]); setTotalResults(0); }
+        if (!cancelled) { setLiveResults([]); setTotalResults(0); setEbayFallback(true); }
       } finally {
         if (!cancelled) setLiveLoading(false);
       }
@@ -666,8 +675,33 @@ const SearchResults = () => {
             ) : !liveLoading ? (
               <div className="flex flex-col items-center justify-center py-12 mb-8">
                 <AlertCircle size={32} className="text-muted-foreground/30 mb-3" />
-                <p className="text-muted-foreground font-medium">No eBay listings found</p>
-                <p className="text-sm text-muted-foreground/60 mt-1">Try a different search term or browse suppliers below</p>
+                <p className="text-muted-foreground font-medium">
+                  {ebayFallback ? "eBay search temporarily unavailable" : "No eBay listings found"}
+                </p>
+                <p className="text-sm text-muted-foreground/60 mt-1">
+                  {ebayFallback
+                    ? "The service is experiencing high demand. Search suppliers directly below."
+                    : "Try a different search term or browse suppliers below"}
+                </p>
+                {ebayFallback && (
+                  <div className="mt-6 w-full max-w-lg">
+                    <p className="text-xs text-muted-foreground mb-3 text-center font-medium">Quick search on supplier sites:</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {suppliers.slice(0, 6).map((s) => (
+                        <a
+                          key={s.name}
+                          href={s.buildUrl(activeQuery)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-gradient-to-br ${s.gradient} text-white text-xs font-semibold transition-transform hover:scale-105 shadow-md`}
+                        >
+                          <ExternalLink size={12} />
+                          {s.name}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : null}
             <div className="mb-4">
