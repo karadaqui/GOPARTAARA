@@ -41,7 +41,7 @@ const Admin = () => {
   const [filter, setFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
 
   useEffect(() => {
-    if (!user) { navigate("/auth"); return; }
+    if (!user) { navigate("/auth?redirect=/admin"); return; }
     if (user.email !== ADMIN_EMAIL) {
       toast({ title: "Access denied", variant: "destructive" });
       navigate("/");

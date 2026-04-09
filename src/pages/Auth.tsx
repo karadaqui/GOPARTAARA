@@ -83,7 +83,7 @@ const Auth = () => {
       } else if (result.redirected) {
         return;
       } else {
-        navigate("/");
+        navigate(redirectTo);
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message || "OAuth sign in failed", variant: "destructive" });
