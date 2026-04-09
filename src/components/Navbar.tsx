@@ -7,7 +7,7 @@ import NotificationBell from "@/components/NotificationBell";
 
 const primaryLinks = [
   { label: "Home", href: "/" },
-  { label: "Search", href: "/#search" },
+  { label: "Search", href: "/" },
   { label: "Marketplace", href: "/marketplace" },
   { label: "Pricing", href: "/#pricing" },
 ];
