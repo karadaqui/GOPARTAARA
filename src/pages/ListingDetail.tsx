@@ -160,6 +160,10 @@ const ListingDetail = () => {
     } else {
       toast({ title: "Price alert set!" });
       setAlertOpen(false);
+      // Notify seller in background
+      supabase.functions.invoke("notify-seller", {
+        body: { listing_id: id!, action: "price_alert", target_price: price.toString() },
+      }).catch(() => {});
     }
   };
 
