@@ -1,31 +1,37 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Suspense, lazy } from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
-import Index from "./pages/Index.tsx";
-import Auth from "./pages/Auth.tsx";
-import Dashboard from "./pages/Dashboard.tsx";
-import ResetPassword from "./pages/ResetPassword.tsx";
-import SearchResults from "./pages/SearchResults.tsx";
-import SavedParts from "./pages/SavedParts.tsx";
-import NotFound from "./pages/NotFound.tsx";
-import About from "./pages/About.tsx";
-import Contact from "./pages/Contact.tsx";
-import Privacy from "./pages/Privacy.tsx";
-import Terms from "./pages/Terms.tsx";
-import Unsubscribe from "./pages/Unsubscribe.tsx";
-import Blog from "./pages/Blog.tsx";
-import BlogPostPage from "./pages/BlogPost.tsx";
-import ListYourParts from "./pages/ListYourParts.tsx";
-import MyMarket from "./pages/MyMarket.tsx";
-import Marketplace from "./pages/Marketplace.tsx";
-import ListingDetail from "./pages/ListingDetail.tsx";
-import SellerProfile from "./pages/SellerProfile.tsx";
-import Pricing from "./pages/Pricing.tsx";
-import Admin from "./pages/Admin.tsx";
+import PageLoader from "@/components/PageLoader";
 import CookieConsent from "./components/CookieConsent.tsx";
+
+// Eager load critical route
+import Index from "./pages/Index.tsx";
+
+// Lazy load other routes
+const Auth = lazy(() => import("./pages/Auth.tsx"));
+const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword.tsx"));
+const SearchResults = lazy(() => import("./pages/SearchResults.tsx"));
+const SavedParts = lazy(() => import("./pages/SavedParts.tsx"));
+const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const About = lazy(() => import("./pages/About.tsx"));
+const Contact = lazy(() => import("./pages/Contact.tsx"));
+const Privacy = lazy(() => import("./pages/Privacy.tsx"));
+const Terms = lazy(() => import("./pages/Terms.tsx"));
+const Unsubscribe = lazy(() => import("./pages/Unsubscribe.tsx"));
+const Blog = lazy(() => import("./pages/Blog.tsx"));
+const BlogPostPage = lazy(() => import("./pages/BlogPost.tsx"));
+const ListYourParts = lazy(() => import("./pages/ListYourParts.tsx"));
+const MyMarket = lazy(() => import("./pages/MyMarket.tsx"));
+const Marketplace = lazy(() => import("./pages/Marketplace.tsx"));
+const ListingDetail = lazy(() => import("./pages/ListingDetail.tsx"));
+const SellerProfile = lazy(() => import("./pages/SellerProfile.tsx"));
+const Pricing = lazy(() => import("./pages/Pricing.tsx"));
+const Admin = lazy(() => import("./pages/Admin.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -36,29 +42,31 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/search" element={<SearchResults />} />
-            <Route path="/saved" element={<SavedParts />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/privacy" element={<Privacy />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/unsubscribe" element={<Unsubscribe />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogPostPage />} />
-            <Route path="/list-your-parts" element={<ListYourParts />} />
-            <Route path="/my-market" element={<MyMarket />} />
-            <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/listing/:id" element={<ListingDetail />} />
-            <Route path="/seller/:id" element={<SellerProfile />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/search" element={<SearchResults />} />
+              <Route path="/saved" element={<SavedParts />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/unsubscribe" element={<Unsubscribe />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPostPage />} />
+              <Route path="/list-your-parts" element={<ListYourParts />} />
+              <Route path="/my-market" element={<MyMarket />} />
+              <Route path="/marketplace" element={<Marketplace />} />
+              <Route path="/listing/:id" element={<ListingDetail />} />
+              <Route path="/seller/:id" element={<SellerProfile />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
           <CookieConsent />
         </AuthProvider>
       </BrowserRouter>

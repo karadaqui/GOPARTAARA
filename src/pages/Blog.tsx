@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import BackToTop from "@/components/BackToTop";
 import { Calendar, ArrowRight, Loader2, Tag } from "lucide-react";
 
 interface BlogPost {
@@ -42,6 +44,18 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Blog | PARTARA"
+        description="Expert advice on car parts, maintenance tips, and industry insights from the PARTARA team. Stay informed about the UK automotive parts market."
+        path="/blog"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Blog",
+          "name": "PARTARA Blog",
+          "url": "https://car-part-search.lovable.app/blog",
+          "description": "Expert advice on car parts, maintenance tips, and industry insights."
+        }}
+      />
       <Navbar />
 
       <div className="container max-w-4xl py-20 px-4">
@@ -114,6 +128,7 @@ const Blog = () => {
       </div>
 
       <Footer />
+      <BackToTop />
     </div>
   );
 };

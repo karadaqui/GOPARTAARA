@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import BackToTop from "@/components/BackToTop";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -151,6 +153,11 @@ const ListYourParts = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="List Your Parts | PARTARA"
+        description="Sell your car parts on PARTARA. Reach thousands of UK buyers searching for parts daily. Choose from Basic, Featured, or Pro seller plans."
+        path="/list-your-parts"
+      />
       <Navbar />
 
       <div className="container max-w-5xl py-20 px-4">
@@ -346,6 +353,7 @@ const ListYourParts = () => {
       </div>
 
       <Footer />
+      <BackToTop />
     </div>
   );
 };

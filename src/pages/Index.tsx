@@ -9,6 +9,8 @@ import StatsSection from "@/components/StatsSection";
 import PricingSection from "@/components/PricingSection";
 import SellerPricingSection from "@/components/SellerPricingSection";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import BackToTop from "@/components/BackToTop";
 
 const Index = () => {
   const location = useLocation();
@@ -25,6 +27,25 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="PARTARA - Find Any Car Part Instantly"
+        description="Search and compare car parts across 15+ trusted UK and global suppliers. Upload a photo or type your part name — PARTARA finds the best prices instantly."
+        path="/"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "PARTARA",
+          "url": "https://car-part-search.lovable.app",
+          "description": "Search and compare car parts across 15+ trusted UK and global suppliers.",
+          "applicationCategory": "AutomotiveApplication",
+          "operatingSystem": "Web",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "GBP"
+          }
+        }}
+      />
       <Navbar />
       <HeroSection />
       <FeaturesSection />
@@ -34,6 +55,7 @@ const Index = () => {
       <PricingSection />
       <SellerPricingSection />
       <Footer />
+      <BackToTop />
     </div>
   );
 };

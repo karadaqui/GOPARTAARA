@@ -1,9 +1,16 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
+import BackToTop from "@/components/BackToTop";
 import { FileText } from "lucide-react";
 
 const Terms = () => (
   <div className="min-h-screen bg-background">
+    <SEOHead
+      title="Terms of Service | PARTARA"
+      description="Read PARTARA's terms of service. Understand the rules and guidelines for using our car parts search and comparison platform."
+      path="/terms"
+    />
     <Navbar />
     <main className="pt-24 pb-16">
       <div className="container px-4 max-w-4xl mx-auto">
@@ -480,6 +487,7 @@ const Terms = () => (
       </div>
     </main>
     <Footer />
+    <BackToTop />
   </div>
 );
 
