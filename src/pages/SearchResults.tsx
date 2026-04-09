@@ -8,7 +8,8 @@ import {
   Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star,
   Truck, Bookmark, BookmarkCheck, MapPin, Clock,
   Heart, AlertCircle, Zap, Filter as FilterIcon, ArrowUp,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, Pencil, Calendar, Palette, Fuel, Gauge,
+  ShieldCheck, Receipt, Check,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { useAuth } from "@/contexts/AuthContext";
@@ -70,6 +71,7 @@ const ITEMS_PER_PAGE = 12;
 
 interface VehicleInfo {
   make: string;
+  model?: string | null;
   yearOfManufacture?: number | null;
   colour?: string | null;
   fuelType?: string | null;
@@ -98,6 +100,8 @@ const SearchResults = () => {
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [savingId, setSavingId] = useState<string | null>(null);
   const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo | null>(null);
+  const [vehicleModelInput, setVehicleModelInput] = useState("");
+  const [vehicleModelConfirmed, setVehicleModelConfirmed] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
   const [ebayFallback, setEbayFallback] = useState(false);
@@ -184,6 +188,8 @@ const SearchResults = () => {
     const nextQuery = `${vehicle.make} ${vehicle.yearOfManufacture || ""}`.trim();
 
     setVehicleInfo(vehicle);
+    setVehicleModelInput("");
+    setVehicleModelConfirmed(!!vehicle.model);
     setQuery(nextQuery);
     setActiveQuery(nextQuery);
     setSelectedCategory(null);
@@ -393,32 +399,138 @@ const SearchResults = () => {
         {activeQuery ? (
           <>
             {vehicleInfo && (
-              <div className="mb-6 glass rounded-2xl p-5 border border-primary/20 animate-in fade-in slide-in-from-top-2 duration-300">
-                <div className="flex items-start gap-4">
-                  <div className="bg-primary/10 rounded-xl p-3 shrink-0">
-                    <Car size={28} className="text-primary" />
+              <div className="mb-6 rounded-2xl bg-card border border-border/60 overflow-hidden shadow-lg animate-in fade-in slide-in-from-top-2 duration-300">
+                {/* Header */}
+                <div className="px-5 pt-5 pb-3 border-b border-border/40">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                        <Car size={22} className="text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        {vehicleModelConfirmed && vehicleInfo.model ? (
+                          <div className="flex items-center gap-2">
+                            <h2 className="font-display font-bold text-xl text-foreground tracking-tight">
+                              {vehicleInfo.make} {vehicleInfo.model}
+                              {vehicleInfo.yearOfManufacture && <span className="text-muted-foreground font-medium ml-1.5">({vehicleInfo.yearOfManufacture})</span>}
+                            </h2>
+                            <button
+                              onClick={() => { setVehicleModelInput(vehicleInfo.model || ""); setVehicleModelConfirmed(false); }}
+                              className="p-1 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-primary"
+                              title="Edit model"
+                            >
+                              <Pencil size={14} />
+                            </button>
+                          </div>
+                        ) : (
+                          <h2 className="font-display font-bold text-xl text-foreground tracking-tight">
+                            {vehicleInfo.make}
+                            {vehicleInfo.yearOfManufacture && <span className="text-muted-foreground font-medium ml-1.5">({vehicleInfo.yearOfManufacture})</span>}
+                          </h2>
+                        )}
+                      </div>
+                    </div>
+                    {vehicleInfo.registrationNumber && (
+                      <span className="bg-secondary text-foreground text-xs font-mono font-bold px-3 py-1.5 rounded-lg tracking-wider border border-border/50 shrink-0">
+                        {vehicleInfo.registrationNumber}
+                      </span>
+                    )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h2 className="font-display font-bold text-xl text-foreground">
-                      {vehicleInfo.make} {vehicleInfo.yearOfManufacture && `(${vehicleInfo.yearOfManufacture})`}
-                    </h2>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {vehicleInfo.colour && <span className="text-xs px-2.5 py-1 rounded-lg bg-secondary text-muted-foreground">{vehicleInfo.colour}</span>}
-                      {vehicleInfo.fuelType && <span className="text-xs px-2.5 py-1 rounded-lg bg-secondary text-muted-foreground">⛽ {vehicleInfo.fuelType}</span>}
-                      {vehicleInfo.engineCapacity && <span className="text-xs px-2.5 py-1 rounded-lg bg-secondary text-muted-foreground">⚙️ {vehicleInfo.engineCapacity}cc</span>}
-                      {vehicleInfo.registrationNumber && <span className="text-xs px-2.5 py-1 rounded-lg bg-secondary font-mono font-bold text-muted-foreground">{vehicleInfo.registrationNumber}</span>}
-                      {vehicleInfo.motStatus && (
-                        <span className={`text-xs px-2.5 py-1 rounded-lg font-medium ${vehicleInfo.motStatus === "Valid" ? "bg-emerald-500/15 text-emerald-400" : "bg-destructive/15 text-destructive"}`}>
-                          MOT: {vehicleInfo.motStatus}
-                        </span>
-                      )}
-                      {vehicleInfo.taxStatus && (
-                        <span className={`text-xs px-2.5 py-1 rounded-lg font-medium ${vehicleInfo.taxStatus === "Taxed" ? "bg-emerald-500/15 text-emerald-400" : "bg-destructive/15 text-destructive"}`}>
-                          Tax: {vehicleInfo.taxStatus}
-                        </span>
-                      )}
+                </div>
+
+                {/* Model input */}
+                {!vehicleModelConfirmed && (
+                  <div className="px-5 py-4 border-b border-border/40 bg-primary/[0.03]">
+                    <p className="text-xs text-muted-foreground mb-2.5 font-medium">
+                      Enter your vehicle model for more accurate parts search
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={vehicleModelInput}
+                        onChange={(e) => setVehicleModelInput(e.target.value)}
+                        placeholder="e.g. Astra, Corsa, Insignia..."
+                        className="bg-secondary border-border h-11 rounded-xl text-sm font-medium flex-1"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            if (vehicleModelInput.trim() && vehicleInfo) {
+                              const model = vehicleModelInput.trim().toUpperCase();
+                              const updated = { ...vehicleInfo, model };
+                              setVehicleInfo(updated);
+                              setVehicleModelConfirmed(true);
+                              const nextQuery = `${updated.make} ${model} ${updated.yearOfManufacture || ""}`.trim();
+                              setQuery(nextQuery);
+                              setActiveQuery(nextQuery);
+                              setCurrentPage(1);
+                              setSearchParams({ q: nextQuery, vehicle: JSON.stringify(updated) });
+                            }
+                          }
+                        }}
+                        autoFocus
+                      />
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          if (vehicleModelInput.trim() && vehicleInfo) {
+                            const model = vehicleModelInput.trim().toUpperCase();
+                            const updated = { ...vehicleInfo, model };
+                            setVehicleInfo(updated);
+                            setVehicleModelConfirmed(true);
+                            const nextQuery = `${updated.make} ${model} ${updated.yearOfManufacture || ""}`.trim();
+                            setQuery(nextQuery);
+                            setActiveQuery(nextQuery);
+                            setCurrentPage(1);
+                            setSearchParams({ q: nextQuery, vehicle: JSON.stringify(updated) });
+                          }
+                        }}
+                        className="rounded-xl h-11 px-5 gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+                        disabled={!vehicleModelInput.trim()}
+                      >
+                        <Check size={16} />
+                        Confirm
+                      </Button>
                     </div>
                   </div>
+                )}
+
+                {/* Details grid */}
+                <div className="px-5 py-3 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-1">
+                  {vehicleInfo.yearOfManufacture && (
+                    <div className="flex items-center gap-2.5 py-2">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"><Calendar size={15} className="text-primary" /></div>
+                      <div><p className="text-[11px] text-muted-foreground uppercase tracking-wider leading-none mb-0.5">Year</p><p className="text-sm font-semibold text-foreground">{vehicleInfo.yearOfManufacture}</p></div>
+                    </div>
+                  )}
+                  {vehicleInfo.colour && (
+                    <div className="flex items-center gap-2.5 py-2">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"><Palette size={15} className="text-primary" /></div>
+                      <div><p className="text-[11px] text-muted-foreground uppercase tracking-wider leading-none mb-0.5">Colour</p><p className="text-sm font-semibold text-foreground">{vehicleInfo.colour}</p></div>
+                    </div>
+                  )}
+                  {vehicleInfo.fuelType && (
+                    <div className="flex items-center gap-2.5 py-2">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"><Fuel size={15} className="text-primary" /></div>
+                      <div><p className="text-[11px] text-muted-foreground uppercase tracking-wider leading-none mb-0.5">Fuel</p><p className="text-sm font-semibold text-foreground">{vehicleInfo.fuelType}</p></div>
+                    </div>
+                  )}
+                  {vehicleInfo.engineCapacity && (
+                    <div className="flex items-center gap-2.5 py-2">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"><Gauge size={15} className="text-primary" /></div>
+                      <div><p className="text-[11px] text-muted-foreground uppercase tracking-wider leading-none mb-0.5">Engine</p><p className="text-sm font-semibold text-foreground">{vehicleInfo.engineCapacity}cc</p></div>
+                    </div>
+                  )}
+                  {vehicleInfo.motStatus && (
+                    <div className="flex items-center gap-2.5 py-2">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"><ShieldCheck size={15} className="text-primary" /></div>
+                      <div><p className="text-[11px] text-muted-foreground uppercase tracking-wider leading-none mb-0.5">MOT</p><p className={`text-sm font-semibold ${vehicleInfo.motStatus === "Valid" ? "text-emerald-400" : "text-destructive"}`}>{vehicleInfo.motStatus}</p></div>
+                    </div>
+                  )}
+                  {vehicleInfo.taxStatus && (
+                    <div className="flex items-center gap-2.5 py-2">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0"><Receipt size={15} className="text-primary" /></div>
+                      <div><p className="text-[11px] text-muted-foreground uppercase tracking-wider leading-none mb-0.5">Tax</p><p className={`text-sm font-semibold ${vehicleInfo.taxStatus === "Taxed" ? "text-emerald-400" : "text-destructive"}`}>{vehicleInfo.taxStatus}</p></div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
