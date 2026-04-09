@@ -565,111 +565,166 @@ const SearchResults = () => {
             ) : liveResults.length > 0 ? (
               <div className="mb-10">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {liveResults.map((item) => (
-                    <div key={item.id} className="group glass rounded-2xl overflow-hidden hover:border-primary/30 transition-all flex flex-col relative">
-                      <div className="absolute top-3 right-3 z-10 flex gap-1.5">
-                        <button
-                          onClick={() => handleSave(item)}
-                          disabled={savingId === item.id}
-                          className="p-2 rounded-lg bg-background/80 backdrop-blur-sm hover:bg-background transition-colors"
-                        >
-                          {savingId === item.id ? (
-                            <Loader2 size={16} className="animate-spin text-muted-foreground" />
-                          ) : savedIds.has(item.partNumber) ? (
-                            <BookmarkCheck size={16} className="text-primary" />
-                          ) : (
-                            <Bookmark size={16} className="text-muted-foreground" />
-                          )}
-                        </button>
-                      </div>
-                      <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
-                        <div className="aspect-[4/3] bg-secondary/50 overflow-hidden relative">
-                          <img
-                            src={item.imageUrl}
-                            alt={item.partName}
-                            className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300"
-                            loading="lazy"
-                            onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }}
-                          />
-                          <span className={`absolute top-3 left-3 text-[10px] font-bold px-2 py-1 rounded-lg backdrop-blur-sm ${
-                            item.condition === "New" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                              : item.condition === "Used" ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                              : "bg-secondary/80 text-muted-foreground border border-border"
-                          }`}>
-                            {item.condition}
-                          </span>
-                          {item.topRatedSeller && (
-                            <span className="absolute bottom-3 left-3 text-[10px] font-bold px-2 py-1 rounded-lg bg-primary/90 text-primary-foreground flex items-center gap-1">
-                              <Shield size={10} /> Top Rated
-                            </span>
-                          )}
-                        </div>
-                      </a>
-                      <div className="p-4 flex-1 flex flex-col">
-                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="block mb-3">
-                          <p className="text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors leading-snug">
-                            {item.partName}
-                          </p>
-                        </a>
-                        <div className="mt-auto space-y-3">
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-2xl font-bold text-primary">£{item.price.toFixed(2)}</span>
+                  {(() => {
+                    // Compute average price for price indicator
+                    const prices = liveResults.map((r: any) => r.price).filter((p: number) => p > 0);
+                    const avgPrice = prices.length > 0 ? prices.reduce((a: number, b: number) => a + b, 0) / prices.length : 0;
+
+                    const getFlag = (code: string) => {
+                      const flag = countryFlags[code];
+                      if (!flag) return "🌍";
+                      return flag;
+                    };
+
+                    const getPriceBadge = (price: number) => {
+                      if (avgPrice === 0) return null;
+                      const ratio = price / avgPrice;
+                      if (ratio <= 0.75) return { label: "Great Price", className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" };
+                      if (ratio <= 0.95) return { label: "Good Price", className: "bg-sky-500/20 text-sky-400 border-sky-500/30" };
+                      if (ratio >= 1.25) return { label: "High Price", className: "bg-red-500/20 text-red-400 border-red-500/30" };
+                      return null;
+                    };
+
+                    return liveResults.map((item: any) => {
+                      const priceBadge = getPriceBadge(item.price);
+                      return (
+                        <div key={item.id} className="group glass rounded-2xl overflow-hidden hover:border-primary/30 transition-all flex flex-col relative">
+                          <div className="absolute top-3 right-3 z-10 flex gap-1.5">
+                            <button
+                              onClick={() => handleSave(item)}
+                              disabled={savingId === item.id}
+                              className="p-2 rounded-lg bg-background/80 backdrop-blur-sm hover:bg-background transition-colors"
+                            >
+                              {savingId === item.id ? (
+                                <Loader2 size={16} className="animate-spin text-muted-foreground" />
+                              ) : savedIds.has(item.partNumber) ? (
+                                <BookmarkCheck size={16} className="text-primary" />
+                              ) : (
+                                <Bookmark size={16} className="text-muted-foreground" />
+                              )}
+                            </button>
                           </div>
-                          <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
-                            {item.freeShipping ? (
-                              <span className="flex items-center gap-1 text-emerald-400 font-medium">
-                                <Truck size={12} /> Free P&P
+                          <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
+                            <div className="aspect-[4/3] bg-secondary/50 overflow-hidden relative">
+                              <img
+                                src={item.imageUrl}
+                                alt={item.partName}
+                                className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-300"
+                                loading="lazy"
+                                onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }}
+                              />
+                              <span className={`absolute top-3 left-3 text-[10px] font-bold px-2 py-1 rounded-lg backdrop-blur-sm ${
+                                item.condition === "New" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                                  : item.condition === "Used" ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                                  : "bg-secondary/80 text-muted-foreground border border-border"
+                              }`}>
+                                {item.condition}
                               </span>
-                            ) : item.shippingCost > 0 ? (
-                              <span className="flex items-center gap-1">
-                                <Truck size={12} /> +£{item.shippingCost.toFixed(2)} P&P
-                              </span>
-                            ) : null}
-                            {item.expedited && (
-                              <span className="flex items-center gap-1 text-primary">
-                                <Zap size={11} /> Express
-                              </span>
-                            )}
-                            {item.handlingTime && (
-                              <span className="flex items-center gap-1">
-                                <Clock size={11} /> {item.handlingTime}d handling
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <MapPin size={11} />
-                            <span>{countryFlags[item.itemCountry] || "🌍"} {item.itemLocation}</span>
-                            {item.shipsToUK && item.itemCountry !== "GB" && (
-                              <span className="text-emerald-400 font-medium">• Ships to UK</span>
-                            )}
-                          </div>
-                          <div className="flex items-center justify-between text-xs border-t border-border pt-2.5 mt-1">
-                            <div className="flex items-center gap-1.5 text-muted-foreground">
-                              <span className="font-medium truncate max-w-[120px]">{item.sellerUsername}</span>
-                              <span className="flex items-center gap-0.5 text-amber-400">
-                                <Star size={10} className="fill-amber-400" />
-                                {item.sellerPositivePercent.toFixed(0)}%
-                              </span>
-                              <span className="text-muted-foreground/60">({item.sellerFeedbackScore})</span>
+                              {priceBadge && (
+                                <span className={`absolute top-10 left-3 text-[10px] font-bold px-2 py-1 rounded-lg border ${priceBadge.className}`}>
+                                  {priceBadge.label}
+                                </span>
+                              )}
+                              {item.topRatedSeller && (
+                                <span className="absolute bottom-3 left-3 text-[10px] font-bold px-2 py-1 rounded-lg bg-primary/90 text-primary-foreground flex items-center gap-1">
+                                  <Shield size={10} /> Top Rated
+                                </span>
+                              )}
                             </div>
-                            {item.watchCount > 0 && (
-                              <span className="flex items-center gap-1 text-muted-foreground/60">
-                                <Heart size={10} /> {item.watchCount}
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex gap-2 pt-1">
-                            <Button size="sm" className="flex-1 rounded-xl gap-1.5 text-xs h-9" asChild>
-                              <a href={item.url} target="_blank" rel="noopener noreferrer">
-                                <ExternalLink size={13} /> View on eBay
-                              </a>
-                            </Button>
-                            <PriceAlertDialog supplierName="eBay Motors" partQuery={item.partName} supplierUrl={item.url} />
+                          </a>
+                          <div className="p-4 flex-1 flex flex-col">
+                            <a href={item.url} target="_blank" rel="noopener noreferrer" className="block mb-3">
+                              <p className="text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors leading-snug">
+                                {item.partName}
+                              </p>
+                            </a>
+                            <div className="mt-auto space-y-3">
+                              <div className="flex items-baseline gap-2">
+                                <span className="text-2xl font-bold text-primary">£{item.price.toFixed(2)}</span>
+                              </div>
+                              {/* Stock info */}
+                              {item.quantityAvailable != null && item.quantityAvailable > 0 && item.quantityAvailable <= 5 && (
+                                <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-400">
+                                  <AlertCircle size={11} /> Only {item.quantityAvailable} left
+                                </span>
+                              )}
+                              {item.quantityAvailable != null && item.quantityAvailable > 5 && (
+                                <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400">
+                                  ✓ In stock
+                                </span>
+                              )}
+                              <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
+                                {item.freeShipping ? (
+                                  <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                                    <Truck size={12} /> Free P&P
+                                  </span>
+                                ) : item.shippingCost > 0 ? (
+                                  <span className="flex items-center gap-1">
+                                    <Truck size={12} /> +£{item.shippingCost.toFixed(2)} P&P
+                                  </span>
+                                ) : null}
+                                {item.expedited && (
+                                  <span className="flex items-center gap-1 text-primary">
+                                    <Zap size={11} /> Express
+                                  </span>
+                                )}
+                                {item.handlingTime && (
+                                  <span className="flex items-center gap-1">
+                                    <Clock size={11} /> {item.handlingTime}d handling
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <MapPin size={11} />
+                                <span>{getFlag(item.itemCountry)} {item.itemLocation}</span>
+                                {item.shipsToUK && item.itemCountry !== "GB" && (
+                                  <span className="text-emerald-400 font-medium">• Ships to UK</span>
+                                )}
+                              </div>
+                              <div className="flex items-center justify-between text-xs border-t border-border pt-2.5 mt-1">
+                                <div className="flex items-center gap-1.5 text-muted-foreground">
+                                  <span className="font-medium truncate max-w-[120px]">{item.sellerUsername}</span>
+                                  <span className="flex items-center gap-0.5 text-amber-400">
+                                    <Star size={10} className="fill-amber-400" />
+                                    {item.sellerPositivePercent.toFixed(0)}%
+                                  </span>
+                                  <span className="text-muted-foreground/60">({item.sellerFeedbackScore})</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {item.watchCount > 0 && (
+                                    <span className="flex items-center gap-1 text-muted-foreground/60">
+                                      <Heart size={10} /> {item.watchCount}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex gap-2 pt-1">
+                                <Button size="sm" className="flex-1 rounded-xl gap-1.5 text-xs h-9" asChild>
+                                  <a href={item.url} target="_blank" rel="noopener noreferrer">
+                                    <ExternalLink size={13} /> View on eBay
+                                  </a>
+                                </Button>
+                                <button
+                                  onClick={() => handleSave(item)}
+                                  disabled={savingId === item.id}
+                                  className="h-9 w-9 rounded-xl border border-border bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors shrink-0"
+                                >
+                                  {savingId === item.id ? (
+                                    <Loader2 size={14} className="animate-spin text-muted-foreground" />
+                                  ) : savedIds.has(item.partNumber) ? (
+                                    <BookmarkCheck size={14} className="text-primary" />
+                                  ) : (
+                                    <Bookmark size={14} className="text-muted-foreground" />
+                                  )}
+                                </button>
+                                <PriceAlertDialog supplierName="eBay Motors" partQuery={item.partName} supplierUrl={item.url} />
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  ))}
+                      );
+                    });
+                  })()}
                 </div>
               </div>
             ) : !liveLoading ? (
