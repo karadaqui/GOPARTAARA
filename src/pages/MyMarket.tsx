@@ -582,7 +582,7 @@ const MyMarket = () => {
               <label className="text-sm text-muted-foreground block mb-1">Description</label>
               <Textarea value={profileForm.description} onChange={e => setProfileForm(f => ({ ...f, description: e.target.value }))} className="bg-secondary border-border rounded-xl" />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm text-muted-foreground block mb-1">Email</label>
                 <Input value={profileForm.contact_email} onChange={e => setProfileForm(f => ({ ...f, contact_email: e.target.value }))} className="bg-secondary border-border rounded-xl" />
