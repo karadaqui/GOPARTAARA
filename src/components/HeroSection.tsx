@@ -128,13 +128,13 @@ const HeroSection = () => {
           Trusted by 2,000+ mechanics &amp; enthusiasts
         </div>
 
-        <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight leading-tight mb-6">
+        <h1 className="font-display text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-bold tracking-tight leading-tight mb-4 sm:mb-6">
           Find Any Car Part
           <br />
           <span className="text-gradient">Instantly</span>
         </h1>
 
-        <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-12">
+        <p className="text-muted-foreground text-sm sm:text-lg md:text-xl max-w-2xl mx-auto mb-8 sm:mb-12">
           Search across 6+ trusted UK and global suppliers. Compare prices, check availability, and order — all in one place.
         </p>
 
@@ -268,9 +268,9 @@ const HeroSection = () => {
         </div>
 
         {/* Trust badges */}
-        <div className="flex flex-wrap items-center justify-center gap-6 mt-12 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-6 mt-8 sm:mt-12 text-[10px] sm:text-xs text-muted-foreground">
           {["eBay UK", "Amazon UK", "Euro Car Parts", "GSF Car Parts", "Car Parts 4 Less", "Autodoc"].map((s) => (
-            <span key={s} className="px-3 py-1.5 rounded-full border border-border bg-secondary/30">
+            <span key={s} className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-border bg-secondary/30">
               {s}
             </span>
           ))}
