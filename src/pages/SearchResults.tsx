@@ -702,7 +702,7 @@ const SearchResults = () => {
                                     <Bookmark size={14} className="text-muted-foreground" />
                                   )}
                                 </button>
-                                <PriceAlertDialog supplierName="eBay Motors" partQuery={item.partName} supplierUrl={item.url} />
+                                <PriceAlertDialog supplierName="eBay Motors" partQuery={item.partName} supplierUrl={item.url} ebayItemId={item.id} currentPrice={item.price} />
                               </div>
                             </div>
                           </div>
