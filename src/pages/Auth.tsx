@@ -75,15 +75,21 @@ const Auth = () => {
     setOauthLoading(provider);
     try {
       const redirectTo = searchParams.get("redirect") || "/";
+      // Store redirect intent before OAuth redirect so we can restore it after callback
+      if (redirectTo !== "/") {
+        localStorage.setItem("partara_auth_redirect", redirectTo);
+      }
       const result = await lovable.auth.signInWithOAuth(provider, {
-        redirect_uri: `${window.location.origin}${redirectTo}`,
+        redirect_uri: window.location.origin,
       });
       if (result.error) {
         toast({ title: "Error", description: String(result.error), variant: "destructive" });
       } else if (result.redirected) {
         return;
       } else {
-        navigate(redirectTo);
+        const storedRedirect = localStorage.getItem("partara_auth_redirect") || "/";
+        localStorage.removeItem("partara_auth_redirect");
+        navigate(storedRedirect);
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message || "OAuth sign in failed", variant: "destructive" });
