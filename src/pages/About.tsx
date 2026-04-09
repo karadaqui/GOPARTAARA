@@ -225,6 +225,7 @@ const About = () => (
       </section>
     </main>
     <Footer />
+    <BackToTop />
   </div>
 );
 

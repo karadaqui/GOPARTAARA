@@ -25,6 +25,7 @@ const Pricing = () => (
       <SellerPricingSection />
     </div>
     <Footer />
+    <BackToTop />
   </div>
 );
 

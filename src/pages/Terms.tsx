@@ -487,6 +487,7 @@ const Terms = () => (
       </div>
     </main>
     <Footer />
+    <BackToTop />
   </div>
 );
 

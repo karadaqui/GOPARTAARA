@@ -203,6 +203,7 @@ const Contact = () => {
         </div>
       </main>
       <Footer />
+      <BackToTop />
     </div>
   );
 };
