@@ -12,9 +12,9 @@ const BodySchema = z.object({
   category: z.string().max(100).optional(),
 });
 
-// Simple in-memory cache to avoid hitting eBay rate limits
+// In-memory cache — 10 minute TTL
 const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const CACHE_TTL_MS = 10 * 60 * 1000;
 
 function getCached(key: string) {
   const entry = cache.get(key);
@@ -26,35 +26,37 @@ function getCached(key: string) {
 }
 
 function setCache(key: string, data: any) {
-  // Limit cache size
-  if (cache.size > 200) {
+  if (cache.size > 300) {
     const oldest = cache.keys().next().value;
     if (oldest) cache.delete(oldest);
   }
   cache.set(key, { data, timestamp: Date.now() });
 }
 
-async function fetchWithRetry(url: string, retries = 2, delayMs = 2000): Promise<Response> {
+async function fetchWithRetry(url: string, retries = 2, delayMs = 2000): Promise<{ response: Response | null; rateLimited: boolean }> {
   for (let attempt = 0; attempt <= retries; attempt++) {
     const response = await fetch(url);
-    if (response.ok) return response;
+    if (response.ok) return { response, rateLimited: false };
 
     const text = await response.text();
 
-    // If rate limited, wait and retry
     if (response.status === 500 && text.includes("RateLimiter") && attempt < retries) {
       console.warn(`eBay rate limited, retrying in ${delayMs}ms (attempt ${attempt + 1}/${retries})`);
       await new Promise(r => setTimeout(r, delayMs));
-      delayMs *= 2; // exponential backoff
+      delayMs *= 2;
       continue;
     }
 
-    // Non-retryable error
+    // Final attempt was rate limited
+    if (text.includes("RateLimiter")) {
+      console.error("eBay rate limited after all retries");
+      return { response: null, rateLimited: true };
+    }
+
     console.error("eBay API error:", response.status, text);
-    return new Response(text, { status: response.status, statusText: response.statusText });
+    return { response: null, rateLimited: false };
   }
-  // Should not reach here, but just in case
-  return new Response("Max retries exceeded", { status: 503 });
+  return { response: null, rateLimited: true };
 }
 
 Deno.serve(async (req) => {
@@ -62,36 +64,33 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  const json = (data: any, status = 200) =>
+    new Response(JSON.stringify(data), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+
   try {
     const EBAY_APP_ID = Deno.env.get("EBAY_APP_ID");
     if (!EBAY_APP_ID) {
-      return new Response(
-        JSON.stringify({ error: "EBAY_APP_ID is not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return json({ error: "EBAY_APP_ID is not configured", results: [], fallback: true });
     }
 
     const body = await req.json();
     const parsed = BodySchema.safeParse(body);
     if (!parsed.success) {
-      return new Response(
-        JSON.stringify({ error: parsed.error.flatten().fieldErrors }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return json({ error: parsed.error.flatten().fieldErrors, results: [] }, 400);
     }
 
     const { query, category } = parsed.data;
     const searchQuery = category ? `${query} ${category}` : query;
+    const cacheKey = searchQuery.toLowerCase().trim();
 
     // Check cache first
-    const cacheKey = searchQuery.toLowerCase().trim();
     const cached = getCached(cacheKey);
     if (cached) {
       console.log("Cache hit for:", cacheKey);
-      return new Response(
-        JSON.stringify(cached),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return json(cached);
     }
 
     const params = new URLSearchParams({
@@ -111,12 +110,19 @@ Deno.serve(async (req) => {
       "outputSelector(2)": "PictureURLSuperSize",
     });
 
-    const response = await fetchWithRetry(`${EBAY_API_URL}?${params.toString()}`);
-    if (!response.ok) {
-      return new Response(
-        JSON.stringify({ error: `eBay search failed [${response.status}]`, results: [] }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const { response, rateLimited } = await fetchWithRetry(`${EBAY_API_URL}?${params.toString()}`);
+
+    if (!response) {
+      // Return 200 with fallback signal so frontend can show supplier buttons
+      const fallbackData = {
+        results: [],
+        totalResults: 0,
+        fallback: true,
+        error: rateLimited ? "SERVICE_RATE_LIMITED" : "SERVICE_UNAVAILABLE",
+      };
+      // Cache the fallback briefly (2 min) to avoid hammering a down API
+      cache.set(cacheKey, { data: fallbackData, timestamp: Date.now() - (CACHE_TTL_MS - 2 * 60 * 1000) });
+      return json(fallbackData);
     }
 
     const data = await response.json();
@@ -186,20 +192,15 @@ Deno.serve(async (req) => {
     });
 
     const responseData = { results, totalResults };
-
-    // Cache successful results
     setCache(cacheKey, responseData);
-
-    return new Response(
-      JSON.stringify(responseData),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return json(responseData);
   } catch (error) {
     console.error("Search error:", error);
-    const msg = error instanceof Error ? error.message : "Unknown error";
-    return new Response(
-      JSON.stringify({ error: msg, results: [] }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return json({
+      error: "SERVICE_FAILED",
+      fallback: true,
+      results: [],
+      totalResults: 0,
+    });
   }
 });
