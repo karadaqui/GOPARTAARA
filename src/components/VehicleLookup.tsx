@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Car, Loader2, Search, ChevronRight } from "lucide-react";
+import { Car, Loader2, Search, ChevronRight, Pencil } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 interface VehicleData {
   registrationNumber: string;
   make: string;
+  model: string | null;
   colour: string | null;
   fuelType: string | null;
   yearOfManufacture: number | null;
@@ -26,6 +27,8 @@ const VehicleLookup = ({ onLookupStart, onVehicleFound }: VehicleLookupProps) =>
   const [regNumber, setRegNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [vehicle, setVehicle] = useState<VehicleData | null>(null);
+  const [modelInput, setModelInput] = useState("");
+  const [modelConfirmed, setModelConfirmed] = useState(false);
   const [partQuery, setPartQuery] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -41,6 +44,8 @@ const VehicleLookup = ({ onLookupStart, onVehicleFound }: VehicleLookupProps) =>
     setLoading(true);
     setVehicle(null);
     setPartQuery("");
+    setModelInput("");
+    setModelConfirmed(false);
     onLookupStart?.();
     try {
       const { data, error } = await supabase.functions.invoke("vehicle-lookup", {
@@ -49,7 +54,10 @@ const VehicleLookup = ({ onLookupStart, onVehicleFound }: VehicleLookupProps) =>
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
-      const nextVehicle = data.vehicle as VehicleData;
+      const nextVehicle: VehicleData = {
+        ...data.vehicle,
+        model: data.vehicle.model || null,
+      };
       toast({ title: `Found: ${nextVehicle.make}`, description: `${nextVehicle.yearOfManufacture || ""} ${nextVehicle.colour || ""}`.trim() });
 
       if (onVehicleFound) {
@@ -65,10 +73,22 @@ const VehicleLookup = ({ onLookupStart, onVehicleFound }: VehicleLookupProps) =>
     }
   };
 
+  const handleModelConfirm = () => {
+    if (!vehicle || !modelInput.trim()) return;
+    const updated = { ...vehicle, model: modelInput.trim().toUpperCase() };
+    setVehicle(updated);
+    setModelConfirmed(true);
+    toast({ title: `Model set: ${updated.make} ${updated.model}` });
+  };
+
+  const vehicleLabel = vehicle
+    ? `${vehicle.make}${vehicle.model ? ` ${vehicle.model}` : ""}${vehicle.yearOfManufacture ? ` (${vehicle.yearOfManufacture})` : ""}`
+    : "";
+
   const handlePartSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!vehicle || !partQuery.trim()) return;
-    const q = `${vehicle.make} ${vehicle.yearOfManufacture || ""} ${partQuery.trim()}`.trim();
+    const q = `${vehicle.make} ${vehicle.model || ""} ${vehicle.yearOfManufacture || ""} ${partQuery.trim()}`.replace(/\s+/g, " ").trim();
     const vehicleParam = encodeURIComponent(JSON.stringify(vehicle));
     navigate(`/search?q=${encodeURIComponent(q)}&vehicle=${vehicleParam}`);
   };
@@ -92,9 +112,8 @@ const VehicleLookup = ({ onLookupStart, onVehicleFound }: VehicleLookupProps) =>
         </Button>
       </form>
 
-      {/* Vehicle details */}
       {vehicle && (
-        <div className="mt-4 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="mt-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
           <div className="glass rounded-xl p-4 border border-primary/20">
             <div className="flex items-start gap-3">
               <div className="bg-primary/10 rounded-lg p-2 shrink-0">
@@ -102,7 +121,7 @@ const VehicleLookup = ({ onLookupStart, onVehicleFound }: VehicleLookupProps) =>
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-display font-bold text-lg text-foreground">
-                  {vehicle.make} {vehicle.yearOfManufacture && `(${vehicle.yearOfManufacture})`}
+                  {vehicleLabel}
                 </h3>
                 <div className="flex flex-wrap gap-2 mt-1.5 text-xs text-muted-foreground">
                   {vehicle.colour && (
@@ -130,21 +149,48 @@ const VehicleLookup = ({ onLookupStart, onVehicleFound }: VehicleLookupProps) =>
             </div>
           </div>
 
-          {/* Part search for this vehicle */}
-          <form onSubmit={handlePartSearch} className="flex items-center gap-2">
-            <div className="flex-1 relative">
-              <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={partQuery}
-                onChange={(e) => setPartQuery(e.target.value)}
-                placeholder={`Search parts for ${vehicle.make}...`}
-                className="pl-10 bg-secondary border-border h-11 rounded-xl"
-              />
+          {/* Model input - show if model not yet confirmed */}
+          {!modelConfirmed && (
+            <div className="flex items-center gap-2">
+              <div className="flex-1 relative">
+                <Pencil size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={modelInput}
+                  onChange={(e) => setModelInput(e.target.value)}
+                  placeholder={`Enter model (e.g. Astra, Corsa, Golf)`}
+                  className="pl-10 bg-secondary border-border h-11 rounded-xl"
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleModelConfirm(); } }}
+                />
+              </div>
+              <Button
+                type="button"
+                onClick={handleModelConfirm}
+                variant="outline"
+                className="rounded-xl h-11 px-5"
+                disabled={!modelInput.trim()}
+              >
+                Confirm Model
+              </Button>
             </div>
-            <Button type="submit" className="rounded-xl h-11 px-5 gap-1.5" disabled={!partQuery.trim()}>
-              Find Parts <ChevronRight size={14} />
-            </Button>
-          </form>
+          )}
+
+          {/* Part search - show after model is confirmed */}
+          {modelConfirmed && (
+            <form onSubmit={handlePartSearch} className="flex items-center gap-2">
+              <div className="flex-1 relative">
+                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={partQuery}
+                  onChange={(e) => setPartQuery(e.target.value)}
+                  placeholder={`Search parts for ${vehicle.make} ${vehicle.model || ""}...`}
+                  className="pl-10 bg-secondary border-border h-11 rounded-xl"
+                />
+              </div>
+              <Button type="submit" className="rounded-xl h-11 px-5 gap-1.5" disabled={!partQuery.trim()}>
+                Find Parts <ChevronRight size={14} />
+              </Button>
+            </form>
+          )}
         </div>
       )}
     </div>
