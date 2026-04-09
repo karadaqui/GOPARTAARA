@@ -230,6 +230,10 @@ function processAndReturn(
 
     const listingType = item.buyingOptions?.includes("AUCTION") ? "Auction" : "FixedPrice";
 
+    // Stock / availability
+    const quantityAvailable = item.estimatedAvailabilities?.[0]?.estimatedAvailableQuantity || null;
+    const availabilityStatus = item.estimatedAvailabilities?.[0]?.availabilityThresholdType || null;
+
     return {
       id: item.itemId || `ebay-${i}-${Date.now()}`,
       partName: item.title || "Unknown Part",
@@ -251,7 +255,9 @@ function processAndReturn(
       itemCountry,
       listingType,
       endTime: null,
-      watchCount: 0,
+      watchCount: item.watchCount || 0,
+      quantityAvailable,
+      availabilityStatus,
     };
   });
 
