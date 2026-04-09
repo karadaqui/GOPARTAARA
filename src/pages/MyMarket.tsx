@@ -271,7 +271,7 @@ const MyMarket = () => {
 
         const newId = newListings?.[0]?.id;
         if (newId) {
-          toast({ title: "Listing created! Running AI review..." });
+          toast({ title: "Listing created! Running review..." });
           try {
             const { data: modResult } = await supabase.functions.invoke("moderate-listing", {
               body: { listing_id: newId },
