@@ -787,34 +787,34 @@ const SearchResults = () => {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="flex flex-col items-center gap-3 mt-8">
-                    <p className="text-xs text-muted-foreground">
+                  <div className="flex flex-col items-center gap-2 sm:gap-3 mt-6 sm:mt-8">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">
                       Pages {chunkStart}-{chunkEnd} of {totalPages.toLocaleString()}
                     </p>
-                    <div className="flex items-center gap-1 flex-wrap justify-center">
+                    <div className="flex items-center gap-0.5 sm:gap-1 flex-wrap justify-center">
                       {currentChunk > 0 && (
                         <button
                           onClick={() => handlePageChange((currentChunk - 1) * PAGES_PER_CHUNK + 1)}
-                          className="flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium bg-secondary hover:bg-secondary/80 text-foreground transition-colors"
+                          className="flex items-center gap-0.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs font-medium bg-secondary hover:bg-secondary/80 text-foreground transition-colors"
                         >
-                          <ChevronLeft size={12} /> Prev 50
+                          <ChevronLeft size={10} className="sm:w-3 sm:h-3" /> Prev 50
                         </button>
                       )}
                       <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1}
-                        className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-secondary hover:bg-secondary/80 text-foreground"
+                        className="flex items-center gap-0.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-secondary hover:bg-secondary/80 text-foreground"
                       >
-                        <ChevronLeft size={14} /> Prev
+                        <ChevronLeft size={12} className="sm:w-3.5 sm:h-3.5" /> Prev
                       </button>
                       {getPageNumbers().map((page, i) =>
                         page === "..." ? (
-                          <span key={`ellipsis-${i}`} className="px-2 py-2 text-sm text-muted-foreground">...</span>
+                          <span key={`ellipsis-${i}`} className="px-1 sm:px-2 py-1.5 sm:py-2 text-xs sm:text-sm text-muted-foreground">...</span>
                         ) : (
                           <button
                             key={page}
                             onClick={() => handlePageChange(page as number)}
-                            className={`min-w-[36px] h-9 rounded-lg text-sm font-medium transition-colors ${
+                            className={`min-w-[28px] sm:min-w-[36px] h-7 sm:h-9 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
                               currentPage === page
                                 ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25"
                                 : "bg-secondary hover:bg-secondary/80 text-foreground"
@@ -827,16 +827,16 @@ const SearchResults = () => {
                       <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages}
-                        className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-secondary hover:bg-secondary/80 text-foreground"
+                        className="flex items-center gap-0.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-secondary hover:bg-secondary/80 text-foreground"
                       >
-                        Next <ChevronRight size={14} />
+                        Next <ChevronRight size={12} className="sm:w-3.5 sm:h-3.5" />
                       </button>
                       {chunkEnd < totalPages && (
                         <button
                           onClick={() => handlePageChange((currentChunk + 1) * PAGES_PER_CHUNK + 1)}
-                          className="flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium bg-secondary hover:bg-secondary/80 text-foreground transition-colors"
+                          className="flex items-center gap-0.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs font-medium bg-secondary hover:bg-secondary/80 text-foreground transition-colors"
                         >
-                          Next 50 <ChevronRight size={12} />
+                          Next 50 <ChevronRight size={10} className="sm:w-3 sm:h-3" />
                         </button>
                       )}
                     </div>

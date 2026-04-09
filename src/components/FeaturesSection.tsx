@@ -57,11 +57,11 @@ const FeaturesSection = () => (
           From search to purchase, PARTARA gives you the tools to find, compare, and buy car parts faster.
         </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 max-w-6xl mx-auto">
         {features.map((f) => (
           <div
             key={f.title}
-            className="group rounded-2xl border border-border bg-card p-6 text-center transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
+            className="group rounded-xl sm:rounded-2xl border border-border bg-card p-3 sm:p-6 text-center transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
           >
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
               <f.icon size={24} />
