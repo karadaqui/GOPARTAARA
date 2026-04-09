@@ -123,6 +123,7 @@ Deno.serve(async (req) => {
       q: searchQuery,
       category_ids: "6030",
       limit: "12",
+      offset: String(offset || 0),
       fieldgroups: "MATCHING_ITEMS",
     });
 
