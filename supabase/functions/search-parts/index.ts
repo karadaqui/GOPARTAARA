@@ -1,10 +1,8 @@
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
+import { corsHeaders } from "@supabase/supabase-js/cors";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
-const EBAY_API_URL = "https://svcs.ebay.com/services/search/FindingService/v1";
+const EBAY_BROWSE_API_URL = "https://api.ebay.com/buy/browse/v1/item_summary/search";
+const EBAY_OAUTH_URL = "https://api.ebay.com/identity/v1/oauth2/token";
 const EBAY_AFFILIATE_CAMPID = "5339148333";
 
 const BodySchema = z.object({
@@ -12,7 +10,39 @@ const BodySchema = z.object({
   category: z.string().max(100).optional(),
 });
 
-// In-memory cache — 10 minute TTL
+// --- OAuth 2.0 token cache ---
+let oauthToken: { token: string; expiresAt: number } | null = null;
+
+async function getOAuthToken(appId: string, certId: string): Promise<string> {
+  if (oauthToken && Date.now() < oauthToken.expiresAt - 60_000) {
+    return oauthToken.token;
+  }
+
+  const credentials = btoa(`${appId}:${certId}`);
+  const response = await fetch(EBAY_OAUTH_URL, {
+    method: "POST",
+    headers: {
+      "Authorization": `Basic ${credentials}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: "grant_type=client_credentials&scope=https%3A%2F%2Fapi.ebay.com%2Foauth%2Fapi_scope",
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    console.error("OAuth token error:", response.status, text);
+    throw new Error(`Failed to get OAuth token: ${response.status}`);
+  }
+
+  const data = await response.json();
+  oauthToken = {
+    token: data.access_token,
+    expiresAt: Date.now() + (data.expires_in * 1000),
+  };
+  return oauthToken.token;
+}
+
+// --- In-memory cache — 10 minute TTL ---
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_TTL_MS = 10 * 60 * 1000;
 
@@ -33,27 +63,31 @@ function setCache(key: string, data: any) {
   cache.set(key, { data, timestamp: Date.now() });
 }
 
-async function fetchWithRetry(url: string, retries = 2, delayMs = 2000): Promise<{ response: Response | null; rateLimited: boolean }> {
+// --- Fetch with retry for rate limits ---
+async function fetchWithRetry(
+  url: string,
+  headers: Record<string, string>,
+  retries = 2,
+  delayMs = 2000
+): Promise<{ response: Response | null; rateLimited: boolean }> {
   for (let attempt = 0; attempt <= retries; attempt++) {
-    const response = await fetch(url);
+    const response = await fetch(url, { headers });
     if (response.ok) return { response, rateLimited: false };
 
-    const text = await response.text();
-
-    if (response.status === 500 && text.includes("RateLimiter") && attempt < retries) {
+    if (response.status === 429 && attempt < retries) {
       console.warn(`eBay rate limited, retrying in ${delayMs}ms (attempt ${attempt + 1}/${retries})`);
-      await new Promise(r => setTimeout(r, delayMs));
+      await new Promise((r) => setTimeout(r, delayMs));
       delayMs *= 2;
       continue;
     }
 
-    // Final attempt was rate limited
-    if (text.includes("RateLimiter")) {
+    if (response.status === 429) {
       console.error("eBay rate limited after all retries");
       return { response: null, rateLimited: true };
     }
 
-    console.error("eBay API error:", response.status, text);
+    const text = await response.text();
+    console.error("eBay Browse API error:", response.status, text);
     return { response: null, rateLimited: false };
   }
   return { response: null, rateLimited: true };
@@ -72,8 +106,9 @@ Deno.serve(async (req) => {
 
   try {
     const EBAY_APP_ID = Deno.env.get("EBAY_APP_ID");
-    if (!EBAY_APP_ID) {
-      return json({ error: "EBAY_APP_ID is not configured", results: [], fallback: true });
+    const EBAY_CERT_ID = Deno.env.get("EBAY_CERT_ID");
+    if (!EBAY_APP_ID || !EBAY_CERT_ID) {
+      return json({ error: "eBay credentials not configured", results: [], fallback: true });
     }
 
     const body = await req.json();
@@ -86,99 +121,93 @@ Deno.serve(async (req) => {
     const searchQuery = category ? `${query} ${category}` : query;
     const cacheKey = searchQuery.toLowerCase().trim();
 
-    // Check cache first
     const cached = getCached(cacheKey);
     if (cached) {
       console.log("Cache hit for:", cacheKey);
       return json(cached);
     }
 
+    // Get OAuth token
+    let token: string;
+    try {
+      token = await getOAuthToken(EBAY_APP_ID, EBAY_CERT_ID);
+    } catch (e) {
+      console.error("OAuth error:", e);
+      return json({ error: "SERVICE_AUTH_FAILED", results: [], fallback: true });
+    }
+
+    // Build Browse API URL
     const params = new URLSearchParams({
-      "OPERATION-NAME": "findItemsAdvanced",
-      "SERVICE-VERSION": "1.0.0",
-      "SECURITY-APPNAME": EBAY_APP_ID,
-      "RESPONSE-DATA-FORMAT": "JSON",
-      "REST-PAYLOAD": "",
-      "keywords": searchQuery,
-      "categoryId": "6030",
-      "paginationInput.entriesPerPage": "12",
-      "sortOrder": "BestMatch",
-      "affiliate.trackingId": EBAY_AFFILIATE_CAMPID,
-      "affiliate.networkId": "9",
-      "outputSelector(0)": "SellerInfo",
-      "outputSelector(1)": "PictureURLLarge",
-      "outputSelector(2)": "PictureURLSuperSize",
+      q: searchQuery,
+      category_ids: "9801",
+      limit: "12",
+      sort: "BEST_MATCH",
+      fieldgroups: "MATCHING_ITEMS",
     });
 
-    const { response, rateLimited } = await fetchWithRetry(`${EBAY_API_URL}?${params.toString()}`);
+    const apiUrl = `${EBAY_BROWSE_API_URL}?${params.toString()}`;
+    const requestHeaders: Record<string, string> = {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json",
+      "X-EBAY-C-MARKETPLACE-ID": "EBAY_GB",
+      "X-EBAY-C-ENDUSERCTX": `affiliateCampaignId=${EBAY_AFFILIATE_CAMPID},affiliateReferenceId=partara`,
+    };
+
+    const { response, rateLimited } = await fetchWithRetry(apiUrl, requestHeaders);
 
     if (!response) {
-      // Return 200 with fallback signal so frontend can show supplier buttons
       const fallbackData = {
         results: [],
         totalResults: 0,
         fallback: true,
         error: rateLimited ? "SERVICE_RATE_LIMITED" : "SERVICE_UNAVAILABLE",
       };
-      // Cache the fallback briefly (2 min) to avoid hammering a down API
       cache.set(cacheKey, { data: fallbackData, timestamp: Date.now() - (CACHE_TTL_MS - 2 * 60 * 1000) });
       return json(fallbackData);
     }
 
     const data = await response.json();
-    const searchResult = data?.findItemsAdvancedResponse?.[0]?.searchResult?.[0];
-    const items = searchResult?.item || [];
-    const totalResults = parseInt(searchResult?.["@count"] || "0", 10);
+    const items = data?.itemSummaries || [];
+    const totalResults = data?.total || 0;
 
     const results = items.map((item: any, i: number) => {
-      const price = parseFloat(item.sellingStatus?.[0]?.currentPrice?.[0]?.__value__ || "0");
-      const condition = item.condition?.[0]?.conditionDisplayName?.[0] || "Not specified";
-      const shippingInfo = item.shippingInfo?.[0] || {};
-      const shippingCost = parseFloat(shippingInfo.shippingServiceCost?.[0]?.__value__ || "0");
-      const shippingType = shippingInfo.shippingType?.[0] || "";
-      const freeShipping = shippingCost === 0 || shippingType === "Free";
-      const shipToLocations = shippingInfo.shipToLocations || [];
-      const shipsToUK = shipToLocations.includes("GB") || shipToLocations.includes("Worldwide") || shipToLocations.length === 0;
-      const handlingTime = parseInt(shippingInfo.handlingTime?.[0] || "3", 10);
-      const expedited = shippingInfo.expeditedShipping?.[0] === "true";
+      const price = parseFloat(item.price?.value || "0");
+      const condition = item.condition || "Not specified";
+      const imageUrl = item.image?.imageUrl || item.thumbnailImages?.[0]?.imageUrl || "/placeholder.svg";
 
-      const pictureURLLarge = item.pictureURLLarge?.[0];
-      const pictureURLSuperSize = item.pictureURLSuperSize?.[0];
-      const galleryURL = item.galleryURL?.[0] || "";
-      const upgradedGallery = galleryURL.replace("s-l140", "s-l500");
-      const imageUrl = pictureURLSuperSize || pictureURLLarge || upgradedGallery || "/placeholder.svg";
+      // Shipping info
+      const shippingCost = parseFloat(item.shippingOptions?.[0]?.shippingCost?.value || "0");
+      const shippingType = item.shippingOptions?.[0]?.shippingCostType || "";
+      const freeShipping = shippingCost === 0 || shippingType === "FIXED" && shippingCost === 0;
 
-      const viewItemUrl = item.viewItemURL?.[0] || "";
-      const affiliateUrl = viewItemUrl
-        ? `https://rover.ebay.com/rover/1/710-53481-19255-0/1?campid=${EBAY_AFFILIATE_CAMPID}&toolid=10001&customid=partara&mpre=${encodeURIComponent(viewItemUrl)}`
-        : viewItemUrl;
+      // The Browse API enriches URLs with affiliate info via X-EBAY-C-ENDUSERCTX header
+      const itemUrl = item.itemAffiliateWebUrl || item.itemWebUrl || "";
 
-      const sellerInfo = item.sellerInfo?.[0] || {};
-      const sellerUsername = sellerInfo.sellerUserName?.[0] || "Unknown Seller";
-      const sellerFeedbackScore = parseInt(sellerInfo.feedbackScore?.[0] || "0", 10);
-      const sellerPositivePercent = parseFloat(sellerInfo.positiveFeedbackPercent?.[0] || "0");
-      const topRatedSeller = sellerInfo.topRatedSeller?.[0] === "true";
+      // Seller info
+      const sellerUsername = item.seller?.username || "Unknown Seller";
+      const sellerFeedbackScore = item.seller?.feedbackScore || 0;
+      const sellerPositivePercent = parseFloat(item.seller?.feedbackPercentage || "0");
+      const topRatedSeller = item.topRatedBuyingExperience === true;
 
-      const itemLocation = item.location?.[0] || "Unknown";
-      const itemCountry = item.country?.[0] || "GB";
+      const itemLocation = item.itemLocation?.city || item.itemLocation?.country || "Unknown";
+      const itemCountry = item.itemLocation?.country || "GB";
 
-      const listingType = item.listingInfo?.[0]?.listingType?.[0] || "FixedPrice";
-      const endTime = item.listingInfo?.[0]?.endTime?.[0] || null;
-      const watchCount = parseInt(item.listingInfo?.[0]?.watchCount?.[0] || "0", 10);
+      const listingType = item.buyingOptions?.includes("AUCTION") ? "Auction" : "FixedPrice";
+      const watchCount = 0; // Not available in Browse API summary
 
       return {
-        id: item.itemId?.[0] || `ebay-${i}-${Date.now()}`,
-        partName: item.title?.[0] || "Unknown Part",
-        partNumber: item.itemId?.[0] || `EBAY-${i}`,
+        id: item.itemId || `ebay-${i}-${Date.now()}`,
+        partName: item.title || "Unknown Part",
+        partNumber: item.itemId || `EBAY-${i}`,
         price,
         condition,
         imageUrl,
-        url: affiliateUrl || viewItemUrl,
+        url: itemUrl,
         freeShipping,
         shippingCost: freeShipping ? 0 : shippingCost,
-        shipsToUK,
-        handlingTime,
-        expedited,
+        shipsToUK: true, // Filtered by marketplace header
+        handlingTime: 3,
+        expedited: false,
         sellerUsername,
         sellerFeedbackScore,
         sellerPositivePercent,
@@ -186,7 +215,7 @@ Deno.serve(async (req) => {
         itemLocation,
         itemCountry,
         listingType,
-        endTime,
+        endTime: null,
         watchCount,
       };
     });
