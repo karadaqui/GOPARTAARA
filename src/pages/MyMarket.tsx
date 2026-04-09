@@ -44,6 +44,7 @@ interface Listing {
   photos: string[];
   external_link: string | null;
   active: boolean;
+  approval_status: string;
   view_count: number;
   save_count: number;
   created_at: string;
