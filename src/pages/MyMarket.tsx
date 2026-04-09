@@ -584,10 +584,6 @@ const MyMarket = () => {
               <label className="text-sm text-muted-foreground block mb-1">Additional Compatible Vehicles (comma-separated)</label>
               <Input value={listingForm.compatible_vehicles_text} onChange={e => setListingForm(f => ({ ...f, compatible_vehicles_text: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="BMW 3 Series 2015-2020, BMW 4 Series" />
             </div>
-            <CategoryTagSelector
-              selected={listingForm.tags}
-              onChange={tags => setListingForm(f => ({ ...f, tags }))}
-            />
             <div>
               <label className="text-sm text-muted-foreground block mb-1">External Link</label>
               <Input value={listingForm.external_link} onChange={e => setListingForm(f => ({ ...f, external_link: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="https://yourshop.com/part" />
