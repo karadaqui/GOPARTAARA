@@ -309,33 +309,48 @@ export type Database = {
         Row: {
           active: boolean
           created_at: string
+          current_price: number | null
+          ebay_item_id: string | null
           email: string
           id: string
+          last_checked_at: string | null
           part_name: string
           supplier: string | null
           target_price: number
+          triggered: boolean
+          triggered_at: string | null
           url: string | null
           user_id: string
         }
         Insert: {
           active?: boolean
           created_at?: string
+          current_price?: number | null
+          ebay_item_id?: string | null
           email: string
           id?: string
+          last_checked_at?: string | null
           part_name: string
           supplier?: string | null
           target_price: number
+          triggered?: boolean
+          triggered_at?: string | null
           url?: string | null
           user_id: string
         }
         Update: {
           active?: boolean
           created_at?: string
+          current_price?: number | null
+          ebay_item_id?: string | null
           email?: string
           id?: string
+          last_checked_at?: string | null
           part_name?: string
           supplier?: string | null
           target_price?: number
+          triggered?: boolean
+          triggered_at?: string | null
           url?: string | null
           user_id?: string
         }
