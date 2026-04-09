@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    const { listing_id, action } = await req.json();
+    const { listing_id, action, target_price } = await req.json();
     if (!listing_id || !action) {
       return new Response(JSON.stringify({ error: "Missing listing_id or action" }), {
         status: 400,
