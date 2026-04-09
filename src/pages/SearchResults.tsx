@@ -134,23 +134,31 @@ const SearchResults = () => {
     if (!activeQuery.trim()) {
       setLiveResults([]);
       setTotalResults(0);
+      setEbayFallback(false);
       return;
     }
     let cancelled = false;
     const fetchLive = async () => {
       setLiveLoading(true);
+      setEbayFallback(false);
       try {
         const { data, error } = await supabase.functions.invoke("search-parts", {
           body: { query: activeQuery, category: selectedCategory || undefined },
         });
         if (error) throw error;
         if (!cancelled) {
-          setLiveResults(data?.results || []);
-          setTotalResults(data?.totalResults || 0);
+          if (data?.fallback) {
+            setEbayFallback(true);
+            setLiveResults([]);
+            setTotalResults(0);
+          } else {
+            setLiveResults(data?.results || []);
+            setTotalResults(data?.totalResults || 0);
+          }
         }
       } catch (err) {
         console.error("Live search failed:", err);
-        if (!cancelled) { setLiveResults([]); setTotalResults(0); }
+        if (!cancelled) { setLiveResults([]); setTotalResults(0); setEbayFallback(true); }
       } finally {
         if (!cancelled) setLiveLoading(false);
       }
