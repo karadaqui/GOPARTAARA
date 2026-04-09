@@ -105,6 +105,7 @@ const Navbar = () => {
           {!loading && (
             user ? (
               <div className="flex items-center gap-3">
+                <NotificationBell />
                 {user.email === ADMIN_EMAIL && (
                   <button
                     onClick={() => navigate("/admin")}
