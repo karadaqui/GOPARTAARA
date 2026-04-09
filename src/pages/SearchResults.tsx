@@ -621,7 +621,7 @@ const SearchResults = () => {
                                 {item.condition}
                               </span>
                               {priceBadge && (
-                                <span className={`absolute top-3 left-[calc(3rem+${item.condition.length*6}px)] text-[10px] font-bold px-2 py-1 rounded-lg border ${priceBadge.className}`}>
+                                <span className={`absolute top-10 left-3 text-[10px] font-bold px-2 py-1 rounded-lg border ${priceBadge.className}`}>
                                   {priceBadge.label}
                                 </span>
                               )}
