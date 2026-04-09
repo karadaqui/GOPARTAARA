@@ -592,22 +592,67 @@ const SearchResults = () => {
               <div className="mb-10">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                   {(() => {
-                    const prices = liveResults.map((r: any) => r.price).filter((p: number) => p > 0);
-                    const avgPrice = prices.length > 0 ? prices.reduce((a: number, b: number) => a + b, 0) / prices.length : 0;
+                    // Group items by extracted part-type keywords for fair price comparison
+                    const extractPartType = (title: string): string => {
+                      const t = title.toLowerCase();
+                      const partPatterns = [
+                        "brake pad", "brake disc", "brake caliper", "brake shoe", "brake line",
+                        "air filter", "oil filter", "fuel filter", "cabin filter", "pollen filter",
+                        "wiper blade", "wiper", "spark plug", "glow plug",
+                        "headlight", "tail light", "fog light", "indicator", "bulb",
+                        "wing mirror", "mirror", "bumper", "grille", "bonnet", "boot lid",
+                        "alternator", "starter motor", "water pump", "fuel pump", "power steering pump",
+                        "radiator", "thermostat", "turbo", "turbocharger", "exhaust", "catalytic converter",
+                        "clutch kit", "clutch", "flywheel", "gearbox", "transmission",
+                        "shock absorber", "spring", "strut", "control arm", "ball joint", "tie rod",
+                        "timing belt", "timing chain", "drive belt", "serpentine belt",
+                        "battery", "engine", "cylinder head", "camshaft", "crankshaft",
+                        "door handle", "window regulator", "wheel bearing", "hub", "cv joint", "driveshaft",
+                        "seat", "steering wheel", "dashboard", "instrument cluster",
+                        "ecu", "sensor", "coil pack", "ignition coil", "injector", "throttle body",
+                        "alloy wheel", "wheel", "tyre",
+                      ];
+                      for (const p of partPatterns) {
+                        if (t.includes(p)) return p;
+                      }
+                      // Fallback: use first 2-3 significant words
+                      const words = t.replace(/[^a-z0-9\s]/g, "").split(/\s+/).filter(w => w.length > 2 && !["for", "the", "and", "new", "fit", "fits", "with", "set"].includes(w));
+                      return words.slice(0, 3).join(" ") || "unknown";
+                    };
+
+                    // Build groups and compute median per group
+                    const groups: Record<string, number[]> = {};
+                    for (const item of liveResults) {
+                      if (item.price > 0) {
+                        const type = extractPartType(item.title || "");
+                        if (!groups[type]) groups[type] = [];
+                        groups[type].push(item.price);
+                      }
+                    }
+
+                    const medianOf = (arr: number[]) => {
+                      const sorted = [...arr].sort((a, b) => a - b);
+                      const mid = Math.floor(sorted.length / 2);
+                      return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+                    };
 
                     const getFlag = (code: string) => countryFlags[code] || "🌍";
 
-                    const getPriceBadge = (price: number) => {
-                      if (avgPrice === 0) return null;
-                      const ratio = price / avgPrice;
+                    const getPriceBadge = (price: number, title: string) => {
+                      const type = extractPartType(title || "");
+                      const group = groups[type];
+                      if (!group || group.length < 3) return null;
+                      const median = medianOf(group);
+                      if (median === 0) return null;
+                      const ratio = price / median;
                       if (ratio <= 0.75) return { label: "Great Price", className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" };
-                      if (ratio <= 0.95) return { label: "Good Price", className: "bg-sky-500/20 text-sky-400 border-sky-500/30" };
+                      if (ratio <= 0.90) return { label: "Good Price", className: "bg-sky-500/20 text-sky-400 border-sky-500/30" };
                       if (ratio >= 1.25) return { label: "High Price", className: "bg-red-500/20 text-red-400 border-red-500/30" };
                       return null;
                     };
 
                     return liveResults.map((item: any) => {
-                      const priceBadge = getPriceBadge(item.price);
+                      const priceBadge = getPriceBadge(item.price, item.title);
                       return (
                         <div key={item.id} className="group glass rounded-2xl overflow-hidden hover:border-primary/30 transition-all flex flex-col relative">
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
