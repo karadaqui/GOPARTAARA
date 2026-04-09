@@ -276,7 +276,7 @@ const SearchResults = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       <div className="border-b border-border bg-card/40 backdrop-blur-lg sticky top-0 z-20 pt-16">
-        <div className="container max-w-5xl py-4 px-4">
+         <div className="container max-w-5xl py-4 px-4">
           <div className="flex gap-1 mb-3">
             <button onClick={() => setSearchMode("text")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${searchMode === "text" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>
@@ -284,37 +284,39 @@ const SearchResults = () => {
             </button>
             <button onClick={() => setSearchMode("reg")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${searchMode === "reg" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}>
-              <Car size={14} /> Reg Plate Lookup
+              <Car size={14} /> Reg Plate
             </button>
           </div>
           {searchMode === "text" ? (
             <div className="space-y-2">
-              <form onSubmit={handleSearch} className="flex items-center gap-2">
+              <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <div className="flex-1 relative flex items-center">
                   <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
                   <Search size={18} className="absolute left-8 top-1/2 -translate-y-1/2 text-muted-foreground" />
                   <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search car parts..." className="pl-14 bg-secondary border-border h-11 rounded-xl" />
                 </div>
-                <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
-                  <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={identifying} />
-                  <div className="flex items-center gap-1.5 px-3 h-11 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-sm text-secondary-foreground">
-                    {identifying ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
-                    <span className="hidden sm:inline">{identifying ? "Identifying..." : "Photo"}</span>
-                  </div>
-                </label>
-                {searchLimit.limitReached ? (
-                  <Button type="button" className="rounded-xl h-11 px-6" onClick={() => {
-                    const el = document.getElementById("pricing");
-                    if (el) el.scrollIntoView({ behavior: "smooth" });
-                    else window.location.href = "/#pricing";
-                  }}>
-                    <ArrowUp size={14} className="mr-1" /> Upgrade to Pro
-                  </Button>
-                ) : (
-                  <Button type="submit" className="rounded-xl h-11 px-6">Search</Button>
-                )}
+                <div className="flex items-center gap-2">
+                  <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
+                    <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={identifying} />
+                    <div className="flex items-center gap-1.5 px-3 h-11 rounded-xl bg-secondary hover:bg-secondary/80 transition-colors text-sm text-secondary-foreground">
+                      {identifying ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
+                      <span>{identifying ? "Identifying..." : "Photo"}</span>
+                    </div>
+                  </label>
+                  {searchLimit.limitReached ? (
+                    <Button type="button" className="rounded-xl h-11 px-4 sm:px-6 flex-1 sm:flex-none" onClick={() => {
+                      const el = document.getElementById("pricing");
+                      if (el) el.scrollIntoView({ behavior: "smooth" });
+                      else window.location.href = "/#pricing";
+                    }}>
+                      <ArrowUp size={14} className="mr-1" /> Upgrade
+                    </Button>
+                  ) : (
+                    <Button type="submit" className="rounded-xl h-11 px-4 sm:px-6 flex-1 sm:flex-none">Search</Button>
+                  )}
+                </div>
               </form>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                 <VehicleFilterButton onSelect={(vehicleQuery) => setQuery((prev) => prev.trim() ? `${vehicleQuery} ${prev.trim()}` : vehicleQuery)} />
                 <div className="flex items-center gap-2">
                   {compareParts.length > 0 && (
@@ -406,20 +408,20 @@ const SearchResults = () => {
                   }}
                   className="group w-full text-left glass rounded-2xl overflow-hidden border-2 border-orange-500/30 hover:border-orange-400/60 transition-all hover:shadow-lg hover:shadow-orange-500/10"
                 >
-                  <div className="flex items-center gap-4 p-5 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent">
-                    <div className="shrink-0 bg-[#FF9900] rounded-xl px-4 py-3 flex items-center justify-center shadow-lg shadow-orange-500/20">
-                      <span className="text-xl font-bold text-white tracking-tight leading-none" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}>amazon.com</span>
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-4 sm:p-5 bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-transparent">
+                    <div className="shrink-0 bg-[#FF9900] rounded-xl px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-center shadow-lg shadow-orange-500/20">
+                      <span className="text-base sm:text-xl font-bold text-white tracking-tight leading-none" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}>amazon.com</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-display font-bold text-lg text-foreground">Amazon UK</h3>
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 font-semibold border border-orange-500/30">🇬🇧 Prime Available</span>
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h3 className="font-display font-bold text-base sm:text-lg text-foreground">Amazon UK</h3>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 font-semibold border border-orange-500/30">🇬🇧 Prime</span>
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        Search <span className="font-semibold text-foreground">"{activeQuery}"</span> on Amazon UK — fast delivery, buyer protection & millions of parts
+                      <p className="text-xs sm:text-sm text-muted-foreground">
+                        Search <span className="font-semibold text-foreground">"{activeQuery}"</span> on Amazon UK
                       </p>
                     </div>
-                    <div className="shrink-0 rounded-xl h-11 px-6 bg-[#FF9900] hover:bg-[#e88b00] text-[#232F3E] font-bold gap-2 shadow-lg shadow-orange-500/20 border-0 inline-flex items-center justify-center text-sm">
+                    <div className="shrink-0 rounded-xl h-10 sm:h-11 px-4 sm:px-6 bg-[#FF9900] hover:bg-[#e88b00] text-[#232F3E] font-bold gap-2 shadow-lg shadow-orange-500/20 border-0 inline-flex items-center justify-center text-xs sm:text-sm w-full sm:w-auto">
                       <Search size={14} />
                       Search on Amazon
                     </div>
@@ -628,7 +630,7 @@ const SearchResults = () => {
                 <h2 className="font-display text-lg font-bold">Search More Suppliers</h2>
               </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {suppliers.map((supplier) => (
                 <div key={supplier.name} className="group relative glass rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.02]">
                   <a href={supplier.buildUrl(activeQuery)} target="_blank" rel="noopener noreferrer">
