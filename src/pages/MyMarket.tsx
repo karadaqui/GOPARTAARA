@@ -468,7 +468,7 @@ const MyMarket = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <div className="glass rounded-xl p-4 text-center">
             <Package size={20} className="text-primary mx-auto mb-1" />
             <p className="font-display text-2xl font-bold">{listings.length}</p>
