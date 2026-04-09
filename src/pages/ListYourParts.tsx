@@ -52,7 +52,7 @@ const ListYourParts = () => {
   const [checkingPlan, setCheckingPlan] = useState(true);
 
   // Redirect seller plan users directly to /my-market
-  useState(() => {
+  useEffect(() => {
     if (!user) { setCheckingPlan(false); return; }
     supabase
       .from("profiles")
@@ -65,9 +65,8 @@ const ListYourParts = () => {
         } else {
           setCheckingPlan(false);
         }
-      })
-      .catch(() => setCheckingPlan(false));
-  });
+      });
+  }, [user, navigate]);
 
   if (checkingPlan) {
     return (
