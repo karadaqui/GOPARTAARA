@@ -77,6 +77,17 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title="Contact Us | PARTARA"
+        description="Get in touch with the PARTARA team. Have a question about car parts, pricing, or our platform? We'd love to hear from you."
+        path="/contact"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          "name": "Contact PARTARA",
+          "url": "https://car-part-search.lovable.app/contact"
+        }}
+      />
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container px-4 max-w-4xl mx-auto">

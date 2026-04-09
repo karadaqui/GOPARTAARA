@@ -6,6 +6,11 @@ import { Shield } from "lucide-react";
 
 const Privacy = () => (
   <div className="min-h-screen bg-background">
+    <SEOHead
+      title="Privacy Policy | PARTARA"
+      description="Read PARTARA's privacy policy. Learn how we collect, use, and protect your personal data in compliance with UK GDPR."
+      path="/privacy"
+    />
     <Navbar />
     <main className="pt-24 pb-16">
       <div className="container px-4 max-w-4xl mx-auto">
