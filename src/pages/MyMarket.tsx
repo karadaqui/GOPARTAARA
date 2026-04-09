@@ -259,7 +259,7 @@ const MyMarket = () => {
     } else {
       setListingDialog(false);
 
-      // Trigger AI moderation for new listings (not edits - edits go to pending for admin review)
+      // Trigger moderation for new listings (not edits - edits go to pending for admin review)
       if (!editingListing && !error) {
         // Get the newly created listing ID
         const { data: newListings } = await supabase

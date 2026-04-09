@@ -19,27 +19,37 @@ Deno.serve(async (req) => {
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
+      log("No auth header");
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const supabase = createClient(
+    // Use anon key + user's token to validate the JWT
+    const userClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-      { auth: { persistSession: false } }
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } }, auth: { persistSession: false } }
     );
 
-    // Verify user
-    const token = authHeader.replace("Bearer ", "");
-    const { data: userData, error: userError } = await supabase.auth.getUser(token);
+    const { data: userData, error: userError } = await userClient.auth.getUser();
     if (userError || !userData?.user) {
+      log("Auth failed", { error: userError?.message });
       return new Response(JSON.stringify({ error: "Auth failed" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    log("User authenticated", { userId: userData.user.id });
+
+    // Service role client for DB operations
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      { auth: { persistSession: false } }
+    );
 
     const { listing_id } = await req.json();
     if (!listing_id) {
@@ -106,6 +116,7 @@ RESPOND WITH EXACTLY ONE OF:
 APPROVED - if the listing passes all checks
 FLAGGED: [reason] - if the listing needs manual review, with a brief reason`;
 
+    log("Calling AI gateway");
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -113,9 +124,9 @@ FLAGGED: [reason] - if the listing needs manual review, with a brief reason`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash-lite",
         messages: [
-          { role: "system", content: "You are a strict but fair content moderator. Respond concisely." },
+          { role: "system", content: "You are a strict but fair content moderator. Respond concisely with APPROVED or FLAGGED: [reason]." },
           { role: "user", content: moderationPrompt },
         ],
       }),
@@ -124,8 +135,7 @@ FLAGGED: [reason] - if the listing needs manual review, with a brief reason`;
     if (!aiResponse.ok) {
       const errText = await aiResponse.text();
       log("AI gateway error", { status: aiResponse.status, body: errText });
-      // On AI failure, default to pending for manual review
-      return new Response(JSON.stringify({ status: "pending", reason: "AI moderation temporarily unavailable" }), {
+      return new Response(JSON.stringify({ status: "pending", reason: "Moderation temporarily unavailable" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -155,8 +165,8 @@ FLAGGED: [reason] - if the listing needs manual review, with a brief reason`;
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     } else {
-      // Flagged - keep as pending, notify admin
-      const reason = aiDecision.replace(/^FLAGGED:\s*/i, "").trim() || "Content flagged by AI moderation";
+      // Flagged - keep as pending
+      const reason = aiDecision.replace(/^FLAGGED:\s*/i, "").trim() || "Content flagged for manual review";
 
       // Send notification email to admin
       try {
@@ -168,7 +178,7 @@ FLAGGED: [reason] - if the listing needs manual review, with a brief reason`;
             templateData: {
               name: listing.seller_profiles?.business_name || "Unknown Seller",
               email: listing.seller_profiles?.contact_email || "",
-              message: `AI Moderation Flag for listing "${listing.title}":\n\nReason: ${reason}\n\nPlease review at /admin`,
+              message: `Moderation Flag for listing "${listing.title}":\n\nReason: ${reason}\n\nPlease review at /admin`,
             },
           },
         });
