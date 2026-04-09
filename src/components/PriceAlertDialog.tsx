@@ -88,11 +88,11 @@ const PriceAlertDialog = ({ supplierName, partQuery, supplierUrl, ebayItemId, cu
     <Dialog open={open} onOpenChange={handleOpen}>
       <DialogTrigger asChild>
         <button
-          className="h-9 w-9 rounded-xl border border-border bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors shrink-0"
+          className="h-7 w-7 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl border border-border bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors shrink-0"
           title="Set price alert"
           onClick={(e) => e.stopPropagation()}
         >
-          <Bell size={14} className="text-muted-foreground" />
+          <Bell size={10} className="sm:w-[14px] sm:h-[14px] text-muted-foreground" />
         </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">

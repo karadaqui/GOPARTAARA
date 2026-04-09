@@ -53,9 +53,9 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
   const triggeredAlerts = alerts.filter((a) => a.triggered);
 
   return (
-    <div className="glass rounded-2xl p-8">
+    <div className="glass rounded-2xl p-4 sm:p-8">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-display text-lg font-semibold flex items-center gap-2">
+        <h2 className="font-display text-base sm:text-lg font-semibold flex items-center gap-2">
           <Bell size={18} className="text-primary" />
           Price Alerts
         </h2>
@@ -80,73 +80,79 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
           {alerts.map((alert) => (
             <div
               key={alert.id}
-              className={`flex items-start gap-3 p-3 rounded-xl border group ${
+              className={`flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3 p-3 rounded-xl border ${
                 alert.triggered
                   ? "bg-emerald-500/5 border-emerald-500/20"
                   : "bg-secondary/30 border-border"
               }`}
             >
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
-                alert.triggered ? "bg-emerald-500/15" : "bg-primary/10"
-              }`}>
-                {alert.triggered ? (
-                  <CheckCircle2 size={14} className="text-emerald-400" />
-                ) : (
-                  <Bell size={14} className="text-primary" />
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{alert.part_name}</p>
-                <div className="flex flex-wrap gap-2 mt-1 text-xs text-muted-foreground">
-                  {alert.supplier && (
-                    <span className="bg-secondary px-2 py-0.5 rounded-md">{alert.supplier}</span>
-                  )}
-                  <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-md font-medium">
-                    Target: £{Number(alert.target_price).toFixed(2)}
-                  </span>
-                  {alert.current_price != null && (
-                    <span className={`px-2 py-0.5 rounded-md font-medium ${
-                      alert.current_price <= alert.target_price
-                        ? "bg-emerald-500/15 text-emerald-400"
-                        : "bg-secondary text-muted-foreground"
-                    }`}>
-                      Now: £{Number(alert.current_price).toFixed(2)}
-                    </span>
-                  )}
-                  {alert.triggered && alert.triggered_at && (
-                    <span className="text-emerald-400 text-[10px] flex items-center gap-0.5">
-                      <CheckCircle2 size={10} /> Triggered {new Date(alert.triggered_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
-                    </span>
-                  )}
-                  {!alert.triggered && alert.last_checked_at && (
-                    <span className="text-[10px] flex items-center gap-0.5">
-                      <Clock size={10} /> Checked {new Date(alert.last_checked_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
-                    </span>
-                  )}
-                  {!alert.triggered && !alert.last_checked_at && (
-                    <span className="text-[10px]">
-                      Set {new Date(alert.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
-                    </span>
+              {/* Top row: icon + name + delete */}
+              <div className="flex items-start gap-2 sm:gap-3 w-full sm:w-auto sm:flex-1 min-w-0">
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                  alert.triggered ? "bg-emerald-500/15" : "bg-primary/10"
+                }`}>
+                  {alert.triggered ? (
+                    <CheckCircle2 size={14} className="text-emerald-400" />
+                  ) : (
+                    <Bell size={14} className="text-primary" />
                   )}
                 </div>
-              </div>
-              <div className="flex items-center gap-1 shrink-0">
-                {alert.url && (
-                  <a
-                    href={alert.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium line-clamp-2">{alert.part_name}</p>
+                  <div className="flex flex-wrap gap-1.5 mt-1.5">
+                    {alert.supplier && (
+                      <span className="text-xs bg-secondary px-2 py-0.5 rounded-md text-muted-foreground">{alert.supplier}</span>
+                    )}
+                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-md font-medium">
+                      Target: £{Number(alert.target_price).toFixed(2)}
+                    </span>
+                    {alert.current_price != null && (
+                      <span className={`text-xs px-2 py-0.5 rounded-md font-medium ${
+                        alert.current_price <= alert.target_price
+                          ? "bg-emerald-500/15 text-emerald-400"
+                          : "bg-secondary text-muted-foreground"
+                      }`}>
+                        Now: £{Number(alert.current_price).toFixed(2)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-1.5">
+                    {alert.triggered && alert.triggered_at && (
+                      <span className="text-emerald-400 text-[10px] flex items-center gap-0.5">
+                        <CheckCircle2 size={10} /> Triggered {new Date(alert.triggered_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                      </span>
+                    )}
+                    {!alert.triggered && alert.last_checked_at && (
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                        <Clock size={10} /> Checked {new Date(alert.last_checked_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    )}
+                    {!alert.triggered && !alert.last_checked_at && (
+                      <span className="text-[10px] text-muted-foreground">
+                        Set {new Date(alert.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {/* Actions - inline on mobile */}
+                <div className="flex items-center gap-1 shrink-0">
+                  {alert.url && (
+                    <a
+                      href={alert.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <ExternalLink size={13} />
+                    </a>
+                  )}
+                  <button
+                    onClick={() => deleteAlert(alert.id)}
+                    className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
                   >
-                    <ExternalLink size={13} />
-                  </a>
-                )}
-                <button
-                  onClick={() => deleteAlert(alert.id)}
-                  className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
-                >
-                  <Trash2 size={13} />
-                </button>
+                    <Trash2 size={13} />
+                  </button>
+                </div>
               </div>
             </div>
           ))}
