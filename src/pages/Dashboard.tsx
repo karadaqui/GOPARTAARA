@@ -443,7 +443,7 @@ const Dashboard = () => {
           <div className="mt-6">
             <MyGarageSection
               userId={user.id}
-              isPro={subStatus.subscribed}
+              isPro={currentPlan !== "free"}
             />
           </div>
         )}

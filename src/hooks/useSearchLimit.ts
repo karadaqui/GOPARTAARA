@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
 const FREE_LIMIT = 5;
+const PAID_PLANS = ["pro", "business", "basic_seller", "featured_seller", "pro_seller"];
 
 export const useSearchLimit = () => {
   const { user } = useAuth();
@@ -26,7 +27,7 @@ export const useSearchLimit = () => {
         .gte("created_at", startOfMonth.toISOString()),
       supabase
         .from("profiles")
-        .select("bonus_searches")
+        .select("bonus_searches, subscription_plan")
         .eq("user_id", user.id)
         .single(),
       supabase.functions.invoke("check-subscription"),
@@ -34,7 +35,10 @@ export const useSearchLimit = () => {
 
     setSearchCount(count || 0);
     setBonusSearches(profile?.bonus_searches || 0);
-    setIsPro(!subResult.error && subResult.data?.subscribed);
+    const dbPlan = profile?.subscription_plan || "free";
+    const hasPaidPlan = PAID_PLANS.includes(dbPlan);
+    const stripeActive = !subResult.error && subResult.data?.subscribed;
+    setIsPro(hasPaidPlan || stripeActive);
     setLoaded(true);
   };
 
