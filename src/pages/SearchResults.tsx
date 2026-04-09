@@ -57,6 +57,18 @@ const PART_CATEGORIES = [
   { label: "Interior", icon: "🪑" },
 ];
 
+const oemBrands: { brand: string; pattern: RegExp; label: string; url: (q: string) => string; bg: string; bgHover: string; text: string; border: string; badgeBg: string; badgeText: string; badgeBorder: string; gradient: string; shadow: string }[] = [
+  { brand: "BMW", pattern: /bmw/i, label: "BMW OEM Catalog", url: (q) => `https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(q)}`, bg: "#1C69D4", bgHover: "#1559b8", text: "white", border: "border-blue-500/30 hover:border-blue-400/60", badgeBg: "bg-blue-500/20", badgeText: "text-blue-400", badgeBorder: "border-blue-500/30", gradient: "from-[#1C69D4] to-[#0A3D91]", shadow: "shadow-blue-500/20" },
+  { brand: "Mercedes", pattern: /mercedes|merc|benz/i, label: "Mercedes Parts", url: (q) => `https://www.mercedes-benz-parts.com/search?q=${encodeURIComponent(q)}`, bg: "#1A1A1A", bgHover: "#333", text: "white", border: "border-slate-500/30 hover:border-slate-400/60", badgeBg: "bg-slate-500/20", badgeText: "text-slate-300", badgeBorder: "border-slate-400/30", gradient: "from-[#1A1A1A] to-[#333]", shadow: "shadow-slate-500/20" },
+  { brand: "Audi", pattern: /audi/i, label: "Audi Parts", url: (q) => `https://www.audi-shopping.com/search?q=${encodeURIComponent(q)}`, bg: "#1A1A1A", bgHover: "#333", text: "white", border: "border-slate-500/30 hover:border-slate-400/60", badgeBg: "bg-slate-500/20", badgeText: "text-slate-300", badgeBorder: "border-slate-400/30", gradient: "from-[#1A1A1A] to-[#444]", shadow: "shadow-slate-500/20" },
+  { brand: "Ford", pattern: /ford/i, label: "Ford Parts", url: (q) => `https://www.fordparts.com/search?q=${encodeURIComponent(q)}`, bg: "#003478", bgHover: "#002a63", text: "white", border: "border-blue-500/30 hover:border-blue-400/60", badgeBg: "bg-blue-500/20", badgeText: "text-blue-400", badgeBorder: "border-blue-500/30", gradient: "from-[#003478] to-[#001f4d]", shadow: "shadow-blue-500/20" },
+  { brand: "Vauxhall", pattern: /vauxhall|opel/i, label: "Vauxhall Parts", url: (q) => `https://www.vauxhall.co.uk/services/parts/search?q=${encodeURIComponent(q)}`, bg: "#C4122F", bgHover: "#a8102a", text: "white", border: "border-red-500/30 hover:border-red-400/60", badgeBg: "bg-red-500/20", badgeText: "text-red-400", badgeBorder: "border-red-500/30", gradient: "from-[#C4122F] to-[#8B0D22]", shadow: "shadow-red-500/20" },
+  { brand: "Toyota", pattern: /toyota/i, label: "Toyota Parts", url: (q) => `https://www.toyotaparts.co.uk/search?q=${encodeURIComponent(q)}`, bg: "#EB0A1E", bgHover: "#cc0919", text: "white", border: "border-red-500/30 hover:border-red-400/60", badgeBg: "bg-red-500/20", badgeText: "text-red-400", badgeBorder: "border-red-500/30", gradient: "from-[#EB0A1E] to-[#9B0714]", shadow: "shadow-red-500/20" },
+  { brand: "Volkswagen", pattern: /volkswagen|vw/i, label: "VW Parts", url: (q) => `https://www.vwparts.co.uk/search?q=${encodeURIComponent(q)}`, bg: "#001E50", bgHover: "#001540", text: "white", border: "border-blue-500/30 hover:border-blue-400/60", badgeBg: "bg-blue-500/20", badgeText: "text-blue-400", badgeBorder: "border-blue-500/30", gradient: "from-[#001E50] to-[#00122F]", shadow: "shadow-blue-500/20" },
+];
+
+const getOemSearchQuery = (query: string, pattern: RegExp) => query.replace(pattern, "").replace(/\s+/g, " ").trim() || query;
+
 const countryFlags: Record<string, string> = {
   GB: "🇬🇧", US: "🇺🇸", DE: "🇩🇪", CN: "🇨🇳", IT: "🇮🇹", FR: "🇫🇷", ES: "🇪🇸", PL: "🇵🇱", NL: "🇳🇱", JP: "🇯🇵", AU: "🇦🇺",
 };
@@ -397,36 +409,39 @@ const SearchResults = () => {
                 <p className="text-sm text-muted-foreground mt-2">{liveResults.length} of {totalResults} eBay listings shown</p>
               )}
             </div>
-            {/* BMW OEM Catalog Card */}
-            {activeQuery && /bmw/i.test(activeQuery) && (
-              <div className="mb-8">
-                <a
-                  href={`https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(activeQuery.replace(/bmw\s*/i, "").trim() || activeQuery)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group block w-full text-left glass rounded-2xl overflow-hidden border-2 border-blue-500/30 hover:border-blue-400/60 transition-all hover:shadow-lg hover:shadow-blue-500/10"
-                >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-4 sm:p-5 bg-gradient-to-r from-blue-600/10 via-blue-500/5 to-transparent">
-                    <div className="shrink-0 bg-[#1C69D4] rounded-xl px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-center shadow-lg shadow-blue-500/20">
-                      <span className="text-base sm:text-xl font-bold text-white tracking-tight leading-none" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}>BMW</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <h3 className="font-display font-bold text-base sm:text-lg text-foreground">BMW OEM Catalog</h3>
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-semibold border border-blue-500/30">Genuine Parts</span>
+            {/* OEM Brand Catalog Cards */}
+            {activeQuery && oemBrands.filter((b) => b.pattern.test(activeQuery)).map((b) => {
+              const oemQuery = getOemSearchQuery(activeQuery, b.pattern);
+              return (
+                <div key={b.brand} className="mb-8">
+                  <a
+                    href={b.url(oemQuery)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`group block w-full text-left glass rounded-2xl overflow-hidden border-2 ${b.border} transition-all hover:shadow-lg`}
+                  >
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-4 sm:p-5">
+                      <div className="shrink-0 rounded-xl px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-center shadow-lg" style={{ backgroundColor: b.bg }}>
+                        <span className="text-base sm:text-xl font-bold text-white tracking-tight leading-none" style={{ fontFamily: 'system-ui, -apple-system, sans-serif', letterSpacing: '-0.02em' }}>{b.brand}</span>
                       </div>
-                      <p className="text-xs sm:text-sm text-muted-foreground">
-                        Find genuine OEM part numbers and diagrams for <span className="font-semibold text-foreground">"{activeQuery}"</span> on RealOEM
-                      </p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <h3 className="font-display font-bold text-base sm:text-lg text-foreground">{b.label}</h3>
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-semibold border ${b.badgeBg} ${b.badgeText} ${b.badgeBorder}`}>Genuine Parts</span>
+                        </div>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          Find genuine OEM parts for <span className="font-semibold text-foreground">"{activeQuery}"</span>
+                        </p>
+                      </div>
+                      <div className="shrink-0 rounded-xl h-10 sm:h-11 px-4 sm:px-6 font-bold gap-2 border-0 inline-flex items-center justify-center text-xs sm:text-sm w-full sm:w-auto text-white shadow-lg" style={{ backgroundColor: b.bg }}>
+                        <ExternalLink size={14} />
+                        View OEM Parts
+                      </div>
                     </div>
-                    <div className="shrink-0 rounded-xl h-10 sm:h-11 px-4 sm:px-6 bg-[#1C69D4] hover:bg-[#1559b8] text-white font-bold gap-2 shadow-lg shadow-blue-500/20 border-0 inline-flex items-center justify-center text-xs sm:text-sm w-full sm:w-auto">
-                      <ExternalLink size={14} />
-                      View OEM Parts
-                    </div>
-                  </div>
-                </a>
-              </div>
-            )}
+                  </a>
+                </div>
+              );
+            })}
 
             {/* Amazon UK Premium Card */}
             {activeQuery && (
@@ -691,28 +706,31 @@ const SearchResults = () => {
                   </div>
                 </div>
               ))}
-              {/bmw/i.test(activeQuery) && (
-                <div className="group relative glass rounded-xl overflow-hidden hover:border-blue-500/30 transition-all hover:scale-[1.02]">
-                  <a href={`https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(activeQuery.replace(/bmw\s*/i, "").trim() || activeQuery)}`} target="_blank" rel="noopener noreferrer">
-                    <div className="h-14 bg-gradient-to-br from-[#1C69D4] to-[#0A3D91] flex items-center justify-center relative">
-                      <span className="text-white font-display font-bold text-sm tracking-wide opacity-90 group-hover:opacity-100 transition-opacity text-center px-2">
-                        🔵 BMW OEM Catalog
-                      </span>
-                      <span className="absolute bottom-1 right-1 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border bg-blue-500/20 text-blue-300 border-blue-400/30">
-                        <Shield size={8} />
-                        OEM
-                      </span>
+              {oemBrands.filter((b) => b.pattern.test(activeQuery)).map((b) => {
+                const oemQuery = getOemSearchQuery(activeQuery, b.pattern);
+                return (
+                  <div key={b.brand} className="group relative glass rounded-xl overflow-hidden transition-all hover:scale-[1.02]">
+                    <a href={b.url(oemQuery)} target="_blank" rel="noopener noreferrer">
+                      <div className={`h-14 bg-gradient-to-br ${b.gradient} flex items-center justify-center relative`}>
+                        <span className="text-white font-display font-bold text-sm tracking-wide opacity-90 group-hover:opacity-100 transition-opacity text-center px-2">
+                          {b.brand} OEM
+                        </span>
+                        <span className={`absolute bottom-1 right-1 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${b.badgeBg} ${b.badgeText} ${b.badgeBorder}`}>
+                          <Shield size={8} />
+                          OEM
+                        </span>
+                      </div>
+                    </a>
+                    <div className="p-2">
+                      <Button size="sm" className="w-full rounded-lg gap-1 text-xs h-7 text-white" style={{ backgroundColor: b.bg }} asChild>
+                        <a href={b.url(oemQuery)} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink size={11} /> Search
+                        </a>
+                      </Button>
                     </div>
-                  </a>
-                  <div className="p-2">
-                    <Button size="sm" className="w-full rounded-lg gap-1 text-xs h-7 bg-[#1C69D4] hover:bg-[#1559b8] text-white" asChild>
-                      <a href={`https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(activeQuery.replace(/bmw\s*/i, "").trim() || activeQuery)}`} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink size={11} /> Search
-                      </a>
-                    </Button>
                   </div>
-                </div>
-              )}
+                );
+              })}
             </div>
           </>
         ) : (
