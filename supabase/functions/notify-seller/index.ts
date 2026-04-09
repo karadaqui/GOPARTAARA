@@ -73,22 +73,21 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Helper to send email with proper error handling
+    // Helper to send email via direct HTTP call (more reliable than supabase.functions.invoke between edge functions)
     const sendEmail = async (templateName: string, recipientEmail: string, idempotencyKey: string, templateData: Record<string, any>) => {
       console.log("[NOTIFY-SELLER] Sending email", { templateName, recipientEmail });
-      const { data, error } = await supabase.functions.invoke("send-transactional-email", {
-        body: {
-          templateName,
-          recipientEmail,
-          idempotencyKey,
-          templateData,
+      const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-transactional-email`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+          "apikey": Deno.env.get("SUPABASE_ANON_KEY")!,
         },
+        body: JSON.stringify({ templateName, recipientEmail, idempotencyKey, templateData }),
       });
-      if (error) {
-        console.error("[NOTIFY-SELLER] Email invoke error:", error.message || JSON.stringify(error));
-      } else {
-        console.log("[NOTIFY-SELLER] Email invoke result:", JSON.stringify(data));
-      }
+      const result = await res.text();
+      console.log("[NOTIFY-SELLER] Email response:", res.status, result);
     };
 
     if (action === "save") {
