@@ -282,11 +282,34 @@ const MyMarket = () => {
   };
 
   const handleDeleteListing = async (id: string) => {
+    const listingToDelete = listings.find(l => l.id === id);
     const { error } = await supabase.from("seller_listings").delete().eq("id", id);
     if (!error) {
       setListings(l => l.filter(x => x.id !== id));
-      toast({ title: "Listing deleted" });
+      setDeleteConfirmId(null);
+
+      // Show undo toast
+      if (listingToDelete) {
+        setUndoListing(listingToDelete);
+        if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+        undoTimerRef.current = setTimeout(() => setUndoListing(null), 5000);
+      }
     }
+  };
+
+  const handleUndoDelete = async () => {
+    if (!undoListing || !profile) return;
+    if (undoTimerRef.current) clearTimeout(undoTimerRef.current);
+    const { id: _id, ...rest } = undoListing;
+    const { error } = await supabase.from("seller_listings").insert({
+      ...rest,
+      seller_id: profile.id,
+    } as any);
+    if (!error) {
+      toast({ title: "Listing restored!" });
+      await loadData();
+    }
+    setUndoListing(null);
   };
 
   const handleToggleActive = async (listing: Listing) => {
