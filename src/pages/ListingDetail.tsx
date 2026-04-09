@@ -129,6 +129,8 @@ const ListingDetail = () => {
       await supabase.from("seller_listings").update({ save_count: (listing?.save_count || 0) + 1 } as any).eq("id", id!);
       setSaved(true);
       toast({ title: "Part saved!" });
+      // Notify seller in background
+      supabase.functions.invoke("notify-seller", { body: { listing_id: id!, action: "save" } }).catch(() => {});
     }
   };
 
