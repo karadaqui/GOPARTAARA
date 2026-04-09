@@ -328,7 +328,6 @@ const SearchResults = () => {
                 </div>
               </div>
             </div>
-            </div>
           ) : (
             <VehicleLookup onLookupStart={handleVehicleLookupStart} onVehicleFound={handleVehicleLookupSuccess} />
           )}
