@@ -251,27 +251,47 @@ const MyMarket = () => {
       // Editing resets to pending for re-approval
       ({ error } = await supabase.from("seller_listings").update({ ...payload, approval_status: "pending" } as any).eq("id", editingListing.id));
     } else {
-      ({ error } = await supabase.from("seller_listings").insert({ ...payload, approval_status: "pending" } as any));
+      ({ error } = await supabase.from("seller_listings").insert({ ...payload, approval_status: "pending" } as any).select().single());
     }
 
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: editingListing ? "Listing updated! Pending approval." : "Listing created! Pending approval." });
       setListingDialog(false);
-      // Send email notification for approval (fire-and-forget, don't block UI)
-      supabase.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "contact-notification",
-          recipientEmail: "info@gopartara.com",
-          idempotencyKey: `listing-approval-${Date.now()}`,
-          templateData: {
-            name: profile.business_name,
-            email: profile.contact_email || "",
-            message: `New listing "${listingForm.title}" needs approval. Log in to the admin panel at /admin to review.`,
-          },
-        },
-      }).catch(() => { /* best-effort notification */ });
+
+      // Trigger AI moderation for new listings (not edits - edits go to pending for admin review)
+      if (!editingListing && !error) {
+        // Get the newly created listing ID
+        const { data: newListings } = await supabase
+          .from("seller_listings")
+          .select("id")
+          .eq("seller_id", profile.id)
+          .order("created_at", { ascending: false })
+          .limit(1);
+
+        const newId = newListings?.[0]?.id;
+        if (newId) {
+          toast({ title: "Listing created! Running AI review..." });
+          try {
+            const { data: modResult } = await supabase.functions.invoke("moderate-listing", {
+              body: { listing_id: newId },
+            });
+            if (modResult?.status === "approved") {
+              toast({ title: "✅ Listing approved!", description: "Your listing is now live on the marketplace." });
+            } else {
+              toast({
+                title: "🔍 Listing under review",
+                description: modResult?.reason || "Our team will review your listing shortly.",
+              });
+            }
+          } catch {
+            toast({ title: "Listing submitted", description: "Pending manual approval." });
+          }
+        }
+      } else {
+        toast({ title: "Listing updated! Pending re-approval." });
+      }
+
       await loadData();
     }
     setSaving(false);
