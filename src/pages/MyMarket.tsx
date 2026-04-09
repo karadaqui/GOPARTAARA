@@ -248,16 +248,34 @@ const MyMarket = () => {
 
     let error;
     if (editingListing) {
-      ({ error } = await supabase.from("seller_listings").update(payload as any).eq("id", editingListing.id));
+      // Editing resets to pending for re-approval
+      ({ error } = await supabase.from("seller_listings").update({ ...payload, approval_status: "pending" } as any).eq("id", editingListing.id));
     } else {
-      ({ error } = await supabase.from("seller_listings").insert(payload as any));
+      ({ error } = await supabase.from("seller_listings").insert({ ...payload, approval_status: "pending" } as any));
     }
 
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: editingListing ? "Listing updated!" : "Listing created!" });
+      toast({ title: editingListing ? "Listing updated! Pending approval." : "Listing created! Pending approval." });
       setListingDialog(false);
+      // Send email notification for approval
+      try {
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "contact-notification",
+            recipientEmail: "info@gopartara.com",
+            idempotencyKey: `listing-approval-${Date.now()}`,
+            templateData: {
+              name: profile.business_name,
+              email: profile.contact_email || "",
+              message: `New listing "${listingForm.title}" needs approval. Log in to the admin panel at /admin to review.`,
+            },
+          },
+        });
+      } catch (e) {
+        // Silent fail - notification is best-effort
+      }
       await loadData();
     }
     setSaving(false);
