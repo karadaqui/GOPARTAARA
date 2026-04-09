@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
-  Plus, Pencil, Trash2, ImagePlus, Eye, Bookmark, ExternalLink,
-  Loader2, Package, BarChart3, Store, X, Save, Upload
+  Plus, Pencil, Trash2, ImagePlus, Eye, Bookmark,
+  Loader2, Package, Store, X, Save, Upload
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
