@@ -43,18 +43,21 @@ const Admin = () => {
   useEffect(() => {
     if (!user) { navigate("/auth?redirect=/admin"); return; }
     // Allow access by admin email or admin subscription plan
-    const { data: adminProfile } = await supabase
-      .from("profiles")
-      .select("subscription_plan")
-      .eq("user_id", user.id)
-      .single();
-    const isAdmin = user.email === ADMIN_EMAIL || adminProfile?.subscription_plan === "admin";
-    if (!isAdmin) {
-      toast({ title: "Access denied", variant: "destructive" });
-      navigate("/");
-      return;
-    }
-    loadListings();
+    const checkAccess = async () => {
+      const { data: adminProfile } = await supabase
+        .from("profiles")
+        .select("subscription_plan")
+        .eq("user_id", user.id)
+        .single();
+      const isAdmin = user.email === ADMIN_EMAIL || adminProfile?.subscription_plan === "admin";
+      if (!isAdmin) {
+        toast({ title: "Access denied", variant: "destructive" });
+        navigate("/");
+        return;
+      }
+      loadListings();
+    };
+    checkAccess();
   }, [user]);
 
   const loadListings = async () => {
