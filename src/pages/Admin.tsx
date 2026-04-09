@@ -64,15 +64,26 @@ const Admin = () => {
 
   const handleApprove = async (id: string) => {
     setProcessing(id);
+    const listing = listings.find(l => l.id === id);
+    
+    // Approve the listing
     const { error } = await supabase
       .from("seller_listings")
       .update({ approval_status: "approved" } as any)
       .eq("id", id);
 
+    // Also approve the seller profile if not yet approved
+    if (!error && listing?.seller_profiles?.id) {
+      await supabase
+        .from("seller_profiles")
+        .update({ approved: true } as any)
+        .eq("id", listing.seller_profiles.id);
+    }
+
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Listing approved!" });
+      toast({ title: "Listing & seller approved!" });
       await loadListings();
     }
     setProcessing(null);
