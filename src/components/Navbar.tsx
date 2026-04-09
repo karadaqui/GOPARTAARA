@@ -43,7 +43,13 @@ const Navbar = () => {
   const handleNavClick = (href: string) => {
     setOpen(false);
     setMoreOpen(false);
-    if (href.startsWith("/#")) {
+    if (href === "/") {
+      if (location.pathname === "/") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        navigate("/");
+      }
+    } else if (href.startsWith("/#")) {
       const id = href.slice(2);
       if (location.pathname === "/") {
         document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
