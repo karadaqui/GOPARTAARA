@@ -56,6 +56,7 @@ Deno.serve(async (req) => {
       .single();
 
     if (!listing || !listing.seller_profiles) {
+      console.log("[NOTIFY-SELLER] Listing or seller not found", { listing_id });
       return new Response(JSON.stringify({ ok: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -66,10 +67,28 @@ Deno.serve(async (req) => {
 
     // Don't notify seller about their own actions
     if (sellerUserId === userData.user.id) {
+      console.log("[NOTIFY-SELLER] Skipping self-notification");
       return new Response(JSON.stringify({ ok: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Helper to send email via direct HTTP call (more reliable than supabase.functions.invoke between edge functions)
+    const sendEmail = async (templateName: string, recipientEmail: string, idempotencyKey: string, templateData: Record<string, any>) => {
+      console.log("[NOTIFY-SELLER] Sending email", { templateName, recipientEmail });
+      const url = `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-transactional-email`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+          "apikey": Deno.env.get("SUPABASE_ANON_KEY")!,
+        },
+        body: JSON.stringify({ templateName, recipientEmail, idempotencyKey, templateData }),
+      });
+      const result = await res.text();
+      console.log("[NOTIFY-SELLER] Email response:", res.status, result);
+    };
 
     if (action === "save") {
       // Create in-app notification
@@ -83,18 +102,12 @@ Deno.serve(async (req) => {
 
       // Send email
       if (sellerEmail) {
-        try {
-          await supabase.functions.invoke("send-transactional-email", {
-            body: {
-              templateName: "listing-saved",
-              recipientEmail: sellerEmail,
-              idempotencyKey: `listing-saved-${listing_id}-${userData.user.id}`,
-              templateData: { listingTitle: listing.title },
-            },
-          });
-        } catch (e) {
-          console.log("[NOTIFY-SELLER] Email failed", e);
-        }
+        await sendEmail(
+          "listing-saved",
+          sellerEmail,
+          `listing-saved-${listing_id}-${userData.user.id}`,
+          { listingTitle: listing.title }
+        );
       }
     }
 
@@ -108,17 +121,60 @@ Deno.serve(async (req) => {
       });
 
       if (sellerEmail) {
-        try {
-          await supabase.functions.invoke("send-transactional-email", {
-            body: {
-              templateName: "price-alert-seller",
-              recipientEmail: sellerEmail,
-              idempotencyKey: `price-alert-seller-${listing_id}-${userData.user.id}-${Date.now()}`,
-              templateData: { listingTitle: listing.title, targetPrice: parseFloat(target_price).toFixed(2) },
-            },
+        await sendEmail(
+          "price-alert-seller",
+          sellerEmail,
+          `price-alert-seller-${listing_id}-${userData.user.id}-${Date.now()}`,
+          { listingTitle: listing.title, targetPrice: parseFloat(target_price).toFixed(2) }
+        );
+      }
+    }
+
+    if (action === "price_drop") {
+      // Notify buyers whose price alerts are now met
+      const newPrice = parseFloat(target_price);
+      if (isNaN(newPrice)) {
+        return new Response(JSON.stringify({ ok: true }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Find active price alerts for this listing's title/seller where target >= new price
+      const { data: alerts } = await supabase
+        .from("price_alerts")
+        .select("*")
+        .eq("part_name", listing.title)
+        .eq("active", true)
+        .gte("target_price", newPrice);
+
+      console.log("[NOTIFY-SELLER] Price drop alerts found:", alerts?.length || 0);
+
+      if (alerts && alerts.length > 0) {
+        for (const alert of alerts) {
+          // In-app notification for buyer
+          await supabase.from("notifications").insert({
+            user_id: alert.user_id,
+            type: "price_drop",
+            title: "Price drop on your alert! 🎉",
+            message: `Good news! "${listing.title}" is now available at £${newPrice.toFixed(2)}, which meets your price alert of £${parseFloat(alert.target_price).toFixed(2)}.`,
+            link: `/listing/${listing_id}`,
           });
-        } catch (e) {
-          console.log("[NOTIFY-SELLER] Price alert email failed", e);
+
+          // Send email to buyer
+          await sendEmail(
+            "price-drop-buyer",
+            alert.email,
+            `price-drop-${listing_id}-${alert.id}-${Date.now()}`,
+            {
+              listingTitle: listing.title,
+              newPrice: newPrice.toFixed(2),
+              targetPrice: parseFloat(alert.target_price).toFixed(2),
+              listingUrl: `https://car-part-search.lovable.app/listing/${listing_id}`,
+            }
+          );
+
+          // Deactivate the alert since it's been triggered
+          await supabase.from("price_alerts").update({ active: false }).eq("id", alert.id);
         }
       }
     }
@@ -128,6 +184,7 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
+    console.error("[NOTIFY-SELLER] Error:", msg);
     return new Response(JSON.stringify({ error: msg }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

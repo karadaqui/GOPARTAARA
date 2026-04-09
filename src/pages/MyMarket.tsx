@@ -247,9 +247,19 @@ const MyMarket = () => {
     };
 
     let error;
+    const newPrice = listingForm.price ? parseFloat(listingForm.price) : null;
+    const oldPrice = editingListing?.price ?? null;
+    
     if (editingListing) {
       // Editing resets to pending for re-approval
       ({ error } = await supabase.from("seller_listings").update({ ...payload, approval_status: "pending" } as any).eq("id", editingListing.id));
+      
+      // If price was reduced, trigger price drop notifications
+      if (!error && oldPrice !== null && newPrice !== null && newPrice < oldPrice) {
+        supabase.functions.invoke("notify-seller", {
+          body: { listing_id: editingListing.id, action: "price_drop", target_price: newPrice.toString() },
+        }).catch(() => {});
+      }
     } else {
       ({ error } = await supabase.from("seller_listings").insert({ ...payload, approval_status: "pending" } as any).select().single());
     }

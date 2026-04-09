@@ -15,12 +15,41 @@ interface Notification {
   created_at: string;
 }
 
+// Generate a soft ding sound using Web Audio API
+const playNotificationSound = () => {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(880, ctx.currentTime); // A5
+    oscillator.frequency.setValueAtTime(1174.66, ctx.currentTime + 0.08); // D6
+
+    gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.4);
+
+    // Clean up
+    setTimeout(() => ctx.close(), 500);
+  } catch {
+    // Audio not supported, silently ignore
+  }
+};
+
 const NotificationBell = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const prevUnreadRef = useRef<number>(0);
+  const initialLoadDone = useRef(false);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -32,12 +61,27 @@ const NotificationBell = () => {
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(20);
-    if (data) setNotifications(data as Notification[]);
+    if (data) {
+      setNotifications(data as Notification[]);
+      // Set initial count without playing sound
+      if (!initialLoadDone.current) {
+        prevUnreadRef.current = (data as Notification[]).filter(n => !n.read).length;
+        initialLoadDone.current = true;
+      }
+    }
   }, [user]);
 
   useEffect(() => {
     loadNotifications();
   }, [loadNotifications]);
+
+  // Play sound when unread count increases
+  useEffect(() => {
+    if (initialLoadDone.current && unreadCount > prevUnreadRef.current) {
+      playNotificationSound();
+    }
+    prevUnreadRef.current = unreadCount;
+  }, [unreadCount]);
 
   // Realtime subscription
   useEffect(() => {
