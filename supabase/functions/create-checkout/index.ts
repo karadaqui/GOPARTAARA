@@ -57,10 +57,12 @@ serve(async (req) => {
       status: 200,
     });
   } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error);
-    return new Response(JSON.stringify({ error: msg }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 500,
-    });
+    console.error("[create-checkout] Error:", error);
+    const isAuthError = error instanceof Error && 
+      (error.message.includes("not authenticated") || error.message.includes("Missing priceId"));
+    return new Response(
+      JSON.stringify({ error: isAuthError ? error.message : "An error occurred processing your request." }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: isAuthError ? 401 : 500 }
+    );
   }
 });
