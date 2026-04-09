@@ -43,7 +43,7 @@ const SELLER_TIERS = {
   },
 };
 
-const SELLER_PLANS = ["basic_seller", "featured_seller", "pro_seller"];
+const SELLER_PLANS = ["basic_seller", "featured_seller", "pro_seller", "admin"];
 
 const ListYourParts = () => {
   const { user } = useAuth();
