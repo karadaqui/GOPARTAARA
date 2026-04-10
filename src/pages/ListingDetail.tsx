@@ -292,11 +292,15 @@ const ListingDetail = () => {
       }
     }
 
-    await supabase.from("listing_reviews").delete().eq("id", adminDeleteReviewId);
-    toast({ title: "Review removed" });
+    const { error } = await supabase.from("listing_reviews").delete().eq("id", adminDeleteReviewId);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Review removed" });
+      setReviews(prev => prev.filter(r => r.id !== adminDeleteReviewId));
+    }
     setAdminDeleteReviewId(null);
     setAdminDeleteReason("");
-    await loadListing();
     setModerating(false);
   };
 
