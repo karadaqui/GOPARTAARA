@@ -38,4 +38,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'refund-admin-notification': refundAdminNotification,
   'review-removed': reviewRemoved,
   'review-dispute': reviewDispute,
+  'dispute-decision': disputeDecision,
 }
