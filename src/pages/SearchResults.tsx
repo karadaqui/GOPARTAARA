@@ -124,6 +124,7 @@ const SearchResults = () => {
   const [ebayFallback, setEbayFallback] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const internalSearchRef = useRef(false);
+  const [authGateOpen, setAuthGateOpen] = useState(false);
 
   // When URL query changes from external navigation (e.g. garage "Search Parts"),
   // record in search_history so it counts toward the limit
