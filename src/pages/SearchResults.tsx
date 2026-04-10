@@ -21,6 +21,7 @@ import PartsComparison, { type ComparePart } from "@/components/PartsComparison"
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
+import AuthGateModal from "@/components/AuthGateModal";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -123,6 +124,7 @@ const SearchResults = () => {
   const [ebayFallback, setEbayFallback] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const internalSearchRef = useRef(false);
+  const [authGateOpen, setAuthGateOpen] = useState(false);
 
   // When URL query changes from external navigation (e.g. garage "Search Parts"),
   // record in search_history so it counts toward the limit
@@ -212,6 +214,7 @@ const SearchResults = () => {
   };
 
   const handleVehicleLookupSuccess = (vehicle: VehicleInfo) => {
+    if (!user) { setAuthGateOpen(true); return; }
     const nextQuery = `${vehicle.make} ${vehicle.yearOfManufacture || ""}`.trim();
 
     setVehicleInfo(vehicle);
@@ -236,6 +239,7 @@ const SearchResults = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) { setAuthGateOpen(true); return; }
     if (!query.trim()) return;
     if (searchLimit.limitReached) {
       toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" });
@@ -263,8 +267,13 @@ const SearchResults = () => {
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!user) {
+      setAuthGateOpen(true);
+      if (photoInputRef.current) photoInputRef.current.value = "";
+      return;
+    }
     // Block photo search for free users
-    if (!searchLimit.isPro && user) {
+    if (!searchLimit.isPro) {
       toast({ title: "Photo search is available on Pro and Business plans", description: "Upgrade to unlock photo search.", variant: "destructive" });
       navigate("/pricing");
       if (photoInputRef.current) photoInputRef.current.value = "";
@@ -417,12 +426,12 @@ const SearchResults = () => {
                       <Scale size={12} /> Compare ({compareParts.length})
                     </Button>
                   )}
-                  <SearchCounter limitData={searchLimit} />
+                   {user && <SearchCounter limitData={searchLimit} />}
                 </div>
               </div>
               {/* Mobile: centered search counter */}
               <div className="sm:hidden flex justify-center mt-1">
-                <SearchCounter limitData={searchLimit} />
+                {user && <SearchCounter limitData={searchLimit} />}
               </div>
             </div>
           ) : (
@@ -987,6 +996,12 @@ const SearchResults = () => {
           onClose={() => setShowCompare(false)}
         />
       )}
+      <AuthGateModal
+        open={authGateOpen}
+        onOpenChange={setAuthGateOpen}
+        title="Please sign in to search for car parts"
+        description="Create a free account to search across 1,000,000+ parts from trusted UK & global suppliers."
+      />
       <Footer />
     </div>
   );

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import AuthGateModal from "@/components/AuthGateModal";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -69,6 +70,7 @@ const Garage = () => {
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [authGateOpen, setAuthGateOpen] = useState(false);
 
   // Form state
   const [mode, setMode] = useState<"manual" | "plate">("manual");
@@ -104,7 +106,7 @@ const Garage = () => {
   const canAddMore = isPro || vehicles.length < 1;
 
   const handleAddClick = () => {
-    if (!user) { navigate("/auth"); return; }
+    if (!user) { setAuthGateOpen(true); return; }
     if (!canAddMore) { setUpgradeOpen(true); return; }
     setShowForm(true);
   };
@@ -418,6 +420,13 @@ const Garage = () => {
           </Button>
         </DialogContent>
       </Dialog>
+
+      <AuthGateModal
+        open={authGateOpen}
+        onOpenChange={setAuthGateOpen}
+        title="Create a free account to save your vehicles"
+        description="Sign in to add vehicles to your garage and find compatible parts faster."
+      />
 
       <Footer />
       <BackToTop />
