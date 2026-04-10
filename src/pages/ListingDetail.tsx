@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
-  Star, Store, ExternalLink, Bookmark, BookmarkCheck, Eye, Crown,
+  Star, Store, ExternalLink, Bookmark, BookmarkCheck, Eye,
   ChevronLeft, Loader2, Send, Bell, User, Trash2, Flag
 } from "lucide-react";
 import PlanBadge from "@/components/badges/PlanBadge";

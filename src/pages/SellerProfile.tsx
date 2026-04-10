@@ -4,7 +4,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Store, Crown, Star, Globe, Mail, Phone, Package, Eye, Loader2, Lock } from "lucide-react";
+import { Store, Star, Globe, Mail, Phone, Package, Eye, Loader2, Lock } from "lucide-react";
+import VerifiedSellerBadge from "@/components/badges/VerifiedSellerBadge";
+import PlanBadge from "@/components/badges/PlanBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -86,8 +88,11 @@ const SellerProfile = () => {
     );
   }
 
-  const tierIcon = seller.seller_tier === "pro" ? Crown : seller.seller_tier === "featured" ? Star : Store;
-  const TierIcon = tierIcon;
+  const getVerifiedVariant = () => {
+    if (seller.seller_tier === "pro") return "pro_seller" as const;
+    return null;
+  };
+  const verifiedVariant = getVerifiedVariant();
 
   return (
     <div className="min-h-screen bg-background">
@@ -104,11 +109,11 @@ const SellerProfile = () => {
               </div>
             )}
             <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-3 mb-2 flex-wrap">
                 <h1 className="font-display text-3xl font-bold">{seller.business_name}</h1>
-                <TierIcon size={20} className="text-primary" />
+                {verifiedVariant && <VerifiedSellerBadge variant={verifiedVariant} />}
               </div>
-              <Badge variant="outline" className="capitalize mb-3">{seller.seller_tier} Seller</Badge>
+              <PlanBadge plan={seller.seller_tier + "_seller"} />
               {seller.description && (
                 <p className="text-secondary-foreground mt-2">{seller.description}</p>
               )}
