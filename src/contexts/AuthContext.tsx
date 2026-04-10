@@ -67,8 +67,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signUp = async (email: string, password: string, displayName?: string) => {
     const redirectUrl = window.location.hostname === 'localhost' 
-      ? `${window.location.origin}/auth/callback`
-      : 'https://gopartara.com/auth/callback';
+      ? window.location.origin
+      : 'https://gopartara.com';
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
