@@ -281,7 +281,10 @@ const Dashboard = () => {
           Back to home
         </button>
 
-        <h1 className="font-display text-3xl font-bold mb-8">My Profile</h1>
+        <div className="flex items-center gap-3 mb-8">
+          <h1 className="font-display text-3xl font-bold">My Profile</h1>
+          {isBusinessUser && <BusinessBadge />}
+        </div>
 
         {/* Avatar */}
         <div className="glass rounded-2xl p-8 mb-6">
