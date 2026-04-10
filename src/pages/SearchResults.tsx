@@ -705,13 +705,13 @@ const SearchResults = () => {
                     return liveResults.map((item: any) => {
                       const priceBadge = getPriceBadge(item.price, item.title);
                       return (
-                        <div key={item.id} className="group glass rounded-xl sm:rounded-2xl overflow-hidden hover:border-primary/30 transition-all flex flex-col relative">
+                        <div key={item.id} className="group glass rounded-xl sm:rounded-2xl overflow-hidden hover:border-primary/30 card-hover flex flex-col relative">
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
                             <div className="aspect-square sm:aspect-[4/3] bg-secondary/50 overflow-hidden relative">
                               <img
                                 src={item.imageUrl}
                                 alt={item.partName}
-                                className="w-full h-full object-contain p-1 sm:p-3 group-hover:scale-105 transition-transform duration-300"
+                                className="w-full h-full object-contain p-1 sm:p-3 img-zoom"
                                 loading="lazy"
                                 onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }}
                               />
