@@ -1,0 +1,1 @@
+UPDATE public.profiles SET subscription_plan = 'elite' WHERE subscription_plan = 'business';
