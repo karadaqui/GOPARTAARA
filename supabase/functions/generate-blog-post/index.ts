@@ -152,6 +152,17 @@ Deno.serve(async (req) => {
 
       if (!post.title || !post.slug || !post.content) continue;
 
+      // Check for duplicate title
+      const { count: existingCount } = await adminClient
+        .from("blog_posts")
+        .select("*", { count: "exact", head: true })
+        .eq("title", post.title);
+
+      if ((existingCount || 0) > 0) {
+        console.log(`Skipping duplicate title: ${post.title}`);
+        continue;
+      }
+
       const uniqueSlug = `${post.slug}-${today}-${Math.random().toString(36).slice(2, 6)}`;
 
       const { data: insertedPost, error: insertError } = await adminClient
@@ -163,7 +174,7 @@ Deno.serve(async (req) => {
           preview: post.preview || post.title,
           meta_description: post.meta_description || post.preview || post.title,
           keywords: post.keywords || [],
-          author: isAutomated ? "PARTARA Team" : authorName,
+          author: "PARTARA Team",
           published: true,
           published_at: new Date().toISOString(),
         })
