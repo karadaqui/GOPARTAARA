@@ -834,6 +834,49 @@ const SearchResults = () => {
                   })()}
                 </div>
 
+                {/* Amazon UK Prominent Card */}
+                {activeQuery && (
+                  <div className="my-6 sm:my-8">
+                    <a
+                      href={`https://www.amazon.co.uk/s?k=${encodeURIComponent(activeQuery)}&tag=gopartara-21`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group block glass rounded-xl sm:rounded-2xl overflow-hidden hover:border-orange-500/40 transition-all border border-orange-500/20"
+                    >
+                      <div className="flex items-center gap-4 sm:gap-6 p-4 sm:p-6">
+                        <div className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20">
+                          <svg viewBox="0 0 100 30" className="w-12 sm:w-16 fill-white">
+                            <path d="M62.4 22.6c-5.6 4.1-13.7 6.3-20.7 6.3-9.8 0-18.6-3.6-25.3-9.6-.5-.5-.1-1.1.6-.7 7.2 4.2 16.1 6.7 25.3 6.7 6.2 0 13-1.3 19.3-3.9.9-.4 1.7.6.8 1.2z"/>
+                            <path d="M64.7 20c-.7-.9-4.6-.4-6.4-.2-.5.1-.6-.4-.1-.7 3.1-2.2 8.2-1.6 8.8-.8.6.7-.2 5.8-3.1 8.2-.4.4-.9.2-.7-.3.7-1.7 2.2-5.3 1.5-6.2z"/>
+                            <path d="M58.5 3.5V1.2c0-.3.2-.6.6-.6h10c.3 0 .6.2.6.6v2c0 .3-.3.7-.8 1.4l-5.2 7.4c1.9 0 3.9.2 5.7 1.2.4.2.5.5.5.9v2.5c0 .3-.4.7-.7.5-3.1-1.6-7.2-1.8-10.6 0-.3.2-.7-.2-.7-.5v-2.4c0-.4 0-1 .4-1.5l6-8.6h-5.2c-.3 0-.6-.2-.6-.6zM21.3 17.3h-3c-.3 0-.5-.2-.6-.5V1.3c0-.3.3-.6.6-.6h2.8c.3 0 .5.2.6.5v2h.1c.8-1.9 2.2-2.8 4.2-2.8 2 0 3.3.9 4.2 2.8.8-1.9 2.5-2.8 4.4-2.8 1.3 0 2.8.5 3.7 1.8 1 1.4.8 3.4.8 5.1v9.4c0 .3-.3.6-.6.6h-3c-.3 0-.6-.3-.6-.6V7.5c0-.7.1-2.4-.1-3-.2-1.1-.9-1.4-1.8-1.4-.7 0-1.5.5-1.9 1.3-.3.8-.3 2.1-.3 3.1v9.3c0 .3-.3.6-.6.6h-3c-.3 0-.6-.3-.6-.6V7.5c0-1.8.3-4.5-1.9-4.5-2.2 0-2.1 2.6-2.1 4.5v9.3c0 .3-.3.5-.6.5h.3zM49.8.4c4.5 0 7 3.9 7 8.8 0 4.8-2.7 8.5-7 8.5-4.5 0-6.9-3.9-6.9-8.7C42.9 4.2 45.4.4 49.8.4zm0 3.2c-2.3 0-2.4 3.1-2.4 5-.1 2 0 6.2 2.4 6.2 2.3 0 2.4-3.4 2.4-5.5 0-1.4-.1-3-.4-4.3-.3-1.1-.9-1.4-2-1.4zM73 17.3h-3c-.3 0-.6-.3-.6-.6V1.2c0-.3.3-.5.6-.5h2.8c.3 0 .5.2.6.4v2.4h.1c.9-2.1 2.2-3.1 4.4-3.1 1.4 0 2.8.5 3.7 1.9.8 1.3.8 3.4.8 5v9.5c0 .3-.3.5-.6.5h-3c-.3 0-.5-.2-.6-.5V7.3c0-1.8.2-4.3-1.9-4.3-.8 0-1.5.5-1.8 1.3-.5 1-.5 2-.5 3v9.4c0 .3-.3.6-.7.6h.7zM14.6 9.8c0 1.2.1 2.3-.6 3.4-.5.9-1.4 1.5-2.3 1.5-1.3 0-2-.9-2-2.3 0-2.7 2.4-3.2 4.9-3.2v.6zm3.3 8c-.2.2-.5.2-.7.1-.9-.8-1.1-1.5-1.7-2.5-1.6 1.6-2.7 2.1-4.7 2.1-2.4 0-4.3-1.5-4.3-4.5 0-2.3 1.3-3.9 3.1-4.7 1.5-.7 3.7-.8 5.3-1v-.4c0-.7.1-1.5-.4-2.1-.4-.5-1.1-.7-1.7-.7-1.2 0-2.2.6-2.5 1.8-.1.3-.2.5-.5.5l-2.9-.3c-.3-.1-.5-.3-.5-.5C6.8 2 10 .6 12.8.6c1.4 0 3.2.4 4.3 1.4 1.4 1.3 1.3 3.1 1.3 5v4.5c0 1.4.6 2 1.1 2.7.2.3.2.6 0 .8l-1.6 1.4v-.1z"/>
+                          </svg>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs sm:text-sm font-medium text-orange-400 mb-0.5">Also available on</p>
+                          <h3 className="font-display text-base sm:text-lg font-bold text-foreground mb-1 truncate">
+                            Search "{activeQuery}" on Amazon UK
+                          </h3>
+                          <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1">
+                            Compare prices with Amazon's car parts selection • Free Prime delivery available
+                          </p>
+                        </div>
+                        <div className="shrink-0 hidden sm:block">
+                          <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 text-white font-semibold text-sm shadow-lg shadow-orange-500/25 group-hover:shadow-orange-500/40 transition-shadow">
+                            <ExternalLink size={14} />
+                            Search Amazon
+                          </span>
+                        </div>
+                        <div className="shrink-0 sm:hidden">
+                          <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-orange-500 to-amber-600 text-white font-semibold text-xs">
+                            <ExternalLink size={12} />
+                            Search
+                          </span>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                )}
+
                 {/* Pagination */}
                 {totalPages > 1 && (
                   <div className="flex flex-col items-center gap-2 sm:gap-3 mt-6 sm:mt-8">
