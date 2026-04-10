@@ -90,7 +90,7 @@ const About = () => (
           hoping you'd picked a trustworthy source.
         </p>
         <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
-          We built PARTARA to fix that. As a UK-based team of car enthusiasts and engineers, we
+          We built PARTARA to fix that. As a UK-based platform built by car enthusiasts and engineers, we
           created a platform that lets you search by part name, vehicle reg plate, or even a photo —
           then compare prices across trusted UK &amp; global suppliers, browse a verified marketplace, set price alerts,
           and manage your garage — all in one place.

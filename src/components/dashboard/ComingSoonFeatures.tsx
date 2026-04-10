@@ -1,9 +1,9 @@
-import { Sparkles, BarChart3, Globe, Zap } from "lucide-react";
+import { Sparkles, BarChart3, BookOpen, Car } from "lucide-react";
 
 const COMING_SOON = [
-  { icon: BarChart3, title: "Advanced Analytics", desc: "Deep insights into your parts spending and savings." },
-  { icon: Globe, title: "Multi-Region Search", desc: "Search parts across EU and US suppliers." },
-  { icon: Zap, title: "Auto-Order", desc: "Automatically purchase when price targets are hit." },
+  { icon: BookOpen, title: "TecDoc Parts Catalog", desc: "Browse the complete TecDoc database for OE-matched parts." },
+  { icon: BarChart3, title: "Bulk Price Comparison", desc: "Compare prices across multiple parts in a single view." },
+  { icon: Car, title: "Advanced Garage Analytics", desc: "Deep insights into your vehicles' maintenance costs and history." },
 ];
 
 const ComingSoonFeatures = () => (
