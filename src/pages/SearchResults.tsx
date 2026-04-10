@@ -956,7 +956,85 @@ const SearchResults = () => {
                   </div>
                 )}
 
-                {/* Pagination */}
+                {/* Parts Catalog Results */}
+                {catalogLoading && (
+                  <div className="flex items-center gap-2 py-4 justify-center text-muted-foreground">
+                    <Loader2 size={16} className="animate-spin" />
+                    <span className="text-sm">Searching parts catalog...</span>
+                  </div>
+                )}
+                {catalogResults.length > 0 && (
+                  <div className="mb-8">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-6 h-6 rounded-md bg-primary/15 flex items-center justify-center">
+                        <Search size={14} className="text-primary" />
+                      </div>
+                      <h3 className="font-display text-base sm:text-lg font-bold">Parts Catalog</h3>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/15 text-primary border border-primary/20">
+                        TecDoc Data
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {catalogResults.map((item: any) => (
+                        <div key={item.id} className="glass rounded-xl p-4 hover:border-primary/30 transition-all flex flex-col gap-2">
+                          <div className="flex items-start gap-3">
+                            {item.imageUrl && (
+                              <img src={item.imageUrl} alt={item.partName} className="w-14 h-14 rounded-lg object-contain bg-secondary/50 p-1 shrink-0" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-semibold line-clamp-2 text-foreground">{item.partName}</p>
+                              {item.partNumber && (
+                                <p className="text-xs text-muted-foreground mt-0.5 font-mono">#{item.partNumber}</p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-secondary text-muted-foreground">{item.brand}</span>
+                            {item.category && (
+                              <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-secondary text-muted-foreground">{item.category}</span>
+                            )}
+                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-primary/15 text-primary border border-primary/20">Parts Catalog</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Global Suppliers */}
+                <div className="mb-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-lg">🌍</span>
+                    <h3 className="font-display text-base sm:text-lg font-bold">Global Suppliers</h3>
+                    <span className="text-xs text-muted-foreground">International shipping available</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                    {globalSuppliers.map((gs) => (
+                      <a
+                        key={gs.name}
+                        href={gs.buildUrl(activeQuery)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group glass rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.02] flex flex-col"
+                      >
+                        <div className={`h-14 sm:h-16 bg-gradient-to-br ${gs.gradient} flex items-center justify-center px-2 relative`}>
+                          <span className="text-white font-display font-bold text-xs sm:text-sm tracking-wide text-center leading-tight">
+                            {gs.flag} {gs.name}
+                          </span>
+                          <span className="absolute top-1 right-1 px-1.5 py-0.5 rounded text-[8px] font-bold bg-white/20 text-white backdrop-blur-sm">
+                            {gs.region}
+                          </span>
+                        </div>
+                        <div className="p-2">
+                          <span className="flex items-center justify-center gap-1 w-full rounded-lg text-xs h-7 bg-primary text-primary-foreground font-medium group-hover:bg-primary/90 transition-colors">
+                            <ExternalLink size={11} /> Search
+                          </span>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
                 {totalPages > 1 && (
                   <div className="flex flex-col items-center gap-2 sm:gap-3 mt-6 sm:mt-8">
                     <p className="text-[10px] sm:text-xs text-muted-foreground">
