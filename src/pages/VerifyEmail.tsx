@@ -14,15 +14,31 @@ const VerifyEmail = () => {
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
 
+  // Listen for cross-tab auth changes via onAuthStateChange (fires from localStorage storage events)
   useEffect(() => {
-    const interval = setInterval(async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user?.email_confirmed_at) {
-        clearInterval(interval);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session?.user) {
         navigate("/", { replace: true });
       }
+    });
+
+    // Also poll as fallback — force refresh from localStorage, not in-memory cache
+    const interval = setInterval(async () => {
+      // setSession triggers a fresh read; we check localStorage directly as a signal
+      const storageKey = Object.keys(localStorage).find(k => k.includes("auth-token"));
+      if (storageKey) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user?.email_confirmed_at) {
+          clearInterval(interval);
+          navigate("/", { replace: true });
+        }
+      }
     }, 2000);
-    return () => clearInterval(interval);
+
+    return () => {
+      subscription.unsubscribe();
+      clearInterval(interval);
+    };
   }, [navigate]);
 
   const handleResend = async () => {
