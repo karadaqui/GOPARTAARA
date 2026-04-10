@@ -26,6 +26,10 @@ type SubStatus = {
   subscribed: boolean;
   product_id?: string | null;
   subscription_end?: string | null;
+  billing_amount?: number | null;
+  billing_currency?: string | null;
+  payment_method_last4?: string | null;
+  payment_method_brand?: string | null;
 };
 
 const Dashboard = () => {
