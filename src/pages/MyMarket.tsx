@@ -88,6 +88,7 @@ const MyMarket = () => {
   const [undoListing, setUndoListing] = useState<Listing | null>(null);
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showSellerGate, setShowSellerGate] = useState(false);
+  const [disputedReviews, setDisputedReviews] = useState<DisputedReview[]>([]);
 
   const [profileForm, setProfileForm] = useState({
     business_name: "", description: "", contact_email: "", contact_phone: "", website_url: ""
