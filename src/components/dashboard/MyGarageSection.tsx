@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getMakes, getModels, getYears, getAllYears } from "@/data/vehicleDatabase";
 
 interface Vehicle {
   id: string;
@@ -24,20 +25,6 @@ interface Vehicle {
   registration_number: string | null;
   created_at: string;
 }
-
-const CAR_MAKES = [
-  "Abarth", "Alfa Romeo", "Aston Martin", "Audi", "Bentley", "BMW", "Chevrolet",
-  "Chrysler", "Citroën", "Cupra", "Dacia", "Daewoo", "Daihatsu", "Dodge", "DS",
-  "Ferrari", "Fiat", "Ford", "Genesis", "Honda", "Hyundai", "Infiniti", "Isuzu",
-  "Jaguar", "Jeep", "Kia", "Lamborghini", "Land Rover", "Lexus", "Lotus",
-  "Maserati", "Mazda", "McLaren", "Mercedes-Benz", "MG", "Mini", "Mitsubishi",
-  "Nissan", "Opel", "Peugeot", "Porsche", "Renault", "Rolls-Royce", "Saab",
-  "SEAT", "Škoda", "Smart", "Subaru", "Suzuki", "Tesla", "Toyota", "Vauxhall",
-  "Volkswagen", "Volvo",
-];
-
-const currentYear = new Date().getFullYear();
-const YEARS = Array.from({ length: 40 }, (_, i) => currentYear - i);
 
 const ENGINE_SIZES = ["1.0L", "1.2L", "1.4L", "1.5L", "1.6L", "1.8L", "2.0L", "2.2L", "2.4L", "2.5L", "3.0L", "3.5L", "4.0L", "5.0L", "Electric"];
 
@@ -150,12 +137,12 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Make *</label>
-              <Select value={make} onValueChange={setMake}>
+              <Select value={make} onValueChange={(v) => { setMake(v); setModel(""); setYear(""); }}>
                 <SelectTrigger className="rounded-xl bg-secondary border-border h-10">
                   <SelectValue placeholder="Select make" />
                 </SelectTrigger>
                 <SelectContent>
-                  {CAR_MAKES.map((m) => (
+                  {getMakes().map((m) => (
                     <SelectItem key={m} value={m}>{m}</SelectItem>
                   ))}
                 </SelectContent>
@@ -163,12 +150,25 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Model *</label>
-              <Input
-                value={model}
-                onChange={(e) => setModel(e.target.value)}
-                placeholder="e.g. XC60, Golf, Focus"
-                className="rounded-xl bg-secondary border-border h-10"
-              />
+              {make && getModels(make).length > 0 ? (
+                <Select value={model} onValueChange={(v) => { setModel(v); setYear(""); }}>
+                  <SelectTrigger className="rounded-xl bg-secondary border-border h-10">
+                    <SelectValue placeholder="Select model" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getModels(make).map((m) => (
+                      <SelectItem key={m} value={m}>{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Input
+                  value={model}
+                  onChange={(e) => setModel(e.target.value)}
+                  placeholder="e.g. Model name"
+                  className="rounded-xl bg-secondary border-border h-10"
+                />
+              )}
             </div>
             <div>
               <label className="text-xs text-muted-foreground mb-1 block">Year *</label>
@@ -177,7 +177,7 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
                   <SelectValue placeholder="Select year" />
                 </SelectTrigger>
                 <SelectContent>
-                  {YEARS.map((y) => (
+                  {(make && model ? getYears(make, model) : getAllYears()).map((y) => (
                     <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
                   ))}
                 </SelectContent>
