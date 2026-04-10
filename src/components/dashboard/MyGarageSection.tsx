@@ -246,30 +246,31 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
           {vehicles.map((v) => (
             <div
               key={v.id}
-              className="flex items-center gap-3 p-4 rounded-xl bg-secondary/30 border border-border hover:border-primary/20 transition-colors group"
+              className="p-4 rounded-xl bg-secondary/30 border border-border hover:border-primary/20 transition-colors group"
             >
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <Car size={18} className="text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-display font-bold text-sm truncate">
-                  {v.make} {v.model} ({v.year})
-                </p>
-                {v.nickname && (
-                  <p className="text-xs text-muted-foreground truncate">"{v.nickname}"</p>
-                )}
-                {v.engine_size && (
-                  <span className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded mt-1 inline-block">
-                    {v.engine_size}
-                  </span>
-                )}
-              </div>
-              <button
-                onClick={() => handleDelete(v.id)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive shrink-0"
-              >
-                <Trash2 size={14} />
-              </button>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <Car size={18} className="text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-display font-bold text-sm truncate">
+                    {v.make} {v.model} ({v.year})
+                  </p>
+                  {v.nickname && (
+                    <p className="text-xs text-muted-foreground truncate">"{v.nickname}"</p>
+                  )}
+                  {v.engine_size && (
+                    <span className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded mt-1 inline-block">
+                      {v.engine_size}
+                    </span>
+                  )}
+                </div>
+                <button
+                  onClick={() => handleDelete(v.id)}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive shrink-0"
+                >
+                  <Trash2 size={14} />
+                </button>
               </div>
               {/* Vehicle Notes — Business feature */}
               <BusinessFeatureGate isBusinessUser={isBusinessUser} label="Business plan feature">
