@@ -16,11 +16,7 @@ import EliteFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import PrioritySupportButton from "@/components/dashboard/PrioritySupportButton";
 import ComingSoonFeatures from "@/components/dashboard/ComingSoonFeatures";
 
-const STRIPE_TIERS: Record<string, { label: string; price: string }> = {
-  prod_UI08qGZRqV94r2: { label: "Pro", price: "£9.99/mo" },
-  prod_UIBpaMM0bdRgJ9: { label: "Elite", price: "£19.99/mo" },
-  prod_UJCdn59OHrLmWH: { label: "Elite", price: "£19.99/mo" },
-};
+const PLAN_INFO_MAP: Record<string, { label: string; price: string }> = {
 
 type SubStatus = {
   subscribed: boolean;
