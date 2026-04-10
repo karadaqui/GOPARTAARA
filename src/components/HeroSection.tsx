@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
 import SearchCounter from "@/components/SearchCounter";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
+import AuthGateModal from "@/components/AuthGateModal";
 
 const HeroSection = () => {
   const [query, setQuery] = useState("");
@@ -19,12 +20,14 @@ const HeroSection = () => {
   const [regNumber, setRegNumber] = useState("");
   const [regLoading, setRegLoading] = useState(false);
   const [regVehicle, setRegVehicle] = useState<{ make: string; yearOfManufacture?: number; colour?: string; engineCapacity?: number } | null>(null);
+  const [authGateOpen, setAuthGateOpen] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) { setAuthGateOpen(true); return; }
     if (searchLimit.limitReached) {
       toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" });
       navigate("/pricing");
@@ -39,8 +42,14 @@ const HeroSection = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (!user) {
+      setAuthGateOpen(true);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
     // Block photo search for free users
-    if (!searchLimit.isPro && user) {
+    if (!searchLimit.isPro) {
       toast({ title: "Photo search is available on Pro and Business plans", description: "Upgrade to unlock photo search.", variant: "destructive" });
       navigate("/pricing");
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -102,6 +111,7 @@ const HeroSection = () => {
 
   const handleRegLookup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) { setAuthGateOpen(true); return; }
     if (searchLimit.limitReached) {
       toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" });
       navigate("/pricing");
@@ -229,7 +239,7 @@ const HeroSection = () => {
                       )}
                     </div>
                   </label>
-                  {searchLimit.limitReached ? (
+                  {user && searchLimit.limitReached ? (
                     <Button
                       type="button"
                       className="shrink-0 flex-1 sm:flex-none rounded-xl px-6 py-3 h-auto text-sm font-semibold"
@@ -249,7 +259,7 @@ const HeroSection = () => {
                 <p className="text-xs text-muted-foreground text-center">
                   📸 Upload a photo of any car part — our system will identify it and find the best prices
                 </p>
-                <SearchCounter limitData={searchLimit} />
+                {user && <SearchCounter limitData={searchLimit} />}
               </div>
             </>
           ) : (
@@ -266,7 +276,7 @@ const HeroSection = () => {
                     disabled={regLoading}
                   />
                 </div>
-                {searchLimit.limitReached ? (
+                {user && searchLimit.limitReached ? (
                   <Button
                     type="button"
                     className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold"
@@ -284,9 +294,11 @@ const HeroSection = () => {
               <p className="text-xs text-muted-foreground mt-3">
                 🚗 Enter your UK number plate to find parts specific to your vehicle
               </p>
-              <div className="flex justify-center mt-2">
-                <SearchCounter limitData={searchLimit} />
-              </div>
+              {user && (
+                <div className="flex justify-center mt-2">
+                  <SearchCounter limitData={searchLimit} />
+                </div>
+              )}
             </>
           )}
         </div>
@@ -300,6 +312,13 @@ const HeroSection = () => {
           ))}
         </div>
       </div>
+
+      <AuthGateModal
+        open={authGateOpen}
+        onOpenChange={setAuthGateOpen}
+        title="Please sign in to search for car parts"
+        description="Create a free account to search across 1,000,000+ parts from trusted UK & global suppliers."
+      />
     </section>
   );
 };
