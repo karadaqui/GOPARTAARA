@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const redirectUrl = window.location.hostname === 'localhost' 
       ? window.location.origin 
       : 'https://gopartara.com';
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -72,6 +72,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         data: { display_name: displayName },
       },
     });
+    
+    // If signup succeeded but user needs email confirmation,
+    // sign out immediately to prevent auto-login before verification
+    if (!error && data?.user && !data.user.email_confirmed_at) {
+      await supabase.auth.signOut();
+    }
+    
     return { error };
   };
 
