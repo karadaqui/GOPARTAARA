@@ -33,13 +33,17 @@ const suppliers: { name: string; flag: string; gradient: string; buildUrl: (q: s
   { name: "Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-600 to-indigo-700", buildUrl: googleSite("eurocarparts.com") },
   { name: "GSF Car Parts", flag: "🇬🇧", gradient: "from-emerald-600 to-teal-700", buildUrl: googleSite("gsfcarparts.com") },
   { name: "Car Parts 4 Less", flag: "🇬🇧", gradient: "from-purple-600 to-purple-800", buildUrl: googleSite("carparts4less.co.uk") },
-  { name: "Halfords", flag: "🇬🇧", gradient: "from-sky-500 to-sky-700", buildUrl: googleSite("halfords.com") },
   { name: "AutoDoc", flag: "🇬🇧", gradient: "from-cyan-500 to-blue-600", buildUrl: googleSite("autodoc.co.uk") },
   { name: "Amazon UK", flag: "🇬🇧", gradient: "from-orange-500 to-amber-600", buildUrl: (q) => `https://www.amazon.co.uk/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara-21` },
   { name: "Partmaster", flag: "🇬🇧", gradient: "from-slate-600 to-slate-800", buildUrl: googleSite("partmaster.co.uk") },
   { name: "LKQ Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-500 to-blue-700", buildUrl: googleSite("lkqeurocarparts.com") },
-  { name: "RockAuto", flag: "🌍", gradient: "from-yellow-600 to-orange-700", buildUrl: googleSite("rockauto.com") },
-  { name: "PartsGeek", flag: "🌍", gradient: "from-red-600 to-red-800", buildUrl: googleSite("partsgeek.com") },
+];
+
+const globalSuppliers: { name: string; flag: string; region: string; gradient: string; buildUrl: (q: string) => string }[] = [
+  { name: "RockAuto", flag: "🇺🇸", region: "USA", gradient: "from-yellow-600 to-orange-700", buildUrl: (q) => `https://www.rockauto.com/en/catalog/?a=${encodeURIComponent(q)}` },
+  { name: "PartsGeek", flag: "🇺🇸", region: "USA", gradient: "from-red-600 to-red-800", buildUrl: (q) => `https://www.partsgeek.com/catalog/search/?search=${encodeURIComponent(q)}` },
+  { name: "AutoZone", flag: "🇺🇸", region: "USA", gradient: "from-amber-600 to-red-700", buildUrl: (q) => `https://www.autozone.com/searchresult?searchText=${encodeURIComponent(q)}` },
+  { name: "Mister Auto", flag: "🇪🇺", region: "Europe", gradient: "from-blue-500 to-indigo-600", buildUrl: (q) => `https://www.mister-auto.com/recherche?q=${encodeURIComponent(q)}` },
 ];
 
 const PART_CATEGORIES = [
