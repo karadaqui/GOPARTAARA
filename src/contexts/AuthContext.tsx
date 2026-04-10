@@ -41,6 +41,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           }
         }
 
+        // Clean up hash fragment after Supabase processes it
+        if (window.location.hash && window.location.hash.includes("access_token")) {
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
+
         const storedRef = localStorage.getItem("partara_ref");
         if (storedRef) {
           try {
@@ -56,6 +61,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
+    // If URL hash contains access_token (from Supabase email redirect),
+    // getSession() will detect and exchange it automatically
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
