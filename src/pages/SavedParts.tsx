@@ -5,7 +5,17 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   Bookmark,
   ExternalLink,
@@ -19,11 +29,12 @@ import type { Tables } from "@/integrations/supabase/types";
 const SavedParts = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const [parts, setParts] = useState<Tables<"saved_parts">[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [confirmClearAll, setConfirmClearAll] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -46,26 +57,28 @@ const SavedParts = () => {
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
+    setConfirmDeleteId(null);
     const { error } = await supabase.from("saved_parts").delete().eq("id", id);
     setDeletingId(null);
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast.error("Failed to remove part", { description: error.message });
     } else {
       setParts((prev) => prev.filter((p) => p.id !== id));
-      toast({ title: "Removed", description: "Part removed from saved list." });
+      toast.success("Part removed from saved list");
     }
   };
 
   const handleClearAll = async () => {
+    setConfirmClearAll(false);
     const { error } = await supabase
       .from("saved_parts")
       .delete()
       .eq("user_id", user!.id);
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast.error("Failed to clear saved parts", { description: error.message });
     } else {
       setParts([]);
-      toast({ title: "Cleared", description: "All saved parts removed." });
+      toast.success("All saved parts removed");
     }
   };
 
@@ -94,7 +107,7 @@ const SavedParts = () => {
               variant="outline"
               size="sm"
               className="rounded-xl gap-2 text-destructive hover:text-destructive"
-              onClick={handleClearAll}
+              onClick={() => setConfirmClearAll(true)}
             >
               <Trash2 size={14} />
               <span className="hidden sm:inline">Clear All</span>
@@ -121,9 +134,7 @@ const SavedParts = () => {
                 key={part.id}
                 className="glass rounded-2xl p-3 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5 hover:border-primary/30 transition-colors"
               >
-                {/* Top row on mobile: image + info */}
                 <div className="flex items-start gap-3 sm:gap-5 w-full sm:w-auto sm:flex-1 min-w-0">
-                  {/* Icon */}
                   <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-secondary/50 flex items-center justify-center shrink-0">
                     {part.image_url && part.image_url !== "/placeholder.svg" ? (
                       <img
@@ -135,8 +146,6 @@ const SavedParts = () => {
                       <Package size={20} className="sm:w-6 sm:h-6 text-muted-foreground/30" />
                     )}
                   </div>
-
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
                     <h3 className="font-display font-semibold text-sm leading-snug line-clamp-2">
                       {part.part_name}
@@ -160,14 +169,12 @@ const SavedParts = () => {
                   </div>
                 </div>
 
-                {/* Price - desktop only */}
                 {part.price != null && (
                   <span className="hidden sm:block font-display text-lg font-bold shrink-0">
                     £{Number(part.price).toFixed(2)}
                   </span>
                 )}
 
-                {/* Actions */}
                 <div className="flex gap-2 sm:shrink-0">
                   {part.url && part.url !== "#" && (
                     <Button size="sm" className="rounded-xl h-9 gap-1.5 text-xs flex-1 sm:flex-none" asChild>
@@ -181,7 +188,7 @@ const SavedParts = () => {
                     size="sm"
                     variant="outline"
                     className="rounded-xl h-9 w-9 p-0 text-muted-foreground hover:text-destructive hover:border-destructive shrink-0"
-                    onClick={() => handleDelete(part.id)}
+                    onClick={() => setConfirmDeleteId(part.id)}
                     disabled={deletingId === part.id}
                   >
                     {deletingId === part.id ? (
@@ -196,6 +203,44 @@ const SavedParts = () => {
           </div>
         )}
       </div>
+
+      {/* Delete single part confirmation */}
+      <AlertDialog open={!!confirmDeleteId} onOpenChange={(open) => !open && setConfirmDeleteId(null)}>
+        <AlertDialogContent className="rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove this part from saved?</AlertDialogTitle>
+            <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => confirmDeleteId && handleDelete(confirmDeleteId)}
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Clear all confirmation */}
+      <AlertDialog open={confirmClearAll} onOpenChange={setConfirmClearAll}>
+        <AlertDialogContent className="rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear all saved parts?</AlertDialogTitle>
+            <AlertDialogDescription>This will remove all {parts.length} saved parts. This cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={handleClearAll}
+            >
+              Clear All
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Footer />
     </div>
