@@ -78,8 +78,11 @@ const Auth = () => {
           toast({ title: "Error", description: error.message, variant: "destructive" });
         }
       } else {
-        // Redirect to verify-email page
-        navigate(`/verify-email?email=${encodeURIComponent(email)}`);
+        // Auto-confirm is enabled, user is logged in immediately
+        processReferral();
+        const redirectTo = searchParams.get("redirect") || "/";
+        navigate(redirectTo);
+        toast({ title: "Welcome to PARTARA!", description: "Your account has been created successfully." });
       }
     }
   };
