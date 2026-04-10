@@ -8,8 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
   Star, Store, ExternalLink, Bookmark, BookmarkCheck, Eye, Crown,
-  ChevronLeft, Loader2, Send, Bell
+  ChevronLeft, Loader2, Send, Bell, User
 } from "lucide-react";
+import BusinessBadge from "@/components/dashboard/BusinessBadge";
+import AdminBadge from "@/components/dashboard/AdminBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -48,6 +50,8 @@ interface Review {
   rating: number;
   comment: string | null;
   created_at: string;
+  reviewer_name?: string | null;
+  reviewer_plan?: string | null;
 }
 
 const ListingDetail = () => {
@@ -99,7 +103,26 @@ const ListingDetail = () => {
         .select("*")
         .eq("listing_id", id!)
         .order("created_at", { ascending: false });
-      setReviews((revs as Review[]) || []);
+
+      // Enrich reviews with profile data
+      const enrichedReviews: Review[] = [];
+      if (revs) {
+        const userIds = [...new Set(revs.map((r: any) => r.user_id))];
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("user_id, display_name, subscription_plan")
+          .in("user_id", userIds);
+        const profileMap = new Map((profiles || []).map((p: any) => [p.user_id, p]));
+        for (const r of revs) {
+          const prof = profileMap.get(r.user_id);
+          enrichedReviews.push({
+            ...r,
+            reviewer_name: prof?.display_name || null,
+            reviewer_plan: prof?.subscription_plan || null,
+          });
+        }
+      }
+      setReviews(enrichedReviews);
 
       if (user) {
         const existing = (revs as Review[])?.find(r => r.user_id === user.id);
@@ -396,12 +419,18 @@ const ListingDetail = () => {
               {reviews.map(r => (
                 <div key={r.id} className="glass rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="flex">
+                    <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                      <User size={12} className="text-muted-foreground" />
+                    </div>
+                    <span className="text-sm font-medium">{r.reviewer_name || "Anonymous"}</span>
+                    {r.reviewer_plan === "admin" && <AdminBadge />}
+                    {r.reviewer_plan === "business" && <BusinessBadge />}
+                    <div className="flex ml-1">
                       {[1, 2, 3, 4, 5].map(s => (
                         <Star key={s} size={14} className={s <= r.rating ? "text-primary fill-primary" : "text-muted-foreground"} />
                       ))}
                     </div>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground ml-auto">
                       {new Date(r.created_at).toLocaleDateString()}
                     </span>
                   </div>

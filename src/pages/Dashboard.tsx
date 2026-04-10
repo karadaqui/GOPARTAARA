@@ -5,13 +5,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Camera, Save, User, Mail, Crown, Clock, Bookmark, Loader2, Search, X, ExternalLink, CreditCard, Download } from "lucide-react";
+import { ArrowLeft, Camera, Save, User, Mail, Crown, Clock, Bookmark, Loader2, Search, X, ExternalLink, CreditCard, Download, Lock } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import ReferralSection from "@/components/dashboard/ReferralSection";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
 import PriceAlertsSection from "@/components/dashboard/PriceAlertsSection";
 import MyGarageSection from "@/components/dashboard/MyGarageSection";
 import BusinessBadge from "@/components/dashboard/BusinessBadge";
+import AdminBadge from "@/components/dashboard/AdminBadge";
 import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import PrioritySupportButton from "@/components/dashboard/PrioritySupportButton";
 import ComingSoonFeatures from "@/components/dashboard/ComingSoonFeatures";
@@ -283,7 +284,7 @@ const Dashboard = () => {
 
         <div className="flex items-center gap-3 mb-8">
           <h1 className="font-display text-3xl font-bold">My Profile</h1>
-          {isBusinessUser && <BusinessBadge />}
+          {currentPlan === "admin" ? <AdminBadge /> : currentPlan === "business" ? <BusinessBadge /> : null}
         </div>
 
         {/* Avatar */}
@@ -514,15 +515,24 @@ const Dashboard = () => {
               Recent Searches
             </h2>
             <div className="flex items-center gap-2">
-              <BusinessFeatureGate isBusinessUser={isBusinessUser} label="Business plan feature">
+              {isBusinessUser ? (
                 <button
                   onClick={exportSearchHistoryCSV}
-                  className="text-xs text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
+                  title="Export search history as CSV"
+                  className="w-7 h-7 rounded-lg border border-border bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors text-primary"
                 >
-                  <Download size={12} />
-                  Export CSV
+                  <Download size={14} />
                 </button>
-              </BusinessFeatureGate>
+              ) : (
+                <button
+                  onClick={() => navigate("/pricing")}
+                  title="Export search history (Business plan)"
+                  className="w-7 h-7 rounded-lg border border-border bg-secondary/50 flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground relative"
+                >
+                  <Download size={14} />
+                  <Lock size={8} className="absolute -top-1 -right-1 text-muted-foreground" />
+                </button>
+              )}
               {searchHistory.length > 0 && (
                 <button
                   onClick={clearAllHistory}

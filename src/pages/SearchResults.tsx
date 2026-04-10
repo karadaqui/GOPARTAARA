@@ -734,15 +734,15 @@ const SearchResults = () => {
                               )}
                             </div>
                           </a>
-                          <div className="p-1.5 sm:p-4 flex-1 flex flex-col">
-                            <a href={item.url} target="_blank" rel="noopener noreferrer" className="block mb-1 sm:mb-3">
-                              <p className="text-[10px] sm:text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors leading-tight sm:leading-snug">
+                            <div className="p-2 sm:p-4 flex-1 flex flex-col min-w-0">
+                            <a href={item.url} target="_blank" rel="noopener noreferrer" className="block mb-1.5 sm:mb-3">
+                              <p className="text-[10px] sm:text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors leading-snug break-words">
                                 {item.partName}
                               </p>
                             </a>
-                            <div className="mt-auto space-y-1 sm:space-y-3">
-                              <div className="flex items-baseline gap-1">
-                                <span className="text-sm sm:text-2xl font-bold text-primary">£{item.price.toFixed(2)}</span>
+                            <div className="mt-auto space-y-1.5 sm:space-y-3">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="text-sm sm:text-2xl font-bold text-primary whitespace-nowrap">£{item.price.toFixed(2)}</span>
                               </div>
                               {/* Desktop-only details */}
                               <div className="hidden sm:block">
