@@ -8,8 +8,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
   Star, Store, ExternalLink, Bookmark, BookmarkCheck, Eye, Crown,
-  ChevronLeft, Loader2, Send, Bell
+  ChevronLeft, Loader2, Send, Bell, User
 } from "lucide-react";
+import BusinessBadge from "@/components/dashboard/BusinessBadge";
+import AdminBadge from "@/components/dashboard/AdminBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
