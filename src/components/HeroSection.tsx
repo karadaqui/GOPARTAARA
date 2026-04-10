@@ -25,6 +25,7 @@ const HeroSection = () => {
     e.preventDefault();
     if (searchLimit.limitReached) {
       toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" });
+      navigate("/pricing");
       return;
     }
     if (query.trim()) {
@@ -91,6 +92,11 @@ const HeroSection = () => {
 
   const handleRegLookup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (searchLimit.limitReached) {
+      toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" });
+      navigate("/pricing");
+      return;
+    }
     const cleaned = regNumber.replace(/\s+/g, "").toUpperCase();
     if (!cleaned || cleaned.length < 2) {
       toast({ title: "Enter a valid registration number", variant: "destructive" });
@@ -217,13 +223,7 @@ const HeroSection = () => {
                     <Button
                       type="button"
                       className="shrink-0 flex-1 sm:flex-none rounded-xl px-6 py-3 h-auto text-sm font-semibold"
-                      onClick={() => {
-                        navigate("/");
-                        setTimeout(() => {
-                          const el = document.getElementById("pricing");
-                          if (el) el.scrollIntoView({ behavior: "smooth" });
-                        }, 100);
-                      }}
+                      onClick={() => navigate("/pricing")}
                     >
                       <ArrowUp size={14} className="mr-1" />
                       Upgrade
@@ -256,9 +256,20 @@ const HeroSection = () => {
                     disabled={regLoading}
                   />
                 </div>
-                <Button type="submit" className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold" disabled={regLoading || !regNumber.trim()}>
-                  {regLoading ? <Loader2 size={16} className="animate-spin" /> : "Lookup"}
-                </Button>
+                {searchLimit.limitReached ? (
+                  <Button
+                    type="button"
+                    className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold"
+                    onClick={() => navigate("/pricing")}
+                  >
+                    <ArrowUp size={14} className="mr-1" />
+                    Upgrade
+                  </Button>
+                ) : (
+                  <Button type="submit" className="shrink-0 rounded-xl px-6 py-3 h-auto text-sm font-semibold" disabled={regLoading || !regNumber.trim()}>
+                    {regLoading ? <Loader2 size={16} className="animate-spin" /> : "Lookup"}
+                  </Button>
+                )}
               </form>
               <p className="text-xs text-muted-foreground mt-3">
                 🚗 Enter your UK number plate to find parts specific to your vehicle
