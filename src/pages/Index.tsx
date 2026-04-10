@@ -51,7 +51,6 @@ const Index = () => {
       <FeaturesSection />
       <HowItWorksSection />
       <SuppliersSection />
-      <StatsSection />
       <PricingSection />
       
       <Footer />
