@@ -4,6 +4,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Car, Plus, Trash2, Loader2, X } from "lucide-react";
+import VehicleNotes from "@/components/dashboard/VehicleNotes";
+import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import {
   Select,
   SelectContent,
@@ -42,9 +44,10 @@ const ENGINE_SIZES = ["1.0L", "1.2L", "1.4L", "1.5L", "1.6L", "1.8L", "2.0L", "2
 interface Props {
   userId: string;
   isPro: boolean;
+  isBusinessUser?: boolean;
 }
 
-const MyGarageSection = ({ userId, isPro }: Props) => {
+const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
   const { toast } = useToast();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
@@ -243,30 +246,36 @@ const MyGarageSection = ({ userId, isPro }: Props) => {
           {vehicles.map((v) => (
             <div
               key={v.id}
-              className="flex items-center gap-3 p-4 rounded-xl bg-secondary/30 border border-border hover:border-primary/20 transition-colors group"
+              className="p-4 rounded-xl bg-secondary/30 border border-border hover:border-primary/20 transition-colors group"
             >
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <Car size={18} className="text-primary" />
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <Car size={18} className="text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-display font-bold text-sm truncate">
+                    {v.make} {v.model} ({v.year})
+                  </p>
+                  {v.nickname && (
+                    <p className="text-xs text-muted-foreground truncate">"{v.nickname}"</p>
+                  )}
+                  {v.engine_size && (
+                    <span className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded mt-1 inline-block">
+                      {v.engine_size}
+                    </span>
+                  )}
+                </div>
+                <button
+                  onClick={() => handleDelete(v.id)}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive shrink-0"
+                >
+                  <Trash2 size={14} />
+                </button>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-display font-bold text-sm truncate">
-                  {v.make} {v.model} ({v.year})
-                </p>
-                {v.nickname && (
-                  <p className="text-xs text-muted-foreground truncate">"{v.nickname}"</p>
-                )}
-                {v.engine_size && (
-                  <span className="text-[10px] text-muted-foreground bg-secondary px-1.5 py-0.5 rounded mt-1 inline-block">
-                    {v.engine_size}
-                  </span>
-                )}
-              </div>
-              <button
-                onClick={() => handleDelete(v.id)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive shrink-0"
-              >
-                <Trash2 size={14} />
-              </button>
+              {/* Vehicle Notes — Business feature */}
+              <BusinessFeatureGate isBusinessUser={isBusinessUser} label="Business plan feature">
+                <VehicleNotes vehicleId={v.id} userId={userId} />
+              </BusinessFeatureGate>
             </div>
           ))}
         </div>

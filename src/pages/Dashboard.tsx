@@ -5,12 +5,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Camera, Save, User, Mail, Crown, Clock, Bookmark, Loader2, Search, X, ExternalLink, CreditCard } from "lucide-react";
+import { ArrowLeft, Camera, Save, User, Mail, Crown, Clock, Bookmark, Loader2, Search, X, ExternalLink, CreditCard, Download } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import ReferralSection from "@/components/dashboard/ReferralSection";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
 import PriceAlertsSection from "@/components/dashboard/PriceAlertsSection";
 import MyGarageSection from "@/components/dashboard/MyGarageSection";
+import BusinessBadge from "@/components/dashboard/BusinessBadge";
+import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
+import PrioritySupportButton from "@/components/dashboard/PrioritySupportButton";
+import ComingSoonFeatures from "@/components/dashboard/ComingSoonFeatures";
 
 const STRIPE_TIERS: Record<string, { label: string; price: string }> = {
   prod_UI08qGZRqV94r2: { label: "Pro", price: "£9.99/mo" },
@@ -235,6 +239,26 @@ const Dashboard = () => {
   };
   const currentPlan = profile?.subscription_plan || "free";
   const currentPlanInfo = PLAN_INFO[currentPlan] || PLAN_INFO.free;
+  const isBusinessUser = ["business", "admin"].includes(currentPlan);
+
+  const exportSearchHistoryCSV = async () => {
+    const { data } = await supabase
+      .from("search_history")
+      .select("*")
+      .eq("user_id", user!.id)
+      .order("created_at", { ascending: false });
+    if (!data || data.length === 0) return;
+    const csv = "Date,Search Query,Results Count\n" + data.map((r) =>
+      `"${new Date(r.created_at).toLocaleDateString("en-GB")}","${r.query.replace(/"/g, '""')}","N/A"`
+    ).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `partara-search-history-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   if (authLoading || loading) {
     return (
@@ -257,7 +281,10 @@ const Dashboard = () => {
           Back to home
         </button>
 
-        <h1 className="font-display text-3xl font-bold mb-8">My Profile</h1>
+        <div className="flex items-center gap-3 mb-8">
+          <h1 className="font-display text-3xl font-bold">My Profile</h1>
+          {isBusinessUser && <BusinessBadge />}
+        </div>
 
         {/* Avatar */}
         <div className="glass rounded-2xl p-8 mb-6">
@@ -462,6 +489,7 @@ const Dashboard = () => {
             <MyGarageSection
               userId={user.id}
               isPro={["pro", "business", "admin"].includes(currentPlan)}
+              isBusinessUser={isBusinessUser}
             />
           </div>
         )}
@@ -485,14 +513,25 @@ const Dashboard = () => {
               <Search size={18} className="text-primary" />
               Recent Searches
             </h2>
-            {searchHistory.length > 0 && (
-              <button
-                onClick={clearAllHistory}
-                className="text-xs text-muted-foreground hover:text-destructive transition-colors"
-              >
-                Clear all
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              <BusinessFeatureGate isBusinessUser={isBusinessUser} label="Business plan feature">
+                <button
+                  onClick={exportSearchHistoryCSV}
+                  className="text-xs text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
+                >
+                  <Download size={12} />
+                  Export CSV
+                </button>
+              </BusinessFeatureGate>
+              {searchHistory.length > 0 && (
+                <button
+                  onClick={clearAllHistory}
+                  className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  Clear all
+                </button>
+              )}
+            </div>
           </div>
           {searchHistory.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-6">
@@ -529,6 +568,26 @@ const Dashboard = () => {
             </div>
           )}
         </div>
+
+        {/* Priority Support — Business only */}
+        <div className="mt-6">
+          <BusinessFeatureGate isBusinessUser={isBusinessUser} label="Business plan feature">
+            <div className="glass rounded-2xl p-6 flex items-center justify-between">
+              <div>
+                <p className="font-display font-semibold text-sm">Priority Email Support</p>
+                <p className="text-xs text-muted-foreground">Get faster responses from our team.</p>
+              </div>
+              <PrioritySupportButton displayName={displayName || user?.email || ""} />
+            </div>
+          </BusinessFeatureGate>
+        </div>
+
+        {/* Coming Soon — Business only */}
+        {isBusinessUser && (
+          <div className="mt-6">
+            <ComingSoonFeatures />
+          </div>
+        )}
       </div>
     </div>
   );
