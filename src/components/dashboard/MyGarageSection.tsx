@@ -4,6 +4,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Car, Plus, Trash2, Loader2, X } from "lucide-react";
+import VehicleNotes from "@/components/dashboard/VehicleNotes";
+import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import {
   Select,
   SelectContent,
@@ -42,9 +44,10 @@ const ENGINE_SIZES = ["1.0L", "1.2L", "1.4L", "1.5L", "1.6L", "1.8L", "2.0L", "2
 interface Props {
   userId: string;
   isPro: boolean;
+  isBusinessUser?: boolean;
 }
 
-const MyGarageSection = ({ userId, isPro }: Props) => {
+const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
   const { toast } = useToast();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
@@ -267,6 +270,11 @@ const MyGarageSection = ({ userId, isPro }: Props) => {
               >
                 <Trash2 size={14} />
               </button>
+              </div>
+              {/* Vehicle Notes — Business feature */}
+              <BusinessFeatureGate isBusinessUser={isBusinessUser} label="Business plan feature">
+                <VehicleNotes vehicleId={v.id} userId={userId} />
+              </BusinessFeatureGate>
             </div>
           ))}
         </div>
