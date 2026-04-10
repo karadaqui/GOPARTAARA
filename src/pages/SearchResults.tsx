@@ -137,8 +137,9 @@ const SearchResults = () => {
 
       // Record search if this came from external navigation (not internal handleSearch)
       if (urlQuery && user && !internalSearchRef.current) {
+        searchLimit.recordSearch();
         supabase.from("search_history").insert({ user_id: user.id, query: urlQuery }).then(() => {
-          searchLimit.refresh();
+          // already updated optimistically
         });
       }
       internalSearchRef.current = false;
@@ -231,6 +232,7 @@ const SearchResults = () => {
     });
 
     if (user) {
+      searchLimit.recordSearch();
       supabase.from("search_history").insert({ user_id: user.id, query: nextQuery }).then(({ error }) => {
         if (error) console.error("Failed to save search history:", error);
       });
@@ -252,10 +254,10 @@ const SearchResults = () => {
     setCurrentPage(1);
     setSearchParams({ q });
     if (user) {
+      searchLimit.recordSearch();
       supabase.from("search_history").insert({ user_id: user.id, query: q }).then(({ error }) => {
         if (error) console.error("Failed to save search history:", error);
       });
-      searchLimit.refresh();
     }
   };
 
