@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, LogOut, User, ChevronDown, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -27,10 +27,18 @@ const ADMIN_EMAIL = "info@gopartara.com";
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const moreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { user, signOut, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleMoreEnter = useCallback(() => {
     if (moreTimeoutRef.current) clearTimeout(moreTimeoutRef.current);
@@ -58,10 +66,17 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass">
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      scrolled
+        ? "glass-strong shadow-lg shadow-background/50"
+        : "bg-transparent backdrop-blur-md border-b border-transparent"
+    }`}>
       <div className="container flex h-16 items-center justify-between">
-        <button onClick={() => handleNavClick("/")} className="font-display text-2xl font-bold tracking-tight">
-          <span className="text-primary">PART</span>
+        <button
+          onClick={() => handleNavClick("/")}
+          className="font-display text-2xl font-bold tracking-tight group"
+        >
+          <span className="text-primary transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(0_85%_50%/0.6)]">PART</span>
           <span className="text-foreground">ARA</span>
         </button>
 
@@ -71,7 +86,7 @@ const Navbar = () => {
               <button
                 key={l.label}
                 onClick={() => handleNavClick(l.href)}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="nav-link text-sm text-muted-foreground hover:text-foreground transition-colors py-1"
               >
                 {l.label}
               </button>
@@ -82,19 +97,19 @@ const Navbar = () => {
               onMouseEnter={handleMoreEnter}
               onMouseLeave={handleMoreLeave}
             >
-              <button className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+              <button className="nav-link text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 py-1">
                 More
-                <ChevronDown size={14} className={`transition-transform ${moreOpen ? "rotate-180" : ""}`} />
+                <ChevronDown size={14} className={`transition-transform duration-300 ${moreOpen ? "rotate-180" : ""}`} />
               </button>
 
               {moreOpen && (
                 <div className="absolute top-full right-0 pt-2 w-48">
-                  <div className="rounded-md border border-border bg-popover p-1 shadow-md animate-in fade-in-0 zoom-in-95">
+                  <div className="rounded-xl border border-border/60 bg-popover/95 backdrop-blur-xl p-1.5 shadow-xl shadow-background/40 animate-in fade-in-0 zoom-in-95">
                     {moreLinks.map((l) => (
                       <button
                         key={l.href}
                         onClick={() => handleNavClick(l.href)}
-                        className="w-full rounded-sm px-3 py-2 text-left text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                        className="w-full rounded-lg px-3 py-2.5 text-left text-sm text-popover-foreground transition-colors hover:bg-accent/10 hover:text-accent-foreground"
                       >
                         {l.label}
                       </button>
@@ -119,19 +134,19 @@ const Navbar = () => {
 
                   <button
                     onClick={() => navigate("/dashboard")}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+                    className="nav-link text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 py-1"
                   >
                     <User size={14} />
                     Dashboard
                   </button>
 
-                  <Button size="sm" variant="outline" onClick={signOut} className="gap-1.5">
+                  <Button size="sm" variant="outline" onClick={signOut} className="gap-1.5 rounded-xl">
                     <LogOut size={14} />
                     Sign Out
                   </Button>
                 </div>
               ) : (
-                <Button size="sm" onClick={() => navigate("/auth")}>
+                <Button size="sm" onClick={() => navigate("/auth")} className="rounded-xl btn-glow">
                   Get Started
                 </Button>
               )
@@ -147,25 +162,25 @@ const Navbar = () => {
       </div>
 
       {open && (
-        <div className="md:hidden glass border-t border-border pb-4">
+        <div className="md:hidden glass-strong border-t border-border/40 pb-4 safe-bottom">
           <div className="container flex flex-col gap-3 pt-3">
             {primaryLinks.map((l) => (
               <button
                 key={l.label}
                 onClick={() => handleNavClick(l.href)}
-                className="py-2 text-left text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="py-2.5 text-left text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 {l.label}
               </button>
             ))}
 
-            <div className="mt-1 border-t border-border pt-2">
+            <div className="mt-1 border-t border-border/40 pt-2">
               <span className="block px-0 pb-1 text-xs uppercase tracking-wider text-muted-foreground">More</span>
               {moreLinks.map((l) => (
                 <button
                   key={l.href}
                   onClick={() => handleNavClick(l.href)}
-                  className="w-full py-2 text-left text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="w-full py-2.5 text-left text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {l.label}
                 </button>
@@ -174,7 +189,7 @@ const Navbar = () => {
 
             {!loading && (
               user ? (
-                <div className="mt-1 flex flex-col gap-2 border-t border-border pt-2">
+                <div className="mt-1 flex flex-col gap-2 border-t border-border/40 pt-2">
                   {user.email === ADMIN_EMAIL && (
                     <button
                       onClick={() => {
@@ -199,7 +214,7 @@ const Navbar = () => {
                     Dashboard
                   </button>
 
-                  <Button size="sm" variant="outline" onClick={signOut} className="w-fit gap-1.5">
+                  <Button size="sm" variant="outline" onClick={signOut} className="w-fit gap-1.5 rounded-xl">
                     <LogOut size={14} />
                     Sign Out
                   </Button>
@@ -208,7 +223,7 @@ const Navbar = () => {
                 <Button size="sm" onClick={() => {
                   setOpen(false);
                   navigate("/auth");
-                }} className="w-fit">
+                }} className="w-fit rounded-xl btn-glow">
                   Get Started
                 </Button>
               )

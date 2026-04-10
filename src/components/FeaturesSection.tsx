@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Camera, Car, Bookmark, Bell, Store, Star, BarChart3, Gift } from "lucide-react";
+import ScrollReveal from "@/components/ScrollReveal";
 
 const features = [
   {
@@ -56,32 +57,33 @@ const FeaturesSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="py-20 md:py-28">
+    <section className="py-24 md:py-32">
       <div className="container px-6 md:px-4">
-        <div className="text-center mb-14">
-          <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary mb-4">
+        <ScrollReveal className="text-center mb-16">
+          <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
             Features
           </span>
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="font-display text-3xl md:text-5xl font-bold mb-5 tracking-tight">
             Everything You Need to Find the Right Part
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
             From search to purchase, PARTARA gives you the tools to find, compare, and buy car parts faster.
           </p>
-        </div>
+        </ScrollReveal>
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-6xl mx-auto">
-          {features.map((f) => (
-            <button
-              key={f.title}
-              onClick={() => navigate(f.link)}
-              className="group rounded-xl sm:rounded-2xl border border-border bg-card p-4 sm:p-6 text-center text-left transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 cursor-pointer"
-            >
-              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-                <f.icon size={24} />
-              </div>
-              <h3 className="font-semibold text-sm mb-1.5">{f.title}</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
-            </button>
+          {features.map((f, i) => (
+            <ScrollReveal key={f.title} delay={(i % 4) + 1}>
+              <button
+                onClick={() => navigate(f.link)}
+                className="group w-full rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm p-5 sm:p-7 text-center transition-all duration-300 hover:border-primary/30 hover:bg-card/70 card-hover cursor-pointer"
+              >
+                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-110 group-hover:rotate-3">
+                  <f.icon size={26} />
+                </div>
+                <h3 className="font-semibold text-sm sm:text-base mb-2">{f.title}</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+              </button>
+            </ScrollReveal>
           ))}
         </div>
       </div>
