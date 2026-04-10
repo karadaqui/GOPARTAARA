@@ -48,6 +48,8 @@ interface Review {
   rating: number;
   comment: string | null;
   created_at: string;
+  reviewer_name?: string | null;
+  reviewer_plan?: string | null;
 }
 
 const ListingDetail = () => {
@@ -99,7 +101,26 @@ const ListingDetail = () => {
         .select("*")
         .eq("listing_id", id!)
         .order("created_at", { ascending: false });
-      setReviews((revs as Review[]) || []);
+
+      // Enrich reviews with profile data
+      const enrichedReviews: Review[] = [];
+      if (revs) {
+        const userIds = [...new Set(revs.map((r: any) => r.user_id))];
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("user_id, display_name, subscription_plan")
+          .in("user_id", userIds);
+        const profileMap = new Map((profiles || []).map((p: any) => [p.user_id, p]));
+        for (const r of revs) {
+          const prof = profileMap.get(r.user_id);
+          enrichedReviews.push({
+            ...r,
+            reviewer_name: prof?.display_name || null,
+            reviewer_plan: prof?.subscription_plan || null,
+          });
+        }
+      }
+      setReviews(enrichedReviews);
 
       if (user) {
         const existing = (revs as Review[])?.find(r => r.user_id === user.id);
