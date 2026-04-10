@@ -35,6 +35,7 @@ const Admin = lazy(() => import("./pages/Admin.tsx"));
 const Garage = lazy(() => import("./pages/Garage.tsx"));
 const Refund = lazy(() => import("./pages/Refund.tsx"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail.tsx"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/search" element={<SearchResults />} />
               <Route path="/saved" element={<SavedParts />} />

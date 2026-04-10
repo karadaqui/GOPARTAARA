@@ -21,7 +21,7 @@ const VerifyEmail = () => {
       const { error } = await supabase.auth.resend({
         type: "signup",
         email,
-        options: { emailRedirectTo: window.location.hostname === 'localhost' ? window.location.origin : 'https://gopartara.com' },
+        options: { emailRedirectTo: window.location.hostname === 'localhost' ? `${window.location.origin}/auth/callback` : 'https://gopartara.com/auth/callback' },
       });
       if (error) throw error;
       setResent(true);
