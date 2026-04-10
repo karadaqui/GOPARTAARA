@@ -8,7 +8,6 @@ const BodySchema = z.object({
   query: z.string().min(1).max(500),
   langId: z.number().int().optional().default(4),
   countryFilterId: z.number().int().optional().default(62),
-  // diagnostic mode - try multiple endpoints to find working ones
   diagnostic: z.boolean().optional().default(false),
 });
 
@@ -24,6 +23,11 @@ async function rapidFetch(path: string, apiKey: string): Promise<{ ok: boolean; 
   let data: any;
   try { data = JSON.parse(text); } catch { data = text; }
   return { ok: res.ok, status: res.status, data };
+}
+
+// Add delay between requests to avoid rate limiting
+function delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 Deno.serve(async (req) => {
@@ -47,40 +51,51 @@ Deno.serve(async (req) => {
 
     const { query, langId, countryFilterId, diagnostic } = parsed.data;
 
-    // Diagnostic mode: try many endpoint patterns to discover the correct API structure
     if (diagnostic) {
       const testPaths = [
-        `/getAllLanguages`,
-        `/getManufacturers?typeId=1&langId=${langId}&countryFilterId=${countryFilterId}`,
-        `/listVehicleTypes`,
-        `/getAllCountries`,
-        `/languages/list`,
-        `/countries/list`,
-        `/manufacturers?typeId=1&langId=${langId}&countryFilterId=${countryFilterId}`,
-        `/v1/manufacturers?typeId=1&langId=${langId}&countryFilterId=${countryFilterId}`,
+        `/manufacturers/list?typeId=1&langId=${langId}&countryFilterId=${countryFilterId}`,
+        `/articles/search-by-article-no/lang-id/${langId}/article-no/${encodeURIComponent(query)}`,
+        `/articles/search?langId=${langId}&query=${encodeURIComponent(query)}`,
+        `/categories/search-by-description?langId=${langId}&countryFilterId=${countryFilterId}&description=${encodeURIComponent(query)}`,
       ];
 
       const diagnosticResults: any[] = [];
       for (const path of testPaths) {
+        await delay(1100); // 1 req/sec for BASIC plan
         const result = await rapidFetch(path, RAPIDAPI_KEY);
         diagnosticResults.push({
           path,
           status: result.status,
           ok: result.ok,
-          sample: typeof result.data === 'string' ? result.data.slice(0, 200) : JSON.stringify(result.data)?.slice(0, 200),
+          sample: typeof result.data === 'string' ? result.data.slice(0, 300) : JSON.stringify(result.data)?.slice(0, 300),
         });
       }
       return jsonResponse({ diagnostic: true, results: diagnosticResults }, 200, corsHeaders);
     }
 
-    // Normal search flow - try known endpoint patterns
-    const searchPaths = [
-      `/getManufacturers?typeId=1&langId=${langId}&countryFilterId=${countryFilterId}`,
-      `/getAllLanguages`,
-    ];
+    // Normal search - try article search endpoint
+    const searchResult = await rapidFetch(
+      `/articles/search-by-article-no/lang-id/${langId}/article-no/${encodeURIComponent(query)}`,
+      RAPIDAPI_KEY
+    );
 
-    // For now return empty until we discover working endpoints
-    return jsonResponse({ results: [] }, 200, corsHeaders);
+    const results: any[] = [];
+    if (searchResult.ok && Array.isArray(searchResult.data)) {
+      for (const item of searchResult.data) {
+        results.push({
+          id: `catalog-${item.articleId || item.id || results.length}`,
+          partName: item.articleName || item.name || item.description || "Auto Part",
+          partNumber: item.articleNo || item.articleNumber || "",
+          brand: item.supplierName || item.brandName || "TecDoc Catalog",
+          category: item.productGroupName || item.category || "",
+          imageUrl: item.s3image || item.imageUrl || null,
+          compatibility: null,
+          source: "catalog",
+        });
+      }
+    }
+
+    return jsonResponse({ results: results.slice(0, 20) }, 200, corsHeaders);
   } catch (error) {
     console.error("[search-auto-parts] Unhandled error:", error);
     return jsonResponse({ error: "SERVICE_FAILED", results: [] }, 200, corsHeaders);
