@@ -150,6 +150,7 @@ export type Database = {
         Row: {
           comment: string | null
           created_at: string
+          dispute_admin_note: string | null
           dispute_date: string | null
           dispute_reason: string | null
           dispute_status: string
@@ -161,6 +162,7 @@ export type Database = {
         Insert: {
           comment?: string | null
           created_at?: string
+          dispute_admin_note?: string | null
           dispute_date?: string | null
           dispute_reason?: string | null
           dispute_status?: string
@@ -172,6 +174,7 @@ export type Database = {
         Update: {
           comment?: string | null
           created_at?: string
+          dispute_admin_note?: string | null
           dispute_date?: string | null
           dispute_reason?: string | null
           dispute_status?: string
