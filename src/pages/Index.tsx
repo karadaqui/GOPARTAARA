@@ -58,7 +58,6 @@ const Index = () => {
       <BackToTop />
       <WelcomeModal />
     </div>
-    </div>
   );
 };
 
