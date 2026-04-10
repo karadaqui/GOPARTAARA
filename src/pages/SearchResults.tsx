@@ -33,13 +33,17 @@ const suppliers: { name: string; flag: string; gradient: string; buildUrl: (q: s
   { name: "Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-600 to-indigo-700", buildUrl: googleSite("eurocarparts.com") },
   { name: "GSF Car Parts", flag: "🇬🇧", gradient: "from-emerald-600 to-teal-700", buildUrl: googleSite("gsfcarparts.com") },
   { name: "Car Parts 4 Less", flag: "🇬🇧", gradient: "from-purple-600 to-purple-800", buildUrl: googleSite("carparts4less.co.uk") },
-  { name: "Halfords", flag: "🇬🇧", gradient: "from-sky-500 to-sky-700", buildUrl: googleSite("halfords.com") },
   { name: "AutoDoc", flag: "🇬🇧", gradient: "from-cyan-500 to-blue-600", buildUrl: googleSite("autodoc.co.uk") },
   { name: "Amazon UK", flag: "🇬🇧", gradient: "from-orange-500 to-amber-600", buildUrl: (q) => `https://www.amazon.co.uk/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara-21` },
   { name: "Partmaster", flag: "🇬🇧", gradient: "from-slate-600 to-slate-800", buildUrl: googleSite("partmaster.co.uk") },
   { name: "LKQ Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-500 to-blue-700", buildUrl: googleSite("lkqeurocarparts.com") },
-  { name: "RockAuto", flag: "🌍", gradient: "from-yellow-600 to-orange-700", buildUrl: googleSite("rockauto.com") },
-  { name: "PartsGeek", flag: "🌍", gradient: "from-red-600 to-red-800", buildUrl: googleSite("partsgeek.com") },
+];
+
+const globalSuppliers: { name: string; flag: string; region: string; gradient: string; buildUrl: (q: string) => string }[] = [
+  { name: "RockAuto", flag: "🇺🇸", region: "USA", gradient: "from-yellow-600 to-orange-700", buildUrl: (q) => `https://www.rockauto.com/en/catalog/?a=${encodeURIComponent(q)}` },
+  { name: "PartsGeek", flag: "🇺🇸", region: "USA", gradient: "from-red-600 to-red-800", buildUrl: (q) => `https://www.partsgeek.com/catalog/search/?search=${encodeURIComponent(q)}` },
+  { name: "AutoZone", flag: "🇺🇸", region: "USA", gradient: "from-amber-600 to-red-700", buildUrl: (q) => `https://www.autozone.com/searchresult?searchText=${encodeURIComponent(q)}` },
+  { name: "Mister Auto", flag: "🇪🇺", region: "Europe", gradient: "from-blue-500 to-indigo-600", buildUrl: (q) => `https://www.mister-auto.com/recherche?q=${encodeURIComponent(q)}` },
 ];
 
 const PART_CATEGORIES = [
@@ -126,6 +130,8 @@ const SearchResults = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const internalSearchRef = useRef(false);
   const [authGateOpen, setAuthGateOpen] = useState(false);
+  const [catalogResults, setCatalogResults] = useState<any[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(false);
 
   // When URL query changes, populate input but DON'T auto-execute search.
   // Search only runs on explicit user action (form submit / button click).
@@ -222,6 +228,32 @@ const SearchResults = () => {
     fetchLive();
     return () => { cancelled = true; };
   }, [activeQuery, selectedCategory, currentPage, user]);
+
+  // Fetch catalog results in parallel
+  useEffect(() => {
+    if (!activeQuery.trim() || !user) {
+      setCatalogResults([]);
+      return;
+    }
+    let cancelled = false;
+    const fetchCatalog = async () => {
+      setCatalogLoading(true);
+      try {
+        const { data, error } = await supabase.functions.invoke("search-auto-parts", {
+          body: { query: activeQuery },
+        });
+        if (!cancelled && !error) {
+          setCatalogResults(data?.results || []);
+        }
+      } catch {
+        if (!cancelled) setCatalogResults([]);
+      } finally {
+        if (!cancelled) setCatalogLoading(false);
+      }
+    };
+    fetchCatalog();
+    return () => { cancelled = true; };
+  }, [activeQuery, user]);
 
   useEffect(() => {
     if (!user) return;
@@ -924,7 +956,85 @@ const SearchResults = () => {
                   </div>
                 )}
 
-                {/* Pagination */}
+                {/* Parts Catalog Results */}
+                {catalogLoading && (
+                  <div className="flex items-center gap-2 py-4 justify-center text-muted-foreground">
+                    <Loader2 size={16} className="animate-spin" />
+                    <span className="text-sm">Searching parts catalog...</span>
+                  </div>
+                )}
+                {catalogResults.length > 0 && (
+                  <div className="mb-8">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-6 h-6 rounded-md bg-primary/15 flex items-center justify-center">
+                        <Search size={14} className="text-primary" />
+                      </div>
+                      <h3 className="font-display text-base sm:text-lg font-bold">Parts Catalog</h3>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary/15 text-primary border border-primary/20">
+                        TecDoc Data
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                      {catalogResults.map((item: any) => (
+                        <div key={item.id} className="glass rounded-xl p-4 hover:border-primary/30 transition-all flex flex-col gap-2">
+                          <div className="flex items-start gap-3">
+                            {item.imageUrl && (
+                              <img src={item.imageUrl} alt={item.partName} className="w-14 h-14 rounded-lg object-contain bg-secondary/50 p-1 shrink-0" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-semibold line-clamp-2 text-foreground">{item.partName}</p>
+                              {item.partNumber && (
+                                <p className="text-xs text-muted-foreground mt-0.5 font-mono">#{item.partNumber}</p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-secondary text-muted-foreground">{item.brand}</span>
+                            {item.category && (
+                              <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-secondary text-muted-foreground">{item.category}</span>
+                            )}
+                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-primary/15 text-primary border border-primary/20">Parts Catalog</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Global Suppliers */}
+                <div className="mb-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-lg">🌍</span>
+                    <h3 className="font-display text-base sm:text-lg font-bold">Global Suppliers</h3>
+                    <span className="text-xs text-muted-foreground">International shipping available</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
+                    {globalSuppliers.map((gs) => (
+                      <a
+                        key={gs.name}
+                        href={gs.buildUrl(activeQuery)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group glass rounded-xl overflow-hidden hover:border-primary/30 transition-all hover:scale-[1.02] flex flex-col"
+                      >
+                        <div className={`h-14 sm:h-16 bg-gradient-to-br ${gs.gradient} flex items-center justify-center px-2 relative`}>
+                          <span className="text-white font-display font-bold text-xs sm:text-sm tracking-wide text-center leading-tight">
+                            {gs.flag} {gs.name}
+                          </span>
+                          <span className="absolute top-1 right-1 px-1.5 py-0.5 rounded text-[8px] font-bold bg-white/20 text-white backdrop-blur-sm">
+                            {gs.region}
+                          </span>
+                        </div>
+                        <div className="p-2">
+                          <span className="flex items-center justify-center gap-1 w-full rounded-lg text-xs h-7 bg-primary text-primary-foreground font-medium group-hover:bg-primary/90 transition-colors">
+                            <ExternalLink size={11} /> Search
+                          </span>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
                 {totalPages > 1 && (
                   <div className="flex flex-col items-center gap-2 sm:gap-3 mt-6 sm:mt-8">
                     <p className="text-[10px] sm:text-xs text-muted-foreground">
