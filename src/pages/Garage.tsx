@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import AuthGateModal from "@/components/AuthGateModal";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -104,7 +105,7 @@ const Garage = () => {
   const canAddMore = isPro || vehicles.length < 1;
 
   const handleAddClick = () => {
-    if (!user) { navigate("/auth"); return; }
+    if (!user) { setAuthGateOpen(true); return; }
     if (!canAddMore) { setUpgradeOpen(true); return; }
     setShowForm(true);
   };
