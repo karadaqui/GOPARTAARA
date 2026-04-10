@@ -25,7 +25,6 @@ async function rapidFetch(path: string, apiKey: string): Promise<{ ok: boolean; 
   return { ok: res.ok, status: res.status, data };
 }
 
-// Add delay between requests to avoid rate limiting
 function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -52,16 +51,19 @@ Deno.serve(async (req) => {
     const { query, langId, countryFilterId, diagnostic } = parsed.data;
 
     if (diagnostic) {
+      // We know /languages/list works. Try patterns based on that.
       const testPaths = [
-        `/manufacturers/list?typeId=1&langId=${langId}&countryFilterId=${countryFilterId}`,
-        `/articles/search-by-article-no/lang-id/${langId}/article-no/${encodeURIComponent(query)}`,
-        `/articles/search?langId=${langId}&query=${encodeURIComponent(query)}`,
-        `/categories/search-by-description?langId=${langId}&countryFilterId=${countryFilterId}&description=${encodeURIComponent(query)}`,
+        `/countries/list?langId=${langId}`,
+        `/vehicle-types/list`,
+        `/manufacturers/list?langId=${langId}&countryFilterId=${countryFilterId}&typeId=1`,
+        `/search/articles?langId=${langId}&articleSearchNr=${encodeURIComponent(query)}`,
+        `/search/by-description?langId=${langId}&countryFilterId=${countryFilterId}&description=${encodeURIComponent(query)}`,
+        `/suppliers/list?langId=${langId}`,
       ];
 
       const diagnosticResults: any[] = [];
       for (const path of testPaths) {
-        await delay(1100); // 1 req/sec for BASIC plan
+        await delay(1100);
         const result = await rapidFetch(path, RAPIDAPI_KEY);
         diagnosticResults.push({
           path,
@@ -73,29 +75,7 @@ Deno.serve(async (req) => {
       return jsonResponse({ diagnostic: true, results: diagnosticResults }, 200, corsHeaders);
     }
 
-    // Normal search - try article search endpoint
-    const searchResult = await rapidFetch(
-      `/articles/search-by-article-no/lang-id/${langId}/article-no/${encodeURIComponent(query)}`,
-      RAPIDAPI_KEY
-    );
-
-    const results: any[] = [];
-    if (searchResult.ok && Array.isArray(searchResult.data)) {
-      for (const item of searchResult.data) {
-        results.push({
-          id: `catalog-${item.articleId || item.id || results.length}`,
-          partName: item.articleName || item.name || item.description || "Auto Part",
-          partNumber: item.articleNo || item.articleNumber || "",
-          brand: item.supplierName || item.brandName || "TecDoc Catalog",
-          category: item.productGroupName || item.category || "",
-          imageUrl: item.s3image || item.imageUrl || null,
-          compatibility: null,
-          source: "catalog",
-        });
-      }
-    }
-
-    return jsonResponse({ results: results.slice(0, 20) }, 200, corsHeaders);
+    return jsonResponse({ results: [] }, 200, corsHeaders);
   } catch (error) {
     console.error("[search-auto-parts] Unhandled error:", error);
     return jsonResponse({ error: "SERVICE_FAILED", results: [] }, 200, corsHeaders);
