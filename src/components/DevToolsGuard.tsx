@@ -13,6 +13,7 @@ const DevToolsGuard = () => {
       warningStyle,
       normalStyle
     );
+    
     // Repeat periodically so it's visible when console is opened later
     const interval = setInterval(() => {
       console.log(
@@ -20,7 +21,6 @@ const DevToolsGuard = () => {
         "color: red; font-size: 14px; font-weight: bold;"
       );
     }, 10000);
-    return () => clearInterval(interval);
 
     const handler = (e: KeyboardEvent) => {
       // F12
@@ -60,7 +60,9 @@ const DevToolsGuard = () => {
 
     document.addEventListener("keydown", handler);
     document.addEventListener("contextmenu", contextHandler);
+    
     return () => {
+      clearInterval(interval);
       document.removeEventListener("keydown", handler);
       document.removeEventListener("contextmenu", contextHandler);
     };
