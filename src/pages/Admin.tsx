@@ -168,9 +168,15 @@ const Admin = () => {
     if (!dispute) { setResolving(false); return; }
 
     const decision = resolveAction === "keep" ? "Keep" : "Remove";
-    const noteText = resolveNote.trim() ? ` ${resolveNote.trim()}` : "";
+    const adminNote = resolveNote.trim() || null;
 
     if (resolveAction === "remove") {
+      // Update status + note before deleting so seller can see decision
+      await supabase.from("listing_reviews").update({
+        dispute_status: "removed",
+        dispute_admin_note: adminNote,
+      } as any).eq("id", resolveId);
+
       // Delete the review
       await supabase.from("listing_reviews").delete().eq("id", resolveId);
 
@@ -179,23 +185,51 @@ const Admin = () => {
         user_id: dispute.user_id,
         type: "review_removed",
         title: "Your review was removed",
-        message: `Your review on "${dispute.listing_title}" was removed after a dispute review. Reason: ${dispute.dispute_reason}${noteText ? `. Note: ${noteText}` : ""}`,
+        message: `Your review on "${dispute.listing_title}" was removed after a dispute review.${adminNote ? ` Note: ${adminNote}` : ""}`,
         link: `/listing/${dispute.listing_id}`,
       });
     } else {
-      // Keep - update status
-      await supabase.from("listing_reviews").update({ dispute_status: "kept" } as any).eq("id", resolveId);
+      // Keep - update status + note
+      await supabase.from("listing_reviews").update({
+        dispute_status: "kept",
+        dispute_admin_note: adminNote,
+      } as any).eq("id", resolveId);
     }
 
-    // Notify seller about the decision
+    // Notify seller about the decision (in-app)
     if (dispute.seller_user_id) {
       await supabase.from("notifications").insert({
         user_id: dispute.seller_user_id,
         type: "dispute_resolved",
         title: `Dispute decision: ${decision}`,
-        message: `Your dispute for "${dispute.listing_title}" has been reviewed. Decision: ${decision}.${noteText}`,
-        link: `/listing/${dispute.listing_id}`,
+        message: `Your dispute for "${dispute.listing_title}" has been reviewed. Decision: ${decision}.${adminNote ? ` Note: ${adminNote}` : ""} If you believe this decision is incorrect, please contact us.`,
+        link: "/contact",
       });
+    }
+
+    // Send branded email to seller
+    if (dispute.seller_user_id) {
+      const { data: sellerProfile } = await supabase
+        .from("profiles")
+        .select("email, display_name")
+        .eq("user_id", dispute.seller_user_id)
+        .single();
+
+      if (sellerProfile?.email) {
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "dispute-decision",
+            recipientEmail: sellerProfile.email,
+            idempotencyKey: `dispute-decision-${resolveId}-${resolveAction}`,
+            templateData: {
+              listingTitle: dispute.listing_title,
+              decision,
+              adminNote: adminNote || undefined,
+              sellerName: sellerProfile.display_name || dispute.seller_name,
+            },
+          },
+        });
+      }
     }
 
     toast({ title: `Dispute resolved: ${decision}` });
