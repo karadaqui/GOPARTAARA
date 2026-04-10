@@ -6,24 +6,24 @@ const RAPIDAPI_BASE = `https://${RAPIDAPI_HOST}`;
 
 const BodySchema = z.object({
   query: z.string().min(1).max(500),
-  langId: z.number().int().optional().default(4), // English
-  countryFilterId: z.number().int().optional().default(62), // Germany (broadest catalog)
+  langId: z.number().int().optional().default(4),
+  countryFilterId: z.number().int().optional().default(62),
+  // diagnostic mode - try multiple endpoints to find working ones
+  diagnostic: z.boolean().optional().default(false),
 });
 
-async function rapidFetch(path: string, apiKey: string): Promise<any> {
+async function rapidFetch(path: string, apiKey: string): Promise<{ ok: boolean; status: number; data: any }> {
   const url = `${RAPIDAPI_BASE}${path}`;
-  console.log(`[search-auto-parts] Fetching: ${url}`);
   const res = await fetch(url, {
     headers: {
       "X-RapidAPI-Key": apiKey,
       "X-RapidAPI-Host": RAPIDAPI_HOST,
     },
   });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`RapidAPI ${res.status}: ${text.slice(0, 300)}`);
-  }
-  return res.json();
+  const text = await res.text();
+  let data: any;
+  try { data = JSON.parse(text); } catch { data = text; }
+  return { ok: res.ok, status: res.status, data };
 }
 
 Deno.serve(async (req) => {
@@ -35,7 +35,6 @@ Deno.serve(async (req) => {
 
   const RAPIDAPI_KEY = Deno.env.get("RAPIDAPI_KEY");
   if (!RAPIDAPI_KEY) {
-    console.error("[search-auto-parts] RAPIDAPI_KEY not configured");
     return jsonResponse({ error: "API not configured", results: [] }, 200, corsHeaders);
   }
 
@@ -46,86 +45,42 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: parsed.error.flatten().fieldErrors, results: [] }, 400, corsHeaders);
     }
 
-    const { query, langId, countryFilterId } = parsed.data;
+    const { query, langId, countryFilterId, diagnostic } = parsed.data;
 
-    // The Auto Parts Catalog API uses specific endpoint names.
-    // For text-based search, we use /searchArticlesByNumber which searches by article/part number.
-    // We also try the commodity group tree search for keyword-based queries.
-    
-    const results: any[] = [];
+    // Diagnostic mode: try many endpoint patterns to discover the correct API structure
+    if (diagnostic) {
+      const testPaths = [
+        `/getAllLanguages`,
+        `/getManufacturers?typeId=1&langId=${langId}&countryFilterId=${countryFilterId}`,
+        `/listVehicleTypes`,
+        `/getAllCountries`,
+        `/languages/list`,
+        `/countries/list`,
+        `/manufacturers?typeId=1&langId=${langId}&countryFilterId=${countryFilterId}`,
+        `/v1/manufacturers?typeId=1&langId=${langId}&countryFilterId=${countryFilterId}`,
+      ];
 
-    // Strategy 1: Search articles by number (works for part numbers like "C 2029")
-    try {
-      const articleData = await rapidFetch(
-        `/searchArticlesByNumber?articleSearchNr=${encodeURIComponent(query)}&langId=${langId}`,
-        RAPIDAPI_KEY
-      );
-      console.log(`[search-auto-parts] articleSearch response type: ${typeof articleData}, isArray: ${Array.isArray(articleData)}`);
-      console.log(`[search-auto-parts] articleSearch sample:`, JSON.stringify(articleData)?.slice(0, 500));
-      
-      if (Array.isArray(articleData)) {
-        for (const item of articleData) {
-          results.push({
-            id: `catalog-${item.articleId || item.id || results.length}`,
-            partName: item.articleName || item.name || item.description || item.productGroupName || "Auto Part",
-            partNumber: item.articleNo || item.articleNumber || "",
-            brand: item.supplierName || item.brandName || item.supplier || "TecDoc Catalog",
-            category: item.productGroupName || item.category || "",
-            imageUrl: item.s3image || item.imageUrl || item.image || null,
-            compatibility: null,
-            source: "catalog",
-          });
-        }
-      } else if (articleData && typeof articleData === "object") {
-        // Could be wrapped in an object
-        const items = articleData.articles || articleData.items || articleData.results || articleData.data || [];
-        for (const item of (Array.isArray(items) ? items : [])) {
-          results.push({
-            id: `catalog-${item.articleId || item.id || results.length}`,
-            partName: item.articleName || item.name || item.description || "Auto Part",
-            partNumber: item.articleNo || item.articleNumber || "",
-            brand: item.supplierName || item.brandName || "TecDoc Catalog",
-            category: item.productGroupName || item.category || "",
-            imageUrl: item.s3image || item.imageUrl || null,
-            compatibility: null,
-            source: "catalog",
-          });
-        }
+      const diagnosticResults: any[] = [];
+      for (const path of testPaths) {
+        const result = await rapidFetch(path, RAPIDAPI_KEY);
+        diagnosticResults.push({
+          path,
+          status: result.status,
+          ok: result.ok,
+          sample: typeof result.data === 'string' ? result.data.slice(0, 200) : JSON.stringify(result.data)?.slice(0, 200),
+        });
       }
-    } catch (e: any) {
-      console.warn(`[search-auto-parts] searchArticlesByNumber failed:`, e.message);
+      return jsonResponse({ diagnostic: true, results: diagnosticResults }, 200, corsHeaders);
     }
 
-    // Strategy 2: If no results from article search, try OEM number search
-    if (results.length === 0) {
-      try {
-        const oemData = await rapidFetch(
-          `/searchArticlesByOEMNumber?oemNumber=${encodeURIComponent(query)}&langId=${langId}`,
-          RAPIDAPI_KEY
-        );
-        console.log(`[search-auto-parts] oemSearch response:`, JSON.stringify(oemData)?.slice(0, 500));
-        
-        if (Array.isArray(oemData)) {
-          for (const item of oemData) {
-            results.push({
-              id: `catalog-${item.articleId || item.id || results.length}`,
-              partName: item.articleName || item.name || item.description || "Auto Part",
-              partNumber: item.articleNo || item.articleNumber || item.oemNumber || "",
-              brand: item.supplierName || item.brandName || "TecDoc Catalog",
-              category: item.productGroupName || "",
-              imageUrl: item.s3image || item.imageUrl || null,
-              compatibility: null,
-              source: "catalog",
-            });
-          }
-        }
-      } catch (e: any) {
-        console.warn(`[search-auto-parts] searchByOEM failed:`, e.message);
-      }
-    }
+    // Normal search flow - try known endpoint patterns
+    const searchPaths = [
+      `/getManufacturers?typeId=1&langId=${langId}&countryFilterId=${countryFilterId}`,
+      `/getAllLanguages`,
+    ];
 
-    console.log(`[search-auto-parts] Total parsed results: ${results.length}`);
-    return jsonResponse({ results: results.slice(0, 20) }, 200, corsHeaders);
+    // For now return empty until we discover working endpoints
+    return jsonResponse({ results: [] }, 200, corsHeaders);
   } catch (error) {
     console.error("[search-auto-parts] Unhandled error:", error);
     return jsonResponse({ error: "SERVICE_FAILED", results: [] }, 200, corsHeaders);
