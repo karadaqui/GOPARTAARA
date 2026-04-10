@@ -238,6 +238,7 @@ const SearchResults = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) { setAuthGateOpen(true); return; }
     if (!query.trim()) return;
     if (searchLimit.limitReached) {
       toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" });
@@ -265,8 +266,13 @@ const SearchResults = () => {
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (!user) {
+      setAuthGateOpen(true);
+      if (photoInputRef.current) photoInputRef.current.value = "";
+      return;
+    }
     // Block photo search for free users
-    if (!searchLimit.isPro && user) {
+    if (!searchLimit.isPro) {
       toast({ title: "Photo search is available on Pro and Business plans", description: "Upgrade to unlock photo search.", variant: "destructive" });
       navigate("/pricing");
       if (photoInputRef.current) photoInputRef.current.value = "";
