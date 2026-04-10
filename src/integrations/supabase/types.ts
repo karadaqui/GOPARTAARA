@@ -356,6 +356,27 @@ export type Database = {
         }
         Relationships: []
       }
+      price_history: {
+        Row: {
+          checked_at: string
+          id: string
+          item_id: string
+          price: number
+        }
+        Insert: {
+          checked_at?: string
+          id?: string
+          item_id: string
+          price: number
+        }
+        Update: {
+          checked_at?: string
+          id?: string
+          item_id?: string
+          price?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -723,6 +744,41 @@ export type Database = {
           year?: number
         }
         Relationships: []
+      }
+      vehicle_notes: {
+        Row: {
+          created_at: string
+          id: string
+          note: string
+          noted_at: string
+          user_id: string
+          vehicle_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note: string
+          noted_at?: string
+          user_id: string
+          vehicle_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note?: string
+          noted_at?: string
+          user_id?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_notes_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "user_vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
