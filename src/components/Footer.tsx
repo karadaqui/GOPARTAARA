@@ -17,7 +17,7 @@ const Footer = () => {
               <span className="text-primary">PART</span>ARA
             </button>
             <p className="text-muted-foreground text-sm mt-3 leading-relaxed">
-              The smarter way to find car parts. Searching across trusted UK and global suppliers.
+              The smarter way to find car parts. Search 1,000,000+ parts from trusted UK &amp; global suppliers.
             </p>
           </div>
           <div>

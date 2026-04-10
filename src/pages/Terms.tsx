@@ -38,7 +38,7 @@ const Terms = () => (
           <Section title="2. Service Description">
             <p>
               PARTARA is a car parts search, comparison, and marketplace platform. We aggregate listings from
-              trusted UK and global suppliers, and host a seller marketplace to help you find, compare, and purchase car parts.
+              trusted UK &amp; global suppliers, and host a seller marketplace to help you find, compare, and purchase car parts.
             </p>
             <p><strong>Important:</strong></p>
             <ul className="list-disc pl-5 space-y-2 mt-2">

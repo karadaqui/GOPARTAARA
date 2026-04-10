@@ -13,7 +13,7 @@ const steps = [
   {
     icon: Search,
     title: "Search",
-    desc: "Type a part name, snap a photo, or enter your UK reg plate. We search 6+ trusted suppliers in seconds.",
+    desc: "Type a part name, snap a photo, or enter your UK reg plate. We search 1,000,000+ parts from trusted suppliers in seconds.",
   },
   {
     icon: BarChart3,
@@ -63,7 +63,7 @@ const About = () => (
   <div className="min-h-screen bg-background">
     <SEOHead
       title="About PARTARA"
-      description="Learn how PARTARA is revolutionising car part search in the UK. Compare prices across 15+ suppliers instantly with photo search and reg plate lookup."
+      description="Learn how PARTARA is revolutionising car part search in the UK. Search 1,000,000+ parts from trusted suppliers with photo search and reg plate lookup."
       path="/about"
       jsonLd={{
         "@context": "https://schema.org",
@@ -92,7 +92,7 @@ const About = () => (
         <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
           We built PARTARA to fix that. As a UK-based team of car enthusiasts and engineers, we
           created a platform that lets you search by part name, vehicle reg plate, or even a photo —
-          then compare prices across 6+ suppliers, browse a verified marketplace, set price alerts,
+          then compare prices across trusted UK &amp; global suppliers, browse a verified marketplace, set price alerts,
           and manage your garage — all in one place.
         </p>
       </section>

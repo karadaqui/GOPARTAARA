@@ -1,7 +1,6 @@
 const stats = [
-  { value: "6+", label: "Suppliers Connected" },
-  { value: "2,000+", label: "Users & Mechanics" },
-  { value: "50K+", label: "Parts Searchable" },
+  { value: "1M+", label: "Parts Searchable" },
+  { value: "6+", label: "Trusted Suppliers" },
   { value: "100%", label: "Free to Search" },
 ];
 

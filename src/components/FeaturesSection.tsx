@@ -41,7 +41,7 @@ const features = [
   {
     icon: BarChart3,
     title: "Price Comparison",
-    desc: "Compare prices across 6+ suppliers side by side in a single search.",
+    desc: "Compare prices from trusted UK &amp; global suppliers side by side in a single search.",
     link: "/search",
   },
   {
