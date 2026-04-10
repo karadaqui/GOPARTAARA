@@ -567,7 +567,7 @@ const ListingDetail = () => {
                     </div>
                     <span className="text-sm font-medium">{r.reviewer_name || "Anonymous"}</span>
                     {r.reviewer_plan === "admin" && <AdminBadge />}
-                    {r.reviewer_plan === "business" && <BusinessBadge />}
+                    {r.reviewer_plan === "elite" && <BusinessBadge />}
                     {r.dispute_status === "pending" && (
                       <Badge variant="outline" className="text-xs text-yellow-500 border-yellow-500/30">Disputed</Badge>
                     )}
