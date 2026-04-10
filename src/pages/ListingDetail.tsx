@@ -7,11 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
-  Star, Store, ExternalLink, Bookmark, BookmarkCheck, Eye, Crown,
+  Star, Store, ExternalLink, Bookmark, BookmarkCheck, Eye,
   ChevronLeft, Loader2, Send, Bell, User, Trash2, Flag
 } from "lucide-react";
-import BusinessBadge from "@/components/dashboard/BusinessBadge";
-import AdminBadge from "@/components/dashboard/AdminBadge";
+import PlanBadge from "@/components/badges/PlanBadge";
+import VerifiedSellerBadge from "@/components/badges/VerifiedSellerBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -515,10 +515,11 @@ const ListingDetail = () => {
                     className="font-display font-bold text-sm hover:text-primary transition-colors flex items-center gap-1.5"
                   >
                     {listing.seller_profiles.business_name}
-                    {listing.seller_profiles.seller_tier === "pro" && <Crown size={14} className="text-primary" />}
-                    {listing.seller_profiles.seller_tier === "featured" && <Star size={14} className="text-primary" />}
+                    {listing.seller_profiles.seller_tier === "pro" && <VerifiedSellerBadge variant="pro_seller" size="sm" />}
                   </button>
-                  <p className="text-xs text-muted-foreground capitalize">{listing.seller_profiles.seller_tier} Seller</p>
+                  <div className="flex items-center gap-1.5">
+                    <PlanBadge plan={listing.seller_profiles.seller_tier + "_seller"} size="sm" />
+                  </div>
                 </div>
               </div>
               {listing.seller_profiles.description && (
@@ -566,8 +567,7 @@ const ListingDetail = () => {
                       <User size={12} className="text-muted-foreground" />
                     </div>
                     <span className="text-sm font-medium">{r.reviewer_name || "Anonymous"}</span>
-                    {r.reviewer_plan === "admin" && <AdminBadge />}
-                    {r.reviewer_plan === "elite" && <BusinessBadge />}
+                    {r.reviewer_plan && r.reviewer_plan !== "free" && <PlanBadge plan={r.reviewer_plan} size="sm" />}
                     {r.dispute_status === "pending" && (
                       <Badge variant="outline" className="text-xs text-yellow-500 border-yellow-500/30">Disputed</Badge>
                     )}

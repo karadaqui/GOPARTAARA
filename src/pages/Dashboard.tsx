@@ -11,8 +11,7 @@ import ReferralSection from "@/components/dashboard/ReferralSection";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
 import PriceAlertsSection from "@/components/dashboard/PriceAlertsSection";
 import MyGarageSection from "@/components/dashboard/MyGarageSection";
-import EliteBadge from "@/components/dashboard/BusinessBadge";
-import AdminBadge from "@/components/dashboard/AdminBadge";
+import PlanBadge from "@/components/badges/PlanBadge";
 import EliteFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import PrioritySupportButton from "@/components/dashboard/PrioritySupportButton";
 import ComingSoonFeatures from "@/components/dashboard/ComingSoonFeatures";
@@ -285,7 +284,9 @@ const Dashboard = () => {
 
         <div className="flex items-center gap-3 mb-8">
           <h1 className="font-display text-3xl font-bold">My Profile</h1>
-          {currentPlan === "admin" ? <AdminBadge /> : currentPlan === "elite" ? <EliteBadge /> : null}
+          <div className="flex items-center gap-2">
+            {currentPlan !== "free" && <PlanBadge plan={currentPlan} />}
+          </div>
         </div>
 
         {/* Avatar */}

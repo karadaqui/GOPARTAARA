@@ -7,7 +7,8 @@ import BackToTop from "@/components/BackToTop";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, Star, Store, Eye, Crown, Package } from "lucide-react";
+import { Search, Store, Eye, Package } from "lucide-react";
+import VerifiedSellerBadge from "@/components/badges/VerifiedSellerBadge";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthGateModal from "@/components/AuthGateModal";
@@ -213,10 +214,7 @@ const Marketplace = () => {
                           )}
                           <span className="text-xs text-muted-foreground">{listing.seller_profiles.business_name}</span>
                           {listing.seller_profiles.seller_tier === "pro" && (
-                            <Crown size={12} className="text-primary" />
-                          )}
-                          {listing.seller_profiles.seller_tier === "featured" && (
-                            <Star size={12} className="text-primary" />
+                            <VerifiedSellerBadge variant="pro_seller" size="sm" />
                           )}
                         </div>
                         <div className="flex flex-wrap gap-1 mb-2">
