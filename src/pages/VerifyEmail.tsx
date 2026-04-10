@@ -14,29 +14,45 @@ const VerifyEmail = () => {
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
 
-  // Detect cross-tab login via localStorage storage event
+  // 1) Instant same-browser detection via localStorage storage event
+  // 2) Cross-device detection via visibility/focus re-check
   useEffect(() => {
-    const handleStorageChange = async (e: StorageEvent) => {
-      // Supabase stores session under a key containing "auth-token"
-      if (e.key && e.key.includes("auth-token") && e.newValue) {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          navigate("/", { replace: true });
-        }
+    let redirected = false;
+    const doRedirect = () => {
+      if (!redirected) {
+        redirected = true;
+        navigate("/", { replace: true });
       }
     };
 
+    // Same-browser: fires instantly when another tab writes to localStorage
+    const handleStorageChange = async (e: StorageEvent) => {
+      if (e.key && e.key.includes("supabase") && e.newValue) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) doRedirect();
+      }
+    };
     window.addEventListener("storage", handleStorageChange);
 
-    // Also listen via onAuthStateChange as backup
+    // onAuthStateChange as backup for same-browser
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session?.user) {
-        navigate("/", { replace: true });
-      }
+      if (event === "SIGNED_IN" && session?.user) doRedirect();
     });
+
+    // Cross-device: when user returns to this tab/window, re-check session
+    const handleVisibility = async () => {
+      if (document.visibilityState === "visible") {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) doRedirect();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("focus", handleVisibility);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("focus", handleVisibility);
       subscription.unsubscribe();
     };
   }, [navigate]);
