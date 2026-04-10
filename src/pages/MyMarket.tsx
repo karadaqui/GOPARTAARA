@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Plus, Pencil, Trash2, ImagePlus, Eye, Bookmark,
-  Loader2, Package, Store, X, Save, Upload, Pause, Play
+  Loader2, Package, Store, X, Save, Upload, Pause, Play, Flag, Star, MessageSquare, ExternalLink
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -50,6 +50,18 @@ interface Listing {
   created_at: string;
 }
 
+interface DisputedReview {
+  id: string;
+  listing_id: string;
+  rating: number;
+  comment: string | null;
+  dispute_status: string;
+  dispute_reason: string | null;
+  dispute_admin_note: string | null;
+  listing_title: string;
+  reviewer_name: string;
+}
+
 const CATEGORIES = [
   "Engine Parts", "Body Parts", "Brakes", "Suspension", "Electrical",
   "Filters", "Exhaust", "Interior", "Cooling", "Transmission",
@@ -76,6 +88,7 @@ const MyMarket = () => {
   const [undoListing, setUndoListing] = useState<Listing | null>(null);
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showSellerGate, setShowSellerGate] = useState(false);
+  const [disputedReviews, setDisputedReviews] = useState<DisputedReview[]>([]);
 
   const [profileForm, setProfileForm] = useState({
     business_name: "", description: "", contact_email: "", contact_phone: "", website_url: ""
@@ -129,6 +142,40 @@ const MyMarket = () => {
         .eq("seller_id", sp.id)
         .order("created_at", { ascending: false });
       setListings((ls as Listing[]) || []);
+
+      // Load disputed reviews for this seller's listings
+      const listingIds = (ls || []).map((l: any) => l.id);
+      if (listingIds.length > 0) {
+        const { data: reviews } = await supabase
+          .from("listing_reviews")
+          .select("id, listing_id, rating, comment, dispute_status, dispute_reason, dispute_admin_note, user_id")
+          .in("listing_id", listingIds)
+          .neq("dispute_status", "none");
+
+        if (reviews && reviews.length > 0) {
+          const reviewerIds = [...new Set(reviews.map((r: any) => r.user_id))];
+          const { data: reviewerProfiles } = await supabase
+            .from("profiles")
+            .select("user_id, display_name")
+            .in("user_id", reviewerIds);
+          const profileMap = new Map((reviewerProfiles || []).map((p: any) => [p.user_id, p.display_name]));
+          const listingMap = new Map((ls || []).map((l: any) => [l.id, l.title]));
+
+          setDisputedReviews(reviews.map((r: any) => ({
+            id: r.id,
+            listing_id: r.listing_id,
+            rating: r.rating,
+            comment: r.comment,
+            dispute_status: r.dispute_status,
+            dispute_reason: r.dispute_reason,
+            dispute_admin_note: r.dispute_admin_note,
+            listing_title: listingMap.get(r.listing_id) || "Unknown",
+            reviewer_name: profileMap.get(r.user_id) || "Anonymous",
+          })));
+        } else {
+          setDisputedReviews([]);
+        }
+      }
     }
     setLoading(false);
   };
@@ -533,6 +580,84 @@ const MyMarket = () => {
             <p className="text-xs text-muted-foreground">Total Saves</p>
           </div>
         </div>
+
+        {/* Disputed Reviews Section */}
+        {disputedReviews.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Flag size={18} className="text-primary" />
+              <h2 className="font-display text-xl font-bold">Disputed Reviews</h2>
+              <Badge variant="secondary" className="text-xs">{disputedReviews.length}</Badge>
+            </div>
+            <div className="space-y-3">
+              {disputedReviews.map(review => (
+                <div key={review.id} className="glass rounded-xl p-4">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <div className="min-w-0">
+                      <h4 className="font-display font-bold text-sm line-clamp-1">{review.listing_title}</h4>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs text-muted-foreground">{review.reviewer_name}</span>
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map(s => (
+                            <Star key={s} size={10} className={s <= review.rating ? "text-primary fill-primary" : "text-muted-foreground"} />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <Badge
+                      variant={
+                        review.dispute_status === "pending" ? "secondary" :
+                        review.dispute_status === "kept" ? "default" : "destructive"
+                      }
+                      className="capitalize shrink-0 text-xs"
+                    >
+                      {review.dispute_status === "kept" ? "Review kept" :
+                       review.dispute_status === "removed" ? "Review removed" : "Pending"}
+                    </Badge>
+                  </div>
+
+                  {review.comment && (
+                    <p className="text-sm text-muted-foreground mb-2">"{review.comment}"</p>
+                  )}
+
+                  {review.dispute_reason && (
+                    <div className="bg-secondary/50 rounded-lg p-2 mb-2">
+                      <p className="text-xs text-muted-foreground">
+                        <span className="font-medium text-foreground">Your reason:</span> {review.dispute_reason}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Show admin decision details */}
+                  {(review.dispute_status === "kept" || review.dispute_status === "removed") && (
+                    <div className={`rounded-lg p-3 mt-2 ${
+                      review.dispute_status === "removed"
+                        ? "bg-green-500/5 border border-green-500/20"
+                        : "bg-yellow-500/5 border border-yellow-500/20"
+                    }`}>
+                      <p className="text-xs font-medium mb-1">
+                        {review.dispute_status === "removed" ? "✅ Review was removed" : "⚠️ Review was kept"}
+                      </p>
+                      {review.dispute_admin_note && (
+                        <p className="text-xs text-muted-foreground mb-2">
+                          <span className="font-medium text-foreground">Admin note:</span> {review.dispute_admin_note}
+                        </p>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => navigate("/contact")}
+                        className="h-6 text-xs text-primary gap-1 px-0 hover:underline"
+                      >
+                        <ExternalLink size={10} /> If you believe this decision is incorrect, contact us
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Add listing */}
         <div className="flex justify-between items-center mb-6">
