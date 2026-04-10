@@ -274,6 +274,9 @@ const HeroSection = () => {
               <p className="text-xs text-muted-foreground mt-3">
                 🚗 Enter your UK number plate to find parts specific to your vehicle
               </p>
+              <div className="flex justify-center mt-2">
+                <SearchCounter limitData={searchLimit} />
+              </div>
             </>
           )}
         </div>
