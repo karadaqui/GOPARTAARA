@@ -69,7 +69,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-8">
             {primaryLinks.map((l) => (
               <button
-                key={l.href}
+                key={l.label}
                 onClick={() => handleNavClick(l.href)}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
@@ -151,7 +151,7 @@ const Navbar = () => {
           <div className="container flex flex-col gap-3 pt-3">
             {primaryLinks.map((l) => (
               <button
-                key={l.href}
+                key={l.label}
                 onClick={() => handleNavClick(l.href)}
                 className="py-2 text-left text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
