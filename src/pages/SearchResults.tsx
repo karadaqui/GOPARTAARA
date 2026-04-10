@@ -109,7 +109,7 @@ const SearchResults = () => {
   const [identifying, setIdentifying] = useState(false);
   const [searchMode, setSearchMode] = useState<"text" | "reg">("text");
   const photoInputRef = useRef<HTMLInputElement>(null);
-  const [compareParts, setCompareParts] = useState<ComparePart[]>([]);
+  const [compareParts, setCompareParts] = useState<CompareItem[]>([]);
   const [showCompare, setShowCompare] = useState(false);
   
   const [liveResults, setLiveResults] = useState<any[]>([]);
