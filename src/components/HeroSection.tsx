@@ -141,7 +141,7 @@ const HeroSection = () => {
       <div className="container relative z-10 text-center px-4">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border bg-secondary/50 text-xs text-muted-foreground mb-8">
           <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          Trusted by 2,000+ mechanics &amp; enthusiasts
+          Join car enthusiasts across the UK &amp; beyond
         </div>
 
         <h1 className="font-display text-2xl sm:text-3xl md:text-5xl lg:text-7xl font-bold tracking-tight leading-tight mb-4 sm:mb-6">
@@ -151,7 +151,7 @@ const HeroSection = () => {
         </h1>
 
         <p className="text-muted-foreground text-sm sm:text-lg md:text-xl max-w-2xl mx-auto mb-8 sm:mb-12">
-          Search across 6+ trusted UK and global suppliers. Compare prices, check availability, and order — all in one place.
+          Search 1,000,000+ parts from trusted UK &amp; global suppliers. Compare prices, check availability, and order — all in one place.
         </p>
 
         {/* Search section with tabs */}

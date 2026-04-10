@@ -29,14 +29,14 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <SEOHead
         title="PARTARA - Find Any Car Part Instantly"
-        description="Search and compare car parts across 15+ trusted UK and global suppliers. Upload a photo or type your part name — PARTARA finds the best prices instantly."
+        description="Search 1,000,000+ car parts from trusted UK &amp; global suppliers. Upload a photo or type your part name — PARTARA finds the best prices instantly."
         path="/"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "WebApplication",
           "name": "PARTARA",
           "url": "https://car-part-search.lovable.app",
-          "description": "Search and compare car parts across 15+ trusted UK and global suppliers.",
+          "description": "Search 1,000,000+ car parts from trusted UK &amp; global suppliers.",
           "applicationCategory": "AutomotiveApplication",
           "operatingSystem": "Web",
           "offers": {

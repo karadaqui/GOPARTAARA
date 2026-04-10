@@ -11,7 +11,7 @@ const steps = [
     icon: BarChart3,
     number: "2",
     title: "Compare",
-    desc: "See prices from 6+ suppliers side by side. Filter by price, rating, and availability.",
+    desc: "See prices from trusted UK &amp; global suppliers side by side. Filter by price, rating, and availability.",
   },
   {
     icon: ShoppingCart,
