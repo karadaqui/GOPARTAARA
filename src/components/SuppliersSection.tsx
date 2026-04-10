@@ -14,8 +14,6 @@ const suppliers = [
   "GSF Car Parts",
   "Car Parts 4 Less",
   "Autodoc",
-  "Halfords",
-  "RockAuto",
 ];
 
 const SuppliersSection = () => (

@@ -202,7 +202,7 @@ const Dashboard = () => {
     basic_seller: { label: "Basic Seller", price: "£9.99/mo" },
     featured_seller: { label: "Featured Seller", price: "£24.99/mo" },
     pro_seller: { label: "Pro Seller", price: "£49.99/mo" },
-    admin: { label: "Admin", price: "N/A" },
+    admin: { label: "Admin", price: "Manually Assigned" },
   };
   const currentPlan = profile?.subscription_plan || "free";
   const currentPlanInfo = PLAN_INFO[currentPlan] || PLAN_INFO.free;
@@ -339,6 +339,21 @@ const Dashboard = () => {
           {subLoading ? (
             <div className="flex items-center justify-center py-6">
               <Loader2 size={20} className="animate-spin text-muted-foreground" />
+            </div>
+          ) : currentPlan === "admin" ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Crown size={20} className="text-primary" />
+                </div>
+                <div>
+                  <p className="font-display font-bold text-lg">Admin Plan</p>
+                  <p className="text-xs text-muted-foreground">Manually Assigned</p>
+                </div>
+              </div>
+              <div className="rounded-xl bg-secondary/40 border border-border p-4 text-sm">
+                <p className="text-muted-foreground">This plan is manually assigned and has no billing information.</p>
+              </div>
             </div>
           ) : currentPlan !== "free" ? (
             <div className="space-y-4">
