@@ -11,15 +11,16 @@ import ReferralSection from "@/components/dashboard/ReferralSection";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
 import PriceAlertsSection from "@/components/dashboard/PriceAlertsSection";
 import MyGarageSection from "@/components/dashboard/MyGarageSection";
-import BusinessBadge from "@/components/dashboard/BusinessBadge";
+import EliteBadge from "@/components/dashboard/BusinessBadge";
 import AdminBadge from "@/components/dashboard/AdminBadge";
-import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
+import EliteFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import PrioritySupportButton from "@/components/dashboard/PrioritySupportButton";
 import ComingSoonFeatures from "@/components/dashboard/ComingSoonFeatures";
 
 const STRIPE_TIERS: Record<string, { label: string; price: string }> = {
   prod_UI08qGZRqV94r2: { label: "Pro", price: "£9.99/mo" },
-  prod_UIBpaMM0bdRgJ9: { label: "Business", price: "£24.99/mo" },
+  prod_UIBpaMM0bdRgJ9: { label: "Elite", price: "£19.99/mo" },
+  prod_UJCdn59OHrLmWH: { label: "Elite", price: "£19.99/mo" },
 };
 
 type SubStatus = {
@@ -232,7 +233,7 @@ const Dashboard = () => {
   const PLAN_INFO: Record<string, { label: string; price: string }> = {
     free: { label: "Free", price: "£0/mo" },
     pro: { label: "Pro", price: "£9.99/mo" },
-    business: { label: "Business", price: "£24.99/mo" },
+    elite: { label: "Elite", price: "£19.99/mo" },
     basic_seller: { label: "Basic Seller", price: "£9.99/mo" },
     featured_seller: { label: "Featured Seller", price: "£24.99/mo" },
     pro_seller: { label: "Pro Seller", price: "£49.99/mo" },
@@ -240,7 +241,7 @@ const Dashboard = () => {
   };
   const currentPlan = profile?.subscription_plan || "free";
   const currentPlanInfo = PLAN_INFO[currentPlan] || PLAN_INFO.free;
-  const isBusinessUser = ["business", "admin"].includes(currentPlan);
+  const isEliteUser = ["elite", "admin"].includes(currentPlan);
 
   const exportSearchHistoryCSV = async () => {
     const { data } = await supabase
@@ -284,7 +285,7 @@ const Dashboard = () => {
 
         <div className="flex items-center gap-3 mb-8">
           <h1 className="font-display text-3xl font-bold">My Profile</h1>
-          {currentPlan === "admin" ? <AdminBadge /> : currentPlan === "business" ? <BusinessBadge /> : null}
+          {currentPlan === "admin" ? <AdminBadge /> : currentPlan === "elite" ? <EliteBadge /> : null}
         </div>
 
         {/* Avatar */}
@@ -489,8 +490,8 @@ const Dashboard = () => {
           <div className="mt-6">
             <MyGarageSection
               userId={user.id}
-              isPro={["pro", "business", "admin"].includes(currentPlan)}
-              isBusinessUser={isBusinessUser}
+              isPro={["pro", "elite", "admin"].includes(currentPlan)}
+              isBusinessUser={isEliteUser}
             />
           </div>
         )}
@@ -515,7 +516,7 @@ const Dashboard = () => {
               Recent Searches
             </h2>
             <div className="flex items-center gap-2">
-              {isBusinessUser ? (
+              {isEliteUser ? (
                 <button
                   onClick={exportSearchHistoryCSV}
                   title="Export search history as CSV"
@@ -526,7 +527,7 @@ const Dashboard = () => {
               ) : (
                 <button
                   onClick={() => navigate("/pricing")}
-                  title="Export search history (Business plan)"
+                  title="Export search history (Elite plan)"
                   className="w-7 h-7 rounded-lg border border-border bg-secondary/50 flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground relative"
                 >
                   <Download size={14} />
@@ -579,9 +580,9 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Priority Support — Business only */}
+        {/* Priority Support — Elite only */}
         <div className="mt-6">
-          <BusinessFeatureGate isBusinessUser={isBusinessUser} label="Business plan feature">
+          <EliteFeatureGate isBusinessUser={isEliteUser} label="Elite plan feature">
             <div className="glass rounded-2xl p-6 flex items-center justify-between">
               <div>
                 <p className="font-display font-semibold text-sm">Priority Email Support</p>
@@ -589,11 +590,11 @@ const Dashboard = () => {
               </div>
               <PrioritySupportButton displayName={displayName || user?.email || ""} />
             </div>
-          </BusinessFeatureGate>
+          </EliteFeatureGate>
         </div>
 
-        {/* Coming Soon — Business only */}
-        {isBusinessUser && (
+        {/* Coming Soon — Elite only */}
+        {isEliteUser && (
           <div className="mt-6">
             <ComingSoonFeatures />
           </div>
