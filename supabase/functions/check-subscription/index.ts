@@ -25,7 +25,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const SELLER_PLANS = ["basic_seller", "featured_seller", "pro_seller", "admin"];
+  // Plans that should never be overwritten by Stripe sync (manually assigned)
+  const PROTECTED_PLANS = ["basic_seller", "featured_seller", "pro_seller", "admin", "business", "pro"];
 
   try {
     const authHeader = req.headers.get("Authorization");
