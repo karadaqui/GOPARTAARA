@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
   Star, Store, ExternalLink, Bookmark, BookmarkCheck, Eye, Crown,
-  ChevronLeft, Loader2, Send, Bell, User
+  ChevronLeft, Loader2, Send, Bell, User, Trash2, Flag
 } from "lucide-react";
 import BusinessBadge from "@/components/dashboard/BusinessBadge";
 import AdminBadge from "@/components/dashboard/AdminBadge";
@@ -18,6 +18,10 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle
 } from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface ListingFull {
   id: string;
@@ -50,6 +54,7 @@ interface Review {
   rating: number;
   comment: string | null;
   created_at: string;
+  dispute_status?: string;
   reviewer_name?: string | null;
   reviewer_plan?: string | null;
 }
@@ -65,6 +70,7 @@ const ListingDetail = () => {
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(0);
+  const [userPlan, setUserPlan] = useState<string | null>(null);
 
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
@@ -77,9 +83,27 @@ const ListingDetail = () => {
   const [alertEmail, setAlertEmail] = useState("");
   const [alertSaving, setAlertSaving] = useState(false);
 
+  // Review moderation state
+  const [deleteReviewId, setDeleteReviewId] = useState<string | null>(null);
+  const [adminDeleteReviewId, setAdminDeleteReviewId] = useState<string | null>(null);
+  const [adminDeleteReason, setAdminDeleteReason] = useState("");
+  const [disputeReviewId, setDisputeReviewId] = useState<string | null>(null);
+  const [disputeReason, setDisputeReason] = useState("");
+  const [moderating, setModerating] = useState(false);
+
+  const isAdmin = userPlan === "admin";
+  const isSeller = listing?.seller_profiles?.user_id === user?.id;
+
   useEffect(() => {
     if (id) loadListing();
   }, [id]);
+
+  useEffect(() => {
+    if (user) {
+      supabase.from("profiles").select("subscription_plan").eq("user_id", user.id).single()
+        .then(({ data }) => setUserPlan(data?.subscription_plan || "free"));
+    }
+  }, [user]);
 
   const loadListing = async () => {
     setLoading(true);
@@ -104,7 +128,6 @@ const ListingDetail = () => {
         .eq("listing_id", id!)
         .order("created_at", { ascending: false });
 
-      // Enrich reviews with profile data
       const enrichedReviews: Review[] = [];
       if (revs) {
         const userIds = [...new Set(revs.map((r: any) => r.user_id))];
@@ -152,7 +175,6 @@ const ListingDetail = () => {
       await supabase.from("seller_listings").update({ save_count: (listing?.save_count || 0) + 1 } as any).eq("id", id!);
       setSaved(true);
       toast({ title: "Part saved!" });
-      // Notify seller in background
       supabase.functions.invoke("notify-seller", { body: { listing_id: id!, action: "save" } }).catch(() => {});
     }
   };
@@ -183,7 +205,6 @@ const ListingDetail = () => {
     } else {
       toast({ title: "Price alert set!" });
       setAlertOpen(false);
-      // Notify seller in background
       supabase.functions.invoke("notify-seller", {
         body: { listing_id: id!, action: "price_alert", target_price: price.toString() },
       }).catch(() => {});
@@ -209,18 +230,128 @@ const ListingDetail = () => {
     } else {
       toast({ title: "Review submitted!" });
       setReviewComment("");
-      // Notify seller about the review
       supabase.functions.invoke("notify-seller", {
-        body: {
-          listing_id: id!,
-          action: "review",
-          rating: reviewRating,
-          review_text: reviewComment || null,
-        },
+        body: { listing_id: id!, action: "review", rating: reviewRating, review_text: reviewComment || null },
       }).catch(() => {});
       await loadListing();
     }
     setSubmittingReview(false);
+  };
+
+  // Delete own review
+  const handleDeleteOwnReview = async () => {
+    if (!deleteReviewId) return;
+    setModerating(true);
+    const { error } = await supabase.from("listing_reviews").delete().eq("id", deleteReviewId).eq("user_id", user!.id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Review deleted" });
+      setUserReview(null);
+      await loadListing();
+    }
+    setDeleteReviewId(null);
+    setModerating(false);
+  };
+
+  // Admin delete review with reason
+  const handleAdminDeleteReview = async () => {
+    if (!adminDeleteReviewId || !adminDeleteReason.trim()) {
+      toast({ title: "Please provide a reason", variant: "destructive" });
+      return;
+    }
+    setModerating(true);
+    const review = reviews.find(r => r.id === adminDeleteReviewId);
+
+    // Send notification to reviewer
+    if (review) {
+      await supabase.from("notifications").insert({
+        user_id: review.user_id,
+        type: "review_removed",
+        title: "Your review was removed",
+        message: `Your review on "${listing?.title}" was removed by our moderation team. Reason: ${adminDeleteReason.trim()}`,
+        link: `/listing/${id}`,
+      });
+
+      // Send email
+      await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "review-removed",
+          recipientEmail: null, // Will look up from user
+          idempotencyKey: `review-removed-${adminDeleteReviewId}-${Date.now()}`,
+          templateData: { listingTitle: listing?.title, reason: adminDeleteReason.trim() },
+        },
+      }).catch(() => {});
+    }
+
+    await supabase.from("listing_reviews").delete().eq("id", adminDeleteReviewId);
+    toast({ title: "Review removed" });
+    setAdminDeleteReviewId(null);
+    setAdminDeleteReason("");
+    await loadListing();
+    setModerating(false);
+  };
+
+  // Seller dispute review
+  const handleDisputeReview = async () => {
+    if (!disputeReviewId || !disputeReason.trim()) {
+      toast({ title: "Please explain your dispute", variant: "destructive" });
+      return;
+    }
+    setModerating(true);
+    const review = reviews.find(r => r.id === disputeReviewId);
+
+    // Update dispute status on the review
+    await supabase.from("listing_reviews").update({
+      dispute_status: "pending",
+      dispute_reason: disputeReason.trim(),
+      dispute_date: new Date().toISOString(),
+    } as any).eq("id", disputeReviewId);
+
+    // Send admin notification (in-app)
+    // Find admin user
+    const { data: adminProfiles } = await supabase
+      .from("profiles")
+      .select("user_id")
+      .eq("subscription_plan", "admin");
+
+    const adminUserIds = (adminProfiles || []).map(p => p.user_id);
+    // Also add the hardcoded admin
+    const ADMIN_UUID = "95e19b6b-32ec-4af8-8184-d02638ac2ded";
+    if (!adminUserIds.includes(ADMIN_UUID)) adminUserIds.push(ADMIN_UUID);
+
+    for (const adminId of adminUserIds) {
+      await supabase.from("notifications").insert({
+        user_id: adminId,
+        type: "review_dispute",
+        title: "Review dispute filed ⚠️",
+        message: `${listing?.seller_profiles?.business_name} disputed a review on "${listing?.title}": ${disputeReason.trim().substring(0, 100)}`,
+        link: "/admin",
+      });
+    }
+
+    // Send email to admin
+    await supabase.functions.invoke("send-transactional-email", {
+      body: {
+        templateName: "review-dispute",
+        recipientEmail: "info@gopartara.com",
+        idempotencyKey: `review-dispute-${disputeReviewId}-${Date.now()}`,
+        templateData: {
+          listingTitle: listing?.title,
+          reviewerName: review?.reviewer_name || "Anonymous",
+          reviewText: review?.comment || "",
+          rating: review?.rating,
+          disputeReason: disputeReason.trim(),
+          sellerName: listing?.seller_profiles?.business_name,
+        },
+      },
+    }).catch(() => {});
+
+    toast({ title: "Dispute submitted", description: "Our team will review this shortly." });
+    setDisputeReviewId(null);
+    setDisputeReason("");
+    await loadListing();
+    setModerating(false);
   };
 
   if (loading) {
@@ -425,6 +556,9 @@ const ListingDetail = () => {
                     <span className="text-sm font-medium">{r.reviewer_name || "Anonymous"}</span>
                     {r.reviewer_plan === "admin" && <AdminBadge />}
                     {r.reviewer_plan === "business" && <BusinessBadge />}
+                    {r.dispute_status === "pending" && (
+                      <Badge variant="outline" className="text-xs text-yellow-500 border-yellow-500/30">Disputed</Badge>
+                    )}
                     <div className="flex ml-1">
                       {[1, 2, 3, 4, 5].map(s => (
                         <Star key={s} size={14} className={s <= r.rating ? "text-primary fill-primary" : "text-muted-foreground"} />
@@ -433,6 +567,40 @@ const ListingDetail = () => {
                     <span className="text-xs text-muted-foreground ml-auto">
                       {new Date(r.created_at).toLocaleDateString()}
                     </span>
+
+                    {/* Moderation buttons */}
+                    <div className="flex items-center gap-1">
+                      {/* Delete own review */}
+                      {user && r.user_id === user.id && (
+                        <button
+                          onClick={() => setDeleteReviewId(r.id)}
+                          className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                          title="Delete your review"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                      {/* Admin delete any review */}
+                      {isAdmin && r.user_id !== user?.id && (
+                        <button
+                          onClick={() => setAdminDeleteReviewId(r.id)}
+                          className="p-1 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                          title="Remove review (Admin)"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      )}
+                      {/* Seller dispute button */}
+                      {isSeller && r.user_id !== user?.id && r.dispute_status !== "pending" && r.dispute_status !== "kept" && (
+                        <button
+                          onClick={() => setDisputeReviewId(r.id)}
+                          className="p-1 rounded hover:bg-yellow-500/10 text-muted-foreground hover:text-yellow-500 transition-colors"
+                          title="Dispute this review"
+                        >
+                          <Flag size={14} />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   {r.comment && <p className="text-sm text-secondary-foreground">{r.comment}</p>}
                 </div>
@@ -481,6 +649,73 @@ const ListingDetail = () => {
             <Button onClick={handleSetAlert} disabled={alertSaving} className="w-full rounded-xl gap-2">
               {alertSaving ? <Loader2 size={16} className="animate-spin" /> : <Bell size={16} />}
               Set Alert
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete own review confirmation */}
+      <AlertDialog open={!!deleteReviewId} onOpenChange={(o) => { if (!o) setDeleteReviewId(null); }}>
+        <AlertDialogContent className="bg-card border-border">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete your review?</AlertDialogTitle>
+            <AlertDialogDescription>This action cannot be undone. Your review will be permanently removed.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteOwnReview} disabled={moderating} className="bg-destructive hover:bg-destructive/90">
+              {moderating ? <Loader2 size={14} className="animate-spin mr-1" /> : null}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Admin delete review with reason */}
+      <Dialog open={!!adminDeleteReviewId} onOpenChange={(o) => { if (!o) { setAdminDeleteReviewId(null); setAdminDeleteReason(""); } }}>
+        <DialogContent className="sm:max-w-md bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2 text-destructive">
+              <Trash2 size={18} />
+              Remove Review (Admin)
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <p className="text-sm text-muted-foreground">The reviewer will be notified with your reason.</p>
+            <Textarea
+              value={adminDeleteReason}
+              onChange={e => setAdminDeleteReason(e.target.value)}
+              placeholder="Reason for removal (e.g., inappropriate content, spam, etc.)"
+              className="bg-secondary border-border rounded-xl min-h-[80px]"
+            />
+            <Button onClick={handleAdminDeleteReview} disabled={moderating || !adminDeleteReason.trim()} variant="destructive" className="w-full rounded-xl gap-2">
+              {moderating ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+              Remove Review & Notify
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Seller dispute dialog */}
+      <Dialog open={!!disputeReviewId} onOpenChange={(o) => { if (!o) { setDisputeReviewId(null); setDisputeReason(""); } }}>
+        <DialogContent className="sm:max-w-md bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2 text-yellow-500">
+              <Flag size={18} />
+              Dispute Review
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <p className="text-sm text-muted-foreground">Explain why you think this review is unfair. Our team will review your dispute.</p>
+            <Textarea
+              value={disputeReason}
+              onChange={e => setDisputeReason(e.target.value)}
+              placeholder="Why do you think this review is unfair?"
+              className="bg-secondary border-border rounded-xl min-h-[80px]"
+            />
+            <Button onClick={handleDisputeReview} disabled={moderating || !disputeReason.trim()} className="w-full rounded-xl gap-2 bg-yellow-500 hover:bg-yellow-600 text-black">
+              {moderating ? <Loader2 size={16} className="animate-spin" /> : <Flag size={16} />}
+              Submit Dispute
             </Button>
           </div>
         </DialogContent>
