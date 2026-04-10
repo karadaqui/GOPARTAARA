@@ -98,6 +98,7 @@ interface VehicleInfo {
 
 const SearchResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const searchLimit = useSearchLimit();
