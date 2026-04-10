@@ -21,6 +21,7 @@ import PartsComparison, { type ComparePart } from "@/components/PartsComparison"
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
+import AuthGateModal from "@/components/AuthGateModal";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
