@@ -186,6 +186,15 @@ const ListingDetail = () => {
     } else {
       toast({ title: "Review submitted!" });
       setReviewComment("");
+      // Notify seller about the review
+      supabase.functions.invoke("notify-seller", {
+        body: {
+          listing_id: id!,
+          action: "review",
+          rating: reviewRating,
+          review_text: reviewComment || null,
+        },
+      }).catch(() => {});
       await loadListing();
     }
     setSubmittingReview(false);

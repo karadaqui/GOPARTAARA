@@ -362,7 +362,7 @@ const Dashboard = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -372,6 +372,23 @@ const Dashboard = () => {
                 >
                   {portalLoading ? <Loader2 size={14} className="animate-spin" /> : <ExternalLink size={14} />}
                   Manage Subscription
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-xl gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+                  onClick={handleManageSubscription}
+                  disabled={portalLoading}
+                >
+                  Cancel Subscription
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-xl gap-2"
+                  onClick={() => navigate("/refund")}
+                >
+                  Request Refund
                 </Button>
                 <Button
                   variant="outline"
