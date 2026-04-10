@@ -214,6 +214,7 @@ const SearchResults = () => {
   };
 
   const handleVehicleLookupSuccess = (vehicle: VehicleInfo) => {
+    if (!user) { setAuthGateOpen(true); return; }
     const nextQuery = `${vehicle.make} ${vehicle.yearOfManufacture || ""}`.trim();
 
     setVehicleInfo(vehicle);
