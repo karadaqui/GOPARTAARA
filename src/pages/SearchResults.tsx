@@ -263,6 +263,13 @@ const SearchResults = () => {
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // Block photo search for free users
+    if (!searchLimit.isPro && user) {
+      toast({ title: "Photo search is available on Pro and Business plans", description: "Upgrade to unlock photo search.", variant: "destructive" });
+      navigate("/pricing");
+      if (photoInputRef.current) photoInputRef.current.value = "";
+      return;
+    }
     if (file.size > 5 * 1024 * 1024) {
       toast({ title: "Too large", description: "Image must be under 5MB.", variant: "destructive" });
       return;
