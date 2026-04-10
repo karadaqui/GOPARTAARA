@@ -134,6 +134,31 @@ Deno.serve(async (req) => {
     } catch {
       logStep("Could not parse subscription end date", { raw: sub.current_period_end });
     }
+
+    // Get billing amount from price
+    let billingAmount: number | null = null;
+    let billingCurrency = "gbp";
+    try {
+      const price = sub.items.data[0].price;
+      billingAmount = (price as any).unit_amount;
+      billingCurrency = (price as any).currency || "gbp";
+    } catch {}
+
+    // Get payment method last 4
+    let paymentMethodLast4: string | null = null;
+    let paymentMethodBrand: string | null = null;
+    try {
+      const defaultPm = sub.default_payment_method;
+      if (defaultPm && typeof defaultPm === "object" && (defaultPm as any).card) {
+        paymentMethodLast4 = (defaultPm as any).card.last4;
+        paymentMethodBrand = (defaultPm as any).card.brand;
+      } else if (typeof defaultPm === "string") {
+        const pm = await stripe.paymentMethods.retrieve(defaultPm);
+        paymentMethodLast4 = pm.card?.last4 || null;
+        paymentMethodBrand = pm.card?.brand || null;
+      }
+    } catch {}
+
     logStep("Active subscription found", { productId, plan, subscriptionEnd });
 
     // Store first_payment_date if not already set
@@ -157,6 +182,32 @@ Deno.serve(async (req) => {
       logStep("Failed to update profile", { error: updateError.message });
     } else {
       logStep("Profile subscription_plan synced", { plan });
+
+      // Send welcome email if upgrading from free to paid
+      if (currentPlan === "free" || !currentPlan) {
+        try {
+          const nextBillingDate = subscriptionEnd
+            ? new Date(subscriptionEnd).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
+            : "See dashboard";
+          const amountStr = billingAmount ? `£${(billingAmount / 100).toFixed(2)}` : "See dashboard";
+
+          await adminClient.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "welcome-purchase",
+              to: user.email,
+              data: {
+                plan_name: plan,
+                display_name: user.email?.split("@")[0] || "",
+                next_billing_date: nextBillingDate,
+                billing_amount: amountStr,
+              },
+            },
+          });
+          logStep("Welcome email sent", { email: user.email, plan });
+        } catch (emailErr) {
+          logStep("Failed to send welcome email", { error: String(emailErr) });
+        }
+      }
     }
 
     // Auto-create seller profile if this is a seller plan and none exists yet
@@ -195,6 +246,10 @@ Deno.serve(async (req) => {
       subscribed: true,
       product_id: productId,
       subscription_end: subscriptionEnd,
+      billing_amount: billingAmount,
+      billing_currency: billingCurrency,
+      payment_method_last4: paymentMethodLast4,
+      payment_method_brand: paymentMethodBrand,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

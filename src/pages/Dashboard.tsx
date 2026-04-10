@@ -16,16 +16,16 @@ import EliteFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import PrioritySupportButton from "@/components/dashboard/PrioritySupportButton";
 import ComingSoonFeatures from "@/components/dashboard/ComingSoonFeatures";
 
-const STRIPE_TIERS: Record<string, { label: string; price: string }> = {
-  prod_UI08qGZRqV94r2: { label: "Pro", price: "£9.99/mo" },
-  prod_UIBpaMM0bdRgJ9: { label: "Elite", price: "£19.99/mo" },
-  prod_UJCdn59OHrLmWH: { label: "Elite", price: "£19.99/mo" },
-};
+// SubStatus type
 
 type SubStatus = {
   subscribed: boolean;
   product_id?: string | null;
   subscription_end?: string | null;
+  billing_amount?: number | null;
+  billing_currency?: string | null;
+  payment_method_last4?: string | null;
+  payment_method_brand?: string | null;
 };
 
 const Dashboard = () => {
@@ -52,43 +52,9 @@ const Dashboard = () => {
     }
   }, [user, authLoading, navigate]);
 
-  // Post-checkout polling: detect ?checkout=success and poll until subscription is active
+  // Refresh subscription if arriving at dashboard
   useEffect(() => {
-    if (!user) return;
-
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("checkout") !== "success") return;
-
-    // Clean up URL
-    window.history.replaceState({}, "", "/dashboard");
-
-    let cancelled = false;
-    let attempts = 0;
-
-    const poll = async () => {
-      while (!cancelled && attempts < 15) {
-        attempts++;
-        try {
-          const { data, error } = await supabase.functions.invoke("check-subscription");
-          if (!error && data?.subscribed) {
-            setSubStatus(data);
-            setSubLoading(false);
-            fetchProfile(); // refresh profile with updated plan
-            toast({ title: "Welcome to Pro! 🎉", description: "Your subscription is now active." });
-            return;
-          }
-        } catch {}
-        await new Promise((r) => setTimeout(r, 2000));
-      }
-      if (!cancelled) {
-        fetchSubscription();
-        toast({ title: "Checking subscription…", description: "It may take a moment. Try refreshing." });
-      }
-    };
-
-    setSubLoading(true);
-    poll();
-    return () => { cancelled = true; };
+    if (user) fetchSubscription();
   }, [user]);
 
   useEffect(() => {
@@ -386,12 +352,53 @@ const Dashboard = () => {
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {currentPlanInfo.price}
-                    {subStatus.subscription_end && (
-                      <> · Renews {new Date(subStatus.subscription_end).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</>
-                    )}
                   </p>
                 </div>
               </div>
+
+              {/* Billing details */}
+              <div className="rounded-xl bg-secondary/40 border border-border p-4 space-y-2 text-sm">
+                {subStatus.subscription_end && (
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Next payment</span>
+                      <span className="font-medium">{new Date(subStatus.subscription_end).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Amount due</span>
+                      <span className="font-medium">
+                        {subStatus.billing_amount
+                          ? `£${(subStatus.billing_amount / 100).toFixed(2)}`
+                          : currentPlanInfo.price.replace("/mo", "")}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Days remaining</span>
+                      <span className="font-medium">
+                        {Math.max(0, Math.ceil((new Date(subStatus.subscription_end).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))} days
+                      </span>
+                    </div>
+                  </>
+                )}
+                {subStatus.payment_method_last4 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Payment method</span>
+                    <span className="font-medium capitalize">{subStatus.payment_method_brand || "Card"} •••• {subStatus.payment_method_last4}</span>
+                  </div>
+                )}
+                {/* Refund eligibility */}
+                {profile?.first_payment_date && (() => {
+                  const daysSince = (Date.now() - new Date(profile.first_payment_date!).getTime()) / (1000 * 60 * 60 * 24);
+                  const refundDeadline = new Date(new Date(profile.first_payment_date!).getTime() + 7 * 24 * 60 * 60 * 1000);
+                  if (profile.refund_granted) {
+                    return <p className="text-xs text-muted-foreground">Refund granted on {profile.refund_date ? new Date(profile.refund_date).toLocaleDateString("en-GB") : "—"}</p>;
+                  }
+                  return daysSince <= 7
+                    ? <p className="text-xs text-green-500">Refund available until {refundDeadline.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</p>
+                    : <p className="text-xs text-destructive">Refund period ended</p>;
+                })()}
+              </div>
+
               <div className="flex flex-wrap gap-2">
                 <Button
                   variant="outline"
@@ -412,21 +419,26 @@ const Dashboard = () => {
                 >
                   Cancel Subscription
                 </Button>
+                {profile?.first_payment_date && !profile.refund_granted && (() => {
+                  const daysSince = (Date.now() - new Date(profile.first_payment_date!).getTime()) / (1000 * 60 * 60 * 24);
+                  return daysSince <= 7;
+                })() && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-xl gap-2"
+                    onClick={() => navigate("/refund")}
+                  >
+                    Request Refund
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
                   className="rounded-xl gap-2"
-                  onClick={() => navigate("/refund")}
+                  onClick={() => navigate("/subscription-policy")}
                 >
-                  Request Refund
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="rounded-xl gap-2"
-                  onClick={fetchSubscription}
-                >
-                  Refresh Status
+                  Subscription Policy
                 </Button>
               </div>
             </div>
