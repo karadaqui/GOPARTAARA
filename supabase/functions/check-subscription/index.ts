@@ -133,7 +133,6 @@ serve(async (req) => {
     // Store first_payment_date if not already set
     const updateData: Record<string, any> = { subscription_plan: plan };
     if (!profileData?.first_payment_date) {
-      // Use subscription start date as proxy for first payment
       try {
         const startVal = sub.start_date || sub.created;
         if (typeof startVal === "number" && startVal > 0) {
@@ -152,6 +151,38 @@ serve(async (req) => {
       logStep("Failed to update profile", { error: updateError.message });
     } else {
       logStep("Profile subscription_plan synced", { plan });
+    }
+
+    // Auto-create seller profile if this is a seller plan and none exists yet
+    if (SELLER_PLANS.includes(plan) && plan !== "admin") {
+      const { data: existingSeller } = await adminClient
+        .from("seller_profiles")
+        .select("id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (!existingSeller) {
+        const sellerTier = plan.replace("_seller", ""); // basic, featured, pro
+        const { error: spError } = await adminClient.from("seller_profiles").insert({
+          user_id: user.id,
+          business_name: user.email?.split("@")[0] || "My Business",
+          contact_email: user.email,
+          seller_tier: sellerTier,
+          approved: true,
+        });
+        if (spError) {
+          logStep("Failed to auto-create seller profile", { error: spError.message });
+        } else {
+          logStep("Auto-created seller profile", { sellerTier });
+        }
+      } else {
+        // Update existing seller profile to approved + correct tier
+        const sellerTier = plan.replace("_seller", "");
+        await adminClient.from("seller_profiles")
+          .update({ approved: true, seller_tier: sellerTier })
+          .eq("user_id", user.id);
+        logStep("Updated seller profile to approved", { sellerTier });
+      }
     }
 
     return new Response(JSON.stringify({
