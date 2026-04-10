@@ -14,6 +14,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      blog_generations: {
+        Row: {
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           author: string
