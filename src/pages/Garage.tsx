@@ -272,13 +272,22 @@ const Garage = () => {
                     </div>
                     <div className="mt-3">
                       <label className="text-xs text-muted-foreground mb-1 block">Confirm Model *</label>
-                      <Input
-                        value={confirmedModel}
-                        onChange={e => setConfirmedModel(e.target.value)}
-                        placeholder={getModelPlaceholder(dvlaVehicle.make)}
-                        className="rounded-xl bg-secondary border-border"
-                      />
-                      <p className="text-[10px] text-muted-foreground mt-1">DVLA doesn't provide the model — please enter it manually for accurate search results.</p>
+                      {dvlaVehicle?.make && getModels(dvlaVehicle.make).length > 0 ? (
+                        <Select value={confirmedModel} onValueChange={setConfirmedModel}>
+                          <SelectTrigger className="rounded-xl bg-secondary border-border"><SelectValue placeholder="Select model" /></SelectTrigger>
+                          <SelectContent>
+                            {getModels(dvlaVehicle.make).map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          value={confirmedModel}
+                          onChange={e => setConfirmedModel(e.target.value)}
+                          placeholder={getModelPlaceholder(dvlaVehicle.make)}
+                          className="rounded-xl bg-secondary border-border"
+                        />
+                      )}
+                      <p className="text-[10px] text-muted-foreground mt-1">DVLA doesn't provide the model — please select or enter it for accurate search results.</p>
                     </div>
                   </div>
                 )}
