@@ -181,37 +181,4 @@ const PricingSection = () => {
           ))}
         </div>
 
-        {/* Temporary test product */}
-        <div className="max-w-sm mx-auto mt-10">
-          <div className="rounded-2xl p-8 flex flex-col glass border-dashed border-2 border-yellow-500/40">
-            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-400 w-fit mb-3">
-              TEST ONLY
-            </span>
-            <h3 className="font-display text-xl font-bold mb-1">PARTARA Test</h3>
-            <p className="text-muted-foreground text-sm mb-6">Test purchase only — will be removed</p>
-            <div className="mb-6">
-              <span className="font-display text-4xl font-bold">£1.00</span>
-              <span className="text-muted-foreground text-sm"> one-time</span>
-            </div>
-            <Button
-              className="w-full rounded-xl"
-              disabled={isLoading("test")}
-              onClick={handleTestPurchase}
-            >
-              {isLoading("test") ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 size={16} className="animate-spin" />
-                  {slowWarning ? "Taking longer than expected…" : "Redirecting to checkout…"}
-                </span>
-              ) : (
-                "Buy Test Product"
-              )}
-            </Button>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-};
-
 export default PricingSection;
