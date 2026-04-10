@@ -70,6 +70,7 @@ const Garage = () => {
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [authGateOpen, setAuthGateOpen] = useState(false);
 
   // Form state
   const [mode, setMode] = useState<"manual" | "plate">("manual");
