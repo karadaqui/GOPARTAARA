@@ -419,12 +419,18 @@ const ListingDetail = () => {
               {reviews.map(r => (
                 <div key={r.id} className="glass rounded-xl p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="flex">
+                    <div className="w-6 h-6 rounded-full bg-secondary flex items-center justify-center shrink-0">
+                      <User size={12} className="text-muted-foreground" />
+                    </div>
+                    <span className="text-sm font-medium">{r.reviewer_name || "Anonymous"}</span>
+                    {r.reviewer_plan === "admin" && <AdminBadge />}
+                    {r.reviewer_plan === "business" && <BusinessBadge />}
+                    <div className="flex ml-1">
                       {[1, 2, 3, 4, 5].map(s => (
                         <Star key={s} size={14} className={s <= r.rating ? "text-primary fill-primary" : "text-muted-foreground"} />
                       ))}
                     </div>
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground ml-auto">
                       {new Date(r.created_at).toLocaleDateString()}
                     </span>
                   </div>
