@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -98,6 +98,7 @@ interface VehicleInfo {
 
 const SearchResults = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const searchLimit = useSearchLimit();
@@ -121,13 +122,24 @@ const SearchResults = () => {
   const [totalResults, setTotalResults] = useState(0);
   const [ebayFallback, setEbayFallback] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const internalSearchRef = useRef(false);
 
+  // When URL query changes from external navigation (e.g. garage "Search Parts"),
+  // record in search_history so it counts toward the limit
   useEffect(() => {
     if (urlQuery !== activeQuery) {
       setQuery(urlQuery);
       setActiveQuery(urlQuery);
       setSelectedCategory(null);
       setCurrentPage(1);
+
+      // Record search if this came from external navigation (not internal handleSearch)
+      if (urlQuery && user && !internalSearchRef.current) {
+        supabase.from("search_history").insert({ user_id: user.id, query: urlQuery }).then(() => {
+          searchLimit.refresh();
+        });
+      }
+      internalSearchRef.current = false;
     }
 
     if (urlQuery) {
@@ -230,6 +242,7 @@ const SearchResults = () => {
       return;
     }
     const q = query.trim();
+    internalSearchRef.current = true; // Mark as internal so URL effect doesn't double-record
     setActiveQuery(q);
     setSelectedCategory(null);
     setCurrentPage(1);
@@ -250,6 +263,13 @@ const SearchResults = () => {
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // Block photo search for free users
+    if (!searchLimit.isPro && user) {
+      toast({ title: "Photo search is available on Pro and Business plans", description: "Upgrade to unlock photo search.", variant: "destructive" });
+      navigate("/pricing");
+      if (photoInputRef.current) photoInputRef.current.value = "";
+      return;
+    }
     if (file.size > 5 * 1024 * 1024) {
       toast({ title: "Too large", description: "Image must be under 5MB.", variant: "destructive" });
       return;
@@ -381,11 +401,7 @@ const SearchResults = () => {
                     </div>
                   </label>
                   {searchLimit.limitReached ? (
-                    <Button type="button" className="rounded-xl h-11 px-4 sm:px-6 flex-1 sm:flex-none" onClick={() => {
-                      const el = document.getElementById("pricing");
-                      if (el) el.scrollIntoView({ behavior: "smooth" });
-                      else window.location.href = "/#pricing";
-                    }}>
+                    <Button type="button" className="rounded-xl h-11 px-4 sm:px-6 flex-1 sm:flex-none" onClick={() => navigate("/pricing")}>
                       <ArrowUp size={14} className="mr-1" /> Upgrade
                     </Button>
                   ) : (

@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
 const FREE_LIMIT = 5;
-const PAID_PLANS = ["pro", "business", "basic_seller", "featured_seller", "pro_seller", "admin"];
+// Only these plans grant unlimited searches - seller plans do NOT
+const UNLIMITED_SEARCH_PLANS = ["pro", "business", "admin"];
 
 export const useSearchLimit = () => {
   const { user } = useAuth();
@@ -19,7 +20,7 @@ export const useSearchLimit = () => {
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
 
-    const [{ count }, { data: profile }, subResult] = await Promise.all([
+    const [{ count }, { data: profile }] = await Promise.all([
       supabase
         .from("search_history")
         .select("*", { count: "exact", head: true })
@@ -30,15 +31,14 @@ export const useSearchLimit = () => {
         .select("bonus_searches, subscription_plan")
         .eq("user_id", user.id)
         .single(),
-      supabase.functions.invoke("check-subscription"),
     ]);
 
     setSearchCount(count || 0);
     setBonusSearches(profile?.bonus_searches || 0);
     const dbPlan = profile?.subscription_plan || "free";
-    const hasPaidPlan = PAID_PLANS.includes(dbPlan);
-    const stripeActive = !subResult.error && subResult.data?.subscribed;
-    setIsPro(hasPaidPlan || stripeActive);
+    // Only pro, business, and admin get unlimited searches
+    const hasPaidPlan = UNLIMITED_SEARCH_PLANS.includes(dbPlan);
+    setIsPro(hasPaidPlan);
     setLoaded(true);
   };
 

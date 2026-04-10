@@ -4,6 +4,7 @@ import { Search, Camera, Loader2, Car, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
 import SearchCounter from "@/components/SearchCounter";
@@ -11,6 +12,7 @@ import { useSearchLimit } from "@/hooks/useSearchLimit";
 
 const HeroSection = () => {
   const [query, setQuery] = useState("");
+  const { user } = useAuth();
   const searchLimit = useSearchLimit();
   const [identifying, setIdentifying] = useState(false);
   const [activeTab, setActiveTab] = useState<"part" | "plate">("part");
@@ -36,6 +38,14 @@ const HeroSection = () => {
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Block photo search for free users
+    if (!searchLimit.isPro && user) {
+      toast({ title: "Photo search is available on Pro and Business plans", description: "Upgrade to unlock photo search.", variant: "destructive" });
+      navigate("/pricing");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
 
     if (file.size > 5 * 1024 * 1024) {
       toast({ title: "Too large", description: "Image must be under 5MB.", variant: "destructive" });
