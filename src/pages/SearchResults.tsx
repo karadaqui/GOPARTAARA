@@ -181,7 +181,7 @@ const SearchResults = () => {
         });
         if (error) {
           // Handle server-side auth/limit errors
-          const errorData = typeof error === "object" && error !== null ? error : {};
+          const msg = (error as any)?.message || "";
           const msg = (error as any)?.message || "";
           if (msg.includes("UNAUTHORIZED") || msg.includes("401")) {
             if (!cancelled) setAuthGateOpen(true);
