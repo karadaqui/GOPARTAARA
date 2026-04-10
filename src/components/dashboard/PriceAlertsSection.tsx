@@ -2,7 +2,17 @@ import { useState, useEffect } from "react";
 import { Bell, Trash2, ExternalLink, Loader2, CheckCircle2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface PriceAlert {
   id: string;
@@ -22,7 +32,7 @@ interface PriceAlert {
 const PriceAlertsSection = ({ userId }: { userId: string }) => {
   const [alerts, setAlerts] = useState<PriceAlert[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const fetchAlerts = async () => {
     const { data, error } = await supabase
@@ -40,12 +50,13 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
   }, [userId]);
 
   const deleteAlert = async (id: string) => {
+    setConfirmDeleteId(null);
     const { error } = await supabase.from("price_alerts").delete().eq("id", id);
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast.error("Failed to delete alert", { description: error.message });
     } else {
       setAlerts((prev) => prev.filter((a) => a.id !== id));
-      toast({ title: "Alert removed" });
+      toast.success("Price alert deleted");
     }
   };
 
@@ -86,7 +97,6 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
                   : "bg-secondary/30 border-border"
               }`}
             >
-              {/* Top row: icon + name + delete */}
               <div className="flex items-start gap-2 sm:gap-3 w-full sm:w-auto sm:flex-1 min-w-0">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                   alert.triggered ? "bg-emerald-500/15" : "bg-primary/10"
@@ -134,7 +144,6 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
                     )}
                   </div>
                 </div>
-                {/* Actions - inline on mobile */}
                 <div className="flex items-center gap-1 shrink-0">
                   {alert.url && (
                     <a
@@ -147,7 +156,7 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
                     </a>
                   )}
                   <button
-                    onClick={() => deleteAlert(alert.id)}
+                    onClick={() => setConfirmDeleteId(alert.id)}
                     className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
                   >
                     <Trash2 size={13} />
@@ -162,6 +171,24 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
       <p className="text-xs text-muted-foreground mt-4 text-center">
         🔔 Prices are checked every 6 hours. You'll receive an email when a price drops below your target.
       </p>
+
+      <AlertDialog open={!!confirmDeleteId} onOpenChange={(open) => !open && setConfirmDeleteId(null)}>
+        <AlertDialogContent className="rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this price alert?</AlertDialogTitle>
+            <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => confirmDeleteId && deleteAlert(confirmDeleteId)}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
