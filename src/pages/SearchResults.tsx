@@ -105,7 +105,8 @@ const SearchResults = () => {
   const searchLimit = useSearchLimit();
   const urlQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(urlQuery);
-  const [activeQuery, setActiveQuery] = useState(urlQuery);
+  // Don't auto-execute search from URL — require explicit user action
+  const [activeQuery, setActiveQuery] = useState("");
   const [identifying, setIdentifying] = useState(false);
   const [searchMode, setSearchMode] = useState<"text" | "reg">("text");
   const photoInputRef = useRef<HTMLInputElement>(null);
