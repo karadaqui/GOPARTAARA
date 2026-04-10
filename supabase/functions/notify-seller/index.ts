@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
-    const { listing_id, action, target_price } = await req.json();
+    const { listing_id, action, target_price, rating, review_text } = await req.json();
     if (!listing_id || !action) {
       return new Response(JSON.stringify({ error: "Missing listing_id or action" }), {
         status: 400,
@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
     const sellerEmail = listing.seller_profiles.contact_email;
 
     // Don't notify seller about their own actions (except price_drop which notifies buyers)
-    if (sellerUserId === userData.user.id && action !== "price_drop") {
+    if (sellerUserId === userData.user.id && action !== "price_drop" && action !== "review") {
       console.log("[NOTIFY-SELLER] Skipping self-notification");
       return new Response(JSON.stringify({ ok: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -128,6 +128,35 @@ Deno.serve(async (req) => {
           { listingTitle: listing.title, targetPrice: parseFloat(target_price).toFixed(2) }
         );
       }
+    }
+
+    if (action === "review") {
+      const starText = `${rating || 5} star`;
+      const commentSnippet = review_text ? `: "${review_text.substring(0, 100)}${review_text.length > 100 ? '...' : ''}"` : '';
+
+      // In-app notification
+      await supabase.from("notifications").insert({
+        user_id: sellerUserId,
+        type: "listing_review",
+        title: `New ${starText} review on your listing ⭐`,
+        message: `Someone left a ${starText} review on "${listing.title}"${commentSnippet}`,
+        link: `/listing/${listing_id}`,
+      });
+
+      // Email
+      if (sellerEmail) {
+        await sendEmail(
+          "review-notification",
+          sellerEmail,
+          `review-${listing_id}-${userData.user.id}-${Date.now()}`,
+          {
+            listingTitle: listing.title,
+            rating: rating || 5,
+            reviewText: review_text || null,
+          }
+        );
+      }
+      console.log("[NOTIFY-SELLER] Review notification sent");
     }
 
     if (action === "price_drop") {
