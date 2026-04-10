@@ -1033,10 +1033,15 @@ const SearchResults = () => {
           </div>
         )}
       </div>
-      {showCompare && compareParts.length >= 2 && (
-        <PartsComparison
-          parts={compareParts}
-          onRemove={(i) => setCompareParts((prev) => prev.filter((_, idx) => idx !== i))}
+      <CompareBar
+        items={compareParts}
+        onOpen={() => setShowCompare(true)}
+        onClear={() => setCompareParts([])}
+      />
+      {showCompare && (
+        <CompareModal
+          items={compareParts}
+          onRemove={(id) => setCompareParts((prev) => prev.filter((p) => p.id !== id))}
           onClose={() => setShowCompare(false)}
         />
       )}
