@@ -273,15 +273,23 @@ const ListingDetail = () => {
         link: `/listing/${id}`,
       });
 
-      // Send email
-      await supabase.functions.invoke("send-transactional-email", {
-        body: {
-          templateName: "review-removed",
-          recipientEmail: null, // Will look up from user
-          idempotencyKey: `review-removed-${adminDeleteReviewId}-${Date.now()}`,
-          templateData: { listingTitle: listing?.title, reason: adminDeleteReason.trim() },
-        },
-      }).catch(() => {});
+      // Look up reviewer's email and send notification email
+      const { data: reviewerProfile } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("user_id", review.user_id)
+        .single();
+
+      if (reviewerProfile?.email) {
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "review-removed",
+            recipientEmail: reviewerProfile.email,
+            idempotencyKey: `review-removed-${adminDeleteReviewId}-${Date.now()}`,
+            templateData: { listingTitle: listing?.title, reason: adminDeleteReason.trim() },
+          },
+        }).catch(() => {});
+      }
     }
 
     await supabase.from("listing_reviews").delete().eq("id", adminDeleteReviewId);
