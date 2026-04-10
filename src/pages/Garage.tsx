@@ -421,6 +421,13 @@ const Garage = () => {
         </DialogContent>
       </Dialog>
 
+      <AuthGateModal
+        open={authGateOpen}
+        onOpenChange={setAuthGateOpen}
+        title="Create a free account to save your vehicles"
+        description="Sign in to add vehicles to your garage and find compatible parts faster."
+      />
+
       <Footer />
       <BackToTop />
     </div>
