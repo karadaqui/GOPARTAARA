@@ -122,13 +122,24 @@ const SearchResults = () => {
   const [totalResults, setTotalResults] = useState(0);
   const [ebayFallback, setEbayFallback] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const internalSearchRef = useRef(false);
 
+  // When URL query changes from external navigation (e.g. garage "Search Parts"),
+  // record in search_history so it counts toward the limit
   useEffect(() => {
     if (urlQuery !== activeQuery) {
       setQuery(urlQuery);
       setActiveQuery(urlQuery);
       setSelectedCategory(null);
       setCurrentPage(1);
+
+      // Record search if this came from external navigation (not internal handleSearch)
+      if (urlQuery && user && !internalSearchRef.current) {
+        supabase.from("search_history").insert({ user_id: user.id, query: urlQuery }).then(() => {
+          searchLimit.refresh();
+        });
+      }
+      internalSearchRef.current = false;
     }
 
     if (urlQuery) {
@@ -231,6 +242,7 @@ const SearchResults = () => {
       return;
     }
     const q = query.trim();
+    internalSearchRef.current = true; // Mark as internal so URL effect doesn't double-record
     setActiveQuery(q);
     setSelectedCategory(null);
     setCurrentPage(1);
