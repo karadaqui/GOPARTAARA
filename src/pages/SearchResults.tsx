@@ -381,11 +381,7 @@ const SearchResults = () => {
                     </div>
                   </label>
                   {searchLimit.limitReached ? (
-                    <Button type="button" className="rounded-xl h-11 px-4 sm:px-6 flex-1 sm:flex-none" onClick={() => {
-                      const el = document.getElementById("pricing");
-                      if (el) el.scrollIntoView({ behavior: "smooth" });
-                      else window.location.href = "/#pricing";
-                    }}>
+                    <Button type="button" className="rounded-xl h-11 px-4 sm:px-6 flex-1 sm:flex-none" onClick={() => navigate("/pricing")}>
                       <ArrowUp size={14} className="mr-1" /> Upgrade
                     </Button>
                   ) : (

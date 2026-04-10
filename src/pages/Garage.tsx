@@ -83,7 +83,7 @@ const Garage = () => {
   const [needsModelConfirm, setNeedsModelConfirm] = useState(false);
   const [confirmedModel, setConfirmedModel] = useState("");
 
-  const PAID_PLANS = ["pro","business","basic_seller","featured_seller","pro_seller","admin"];
+  const PAID_PLANS = ["pro","business","admin"];
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }

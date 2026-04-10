@@ -397,7 +397,7 @@ const Dashboard = () => {
               <Button
                 size="sm"
                 className="rounded-xl gap-2"
-                onClick={() => navigate("/#pricing")}
+                onClick={() => navigate("/pricing")}
               >
                 Upgrade Plan
               </Button>
@@ -444,7 +444,7 @@ const Dashboard = () => {
           <div className="mt-6">
             <MyGarageSection
               userId={user.id}
-              isPro={currentPlan !== "free"}
+              isPro={["pro", "business", "admin"].includes(currentPlan)}
             />
           </div>
         )}
