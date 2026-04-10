@@ -2,9 +2,9 @@ import ScrollReveal from "@/components/ScrollReveal";
 
 const stats = [
   { value: "1M+", label: "Parts Available" },
-  { value: "100%", label: "Free to Search" },
-  { value: "6", label: "Trusted Suppliers" },
-  { value: "Real-time", label: "Live Prices" },
+  { value: "Free", label: "Always Free to Search" },
+  { value: "Real-time", label: "Live eBay Prices" },
+  { value: "UK & Global", label: "Suppliers Connected" },
 ];
 
 const suppliers = [
