@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import {
   Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star,
   Truck, Bookmark, BookmarkCheck, MapPin, Clock,
-  Heart, AlertCircle, Zap, Filter as FilterIcon, ArrowUp,
+  Heart, AlertCircle, Zap, Filter as FilterIcon,
   ChevronLeft, ChevronRight, ChevronDown, Pencil, Calendar, Palette, Fuel, Gauge,
   ShieldCheck, Receipt, Check, X as XIcon,
 } from "lucide-react";
@@ -411,13 +411,9 @@ const SearchResults = () => {
                       <span>{identifying ? "Identifying..." : "Photo"}</span>
                     </div>
                   </label>
-                  {searchLimit.limitReached ? (
-                    <Button type="button" className="rounded-xl h-11 px-4 sm:px-6 flex-1 sm:flex-none" onClick={() => navigate("/pricing")}>
-                      <ArrowUp size={14} className="mr-1" /> Upgrade
-                    </Button>
-                  ) : (
-                    <Button type="submit" className="rounded-xl h-11 px-4 sm:px-6 flex-1 sm:flex-none">Search</Button>
-                  )}
+                  <Button type="submit" className="rounded-xl h-11 px-4 sm:px-6 flex-1 sm:flex-none bg-primary hover:bg-primary/90">
+                    <Search size={14} className="mr-1" /> Search
+                  </Button>
                 </div>
               </form>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
