@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Car, Plus, Trash2, Loader2, X } from "lucide-react";
 import VehicleNotes from "@/components/dashboard/VehicleNotes";
+import VehicleSpecsCard from "@/components/dashboard/VehicleSpecsCard";
 import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import {
   Select,
@@ -272,6 +273,8 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
                   <Trash2 size={14} />
                 </button>
               </div>
+              {/* Vehicle Specs from NHTSA + FuelEconomy */}
+              <VehicleSpecsCard make={v.make} model={v.model} year={v.year} />
               {/* Vehicle Notes — Business feature */}
               <BusinessFeatureGate isBusinessUser={isBusinessUser} label="Business plan feature">
                 <VehicleNotes vehicleId={v.id} userId={userId} />
