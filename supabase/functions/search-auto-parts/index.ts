@@ -48,103 +48,83 @@ Deno.serve(async (req) => {
 
     const { query, langId, countryFilterId } = parsed.data;
 
-    // The Auto Parts Catalog API is hierarchical. For a text search,
-    // we use the "Search for the Commodity Group Tree by Description" endpoint.
-    // Based on the API docs, the endpoint pattern is:
-    // /search/description?langId=X&countryFilterId=Y&description=Z
-    // Let's try multiple path patterns to find the working one.
-
-    const searchPaths = [
-      `/search/description?langId=${langId}&countryFilterId=${countryFilterId}&description=${encodeURIComponent(query)}`,
-      `/searchByDescription?langId=${langId}&countryFilterId=${countryFilterId}&description=${encodeURIComponent(query)}`,
-      `/categories/search?langId=${langId}&countryFilterId=${countryFilterId}&description=${encodeURIComponent(query)}`,
-    ];
-
-    let searchData: any = null;
-    let lastError: string | null = null;
-
-    for (const searchPath of searchPaths) {
-      try {
-        searchData = await rapidFetch(searchPath, RAPIDAPI_KEY);
-        console.log(`[search-auto-parts] Success with path: ${searchPath}`);
-        break;
-      } catch (e: any) {
-        lastError = e.message;
-        console.warn(`[search-auto-parts] Path failed: ${searchPath} - ${e.message}`);
-        continue;
-      }
-    }
-
-    // If all search paths failed, try getting manufacturers as a fallback
-    // to at least verify the API key works
-    if (!searchData) {
-      try {
-        const makesData = await rapidFetch(`/makes?typeId=1&langId=${langId}&countryFilterId=${countryFilterId}`, RAPIDAPI_KEY);
-        console.log(`[search-auto-parts] /makes returned data, API key is valid. Search paths not found.`);
-        console.log(`[search-auto-parts] /makes sample:`, JSON.stringify(makesData)?.slice(0, 500));
-      } catch (makesErr: any) {
-        console.error(`[search-auto-parts] Even /makes failed:`, makesErr.message);
-      }
-      
-      console.error(`[search-auto-parts] All search paths failed. Last error: ${lastError}`);
-      return jsonResponse({ error: "SERVICE_UNAVAILABLE", results: [] }, 200, corsHeaders);
-    }
-
-    // Parse results - the API returns various structures
+    // The Auto Parts Catalog API uses specific endpoint names.
+    // For text-based search, we use /searchArticlesByNumber which searches by article/part number.
+    // We also try the commodity group tree search for keyword-based queries.
+    
     const results: any[] = [];
 
-    console.log(`[search-auto-parts] Response type: ${typeof searchData}, isArray: ${Array.isArray(searchData)}`);
-    console.log(`[search-auto-parts] Response sample:`, JSON.stringify(searchData)?.slice(0, 500));
-
-    if (Array.isArray(searchData)) {
-      for (const category of searchData) {
-        if (category.children && Array.isArray(category.children)) {
-          for (const sub of category.children) {
-            if (sub.children && Array.isArray(sub.children)) {
-              for (const item of sub.children) {
-                results.push({
-                  id: `catalog-${item.productGroupId || item.id || results.length}`,
-                  partName: item.name || item.description || "Auto Part",
-                  partNumber: item.articleNo || item.productGroupId?.toString() || "",
-                  brand: item.supplierName || item.brand || category.name || "TecDoc Catalog",
-                  category: sub.name || category.name || "",
-                  imageUrl: item.s3image || item.imageUrl || null,
-                  compatibility: item.vehicles || item.compatibility || null,
-                  source: "catalog",
-                });
-              }
-            } else {
-              results.push({
-                id: `catalog-${sub.productGroupId || sub.id || results.length}`,
-                partName: sub.name || sub.description || "Auto Part",
-                partNumber: sub.articleNo || sub.productGroupId?.toString() || "",
-                brand: sub.supplierName || sub.brand || category.name || "TecDoc Catalog",
-                category: category.name || "",
-                imageUrl: sub.s3image || sub.imageUrl || null,
-                compatibility: null,
-                source: "catalog",
-              });
-            }
-          }
+    // Strategy 1: Search articles by number (works for part numbers like "C 2029")
+    try {
+      const articleData = await rapidFetch(
+        `/searchArticlesByNumber?articleSearchNr=${encodeURIComponent(query)}&langId=${langId}`,
+        RAPIDAPI_KEY
+      );
+      console.log(`[search-auto-parts] articleSearch response type: ${typeof articleData}, isArray: ${Array.isArray(articleData)}`);
+      console.log(`[search-auto-parts] articleSearch sample:`, JSON.stringify(articleData)?.slice(0, 500));
+      
+      if (Array.isArray(articleData)) {
+        for (const item of articleData) {
+          results.push({
+            id: `catalog-${item.articleId || item.id || results.length}`,
+            partName: item.articleName || item.name || item.description || item.productGroupName || "Auto Part",
+            partNumber: item.articleNo || item.articleNumber || "",
+            brand: item.supplierName || item.brandName || item.supplier || "TecDoc Catalog",
+            category: item.productGroupName || item.category || "",
+            imageUrl: item.s3image || item.imageUrl || item.image || null,
+            compatibility: null,
+            source: "catalog",
+          });
+        }
+      } else if (articleData && typeof articleData === "object") {
+        // Could be wrapped in an object
+        const items = articleData.articles || articleData.items || articleData.results || articleData.data || [];
+        for (const item of (Array.isArray(items) ? items : [])) {
+          results.push({
+            id: `catalog-${item.articleId || item.id || results.length}`,
+            partName: item.articleName || item.name || item.description || "Auto Part",
+            partNumber: item.articleNo || item.articleNumber || "",
+            brand: item.supplierName || item.brandName || "TecDoc Catalog",
+            category: item.productGroupName || item.category || "",
+            imageUrl: item.s3image || item.imageUrl || null,
+            compatibility: null,
+            source: "catalog",
+          });
         }
       }
-    } else if (searchData && typeof searchData === "object") {
-      const items = searchData.items || searchData.articles || searchData.results || searchData.data || [];
-      for (const item of (Array.isArray(items) ? items : [])) {
-        results.push({
-          id: `catalog-${item.articleId || item.id || results.length}`,
-          partName: item.name || item.articleName || item.description || "Auto Part",
-          partNumber: item.articleNo || item.articleNumber || "",
-          brand: item.supplierName || item.brandName || "TecDoc Catalog",
-          category: item.productGroupName || item.category || "",
-          imageUrl: item.s3image || item.imageUrl || null,
-          compatibility: null,
-          source: "catalog",
-        });
+    } catch (e: any) {
+      console.warn(`[search-auto-parts] searchArticlesByNumber failed:`, e.message);
+    }
+
+    // Strategy 2: If no results from article search, try OEM number search
+    if (results.length === 0) {
+      try {
+        const oemData = await rapidFetch(
+          `/searchArticlesByOEMNumber?oemNumber=${encodeURIComponent(query)}&langId=${langId}`,
+          RAPIDAPI_KEY
+        );
+        console.log(`[search-auto-parts] oemSearch response:`, JSON.stringify(oemData)?.slice(0, 500));
+        
+        if (Array.isArray(oemData)) {
+          for (const item of oemData) {
+            results.push({
+              id: `catalog-${item.articleId || item.id || results.length}`,
+              partName: item.articleName || item.name || item.description || "Auto Part",
+              partNumber: item.articleNo || item.articleNumber || item.oemNumber || "",
+              brand: item.supplierName || item.brandName || "TecDoc Catalog",
+              category: item.productGroupName || "",
+              imageUrl: item.s3image || item.imageUrl || null,
+              compatibility: null,
+              source: "catalog",
+            });
+          }
+        }
+      } catch (e: any) {
+        console.warn(`[search-auto-parts] searchByOEM failed:`, e.message);
       }
     }
 
-    console.log(`[search-auto-parts] Parsed ${results.length} results`);
+    console.log(`[search-auto-parts] Total parsed results: ${results.length}`);
     return jsonResponse({ results: results.slice(0, 20) }, 200, corsHeaders);
   } catch (error) {
     console.error("[search-auto-parts] Unhandled error:", error);
