@@ -23,6 +23,7 @@ import { template as refundAdminNotification } from './refund-admin-notification
 import { template as reviewRemoved } from './review-removed.tsx'
 import { template as reviewDispute } from './review-dispute.tsx'
 import { template as disputeDecision } from './dispute-decision.tsx'
+import { template as welcomePurchase } from './welcome-purchase.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'contact-notification': contactNotification,
@@ -39,4 +40,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'review-removed': reviewRemoved,
   'review-dispute': reviewDispute,
   'dispute-decision': disputeDecision,
+  'welcome-purchase': welcomePurchase,
 }

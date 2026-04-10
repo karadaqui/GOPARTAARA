@@ -39,6 +39,7 @@ const Footer = () => {
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><button onClick={() => handleLink("/privacy")} className="hover:text-foreground transition-colors">Privacy Policy</button></li>
               <li><button onClick={() => handleLink("/terms")} className="hover:text-foreground transition-colors">Terms of Service</button></li>
+              <li><button onClick={() => handleLink("/subscription-policy")} className="hover:text-foreground transition-colors">Subscription Policy</button></li>
             </ul>
           </div>
         </div>
