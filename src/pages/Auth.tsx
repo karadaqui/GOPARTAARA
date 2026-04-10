@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mail, Lock, User, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, ArrowLeft, Eye, EyeOff, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ForgotPassword from "@/components/ForgotPassword";
 import { lovable } from "@/integrations/lovable/index";
@@ -19,11 +19,12 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [oauthLoading, setOauthLoading] = useState<string | null>(null);
+  const [alreadyRegistered, setAlreadyRegistered] = useState(false);
+  const [resending, setResending] = useState(false);
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Capture referral code from URL
   const refCode = searchParams.get("ref");
 
   useEffect(() => {
@@ -32,28 +33,54 @@ const Auth = () => {
     }
   }, [refCode]);
 
+  const handleResendConfirmation = async () => {
+    if (!email) return;
+    setResending(true);
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: { emailRedirectTo: window.location.origin },
+      });
+      if (error) throw error;
+      toast({ title: "Email sent!", description: "Check your inbox for the confirmation link." });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to resend email", variant: "destructive" });
+    } finally {
+      setResending(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setAlreadyRegistered(false);
 
-    const { error } = isLogin
-      ? await signIn(email, password)
-      : await signUp(email, password, displayName);
-
-    setSubmitting(false);
-
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else if (isLogin) {
-      // Process referral on login too (in case they signed up via OAuth with ref)
-      processReferral();
-      const redirectTo = searchParams.get("redirect") || "/";
-      navigate(redirectTo);
+    if (isLogin) {
+      const { error } = await signIn(email, password);
+      setSubmitting(false);
+      if (error) {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+      } else {
+        processReferral();
+        const redirectTo = searchParams.get("redirect") || "/";
+        navigate(redirectTo);
+      }
     } else {
-      toast({
-        title: "Account created",
-        description: "Check your email to confirm your account.",
-      });
+      const { error } = await signUp(email, password, displayName);
+      setSubmitting(false);
+
+      if (error) {
+        // Handle "User already registered" specifically
+        if (error.message?.includes("already registered") || error.message?.includes("already_exists")) {
+          setAlreadyRegistered(true);
+        } else {
+          toast({ title: "Error", description: error.message, variant: "destructive" });
+        }
+      } else {
+        // Redirect to verify-email page
+        navigate(`/verify-email?email=${encodeURIComponent(email)}`);
+      }
     }
   };
 
@@ -75,7 +102,6 @@ const Auth = () => {
     setOauthLoading(provider);
     try {
       const redirectTo = searchParams.get("redirect") || "/";
-      // Store redirect intent before OAuth redirect so we can restore it after callback
       if (redirectTo !== "/") {
         localStorage.setItem("partara_auth_redirect", redirectTo);
       }
@@ -128,6 +154,35 @@ const Auth = () => {
                   {isLogin ? "Sign in to your account" : "Start finding parts faster"}
                 </p>
               </div>
+
+              {/* Already registered banner */}
+              {alreadyRegistered && !isLogin && (
+                <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-4 mb-6">
+                  <p className="text-sm text-foreground mb-3">
+                    This email is already registered. Please check your inbox for a confirmation email, or click below to resend it.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="w-full rounded-lg"
+                    disabled={resending}
+                    onClick={handleResendConfirmation}
+                  >
+                    {resending ? (
+                      <span className="flex items-center gap-2">
+                        <RefreshCw size={14} className="animate-spin" />
+                        Sending...
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        <RefreshCw size={14} />
+                        Resend confirmation email
+                      </span>
+                    )}
+                  </Button>
+                </div>
+              )}
 
               {/* Social login buttons */}
               <div className="space-y-3 mb-6">
@@ -198,7 +253,7 @@ const Auth = () => {
                     type="email"
                     placeholder="Email address"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => { setEmail(e.target.value); setAlreadyRegistered(false); }}
                     required
                     className="pl-10 bg-secondary border-border h-12 rounded-xl"
                   />
@@ -243,7 +298,7 @@ const Auth = () => {
 
               <div className="mt-6 text-center">
                 <button
-                  onClick={() => setIsLogin(!isLogin)}
+                  onClick={() => { setIsLogin(!isLogin); setAlreadyRegistered(false); }}
                   className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {isLogin ? "Don't have an account? " : "Already have an account? "}
