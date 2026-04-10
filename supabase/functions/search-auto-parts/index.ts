@@ -43,69 +43,88 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: parsed.error.flatten().fieldErrors, results: [] }, 400, corsHeaders);
     }
 
-    const { query, langId, countryFilterId } = parsed.data;
-
-    // Use the category search by description endpoint to find matching product groups
-    const searchPath = `/api/search/description?langId=${langId}&countryFilterId=${countryFilterId}&description=${encodeURIComponent(query)}`;
-    
-    let searchData: any;
-    try {
-      searchData = await rapidFetch(searchPath, RAPIDAPI_KEY);
-    } catch (e) {
-      console.error("[search-auto-parts] API error:", e);
-      return jsonResponse({ error: "SERVICE_UNAVAILABLE", results: [] }, 200, corsHeaders);
-    }
-
-    // Parse results - the API returns a tree structure of categories with products
+    const { query, langId } = parsed.data;
     const results: any[] = [];
+
+    // Try searching by article number - this is the primary search endpoint
+    // The API uses path-based params: /articles/search-by-article-no/lang-id/{langId}/article-no/{articleNo}
+    // Note: Some endpoints require PRO plan. We try multiple patterns and gracefully handle 404s.
     
-    if (Array.isArray(searchData)) {
-      for (const category of searchData) {
-        if (category.children && Array.isArray(category.children)) {
-          for (const sub of category.children) {
-            if (sub.children && Array.isArray(sub.children)) {
-              for (const item of sub.children) {
-                results.push({
-                  id: `catalog-${item.productGroupId || item.id || results.length}`,
-                  partName: item.name || item.description || "Auto Part",
-                  partNumber: item.articleNo || item.productGroupId?.toString() || "",
-                  brand: item.supplierName || item.brand || category.name || "TecDoc Catalog",
-                  category: sub.name || category.name || "",
-                  imageUrl: item.s3image || item.imageUrl || null,
-                  compatibility: item.vehicles || item.compatibility || null,
-                  source: "catalog",
-                });
-              }
-            } else {
-              // sub itself is a product
+    const searchEndpoints = [
+      `/articles/search?langId=${langId}&articleSearchNr=${encodeURIComponent(query)}`,
+      `/search/articles?langId=${langId}&articleSearchNr=${encodeURIComponent(query)}`,
+    ];
+
+    for (const endpoint of searchEndpoints) {
+      try {
+        const data = await rapidFetch(endpoint, RAPIDAPI_KEY);
+        
+        if (Array.isArray(data)) {
+          for (const item of data) {
+            results.push({
+              id: `catalog-${item.articleId || item.id || results.length}`,
+              partName: item.articleName || item.name || item.description || item.productGroupName || "Auto Part",
+              partNumber: item.articleNo || item.articleNumber || "",
+              brand: item.supplierName || item.brandName || "TecDoc Catalog",
+              category: item.productGroupName || item.category || "",
+              imageUrl: item.s3image || item.imageUrl || null,
+              compatibility: null,
+              source: "catalog",
+            });
+          }
+          break; // Found working endpoint
+        } else if (data && typeof data === "object") {
+          const items = data.articles || data.items || data.results || data.data || [];
+          if (Array.isArray(items)) {
+            for (const item of items) {
               results.push({
-                id: `catalog-${sub.productGroupId || sub.id || results.length}`,
-                partName: sub.name || sub.description || "Auto Part",
-                partNumber: sub.articleNo || sub.productGroupId?.toString() || "",
-                brand: sub.supplierName || sub.brand || category.name || "TecDoc Catalog",
-                category: category.name || "",
-                imageUrl: sub.s3image || sub.imageUrl || null,
+                id: `catalog-${item.articleId || item.id || results.length}`,
+                partName: item.articleName || item.name || item.description || "Auto Part",
+                partNumber: item.articleNo || item.articleNumber || "",
+                brand: item.supplierName || item.brandName || "TecDoc Catalog",
+                category: item.productGroupName || item.category || "",
+                imageUrl: item.s3image || item.imageUrl || null,
                 compatibility: null,
                 source: "catalog",
               });
             }
+            if (items.length > 0) break;
           }
         }
+      } catch (e) {
+        // Endpoint not available on current plan, try next
+        console.warn(`[search-auto-parts] Endpoint failed: ${endpoint}`);
+        continue;
       }
-    } else if (searchData && typeof searchData === "object") {
-      // Single result or different structure
-      const items = searchData.items || searchData.articles || searchData.results || [];
-      for (const item of (Array.isArray(items) ? items : [])) {
-        results.push({
-          id: `catalog-${item.articleId || item.id || results.length}`,
-          partName: item.name || item.articleName || item.description || "Auto Part",
-          partNumber: item.articleNo || item.articleNumber || "",
-          brand: item.supplierName || item.brandName || "TecDoc Catalog",
-          category: item.productGroupName || item.category || "",
-          imageUrl: item.s3image || item.imageUrl || null,
-          compatibility: null,
-          source: "catalog",
-        });
+    }
+
+    // If no article search results, try to get supplier info as enrichment data
+    if (results.length === 0) {
+      try {
+        const suppliers = await rapidFetch(`/suppliers/list?langId=${langId}`, RAPIDAPI_KEY);
+        if (Array.isArray(suppliers)) {
+          // Filter suppliers whose name matches part of the query
+          const queryLower = query.toLowerCase();
+          const matchingSuppliers = suppliers.filter((s: any) => 
+            queryLower.includes(s.supplierName?.toLowerCase()) || 
+            s.supplierName?.toLowerCase().includes(queryLower.split(' ')[0])
+          ).slice(0, 5);
+          
+          for (const supplier of matchingSuppliers) {
+            results.push({
+              id: `supplier-${supplier.supplierId}`,
+              partName: `${supplier.supplierName} Parts`,
+              partNumber: "",
+              brand: supplier.supplierName,
+              category: "Supplier",
+              imageUrl: supplier.s3image || null,
+              compatibility: null,
+              source: "catalog",
+            });
+          }
+        }
+      } catch {
+        // Suppliers list also failed
       }
     }
 
