@@ -340,6 +340,21 @@ const Dashboard = () => {
             <div className="flex items-center justify-center py-6">
               <Loader2 size={20} className="animate-spin text-muted-foreground" />
             </div>
+          ) : currentPlan === "admin" ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Crown size={20} className="text-primary" />
+                </div>
+                <div>
+                  <p className="font-display font-bold text-lg">Admin Plan</p>
+                  <p className="text-xs text-muted-foreground">Manually Assigned</p>
+                </div>
+              </div>
+              <div className="rounded-xl bg-secondary/40 border border-border p-4 text-sm">
+                <p className="text-muted-foreground">This plan is manually assigned and has no billing information.</p>
+              </div>
+            </div>
           ) : currentPlan !== "free" ? (
             <div className="space-y-4">
               <div className="flex items-center gap-3">

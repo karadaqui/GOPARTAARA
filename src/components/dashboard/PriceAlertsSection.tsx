@@ -41,7 +41,17 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
-    if (!error && data) setAlerts(data as unknown as PriceAlert[]);
+    if (!error && data) {
+      // Deduplicate by part_name + supplier (keep most recent)
+      const seen = new Set<string>();
+      const unique = (data as unknown as PriceAlert[]).filter((a) => {
+        const key = `${a.part_name}||${a.supplier || ""}||${a.target_price}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      setAlerts(unique);
+    }
     setLoading(false);
   };
 
