@@ -229,7 +229,32 @@ const SearchResults = () => {
     return () => { cancelled = true; };
   }, [activeQuery, selectedCategory, currentPage, user]);
 
+  // Fetch catalog results in parallel
   useEffect(() => {
+    if (!activeQuery.trim() || !user) {
+      setCatalogResults([]);
+      return;
+    }
+    let cancelled = false;
+    const fetchCatalog = async () => {
+      setCatalogLoading(true);
+      try {
+        const { data, error } = await supabase.functions.invoke("search-auto-parts", {
+          body: { query: activeQuery },
+        });
+        if (!cancelled && !error) {
+          setCatalogResults(data?.results || []);
+        }
+      } catch {
+        if (!cancelled) setCatalogResults([]);
+      } finally {
+        if (!cancelled) setCatalogLoading(false);
+      }
+    };
+    fetchCatalog();
+    return () => { cancelled = true; };
+  }, [activeQuery, user]);
+
     if (!user) return;
     supabase.from("saved_parts").select("part_number").eq("user_id", user.id).then(({ data }) => {
       if (data) setSavedIds(new Set(data.map((d) => d.part_number).filter(Boolean) as string[]));
