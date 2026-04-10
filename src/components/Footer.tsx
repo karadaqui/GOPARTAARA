@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Instagram, TikTok } from "lucide-react";
+import { Instagram } from "lucide-react";
 
 const Footer = () => {
   const navigate = useNavigate();
