@@ -489,6 +489,7 @@ const Dashboard = () => {
             <MyGarageSection
               userId={user.id}
               isPro={["pro", "business", "admin"].includes(currentPlan)}
+              isBusinessUser={isBusinessUser}
             />
           </div>
         )}
@@ -512,14 +513,25 @@ const Dashboard = () => {
               <Search size={18} className="text-primary" />
               Recent Searches
             </h2>
-            {searchHistory.length > 0 && (
-              <button
-                onClick={clearAllHistory}
-                className="text-xs text-muted-foreground hover:text-destructive transition-colors"
-              >
-                Clear all
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              <BusinessFeatureGate isBusinessUser={isBusinessUser} label="Business plan feature">
+                <button
+                  onClick={exportSearchHistoryCSV}
+                  className="text-xs text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
+                >
+                  <Download size={12} />
+                  Export CSV
+                </button>
+              </BusinessFeatureGate>
+              {searchHistory.length > 0 && (
+                <button
+                  onClick={clearAllHistory}
+                  className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                >
+                  Clear all
+                </button>
+              )}
+            </div>
           </div>
           {searchHistory.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-6">
@@ -556,6 +568,26 @@ const Dashboard = () => {
             </div>
           )}
         </div>
+
+        {/* Priority Support — Business only */}
+        <div className="mt-6">
+          <BusinessFeatureGate isBusinessUser={isBusinessUser} label="Business plan feature">
+            <div className="glass rounded-2xl p-6 flex items-center justify-between">
+              <div>
+                <p className="font-display font-semibold text-sm">Priority Email Support</p>
+                <p className="text-xs text-muted-foreground">Get faster responses from our team.</p>
+              </div>
+              <PrioritySupportButton displayName={displayName || user?.email || ""} />
+            </div>
+          </BusinessFeatureGate>
+        </div>
+
+        {/* Coming Soon — Business only */}
+        {isBusinessUser && (
+          <div className="mt-6">
+            <ComingSoonFeatures />
+          </div>
+        )}
       </div>
     </div>
   );
