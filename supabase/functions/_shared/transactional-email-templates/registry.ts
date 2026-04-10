@@ -17,6 +17,9 @@ import { template as listingSaved } from './listing-saved.tsx'
 import { template as priceAlertSeller } from './price-alert-seller.tsx'
 import { template as priceDropBuyer } from './price-drop-buyer.tsx'
 import { template as securityReport } from './security-report.tsx'
+import { template as reviewNotification } from './review-notification.tsx'
+import { template as refundConfirmation } from './refund-confirmation.tsx'
+import { template as refundAdminNotification } from './refund-admin-notification.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'contact-notification': contactNotification,
@@ -27,4 +30,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'price-alert-seller': priceAlertSeller,
   'price-drop-buyer': priceDropBuyer,
   'security-report': securityReport,
+  'review-notification': reviewNotification,
+  'refund-confirmation': refundConfirmation,
+  'refund-admin-notification': refundAdminNotification,
 }
