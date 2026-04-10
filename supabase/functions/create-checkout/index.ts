@@ -1,37 +1,41 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limiter.ts";
+import { getCorsHeaders, corsPreflightResponse, jsonResponse, validateJWT, logSecurityEvent, checkRequestSize } from "../_shared/security.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") return corsPreflightResponse(corsHeaders);
+
+  // Request size limit (16KB)
+  const sizeCheck = checkRequestSize(req, 16_384);
+  if (sizeCheck) return sizeCheck;
+
+  // Rate limit (5/min for checkout)
+  const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const { allowed } = await checkRateLimit(clientIp, "create-checkout");
+  if (!allowed) {
+    await logSecurityEvent("rate_limit_exceeded", req, undefined, "create-checkout");
+    return rateLimitResponse(corsHeaders);
   }
 
-  const supabaseClient = createClient(
-    Deno.env.get("SUPABASE_URL") ?? "",
-    Deno.env.get("SUPABASE_ANON_KEY") ?? ""
-  );
+  // JWT validation (mandatory)
+  const auth = await validateJWT(req, corsHeaders);
+  if (auth.error) {
+    await logSecurityEvent("unauthenticated_access", req, undefined, "create-checkout");
+    return auth.error;
+  }
+
+  if (!auth.email) {
+    return jsonResponse({ error: "Email required for checkout." }, 400, corsHeaders);
+  }
 
   try {
-    const authHeader = req.headers.get("Authorization")!;
-    if (!authHeader) throw new Error("User not authenticated");
-
-    const { allowed } = await checkRateLimit(authHeader.slice(-20), "create-checkout");
-    if (!allowed) return rateLimitResponse(corsHeaders);
-
-    const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated");
-
     const { priceId, mode } = await req.json();
-    if (!priceId) throw new Error("Missing priceId");
+    if (!priceId) {
+      return jsonResponse({ error: "Missing priceId" }, 400, corsHeaders);
+    }
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
@@ -39,31 +43,23 @@ serve(async (req) => {
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
 
     // Look up existing Stripe customer
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+    const customers = await stripe.customers.list({ email: auth.email, limit: 1 });
     const customerId = customers.data.length > 0 ? customers.data[0].id : undefined;
 
     const checkoutMode = mode === "payment" ? "payment" : "subscription";
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      customer_email: customerId ? undefined : user.email,
+      customer_email: customerId ? undefined : auth.email,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: checkoutMode,
       success_url: `https://gopartara.com/dashboard?checkout=success`,
       cancel_url: `https://gopartara.com/pricing`,
     });
 
-    return new Response(JSON.stringify({ url: session.url }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
+    return jsonResponse({ url: session.url }, 200, corsHeaders);
   } catch (error) {
     console.error("[create-checkout] Error:", error);
-    const isAuthError = error instanceof Error &&
-      (error.message.includes("not authenticated") || error.message.includes("Missing priceId"));
-    return new Response(
-      JSON.stringify({ error: isAuthError ? error.message : "An error occurred processing your request." }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: isAuthError ? 401 : 500 }
-    );
+    return jsonResponse({ error: "An error occurred processing your request." }, 500, corsHeaders);
   }
 });

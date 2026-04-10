@@ -105,7 +105,8 @@ const SearchResults = () => {
   const searchLimit = useSearchLimit();
   const urlQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(urlQuery);
-  const [activeQuery, setActiveQuery] = useState(urlQuery);
+  // Don't auto-execute search from URL — require explicit user action
+  const [activeQuery, setActiveQuery] = useState("");
   const [identifying, setIdentifying] = useState(false);
   const [searchMode, setSearchMode] = useState<"text" | "reg">("text");
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -126,26 +127,20 @@ const SearchResults = () => {
   const internalSearchRef = useRef(false);
   const [authGateOpen, setAuthGateOpen] = useState(false);
 
-  // When URL query changes from external navigation (e.g. garage "Search Parts"),
-  // search recording now happens server-side in the edge function
+  // When URL query changes, populate input but DON'T auto-execute search.
+  // Search only runs on explicit user action (form submit / button click).
   useEffect(() => {
-    if (urlQuery !== activeQuery) {
+    if (urlQuery && urlQuery !== query) {
       setQuery(urlQuery);
-      setActiveQuery(urlQuery);
-      setSelectedCategory(null);
-      setCurrentPage(1);
-
-      // Optimistic UI update for search counter
-      if (urlQuery && user && !internalSearchRef.current) {
-        searchLimit.recordSearch();
-      }
-      internalSearchRef.current = false;
     }
-
     if (urlQuery) {
       setSearchMode("text");
     }
-  }, [urlQuery, activeQuery]);
+    // Show auth gate if not logged in and URL has a query
+    if (urlQuery && !user) {
+      setAuthGateOpen(true);
+    }
+  }, [urlQuery]);
 
   useEffect(() => {
     const v = searchParams.get("vehicle");

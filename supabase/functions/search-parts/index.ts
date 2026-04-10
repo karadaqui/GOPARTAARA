@@ -1,10 +1,7 @@
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
-};
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limiter.ts";
+import { getCorsHeaders, corsPreflightResponse, jsonResponse, validateJWT, logSecurityEvent, checkRequestSize } from "../_shared/security.ts";
 
 const EBAY_BROWSE_API_URL = "https://api.ebay.com/buy/browse/v1/item_summary/search";
 const EBAY_OAUTH_URL = "https://api.ebay.com/identity/v1/oauth2/token";
@@ -19,14 +16,12 @@ const BodySchema = z.object({
   offset: z.number().int().min(0).optional().default(0).transform((v) => Math.min(v, 9999)),
 });
 
-// --- OAuth 2.0 token cache ---
 let oauthToken: { token: string; expiresAt: number } | null = null;
 
 async function getOAuthToken(appId: string, certId: string): Promise<string> {
   if (oauthToken && Date.now() < oauthToken.expiresAt - 60_000) {
     return oauthToken.token;
   }
-
   const credentials = btoa(`${appId}:${certId}`);
   const response = await fetch(EBAY_OAUTH_URL, {
     method: "POST",
@@ -36,29 +31,19 @@ async function getOAuthToken(appId: string, certId: string): Promise<string> {
     },
     body: "grant_type=client_credentials&scope=https%3A%2F%2Fapi.ebay.com%2Foauth%2Fapi_scope",
   });
-
   const text = await response.text();
-  if (!response.ok) {
-    throw new Error(`Failed to get OAuth token: ${response.status} - ${text}`);
-  }
-
+  if (!response.ok) throw new Error(`OAuth failed: ${response.status} - ${text}`);
   const data = JSON.parse(text);
-  oauthToken = {
-    token: data.access_token,
-    expiresAt: Date.now() + (data.expires_in * 1000),
-  };
+  oauthToken = { token: data.access_token, expiresAt: Date.now() + (data.expires_in * 1000) };
   return oauthToken.token;
 }
 
-// --- In-memory cache — 10 minute TTL ---
 const cache = new Map<string, { data: any; timestamp: number }>();
 const CACHE_TTL_MS = 10 * 60 * 1000;
 
 function getCached(key: string) {
   const entry = cache.get(key);
-  if (entry && Date.now() - entry.timestamp < CACHE_TTL_MS) {
-    return entry.data;
-  }
+  if (entry && Date.now() - entry.timestamp < CACHE_TTL_MS) return entry.data;
   cache.delete(key);
   return null;
 }
@@ -71,17 +56,28 @@ function setCache(key: string, data: any) {
   cache.set(key, { data, timestamp: Date.now() });
 }
 
-// --- Server-side auth & search limit enforcement ---
-async function validateAndCheckLimit(req: Request): Promise<{ userId: string; error?: never } | { userId?: never; error: Response }> {
-  const json = (data: any, status = 200) =>
-    new Response(JSON.stringify(data), {
-      status,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
 
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return { error: json({ error: "UNAUTHORIZED", message: "Sign in to search for parts." }, 401) };
+  if (req.method === "OPTIONS") return corsPreflightResponse(corsHeaders);
+
+  // Request size limit (512KB for search)
+  const sizeCheck = checkRequestSize(req, 524_288);
+  if (sizeCheck) return sizeCheck;
+
+  // Rate limit by IP (30/min)
+  const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const { allowed } = await checkRateLimit(clientIp, "search-parts");
+  if (!allowed) {
+    await logSecurityEvent("rate_limit_exceeded", req, undefined, "search-parts", { ip: clientIp });
+    return rateLimitResponse(corsHeaders);
+  }
+
+  // JWT validation (mandatory)
+  const auth = await validateJWT(req, corsHeaders);
+  if (auth.error) {
+    await logSecurityEvent("unauthenticated_access", req, undefined, "search-parts");
+    return auth.error;
   }
 
   const supabaseAdmin = createClient(
@@ -90,137 +86,81 @@ async function validateAndCheckLimit(req: Request): Promise<{ userId: string; er
     { auth: { persistSession: false } }
   );
 
-  // Validate JWT using getClaims
-  const token = authHeader.replace("Bearer ", "");
-  const { data: claimsData, error: claimsError } = await supabaseAdmin.auth.getClaims(token);
-
-  if (claimsError || !claimsData?.claims) {
-    console.error("[search-parts] JWT validation failed:", claimsError?.message);
-    return { error: json({ error: "UNAUTHORIZED", message: "Invalid or expired session. Please sign in again." }, 401) };
-  }
-
-  const userId = claimsData.claims.sub as string;
-
-  // Check subscription plan & search count from DB (never trust frontend)
+  // Check search limits from DB (never trust frontend)
   const { data: profile } = await supabaseAdmin
     .from("profiles")
     .select("subscription_plan, bonus_searches")
-    .eq("user_id", userId)
+    .eq("user_id", auth.userId)
     .single();
 
   const plan = profile?.subscription_plan || "free";
   const bonusSearches = profile?.bonus_searches || 0;
-
-  // Unlimited plans skip the limit
-  if (UNLIMITED_PLANS.includes(plan)) {
-    return { userId };
-  }
-
-  // Count searches this month
-  const startOfMonth = new Date();
-  startOfMonth.setDate(1);
-  startOfMonth.setHours(0, 0, 0, 0);
-
-  const { count } = await supabaseAdmin
-    .from("search_history")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", userId)
-    .gte("created_at", startOfMonth.toISOString());
-
-  const totalAllowed = FREE_LIMIT + bonusSearches;
-  const used = count || 0;
-
-  if (used >= totalAllowed) {
-    return {
-      error: json({
-        error: "SEARCH_LIMIT_REACHED",
-        message: `You've used all ${totalAllowed} searches this month. Upgrade to Pro for unlimited searches.`,
-        remaining: 0,
-      }, 403),
-    };
-  }
-
-  return { userId };
-}
-
-Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
-  }
-
-  const json = (data: any, status = 200) =>
-    new Response(JSON.stringify(data), {
-      status,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-
-  // IP-based rate limit (backup defense)
-  const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
-  const clientId = req.headers.get("Authorization")?.slice(-20) || clientIp;
-  const { allowed } = await checkRateLimit(clientId, "search-parts");
-  if (!allowed) return rateLimitResponse(corsHeaders);
-
-  // --- Server-side JWT + search limit enforcement ---
-  const authResult = await validateAndCheckLimit(req);
-  if (authResult.error) return authResult.error;
-  const userId = authResult.userId;
+  const isUnlimited = UNLIMITED_PLANS.includes(plan);
 
   try {
-    const EBAY_APP_ID = Deno.env.get("EBAY_APP_ID");
-    const EBAY_CERT_ID = Deno.env.get("EBAY_CERT_ID");
-    if (!EBAY_APP_ID || !EBAY_CERT_ID) {
-      return json({ error: "eBay credentials not configured", results: [], fallback: true });
-    }
-
     const body = await req.json();
     const parsed = BodySchema.safeParse(body);
     if (!parsed.success) {
-      return json({ error: parsed.error.flatten().fieldErrors, results: [] }, 400);
+      return jsonResponse({ error: parsed.error.flatten().fieldErrors, results: [] }, 400, corsHeaders);
     }
 
     const { query, category, offset } = parsed.data;
+
+    // Check monthly limit for non-unlimited plans (only on first page)
+    if (!isUnlimited && offset === 0) {
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+
+      const { count } = await supabaseAdmin
+        .from("search_history")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", auth.userId)
+        .gte("created_at", startOfMonth.toISOString());
+
+      const totalAllowed = FREE_LIMIT + bonusSearches;
+      if ((count || 0) >= totalAllowed) {
+        await logSecurityEvent("search_limit_exceeded", req, auth.userId, "search-parts", { count, totalAllowed });
+        return jsonResponse({
+          error: "SEARCH_LIMIT_REACHED",
+          message: `You've used all ${totalAllowed} searches this month. Upgrade to Pro for unlimited searches.`,
+          remaining: 0,
+        }, 403, corsHeaders);
+      }
+    }
+
     const searchQuery = category ? `${query} ${category}` : query;
     const cacheKey = `${searchQuery.toLowerCase().trim()}:${offset || 0}`;
 
     const cached = getCached(cacheKey);
-    if (cached) {
-      // Cached results still count — we already validated the user can search
-      return json(cached);
-    }
+    if (cached) return jsonResponse(cached, 200, corsHeaders);
 
-    // Record the search server-side (authoritative source of truth)
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-      { auth: { persistSession: false } }
-    );
-
-    // Only record for offset=0 (first page of results, not pagination)
+    // Record search atomically (only first page)
     if (offset === 0) {
       await supabaseAdmin.from("search_history").insert({
-        user_id: userId,
+        user_id: auth.userId,
         query: query,
       });
     }
 
-    // Get OAuth token
+    const EBAY_APP_ID = Deno.env.get("EBAY_APP_ID");
+    const EBAY_CERT_ID = Deno.env.get("EBAY_CERT_ID");
+    if (!EBAY_APP_ID || !EBAY_CERT_ID) {
+      return jsonResponse({ error: "eBay credentials not configured", results: [], fallback: true }, 200, corsHeaders);
+    }
+
     let token: string;
     try {
       token = await getOAuthToken(EBAY_APP_ID, EBAY_CERT_ID);
     } catch (e) {
       console.error("[search-parts] OAuth error:", e);
-      return json({ error: "SERVICE_AUTH_FAILED", results: [], fallback: true });
+      return jsonResponse({ error: "SERVICE_AUTH_FAILED", results: [], fallback: true }, 200, corsHeaders);
     }
 
     const params = new URLSearchParams({
-      q: searchQuery,
-      category_ids: "6030",
-      limit: "12",
-      offset: String(offset || 0),
-      fieldgroups: "MATCHING_ITEMS",
+      q: searchQuery, category_ids: "6030", limit: "12",
+      offset: String(offset || 0), fieldgroups: "MATCHING_ITEMS",
     });
-
-    const apiUrl = `${EBAY_BROWSE_API_URL}?${params.toString()}`;
 
     const requestHeaders: Record<string, string> = {
       "Authorization": `Bearer ${token}`,
@@ -228,119 +168,64 @@ Deno.serve(async (req) => {
       "X-EBAY-C-ENDUSERCTX": `affiliateCampaignId=${EBAY_AFFILIATE_CAMPID},affiliateReferenceId=partara`,
     };
 
-    const apiResponse = await fetch(apiUrl, { headers: requestHeaders });
+    const apiResponse = await fetch(`${EBAY_BROWSE_API_URL}?${params.toString()}`, { headers: requestHeaders });
     const responseText = await apiResponse.text();
 
     if (!apiResponse.ok) {
       if (apiResponse.status === 400 || apiResponse.status === 404) {
         const fallbackParams = new URLSearchParams({
-          q: searchQuery,
-          limit: "12",
-          fieldgroups: "MATCHING_ITEMS",
+          q: searchQuery, limit: "12", fieldgroups: "MATCHING_ITEMS",
           filter: "categoryIds:{6030|6028|33612|174016}",
         });
-        const fallbackUrl = `${EBAY_BROWSE_API_URL}?${fallbackParams.toString()}`;
-        const fallbackResponse = await fetch(fallbackUrl, { headers: requestHeaders });
+        const fallbackResponse = await fetch(`${EBAY_BROWSE_API_URL}?${fallbackParams.toString()}`, { headers: requestHeaders });
         const fallbackText = await fallbackResponse.text();
-
         if (!fallbackResponse.ok) {
-          return json({
-            results: [],
-            totalResults: 0,
-            fallback: true,
-            error: "SERVICE_UNAVAILABLE",
-          });
+          return jsonResponse({ results: [], totalResults: 0, fallback: true, error: "SERVICE_UNAVAILABLE" }, 200, corsHeaders);
         }
-
-        const fallbackData = JSON.parse(fallbackText);
-        return processAndReturn(fallbackData, cacheKey, json);
+        return processAndReturn(JSON.parse(fallbackText), cacheKey, corsHeaders);
       }
-
       if (apiResponse.status === 429) {
-        return json({ results: [], totalResults: 0, fallback: true, error: "SERVICE_RATE_LIMITED" });
+        return jsonResponse({ results: [], totalResults: 0, fallback: true, error: "SERVICE_RATE_LIMITED" }, 200, corsHeaders);
       }
-
-      return json({
-        results: [],
-        totalResults: 0,
-        fallback: true,
-        error: "SERVICE_UNAVAILABLE",
-      });
+      return jsonResponse({ results: [], totalResults: 0, fallback: true, error: "SERVICE_UNAVAILABLE" }, 200, corsHeaders);
     }
 
-    const data = JSON.parse(responseText);
-    return processAndReturn(data, cacheKey, json);
+    return processAndReturn(JSON.parse(responseText), cacheKey, corsHeaders);
   } catch (error) {
     console.error("[search-parts] Unhandled error:", error);
-    return json({
-      error: "SERVICE_FAILED",
-      fallback: true,
-      results: [],
-      totalResults: 0,
-    });
+    return jsonResponse({ error: "SERVICE_FAILED", fallback: true, results: [], totalResults: 0 }, 200, corsHeaders);
   }
 });
 
-function processAndReturn(
-  data: any,
-  cacheKey: string,
-  json: (data: any, status?: number) => Response
-): Response {
+function processAndReturn(data: any, cacheKey: string, corsHeaders: Record<string, string>): Response {
   const items = data?.itemSummaries || [];
   const totalResults = data?.total || 0;
 
-  const results = items.map((item: any, i: number) => {
-    const price = parseFloat(item.price?.value || "0");
-    const condition = item.condition || "Not specified";
-    const imageUrl = item.image?.imageUrl || item.thumbnailImages?.[0]?.imageUrl || "/placeholder.svg";
-
-    const shippingCost = parseFloat(item.shippingOptions?.[0]?.shippingCost?.value || "0");
-    const shippingType = item.shippingOptions?.[0]?.shippingCostType || "";
-    const freeShipping = shippingCost === 0 || (shippingType === "FIXED" && shippingCost === 0);
-
-    const itemUrl = item.itemAffiliateWebUrl || item.itemWebUrl || "";
-
-    const sellerUsername = item.seller?.username || "Unknown Seller";
-    const sellerFeedbackScore = item.seller?.feedbackScore || 0;
-    const sellerPositivePercent = parseFloat(item.seller?.feedbackPercentage || "0");
-    const topRatedSeller = item.topRatedBuyingExperience === true;
-
-    const itemLocation = item.itemLocation?.city || item.itemLocation?.country || "Unknown";
-    const itemCountry = item.itemLocation?.country || "GB";
-
-    const listingType = item.buyingOptions?.includes("AUCTION") ? "Auction" : "FixedPrice";
-
-    const quantityAvailable = item.estimatedAvailabilities?.[0]?.estimatedAvailableQuantity || null;
-    const availabilityStatus = item.estimatedAvailabilities?.[0]?.availabilityThresholdType || null;
-
-    return {
-      id: item.itemId || `ebay-${i}-${Date.now()}`,
-      partName: item.title || "Unknown Part",
-      partNumber: item.itemId || `EBAY-${i}`,
-      price,
-      condition,
-      imageUrl,
-      url: itemUrl,
-      freeShipping,
-      shippingCost: freeShipping ? 0 : shippingCost,
-      shipsToUK: true,
-      handlingTime: 3,
-      expedited: false,
-      sellerUsername,
-      sellerFeedbackScore,
-      sellerPositivePercent,
-      topRatedSeller,
-      itemLocation,
-      itemCountry,
-      listingType,
-      endTime: null,
-      watchCount: item.watchCount || 0,
-      quantityAvailable,
-      availabilityStatus,
-    };
-  });
+  const results = items.map((item: any, i: number) => ({
+    id: item.itemId || `ebay-${i}-${Date.now()}`,
+    partName: item.title || "Unknown Part",
+    partNumber: item.itemId || `EBAY-${i}`,
+    price: parseFloat(item.price?.value || "0"),
+    condition: item.condition || "Not specified",
+    imageUrl: item.image?.imageUrl || item.thumbnailImages?.[0]?.imageUrl || "/placeholder.svg",
+    url: item.itemAffiliateWebUrl || item.itemWebUrl || "",
+    freeShipping: parseFloat(item.shippingOptions?.[0]?.shippingCost?.value || "0") === 0,
+    shippingCost: parseFloat(item.shippingOptions?.[0]?.shippingCost?.value || "0"),
+    shipsToUK: true, handlingTime: 3, expedited: false,
+    sellerUsername: item.seller?.username || "Unknown Seller",
+    sellerFeedbackScore: item.seller?.feedbackScore || 0,
+    sellerPositivePercent: parseFloat(item.seller?.feedbackPercentage || "0"),
+    topRatedSeller: item.topRatedBuyingExperience === true,
+    itemLocation: item.itemLocation?.city || item.itemLocation?.country || "Unknown",
+    itemCountry: item.itemLocation?.country || "GB",
+    listingType: item.buyingOptions?.includes("AUCTION") ? "Auction" : "FixedPrice",
+    endTime: null,
+    watchCount: item.watchCount || 0,
+    quantityAvailable: item.estimatedAvailabilities?.[0]?.estimatedAvailableQuantity || null,
+    availabilityStatus: item.estimatedAvailabilities?.[0]?.availabilityThresholdType || null,
+  }));
 
   const responseData = { results, totalResults };
   setCache(cacheKey, responseData);
-  return json(responseData);
+  return jsonResponse(responseData, 200, corsHeaders);
 }

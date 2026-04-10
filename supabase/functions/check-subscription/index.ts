@@ -1,11 +1,6 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
-};
+import { getCorsHeaders, corsPreflightResponse, checkRequestSize } from "../_shared/security.ts";
 
 const PRODUCT_TO_PLAN: Record<string, string> = {
   prod_UI08qGZRqV94r2: "pro",
@@ -21,10 +16,11 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CHECK-SUBSCRIPTION] ${step}${d}`);
 };
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+  if (req.method === "OPTIONS") return corsPreflightResponse(corsHeaders);
+  const sizeCheck = checkRequestSize(req, 16_384);
+  if (sizeCheck) return sizeCheck;
 
   // Plans that should never be overwritten by Stripe sync (manually assigned)
   const PROTECTED_PLANS = ["basic_seller", "featured_seller", "pro_seller", "admin", "elite", "pro"];
