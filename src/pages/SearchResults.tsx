@@ -995,6 +995,12 @@ const SearchResults = () => {
           onClose={() => setShowCompare(false)}
         />
       )}
+      <AuthGateModal
+        open={authGateOpen}
+        onOpenChange={setAuthGateOpen}
+        title="Please sign in to search for car parts"
+        description="Create a free account to search across 1,000,000+ parts from trusted UK & global suppliers."
+      />
       <Footer />
     </div>
   );
