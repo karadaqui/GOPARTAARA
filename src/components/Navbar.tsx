@@ -62,84 +62,82 @@ const Navbar = () => {
           <span className="text-foreground">ARA</span>
         </button>
 
-        {/* Desktop */}
-        <div className="hidden md:flex items-center gap-8">
-          {primaryLinks.map((l) => (
-            <button
-              key={l.href}
-              onClick={() => handleNavClick(l.href)}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {l.label}
-            </button>
-          ))}
+        <div className="flex items-center gap-3">
+          {/* Desktop */}
+          <div className="hidden md:flex items-center gap-8">
+            {primaryLinks.map((l) => (
+              <button
+                key={l.href}
+                onClick={() => handleNavClick(l.href)}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {l.label}
+              </button>
+            ))}
 
-          {/* More dropdown */}
-          <div
-            className="relative"
-            onMouseEnter={handleMoreEnter}
-            onMouseLeave={handleMoreLeave}
-          >
-            <button className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
-              More
-              <ChevronDown size={14} className={`transition-transform ${moreOpen ? "rotate-180" : ""}`} />
-            </button>
-            {moreOpen && (
-              <div className="absolute top-full right-0 pt-2 w-48">
-                <div className="rounded-md border border-border bg-popover p-1 shadow-md animate-in fade-in-0 zoom-in-95">
-                {moreLinks.map((l) => (
-                  <button
-                    key={l.href}
-                    onClick={() => handleNavClick(l.href)}
-                    className="w-full text-left text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground rounded-sm px-3 py-2 transition-colors"
-                  >
-                    {l.label}
-                  </button>
-                ))}
+            {/* More dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={handleMoreEnter}
+              onMouseLeave={handleMoreLeave}
+            >
+              <button className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1">
+                More
+                <ChevronDown size={14} className={`transition-transform ${moreOpen ? "rotate-180" : ""}`} />
+              </button>
+              {moreOpen && (
+                <div className="absolute top-full right-0 pt-2 w-48">
+                  <div className="rounded-md border border-border bg-popover p-1 shadow-md animate-in fade-in-0 zoom-in-95">
+                    {moreLinks.map((l) => (
+                      <button
+                        key={l.href}
+                        onClick={() => handleNavClick(l.href)}
+                        className="w-full text-left text-sm text-popover-foreground hover:bg-accent hover:text-accent-foreground rounded-sm px-3 py-2 transition-colors"
+                      >
+                        {l.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
+            </div>
+
+            {!loading && (
+              user ? (
+                <div className="flex items-center gap-3">
+                  {user.email === ADMIN_EMAIL && (
+                    <button
+                      onClick={() => navigate("/admin")}
+                      className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5 font-medium"
+                    >
+                      <Shield size={14} />
+                      Admin
+                    </button>
+                  )}
+                  <button
+                    onClick={() => navigate("/dashboard")}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+                  >
+                    <User size={14} />
+                    Dashboard
+                  </button>
+                  <Button size="sm" variant="outline" onClick={signOut} className="gap-1.5">
+                    <LogOut size={14} />
+                    Sign Out
+                  </Button>
+                </div>
+              ) : (
+                <Button size="sm" onClick={() => navigate("/auth")}>
+                  Get Started
+                </Button>
+              )
             )}
           </div>
 
-          {!loading && (
-            user ? (
-              <div className="flex items-center gap-3">
-                <div className="hidden md:block">
-                  <NotificationBell />
-                </div>
-                {user.email === ADMIN_EMAIL && (
-                  <button
-                    onClick={() => navigate("/admin")}
-                    className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5 font-medium"
-                  >
-                    <Shield size={14} />
-                    Admin
-                  </button>
-                )}
-                <button
-                  onClick={() => navigate("/dashboard")}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
-                >
-                  <User size={14} />
-                  Dashboard
-                </button>
-                <Button size="sm" variant="outline" onClick={signOut} className="gap-1.5">
-                  <LogOut size={14} />
-                  Sign Out
-                </Button>
-              </div>
-            ) : (
-              <Button size="sm" onClick={() => navigate("/auth")}>
-                Get Started
-              </Button>
-            )
-          )}
-        </div>
+          {!loading && user && <NotificationBell />}
 
-        {/* Mobile toggle + bell */}
-        <div className="md:hidden flex items-center gap-2">
-          {user && <NotificationBell />}
-          <button className="text-foreground" onClick={() => setOpen(!open)}>
+          {/* Mobile toggle */}
+          <button className="md:hidden text-foreground" onClick={() => setOpen(!open)}>
             {open ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
