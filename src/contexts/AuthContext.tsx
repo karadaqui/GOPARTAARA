@@ -61,13 +61,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     });
 
-    // If URL hash contains access_token (from Supabase email redirect),
-    // getSession() will detect and exchange it automatically
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    // Handle hash fragment from email confirmation redirect
+    const hash = window.location.hash;
+    if (hash && hash.includes("access_token")) {
+      // Supabase client auto-detects hash tokens during getSession(),
+      // but we add a small delay to ensure the client has initialized
+      setTimeout(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session) {
+            setSession(session);
+            setUser(session.user);
+            setLoading(false);
+            // Clean the URL and navigate home
+            window.history.replaceState(null, "", "/");
+            navigate("/");
+          }
+        });
+      }, 500);
+    } else {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      });
+    }
 
     return () => subscription.unsubscribe();
   }, []);
