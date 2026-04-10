@@ -1,4 +1,4 @@
-import { Check, Loader2, Sparkles, Crown, Star, Store, Zap, Shield } from "lucide-react";
+import { Check, Loader2, Sparkles, Crown, Star, Store, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
