@@ -34,6 +34,7 @@ const Pricing = lazy(() => import("./pages/Pricing.tsx"));
 const Admin = lazy(() => import("./pages/Admin.tsx"));
 const Garage = lazy(() => import("./pages/Garage.tsx"));
 const Refund = lazy(() => import("./pages/Refund.tsx"));
+const VerifyEmail = lazy(() => import("./pages/VerifyEmail.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,7 @@ const App = () => (
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/garage" element={<Garage />} />
               <Route path="/refund" element={<Refund />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
