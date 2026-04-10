@@ -1,4 +1,5 @@
 import { Search, BarChart3, ShoppingCart } from "lucide-react";
+import ScrollReveal from "@/components/ScrollReveal";
 
 const steps = [
   {
@@ -22,32 +23,34 @@ const steps = [
 ];
 
 const HowItWorksSection = () => (
-  <section className="py-20 md:py-28 relative overflow-hidden">
+  <section className="py-24 md:py-32 relative overflow-hidden">
     <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/[0.02] to-transparent pointer-events-none" />
     <div className="container px-4 relative">
-      <div className="text-center mb-14">
-        <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary mb-4">
+      <ScrollReveal className="text-center mb-16">
+        <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
           How It Works
         </span>
-        <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
+        <h2 className="font-display text-3xl md:text-5xl font-bold mb-5 tracking-tight">
           Three Simple Steps
         </h2>
-        <p className="text-muted-foreground max-w-xl mx-auto">
+        <p className="text-muted-foreground max-w-xl mx-auto text-base md:text-lg leading-relaxed">
           Finding the right car part shouldn't take hours. With PARTARA, it takes seconds.
         </p>
-      </div>
+      </ScrollReveal>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-        {steps.map((s) => (
-          <div key={s.title} className="relative text-center">
-            <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-              <s.icon size={28} />
+        {steps.map((s, i) => (
+          <ScrollReveal key={s.title} delay={i + 1}>
+            <div className="relative text-center group">
+              <div className="mx-auto mb-6 flex h-18 w-18 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
+                <s.icon size={30} />
+              </div>
+              <span className="absolute -top-2 -right-2 md:top-0 md:right-4 text-6xl font-black text-muted/15 select-none">
+                {s.number}
+              </span>
+              <h3 className="font-display text-xl font-bold mb-3">{s.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{s.desc}</p>
             </div>
-            <span className="absolute -top-2 -right-2 md:top-0 md:right-4 text-5xl font-black text-muted/20 select-none">
-              {s.number}
-            </span>
-            <h3 className="font-display text-xl font-bold mb-2">{s.title}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{s.desc}</p>
-          </div>
+          </ScrollReveal>
         ))}
       </div>
     </div>
