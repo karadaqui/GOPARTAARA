@@ -9,11 +9,11 @@ const primaryLinks = [
   { label: "Home", href: "/" },
   { label: "Search", href: "/" },
   { label: "Marketplace", href: "/marketplace" },
-  { label: "Pricing", href: "/#pricing" },
+  { label: "Pricing", href: "/pricing" },
 ];
 
 const moreLinks = [
-  { label: "My Garage", href: "/dashboard#garage" },
+  { label: "My Garage", href: "/garage" },
   { label: "My Market", href: "/my-market" },
   { label: "Saved Parts", href: "/saved" },
   { label: "List Your Parts", href: "/list-your-parts" },
@@ -141,10 +141,13 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile toggle */}
-        <button className="md:hidden text-foreground" onClick={() => setOpen(!open)}>
-          {open ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {/* Mobile toggle + bell */}
+        <div className="md:hidden flex items-center gap-2">
+          {user && <NotificationBell />}
+          <button className="text-foreground" onClick={() => setOpen(!open)}>
+            {open ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
