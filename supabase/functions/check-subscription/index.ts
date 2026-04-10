@@ -163,7 +163,7 @@ serve(async (req) => {
     }
 
     // Auto-create seller profile if this is a seller plan and none exists yet
-    if (SELLER_PLANS.includes(plan) && plan !== "admin") {
+    if (["basic_seller", "featured_seller", "pro_seller"].includes(plan)) {
       const { data: existingSeller } = await adminClient
         .from("seller_profiles")
         .select("id")
