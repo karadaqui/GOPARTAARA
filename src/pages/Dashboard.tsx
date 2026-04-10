@@ -5,12 +5,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Camera, Save, User, Mail, Crown, Clock, Bookmark, Loader2, Search, X, ExternalLink, CreditCard } from "lucide-react";
+import { ArrowLeft, Camera, Save, User, Mail, Crown, Clock, Bookmark, Loader2, Search, X, ExternalLink, CreditCard, Download } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import ReferralSection from "@/components/dashboard/ReferralSection";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
 import PriceAlertsSection from "@/components/dashboard/PriceAlertsSection";
 import MyGarageSection from "@/components/dashboard/MyGarageSection";
+import BusinessBadge from "@/components/dashboard/BusinessBadge";
+import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
+import PrioritySupportButton from "@/components/dashboard/PrioritySupportButton";
+import ComingSoonFeatures from "@/components/dashboard/ComingSoonFeatures";
 
 const STRIPE_TIERS: Record<string, { label: string; price: string }> = {
   prod_UI08qGZRqV94r2: { label: "Pro", price: "£9.99/mo" },
@@ -235,6 +239,26 @@ const Dashboard = () => {
   };
   const currentPlan = profile?.subscription_plan || "free";
   const currentPlanInfo = PLAN_INFO[currentPlan] || PLAN_INFO.free;
+  const isBusinessUser = ["business", "admin"].includes(currentPlan);
+
+  const exportSearchHistoryCSV = async () => {
+    const { data } = await supabase
+      .from("search_history")
+      .select("*")
+      .eq("user_id", user!.id)
+      .order("created_at", { ascending: false });
+    if (!data || data.length === 0) return;
+    const csv = "Date,Search Query,Results Count\n" + data.map((r) =>
+      `"${new Date(r.created_at).toLocaleDateString("en-GB")}","${r.query.replace(/"/g, '""')}","N/A"`
+    ).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `partara-search-history-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   if (authLoading || loading) {
     return (
