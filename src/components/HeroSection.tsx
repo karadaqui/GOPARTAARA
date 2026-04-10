@@ -4,6 +4,7 @@ import { Search, Camera, Loader2, Car, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
 import SearchCounter from "@/components/SearchCounter";
@@ -11,6 +12,7 @@ import { useSearchLimit } from "@/hooks/useSearchLimit";
 
 const HeroSection = () => {
   const [query, setQuery] = useState("");
+  const { user } = useAuth();
   const searchLimit = useSearchLimit();
   const [identifying, setIdentifying] = useState(false);
   const [activeTab, setActiveTab] = useState<"part" | "plate">("part");
