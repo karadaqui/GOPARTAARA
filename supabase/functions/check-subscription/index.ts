@@ -182,6 +182,32 @@ Deno.serve(async (req) => {
       logStep("Failed to update profile", { error: updateError.message });
     } else {
       logStep("Profile subscription_plan synced", { plan });
+
+      // Send welcome email if upgrading from free to paid
+      if (currentPlan === "free" || !currentPlan) {
+        try {
+          const nextBillingDate = subscriptionEnd
+            ? new Date(subscriptionEnd).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
+            : "See dashboard";
+          const amountStr = billingAmount ? `£${(billingAmount / 100).toFixed(2)}` : "See dashboard";
+
+          await adminClient.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "welcome-purchase",
+              to: user.email,
+              data: {
+                plan_name: plan,
+                display_name: user.email?.split("@")[0] || "",
+                next_billing_date: nextBillingDate,
+                billing_amount: amountStr,
+              },
+            },
+          });
+          logStep("Welcome email sent", { email: user.email, plan });
+        } catch (emailErr) {
+          logStep("Failed to send welcome email", { error: String(emailErr) });
+        }
+      }
     }
 
     // Auto-create seller profile if this is a seller plan and none exists yet
