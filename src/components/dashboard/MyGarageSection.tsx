@@ -135,7 +135,7 @@ const MyGarageSection = ({ userId, isPro }: Props) => {
       {!canAddMore && !showForm && (
         <p className="text-xs text-muted-foreground mb-3">
           Free plan allows 1 vehicle.{" "}
-          <a href="/#pricing" className="text-primary hover:underline">Upgrade to Pro</a> for unlimited.
+          <a href="/pricing" className="text-primary hover:underline">Upgrade to Pro</a> for unlimited.
         </p>
       )}
 
