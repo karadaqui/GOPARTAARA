@@ -48,6 +48,7 @@ const NotificationBell = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const instanceIdRef = useRef<string>(typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Math.random().toString(36).slice(2));
   const prevUnreadRef = useRef<number>(0);
   const initialLoadDone = useRef(false);
 
@@ -86,18 +87,22 @@ const NotificationBell = () => {
   // Realtime subscription
   useEffect(() => {
     if (!user) return;
-    const channelName = `user-notifications-${user.id}-${Date.now()}`;
-    const channel = supabase
-      .channel(channelName)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
-        (payload) => {
-          setNotifications((prev) => [payload.new as Notification, ...prev].slice(0, 20));
-        }
-      )
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    const channelName = `user-notifications-${user.id}-${instanceIdRef.current}`;
+    const channel = supabase.channel(channelName);
+
+    channel.on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
+      (payload) => {
+        setNotifications((prev) => [payload.new as Notification, ...prev].slice(0, 20));
+      }
+    );
+
+    channel.subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   // Close on outside click
