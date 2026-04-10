@@ -54,7 +54,11 @@
     @apply border-border;
   }
 
-  html, body {
+  html {
+    max-width: 100vw;
+  }
+
+  body {
     overflow-x: hidden;
     max-width: 100vw;
   }
@@ -75,6 +79,9 @@
 
   .glass {
     @apply bg-card/60 backdrop-blur-xl border border-border/50;
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
 }
 
