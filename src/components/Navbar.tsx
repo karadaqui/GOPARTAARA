@@ -49,13 +49,6 @@ const Navbar = () => {
       } else {
         navigate("/");
       }
-    } else if (href.startsWith("/#")) {
-      const id = href.slice(2);
-      if (location.pathname === "/") {
-        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-      } else {
-        navigate("/", { state: { scrollTo: id } });
-      }
     } else {
       navigate(href);
     }

@@ -32,6 +32,7 @@ const ListingDetail = lazy(() => import("./pages/ListingDetail.tsx"));
 const SellerProfile = lazy(() => import("./pages/SellerProfile.tsx"));
 const Pricing = lazy(() => import("./pages/Pricing.tsx"));
 const Admin = lazy(() => import("./pages/Admin.tsx"));
+const Garage = lazy(() => import("./pages/Garage.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -63,6 +64,7 @@ const App = () => (
               <Route path="/listing/:id" element={<ListingDetail />} />
               <Route path="/seller/:id" element={<SellerProfile />} />
               <Route path="/pricing" element={<Pricing />} />
+              <Route path="/garage" element={<Garage />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
