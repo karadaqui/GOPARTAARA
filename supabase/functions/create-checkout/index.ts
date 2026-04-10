@@ -22,7 +22,6 @@ serve(async (req) => {
     const authHeader = req.headers.get("Authorization")!;
     if (!authHeader) throw new Error("User not authenticated");
 
-    // Rate limit
     const { allowed } = await checkRateLimit(authHeader.slice(-20), "create-checkout");
     if (!allowed) return rateLimitResponse(corsHeaders);
 
@@ -30,8 +29,18 @@ serve(async (req) => {
     const { data } = await supabaseClient.auth.getUser(token);
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated");
+
     const { priceId, mode } = await req.json();
     if (!priceId) throw new Error("Missing priceId");
+
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
+
+    const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
+
+    // Look up existing Stripe customer
+    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+    const customerId = customers.data.length > 0 ? customers.data[0].id : undefined;
 
     const checkoutMode = mode === "payment" ? "payment" : "subscription";
 
@@ -40,8 +49,8 @@ serve(async (req) => {
       customer_email: customerId ? undefined : user.email,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: checkoutMode,
-      success_url: `${req.headers.get("origin")}/dashboard?checkout=success`,
-      cancel_url: `${req.headers.get("origin")}/#pricing`,
+      success_url: `https://gopartara.com/dashboard?checkout=success`,
+      cancel_url: `https://gopartara.com/pricing`,
     });
 
     return new Response(JSON.stringify({ url: session.url }), {
@@ -50,7 +59,7 @@ serve(async (req) => {
     });
   } catch (error) {
     console.error("[create-checkout] Error:", error);
-    const isAuthError = error instanceof Error && 
+    const isAuthError = error instanceof Error &&
       (error.message.includes("not authenticated") || error.message.includes("Missing priceId"));
     return new Response(
       JSON.stringify({ error: isAuthError ? error.message : "An error occurred processing your request." }),
