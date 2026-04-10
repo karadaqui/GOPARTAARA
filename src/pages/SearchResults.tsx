@@ -109,8 +109,8 @@ const SearchResults = () => {
   const searchLimit = useSearchLimit();
   const urlQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(urlQuery);
-  // Don't auto-execute search from URL — require explicit user action
-  const [activeQuery, setActiveQuery] = useState("");
+  // Auto-execute search from URL query parameter
+  const [activeQuery, setActiveQuery] = useState(urlQuery);
   const [identifying, setIdentifying] = useState(false);
   const [searchMode, setSearchMode] = useState<"text" | "reg">("text");
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -133,16 +133,18 @@ const SearchResults = () => {
   const [catalogResults, setCatalogResults] = useState<any[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(false);
 
-  // When URL query changes, populate input but DON'T auto-execute search.
-  // Search only runs on explicit user action (form submit / button click).
+  // When URL query changes, auto-execute search
   useEffect(() => {
     if (urlQuery && urlQuery !== query) {
       setQuery(urlQuery);
     }
+    if (urlQuery && urlQuery !== activeQuery) {
+      setActiveQuery(urlQuery);
+      setCurrentPage(1);
+    }
     if (urlQuery) {
       setSearchMode("text");
     }
-    // Show auth gate if not logged in and URL has a query
     if (urlQuery && !user) {
       setAuthGateOpen(true);
     }
