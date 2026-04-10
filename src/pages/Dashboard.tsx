@@ -16,7 +16,7 @@ import EliteFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import PrioritySupportButton from "@/components/dashboard/PrioritySupportButton";
 import ComingSoonFeatures from "@/components/dashboard/ComingSoonFeatures";
 
-const PLAN_INFO_MAP: Record<string, { label: string; price: string }> = {
+// SubStatus type
 
 type SubStatus = {
   subscribed: boolean;
