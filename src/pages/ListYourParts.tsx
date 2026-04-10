@@ -20,7 +20,7 @@ const SELLER_TIERS = {
     icon: Store,
     description: "Get listed in the PARTARA supplier directory",
     features: ["Supplier directory listing", "Business profile page", "Customer enquiries", "Email support"],
-    price_id: "price_1TJnPfAc5QcTT3aLxbMPfR2Z",
+    price_id: "price_1TKUmsAc5QcTT3aLrLoieucV",
     popular: false,
   },
   featured: {
@@ -30,7 +30,7 @@ const SELLER_TIERS = {
     icon: Star,
     description: "Stand out with highlighted listings and badges",
     features: ["Everything in Basic", "Highlighted listing", "Featured badge", "Priority placement", "Analytics dashboard"],
-    price_id: "price_1TJnPqAc5QcTT3aLMoC5sivK",
+    price_id: "price_1TKUnQAc5QcTT3aLAHq0CpaN",
     popular: true,
   },
   pro: {
@@ -40,7 +40,7 @@ const SELLER_TIERS = {
     icon: Crown,
     description: "Maximum visibility and premium features",
     features: ["Everything in Featured", "Top placement", "Premium profile page", "Dedicated seller section", "Priority support", "API access"],
-    price_id: "price_1TJnPrAc5QcTT3aLbuZ5g8in",
+    price_id: "price_1TKUo4Ac5QcTT3aLU2WNxx5F",
     popular: false,
   },
 };
