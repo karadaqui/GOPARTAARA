@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -13,7 +13,7 @@ export const useSearchLimit = () => {
   const [isPro, setIsPro] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     if (!user) return;
 
     const startOfMonth = new Date();
@@ -36,11 +36,15 @@ export const useSearchLimit = () => {
     setSearchCount(count || 0);
     setBonusSearches(profile?.bonus_searches || 0);
     const dbPlan = profile?.subscription_plan || "free";
-    // Only pro, business, and admin get unlimited searches
     const hasPaidPlan = UNLIMITED_SEARCH_PLANS.includes(dbPlan);
     setIsPro(hasPaidPlan);
     setLoaded(true);
-  };
+  }, [user]);
+
+  // Optimistic increment — updates UI instantly, then syncs with DB in background
+  const recordSearch = useCallback(() => {
+    setSearchCount((prev) => prev + 1);
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -48,12 +52,12 @@ export const useSearchLimit = () => {
       return;
     }
     refresh();
-  }, [user]);
+  }, [user, refresh]);
 
   const totalAllowed = FREE_LIMIT + bonusSearches;
   const remaining = Math.max(0, totalAllowed - searchCount);
   const canSearch = !user || !loaded || isPro || remaining > 0;
   const limitReached = loaded && !!user && !isPro && remaining <= 0;
 
-  return { canSearch, limitReached, remaining, isPro, loaded, refresh };
+  return { canSearch, limitReached, remaining, isPro, loaded, refresh, recordSearch };
 };
