@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import {
   Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star,
   Truck, Bookmark, BookmarkCheck, MapPin, Clock,
-  Heart, AlertCircle, Zap, Filter as FilterIcon, ArrowUp,
+  Heart, AlertCircle, Zap, Filter as FilterIcon,
   ChevronLeft, ChevronRight, ChevronDown, Pencil, Calendar, Palette, Fuel, Gauge,
   ShieldCheck, Receipt, Check, X as XIcon,
 } from "lucide-react";
