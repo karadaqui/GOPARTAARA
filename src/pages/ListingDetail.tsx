@@ -248,7 +248,7 @@ const ListingDetail = () => {
     } else {
       toast({ title: "Review deleted" });
       setUserReview(null);
-      await loadListing();
+      setReviews(prev => prev.filter(r => r.id !== deleteReviewId));
     }
     setDeleteReviewId(null);
     setModerating(false);
