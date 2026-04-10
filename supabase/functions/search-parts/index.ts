@@ -3,11 +3,15 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limiter.ts";
 
 const EBAY_BROWSE_API_URL = "https://api.ebay.com/buy/browse/v1/item_summary/search";
 const EBAY_OAUTH_URL = "https://api.ebay.com/identity/v1/oauth2/token";
 const EBAY_AFFILIATE_CAMPID = "5339148333";
+
+const FREE_LIMIT = 5;
+const UNLIMITED_PLANS = ["pro", "elite", "admin"];
 
 const BodySchema = z.object({
   query: z.string().min(1).max(500),
@@ -20,11 +24,9 @@ let oauthToken: { token: string; expiresAt: number } | null = null;
 
 async function getOAuthToken(appId: string, certId: string): Promise<string> {
   if (oauthToken && Date.now() < oauthToken.expiresAt - 60_000) {
-    console.log("[OAuth] Using cached token");
     return oauthToken.token;
   }
 
-  console.log("[OAuth] Requesting new token...");
   const credentials = btoa(`${appId}:${certId}`);
   const response = await fetch(EBAY_OAUTH_URL, {
     method: "POST",
@@ -36,15 +38,11 @@ async function getOAuthToken(appId: string, certId: string): Promise<string> {
   });
 
   const text = await response.text();
-  console.log("[OAuth] Response status:", response.status);
-
   if (!response.ok) {
-    console.error("[OAuth] Token error body:", text);
     throw new Error(`Failed to get OAuth token: ${response.status} - ${text}`);
   }
 
   const data = JSON.parse(text);
-  console.log("[OAuth] Token obtained, expires_in:", data.expires_in);
   oauthToken = {
     token: data.access_token,
     expiresAt: Date.now() + (data.expires_in * 1000),
@@ -73,6 +71,78 @@ function setCache(key: string, data: any) {
   cache.set(key, { data, timestamp: Date.now() });
 }
 
+// --- Server-side auth & search limit enforcement ---
+async function validateAndCheckLimit(req: Request): Promise<{ userId: string; error?: never } | { userId?: never; error: Response }> {
+  const json = (data: any, status = 200) =>
+    new Response(JSON.stringify(data), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader?.startsWith("Bearer ")) {
+    return { error: json({ error: "UNAUTHORIZED", message: "Sign in to search for parts." }, 401) };
+  }
+
+  const supabaseAdmin = createClient(
+    Deno.env.get("SUPABASE_URL")!,
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    { auth: { persistSession: false } }
+  );
+
+  // Validate JWT using getClaims
+  const token = authHeader.replace("Bearer ", "");
+  const { data: claimsData, error: claimsError } = await supabaseAdmin.auth.getClaims(token);
+
+  if (claimsError || !claimsData?.claims) {
+    console.error("[search-parts] JWT validation failed:", claimsError?.message);
+    return { error: json({ error: "UNAUTHORIZED", message: "Invalid or expired session. Please sign in again." }, 401) };
+  }
+
+  const userId = claimsData.claims.sub as string;
+
+  // Check subscription plan & search count from DB (never trust frontend)
+  const { data: profile } = await supabaseAdmin
+    .from("profiles")
+    .select("subscription_plan, bonus_searches")
+    .eq("user_id", userId)
+    .single();
+
+  const plan = profile?.subscription_plan || "free";
+  const bonusSearches = profile?.bonus_searches || 0;
+
+  // Unlimited plans skip the limit
+  if (UNLIMITED_PLANS.includes(plan)) {
+    return { userId };
+  }
+
+  // Count searches this month
+  const startOfMonth = new Date();
+  startOfMonth.setDate(1);
+  startOfMonth.setHours(0, 0, 0, 0);
+
+  const { count } = await supabaseAdmin
+    .from("search_history")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .gte("created_at", startOfMonth.toISOString());
+
+  const totalAllowed = FREE_LIMIT + bonusSearches;
+  const used = count || 0;
+
+  if (used >= totalAllowed) {
+    return {
+      error: json({
+        error: "SEARCH_LIMIT_REACHED",
+        message: `You've used all ${totalAllowed} searches this month. Upgrade to Pro for unlimited searches.`,
+        remaining: 0,
+      }, 403),
+    };
+  }
+
+  return { userId };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -84,16 +154,21 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
-  // Rate limit by IP or auth header
-  const clientId = req.headers.get("Authorization")?.slice(-20) || req.headers.get("x-forwarded-for") || "anonymous";
+  // IP-based rate limit (backup defense)
+  const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const clientId = req.headers.get("Authorization")?.slice(-20) || clientIp;
   const { allowed } = await checkRateLimit(clientId, "search-parts");
   if (!allowed) return rateLimitResponse(corsHeaders);
+
+  // --- Server-side JWT + search limit enforcement ---
+  const authResult = await validateAndCheckLimit(req);
+  if (authResult.error) return authResult.error;
+  const userId = authResult.userId;
 
   try {
     const EBAY_APP_ID = Deno.env.get("EBAY_APP_ID");
     const EBAY_CERT_ID = Deno.env.get("EBAY_CERT_ID");
     if (!EBAY_APP_ID || !EBAY_CERT_ID) {
-      console.error("[search-parts] Missing credentials - APP_ID:", !!EBAY_APP_ID, "CERT_ID:", !!EBAY_CERT_ID);
       return json({ error: "eBay credentials not configured", results: [], fallback: true });
     }
 
@@ -106,12 +181,26 @@ Deno.serve(async (req) => {
     const { query, category, offset } = parsed.data;
     const searchQuery = category ? `${query} ${category}` : query;
     const cacheKey = `${searchQuery.toLowerCase().trim()}:${offset || 0}`;
-    console.log("[search-parts] Query:", searchQuery);
 
     const cached = getCached(cacheKey);
     if (cached) {
-      console.log("[search-parts] Cache hit for:", cacheKey);
+      // Cached results still count — we already validated the user can search
       return json(cached);
+    }
+
+    // Record the search server-side (authoritative source of truth)
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      { auth: { persistSession: false } }
+    );
+
+    // Only record for offset=0 (first page of results, not pagination)
+    if (offset === 0) {
+      await supabaseAdmin.from("search_history").insert({
+        user_id: userId,
+        query: query,
+      });
     }
 
     // Get OAuth token
@@ -123,8 +212,6 @@ Deno.serve(async (req) => {
       return json({ error: "SERVICE_AUTH_FAILED", results: [], fallback: true });
     }
 
-    // Build Browse API URL - use category 6030 (Car Parts & Accessories)
-    // and also try without category restriction for broader results
     const params = new URLSearchParams({
       q: searchQuery,
       category_ids: "6030",
@@ -134,7 +221,6 @@ Deno.serve(async (req) => {
     });
 
     const apiUrl = `${EBAY_BROWSE_API_URL}?${params.toString()}`;
-    console.log("[search-parts] Request URL:", apiUrl);
 
     const requestHeaders: Record<string, string> = {
       "Authorization": `Bearer ${token}`,
@@ -142,18 +228,11 @@ Deno.serve(async (req) => {
       "X-EBAY-C-ENDUSERCTX": `affiliateCampaignId=${EBAY_AFFILIATE_CAMPID},affiliateReferenceId=partara`,
     };
 
-    // Direct fetch with full logging instead of fetchWithRetry
     const apiResponse = await fetch(apiUrl, { headers: requestHeaders });
     const responseText = await apiResponse.text();
-    console.log("[search-parts] API status:", apiResponse.status);
-    console.log("[search-parts] API response (first 500 chars):", responseText.substring(0, 500));
 
     if (!apiResponse.ok) {
-      console.error("[search-parts] API error full response:", responseText);
-      
-      // If category 6030 fails, try without category
       if (apiResponse.status === 400 || apiResponse.status === 404) {
-        console.log("[search-parts] Retrying without category restriction...");
         const fallbackParams = new URLSearchParams({
           q: searchQuery,
           limit: "12",
@@ -161,23 +240,18 @@ Deno.serve(async (req) => {
           filter: "categoryIds:{6030|6028|33612|174016}",
         });
         const fallbackUrl = `${EBAY_BROWSE_API_URL}?${fallbackParams.toString()}`;
-        console.log("[search-parts] Fallback URL:", fallbackUrl);
-        
         const fallbackResponse = await fetch(fallbackUrl, { headers: requestHeaders });
         const fallbackText = await fallbackResponse.text();
-        console.log("[search-parts] Fallback status:", fallbackResponse.status);
-        console.log("[search-parts] Fallback response (first 500 chars):", fallbackText.substring(0, 500));
-        
+
         if (!fallbackResponse.ok) {
           return json({
             results: [],
             totalResults: 0,
             fallback: true,
             error: "SERVICE_UNAVAILABLE",
-            debug: { status: fallbackResponse.status, message: fallbackText.substring(0, 200) },
           });
         }
-        
+
         const fallbackData = JSON.parse(fallbackText);
         return processAndReturn(fallbackData, cacheKey, json);
       }
@@ -191,7 +265,6 @@ Deno.serve(async (req) => {
         totalResults: 0,
         fallback: true,
         error: "SERVICE_UNAVAILABLE",
-        debug: { status: apiResponse.status, message: responseText.substring(0, 200) },
       });
     }
 
@@ -215,7 +288,6 @@ function processAndReturn(
 ): Response {
   const items = data?.itemSummaries || [];
   const totalResults = data?.total || 0;
-  console.log("[search-parts] Items found:", items.length, "Total:", totalResults);
 
   const results = items.map((item: any, i: number) => {
     const price = parseFloat(item.price?.value || "0");
@@ -238,7 +310,6 @@ function processAndReturn(
 
     const listingType = item.buyingOptions?.includes("AUCTION") ? "Auction" : "FixedPrice";
 
-    // Stock / availability
     const quantityAvailable = item.estimatedAvailabilities?.[0]?.estimatedAvailableQuantity || null;
     const availabilityStatus = item.estimatedAvailabilities?.[0]?.availabilityThresholdType || null;
 
