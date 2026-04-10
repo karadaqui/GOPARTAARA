@@ -363,8 +363,11 @@ export type Database = {
           created_at: string
           display_name: string | null
           email: string | null
+          first_payment_date: string | null
           id: string
           referral_code: string
+          refund_date: string | null
+          refund_granted: boolean
           subscription_plan: Database["public"]["Enums"]["subscription_plan"]
           updated_at: string
           user_id: string
@@ -375,8 +378,11 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           email?: string | null
+          first_payment_date?: string | null
           id?: string
           referral_code?: string
+          refund_date?: string | null
+          refund_granted?: boolean
           subscription_plan?: Database["public"]["Enums"]["subscription_plan"]
           updated_at?: string
           user_id: string
@@ -387,8 +393,11 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           email?: string | null
+          first_payment_date?: string | null
           id?: string
           referral_code?: string
+          refund_date?: string | null
+          refund_granted?: boolean
           subscription_plan?: Database["public"]["Enums"]["subscription_plan"]
           updated_at?: string
           user_id?: string
