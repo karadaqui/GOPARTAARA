@@ -1,12 +1,11 @@
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
-// Stripe product/price mapping
 const STRIPE_TIERS = {
   pro: {
     price_id: "price_1TK5ccAc5QcTT3aL7jb3xTlb",
@@ -57,7 +56,6 @@ const plans = [
       "UK + global suppliers",
       "Photo search",
       "Bulk ordering",
-      
       "Priority support",
       "Dedicated account manager",
     ],
@@ -67,27 +65,35 @@ const plans = [
   },
 ];
 
+const CHECKOUT_TIMEOUT_MS = 10_000;
+
 const PricingSection = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loadingTier, setLoadingTier] = useState<string | null>(null);
+  const [slowWarning, setSlowWarning] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleSelectPlan = async (tier: "free" | "pro" | "business") => {
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  const startCheckout = async (priceId: string, tier: string, mode?: "payment") => {
     if (!user) {
       navigate("/auth");
-      return;
-    }
-
-    if (tier === "free") {
-      toast({ title: "Free plan", description: "You're already on the Free plan!" });
       return;
     }
 
     setLoadingTier(tier);
+    setSlowWarning(false);
+    timeoutRef.current = setTimeout(() => setSlowWarning(true), CHECKOUT_TIMEOUT_MS);
+
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { priceId: STRIPE_TIERS[tier].price_id },
+        body: { priceId, ...(mode ? { mode } : {}) },
       });
 
       if (error) throw error;
@@ -96,31 +102,26 @@ const PricingSection = () => {
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message || "Failed to start checkout", variant: "destructive" });
-    } finally {
       setLoadingTier(null);
+      setSlowWarning(false);
+    } finally {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     }
   };
 
-  const handleTestPurchase = async () => {
-    if (!user) {
-      navigate("/auth");
+  const handleSelectPlan = (tier: "free" | "pro" | "business") => {
+    if (tier === "free") {
+      toast({ title: "Free plan", description: "You're already on the Free plan!" });
       return;
     }
-    setLoadingTier("test");
-    try {
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { priceId: "price_1TKVcvAc5QcTT3aLZndkwUdX", mode: "payment" },
-      });
-      if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
-      }
-    } catch (err: any) {
-      toast({ title: "Error", description: err.message || "Failed to start checkout", variant: "destructive" });
-    } finally {
-      setLoadingTier(null);
-    }
+    startCheckout(STRIPE_TIERS[tier].price_id, tier);
   };
+
+  const handleTestPurchase = () => {
+    startCheckout("price_1TKVcvAc5QcTT3aLZndkwUdX", "test", "payment");
+  };
+
+  const isLoading = (tier: string) => loadingTier === tier;
 
   return (
     <section id="pricing" className="py-24">
@@ -164,10 +165,17 @@ const PricingSection = () => {
               <Button
                 variant={plan.popular ? "default" : "outline"}
                 className="w-full rounded-xl"
-                disabled={loadingTier === plan.tier}
+                disabled={isLoading(plan.tier)}
                 onClick={() => handleSelectPlan(plan.tier)}
               >
-                {loadingTier === plan.tier ? "Loading..." : plan.cta}
+                {isLoading(plan.tier) ? (
+                  <span className="flex items-center gap-2">
+                    <Loader2 size={16} className="animate-spin" />
+                    {slowWarning ? "Taking longer than expected…" : "Redirecting to checkout…"}
+                  </span>
+                ) : (
+                  plan.cta
+                )}
               </Button>
             </div>
           ))}
@@ -187,10 +195,17 @@ const PricingSection = () => {
             </div>
             <Button
               className="w-full rounded-xl"
-              disabled={loadingTier === "test"}
+              disabled={isLoading("test")}
               onClick={handleTestPurchase}
             >
-              {loadingTier === "test" ? "Loading..." : "Buy Test Product"}
+              {isLoading("test") ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 size={16} className="animate-spin" />
+                  {slowWarning ? "Taking longer than expected…" : "Redirecting to checkout…"}
+                </span>
+              ) : (
+                "Buy Test Product"
+              )}
             </Button>
           </div>
         </div>
