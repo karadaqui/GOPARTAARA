@@ -426,12 +426,12 @@ const SearchResults = () => {
                       <Scale size={12} /> Compare ({compareParts.length})
                     </Button>
                   )}
-                  <SearchCounter limitData={searchLimit} />
+                   {user && <SearchCounter limitData={searchLimit} />}
                 </div>
               </div>
               {/* Mobile: centered search counter */}
               <div className="sm:hidden flex justify-center mt-1">
-                <SearchCounter limitData={searchLimit} />
+                {user && <SearchCounter limitData={searchLimit} />}
               </div>
             </div>
           ) : (
