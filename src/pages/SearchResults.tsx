@@ -133,16 +133,18 @@ const SearchResults = () => {
   const [catalogResults, setCatalogResults] = useState<any[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(false);
 
-  // When URL query changes, populate input but DON'T auto-execute search.
-  // Search only runs on explicit user action (form submit / button click).
+  // When URL query changes, auto-execute search
   useEffect(() => {
     if (urlQuery && urlQuery !== query) {
       setQuery(urlQuery);
     }
+    if (urlQuery && urlQuery !== activeQuery) {
+      setActiveQuery(urlQuery);
+      setCurrentPage(1);
+    }
     if (urlQuery) {
       setSearchMode("text");
     }
-    // Show auth gate if not logged in and URL has a query
     if (urlQuery && !user) {
       setAuthGateOpen(true);
     }
