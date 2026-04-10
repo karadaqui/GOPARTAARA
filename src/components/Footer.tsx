@@ -24,7 +24,7 @@ const Footer = () => {
             <h4 className="font-semibold text-sm mb-4">Product</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><button onClick={() => handleLink("/")} className="hover:text-foreground transition-colors">Search</button></li>
-              <li><button onClick={() => handleLink("/")} className="hover:text-foreground transition-colors">Pricing</button></li>
+              <li><button onClick={() => handleLink("/pricing")} className="hover:text-foreground transition-colors">Pricing</button></li>
             </ul>
           </div>
           <div>
