@@ -255,6 +255,7 @@ const SearchResults = () => {
     return () => { cancelled = true; };
   }, [activeQuery, user]);
 
+  useEffect(() => {
     if (!user) return;
     supabase.from("saved_parts").select("part_number").eq("user_id", user.id).then(({ data }) => {
       if (data) setSavedIds(new Set(data.map((d) => d.part_number).filter(Boolean) as string[]));
