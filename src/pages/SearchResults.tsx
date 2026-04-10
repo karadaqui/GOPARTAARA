@@ -127,7 +127,7 @@ const SearchResults = () => {
   const [authGateOpen, setAuthGateOpen] = useState(false);
 
   // When URL query changes from external navigation (e.g. garage "Search Parts"),
-  // record in search_history so it counts toward the limit
+  // search recording now happens server-side in the edge function
   useEffect(() => {
     if (urlQuery !== activeQuery) {
       setQuery(urlQuery);
@@ -135,12 +135,9 @@ const SearchResults = () => {
       setSelectedCategory(null);
       setCurrentPage(1);
 
-      // Record search if this came from external navigation (not internal handleSearch)
+      // Optimistic UI update for search counter
       if (urlQuery && user && !internalSearchRef.current) {
         searchLimit.recordSearch();
-        supabase.from("search_history").insert({ user_id: user.id, query: urlQuery }).then(() => {
-          // already updated optimistically
-        });
       }
       internalSearchRef.current = false;
     }
@@ -166,6 +163,13 @@ const SearchResults = () => {
       setEbayFallback(false);
       return;
     }
+    // Block unauthenticated users from fetching results
+    if (!user) {
+      setAuthGateOpen(true);
+      setLiveResults([]);
+      setTotalResults(0);
+      return;
+    }
     let cancelled = false;
     const fetchLive = async () => {
       setLiveLoading(true);
@@ -175,8 +179,33 @@ const SearchResults = () => {
         const { data, error } = await supabase.functions.invoke("search-parts", {
           body: { query: activeQuery, category: selectedCategory || undefined, offset },
         });
-        if (error) throw error;
+        if (error) {
+          // Handle server-side auth/limit errors
+          const msg = (error as any)?.message || "";
+          if (msg.includes("UNAUTHORIZED") || msg.includes("401")) {
+            if (!cancelled) setAuthGateOpen(true);
+            return;
+          }
+          if (msg.includes("SEARCH_LIMIT_REACHED") || msg.includes("403")) {
+            if (!cancelled) {
+              toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" });
+              searchLimit.refresh();
+            }
+            return;
+          }
+          throw error;
+        }
         if (!cancelled) {
+          // Handle structured error responses from the edge function
+          if (data?.error === "UNAUTHORIZED") {
+            setAuthGateOpen(true);
+            return;
+          }
+          if (data?.error === "SEARCH_LIMIT_REACHED") {
+            toast({ title: "Search limit reached", description: data?.message || "Upgrade to Pro for unlimited searches.", variant: "destructive" });
+            searchLimit.refresh();
+            return;
+          }
           if (data?.fallback) {
             setEbayFallback(true);
             setLiveResults([]);
@@ -184,6 +213,8 @@ const SearchResults = () => {
           } else {
             setLiveResults(data?.results || []);
             setTotalResults(data?.totalResults || 0);
+            // Refresh search counter from DB after successful search
+            searchLimit.refresh();
           }
         }
       } catch (err) {
@@ -195,7 +226,7 @@ const SearchResults = () => {
     };
     fetchLive();
     return () => { cancelled = true; };
-  }, [activeQuery, selectedCategory, currentPage]);
+  }, [activeQuery, selectedCategory, currentPage, user]);
 
   useEffect(() => {
     if (!user) return;
@@ -233,9 +264,6 @@ const SearchResults = () => {
 
     if (user) {
       searchLimit.recordSearch();
-      supabase.from("search_history").insert({ user_id: user.id, query: nextQuery }).then(({ error }) => {
-        if (error) console.error("Failed to save search history:", error);
-      });
     }
   };
 
@@ -255,9 +283,6 @@ const SearchResults = () => {
     setSearchParams({ q });
     if (user) {
       searchLimit.recordSearch();
-      supabase.from("search_history").insert({ user_id: user.id, query: q }).then(({ error }) => {
-        if (error) console.error("Failed to save search history:", error);
-      });
     }
   };
 

@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import PageLoader from "@/components/PageLoader";
 import CookieConsent from "./components/CookieConsent.tsx";
+import DevToolsGuard from "./components/DevToolsGuard.tsx";
 
 // Eager load critical route
 import Index from "./pages/Index.tsx";
@@ -76,6 +77,7 @@ const App = () => (
             </Routes>
           </Suspense>
           <CookieConsent />
+          <DevToolsGuard />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
