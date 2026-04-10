@@ -32,8 +32,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const pendingRedirect = localStorage.getItem("partara_auth_redirect");
         if (pendingRedirect) {
           localStorage.removeItem("partara_auth_redirect");
-          // Use setTimeout to ensure state is settled before navigating
           setTimeout(() => navigate(pendingRedirect), 0);
+        } else {
+          // After email confirmation, redirect to homepage if on verify-email or auth page
+          const currentPath = window.location.pathname;
+          if (currentPath === "/verify-email" || currentPath === "/auth") {
+            setTimeout(() => navigate("/"), 0);
+          }
         }
 
         const storedRef = localStorage.getItem("partara_ref");
