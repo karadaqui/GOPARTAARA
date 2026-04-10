@@ -36,7 +36,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "car-part-search"
+const SITE_NAME = "Partara Search Hub"
 const SENDER_DOMAIN = "hello.gopartara.com"
 const ROOT_DOMAIN = "gopartara.com"
 const FROM_DOMAIN = "gopartara.com" // Domain shown in From address (may be root or sender subdomain)
