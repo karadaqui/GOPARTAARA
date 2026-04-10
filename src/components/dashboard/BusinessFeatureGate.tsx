@@ -8,7 +8,7 @@ interface BusinessFeatureGateProps {
   label?: string;
 }
 
-const BusinessFeatureGate = ({ children, isBusinessUser, label = "Business plan feature" }: BusinessFeatureGateProps) => {
+const BusinessFeatureGate = ({ children, isBusinessUser, label = "Elite plan feature" }: BusinessFeatureGateProps) => {
   const navigate = useNavigate();
 
   if (isBusinessUser) return <>{children}</>;
