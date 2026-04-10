@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Mail, RefreshCw, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,17 @@ const VerifyEmail = () => {
   const { toast } = useToast();
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.email_confirmed_at) {
+        clearInterval(interval);
+        navigate("/", { replace: true });
+      }
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [navigate]);
 
   const handleResend = async () => {
     if (!email) return;
