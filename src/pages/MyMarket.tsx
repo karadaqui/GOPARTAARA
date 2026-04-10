@@ -56,6 +56,8 @@ const CATEGORIES = [
   "Body Panels", "Lighting", "Wheels & Tyres", "Other"
 ];
 
+const SELLER_PLANS = ["basic_seller", "featured_seller", "pro_seller", "admin"];
+
 const MyMarket = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -73,6 +75,7 @@ const MyMarket = () => {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [undoListing, setUndoListing] = useState<Listing | null>(null);
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showSellerGate, setShowSellerGate] = useState(false);
 
   const [profileForm, setProfileForm] = useState({
     business_name: "", description: "", contact_email: "", contact_phone: "", website_url: ""
@@ -86,7 +89,20 @@ const MyMarket = () => {
 
   useEffect(() => {
     if (!user) { navigate("/auth"); return; }
-    loadData();
+    // Check if user has a seller plan
+    supabase
+      .from("profiles")
+      .select("subscription_plan")
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        if (!data || !SELLER_PLANS.includes(data.subscription_plan)) {
+          setShowSellerGate(true);
+          setLoading(false);
+        } else {
+          loadData();
+        }
+      });
   }, [user]);
 
   const loadData = async () => {
