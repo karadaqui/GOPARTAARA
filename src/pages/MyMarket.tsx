@@ -581,6 +581,84 @@ const MyMarket = () => {
           </div>
         </div>
 
+        {/* Disputed Reviews Section */}
+        {disputedReviews.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Flag size={18} className="text-primary" />
+              <h2 className="font-display text-xl font-bold">Disputed Reviews</h2>
+              <Badge variant="secondary" className="text-xs">{disputedReviews.length}</Badge>
+            </div>
+            <div className="space-y-3">
+              {disputedReviews.map(review => (
+                <div key={review.id} className="glass rounded-xl p-4">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <div className="min-w-0">
+                      <h4 className="font-display font-bold text-sm line-clamp-1">{review.listing_title}</h4>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs text-muted-foreground">{review.reviewer_name}</span>
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map(s => (
+                            <Star key={s} size={10} className={s <= review.rating ? "text-primary fill-primary" : "text-muted-foreground"} />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <Badge
+                      variant={
+                        review.dispute_status === "pending" ? "secondary" :
+                        review.dispute_status === "kept" ? "default" : "destructive"
+                      }
+                      className="capitalize shrink-0 text-xs"
+                    >
+                      {review.dispute_status === "kept" ? "Review kept" :
+                       review.dispute_status === "removed" ? "Review removed" : "Pending"}
+                    </Badge>
+                  </div>
+
+                  {review.comment && (
+                    <p className="text-sm text-muted-foreground mb-2">"{review.comment}"</p>
+                  )}
+
+                  {review.dispute_reason && (
+                    <div className="bg-secondary/50 rounded-lg p-2 mb-2">
+                      <p className="text-xs text-muted-foreground">
+                        <span className="font-medium text-foreground">Your reason:</span> {review.dispute_reason}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Show admin decision details */}
+                  {(review.dispute_status === "kept" || review.dispute_status === "removed") && (
+                    <div className={`rounded-lg p-3 mt-2 ${
+                      review.dispute_status === "removed"
+                        ? "bg-green-500/5 border border-green-500/20"
+                        : "bg-yellow-500/5 border border-yellow-500/20"
+                    }`}>
+                      <p className="text-xs font-medium mb-1">
+                        {review.dispute_status === "removed" ? "✅ Review was removed" : "⚠️ Review was kept"}
+                      </p>
+                      {review.dispute_admin_note && (
+                        <p className="text-xs text-muted-foreground mb-2">
+                          <span className="font-medium text-foreground">Admin note:</span> {review.dispute_admin_note}
+                        </p>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => navigate("/contact")}
+                        className="h-6 text-xs text-primary gap-1 px-0 hover:underline"
+                      >
+                        <ExternalLink size={10} /> If you believe this decision is incorrect, contact us
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Add listing */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="font-display text-xl font-bold">My Listings</h2>
