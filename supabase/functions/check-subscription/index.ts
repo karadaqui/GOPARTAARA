@@ -25,7 +25,8 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  const SELLER_PLANS = ["basic_seller", "featured_seller", "pro_seller", "admin"];
+  // Plans that should never be overwritten by Stripe sync (manually assigned)
+  const PROTECTED_PLANS = ["basic_seller", "featured_seller", "pro_seller", "admin", "business", "pro"];
 
   try {
     const authHeader = req.headers.get("Authorization");
@@ -77,9 +78,9 @@ serve(async (req) => {
       .single();
 
     const currentPlan = profileData?.subscription_plan;
-    if (currentPlan && SELLER_PLANS.includes(currentPlan)) {
-      logStep("User has seller plan, skipping Stripe sync", { currentPlan });
-      return new Response(JSON.stringify({ subscribed: true, plan: currentPlan, seller_plan: true }), {
+    if (currentPlan && PROTECTED_PLANS.includes(currentPlan)) {
+      logStep("User has protected plan, skipping Stripe sync", { currentPlan });
+      return new Response(JSON.stringify({ subscribed: true, plan: currentPlan, protected_plan: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -162,7 +163,7 @@ serve(async (req) => {
     }
 
     // Auto-create seller profile if this is a seller plan and none exists yet
-    if (SELLER_PLANS.includes(plan) && plan !== "admin") {
+    if (["basic_seller", "featured_seller", "pro_seller"].includes(plan)) {
       const { data: existingSeller } = await adminClient
         .from("seller_profiles")
         .select("id")
