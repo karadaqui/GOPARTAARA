@@ -160,12 +160,10 @@ const Terms = () => (
                 days' written notice. Continued use after the effective date constitutes acceptance.
               </p>
               <p>
-                <strong>Refunds:</strong> Refunds are considered on a case-by-case basis in
-                accordance with the UK Consumer Rights Act 2015. If you believe you are entitled to a
-                refund, contact us at{" "}
-                <a href="mailto:info@gopartara.com" className="text-primary hover:underline">
-                  info@gopartara.com
-                </a>.
+                <strong>Refunds:</strong> Refund requests must be submitted within 7 days of your initial subscription payment. Refunds are not available after this period. You may request a refund from your{" "}
+                <a href="/refund" className="text-primary hover:underline">
+                  dashboard refund page
+                </a>. Cancellation results in immediate loss of paid features. Each account is entitled to one refund only.
               </p>
               <p>
                 <strong>Free trials:</strong> If offered, free trial terms will be clearly stated at

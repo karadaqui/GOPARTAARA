@@ -61,7 +61,7 @@ serve(async (req) => {
     // Check current plan — if it's a seller plan, skip Stripe sync entirely
     const { data: profileData } = await adminClient
       .from("profiles")
-      .select("subscription_plan")
+      .select("subscription_plan, first_payment_date")
       .eq("user_id", user.id)
       .single();
 
@@ -127,9 +127,22 @@ serve(async (req) => {
     }
     logStep("Active subscription found", { productId, plan, subscriptionEnd });
 
+    // Store first_payment_date if not already set
+    const updateData: Record<string, any> = { subscription_plan: plan };
+    if (!profileData?.first_payment_date) {
+      // Use subscription start date as proxy for first payment
+      try {
+        const startVal = sub.start_date || sub.created;
+        if (typeof startVal === "number" && startVal > 0) {
+          const ms = startVal < 1e12 ? startVal * 1000 : startVal;
+          updateData.first_payment_date = new Date(ms).toISOString();
+        }
+      } catch {}
+    }
+
     const { error: updateError } = await adminClient
       .from("profiles")
-      .update({ subscription_plan: plan })
+      .update(updateData)
       .eq("user_id", user.id);
 
     if (updateError) {
