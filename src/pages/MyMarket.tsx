@@ -146,6 +146,7 @@ const MyMarket = () => {
       contact_email: profileForm.contact_email || null,
       contact_phone: profileForm.contact_phone || null,
       website_url: profileForm.website_url || null,
+      approved: true,
     } as any);
 
     if (error) {
@@ -496,9 +497,7 @@ const MyMarket = () => {
             <div>
               <h1 className="font-display text-2xl font-bold">{profile.business_name}</h1>
               <div className="flex items-center gap-2 mt-1">
-                <Badge variant={profile.approved ? "default" : "secondary"}>
-                  {profile.approved ? "Approved" : "Pending Approval"}
-                </Badge>
+                <Badge variant="default">Active</Badge>
                 <Badge variant="outline" className="capitalize">{profile.seller_tier} seller</Badge>
               </div>
             </div>
