@@ -86,8 +86,9 @@ const NotificationBell = () => {
   // Realtime subscription
   useEffect(() => {
     if (!user) return;
+    const channelName = `user-notifications-${user.id}-${Date.now()}`;
     const channel = supabase
-      .channel("user-notifications")
+      .channel(channelName)
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
