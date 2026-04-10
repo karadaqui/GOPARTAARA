@@ -130,6 +130,8 @@ const SearchResults = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const internalSearchRef = useRef(false);
   const [authGateOpen, setAuthGateOpen] = useState(false);
+  const [catalogResults, setCatalogResults] = useState<any[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(false);
 
   // When URL query changes, populate input but DON'T auto-execute search.
   // Search only runs on explicit user action (form submit / button click).
