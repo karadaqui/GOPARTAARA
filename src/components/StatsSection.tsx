@@ -1,3 +1,5 @@
+import ScrollReveal from "@/components/ScrollReveal";
+
 const stats = [
   { value: "1M+", label: "Parts Searchable" },
   { value: "6+", label: "Trusted Suppliers" },
@@ -5,18 +7,20 @@ const stats = [
 ];
 
 const StatsSection = () => (
-  <section className="py-16 md:py-20">
+  <section className="py-20 md:py-24">
     <div className="container px-4">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-        {stats.map((s) => (
-          <div key={s.label} className="text-center">
-            <div className="font-display text-3xl md:text-4xl font-bold text-primary mb-1">
-              {s.value}
+      <ScrollReveal>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+          {stats.map((s) => (
+            <div key={s.label} className="text-center group">
+              <div className="font-display text-4xl md:text-5xl font-bold text-primary mb-2 tracking-tight transition-transform duration-300 group-hover:scale-110">
+                {s.value}
+              </div>
+              <div className="text-sm text-muted-foreground">{s.label}</div>
             </div>
-            <div className="text-sm text-muted-foreground">{s.label}</div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </ScrollReveal>
     </div>
   </section>
 );
