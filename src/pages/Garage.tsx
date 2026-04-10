@@ -21,6 +21,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { getMakes, getModels, getYears, getAllYears } from "@/data/vehicleDatabase";
 
 interface Vehicle {
   id: string;
@@ -33,18 +34,6 @@ interface Vehicle {
   created_at: string;
 }
 
-const CAR_MAKES = [
-  "Abarth","Alfa Romeo","Aston Martin","Audi","Bentley","BMW","Chevrolet",
-  "Chrysler","Citroën","Cupra","Dacia","Daewoo","Daihatsu","Dodge","DS",
-  "Ferrari","Fiat","Ford","Genesis","Honda","Hyundai","Infiniti","Isuzu",
-  "Jaguar","Jeep","Kia","Lamborghini","Land Rover","Lexus","Lotus",
-  "Maserati","Mazda","McLaren","Mercedes-Benz","MG","Mini","Mitsubishi",
-  "Nissan","Opel","Peugeot","Porsche","Renault","Rolls-Royce","Saab",
-  "SEAT","Škoda","Smart","Subaru","Suzuki","Tesla","Toyota","Vauxhall",
-  "Volkswagen","Volvo",
-];
-const currentYear = new Date().getFullYear();
-const YEARS = Array.from({ length: 40 }, (_, i) => currentYear - i);
 const ENGINE_SIZES = ["1.0L","1.2L","1.4L","1.5L","1.6L","1.8L","2.0L","2.2L","2.4L","2.5L","3.0L","3.5L","4.0L","5.0L","Electric"];
 
 // Detect vehicle type icon from make/model
@@ -283,13 +272,22 @@ const Garage = () => {
                     </div>
                     <div className="mt-3">
                       <label className="text-xs text-muted-foreground mb-1 block">Confirm Model *</label>
-                      <Input
-                        value={confirmedModel}
-                        onChange={e => setConfirmedModel(e.target.value)}
-                        placeholder={getModelPlaceholder(dvlaVehicle.make)}
-                        className="rounded-xl bg-secondary border-border"
-                      />
-                      <p className="text-[10px] text-muted-foreground mt-1">DVLA doesn't provide the model — please enter it manually for accurate search results.</p>
+                      {dvlaVehicle?.make && getModels(dvlaVehicle.make).length > 0 ? (
+                        <Select value={confirmedModel} onValueChange={setConfirmedModel}>
+                          <SelectTrigger className="rounded-xl bg-secondary border-border"><SelectValue placeholder="Select model" /></SelectTrigger>
+                          <SelectContent>
+                            {getModels(dvlaVehicle.make).map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          value={confirmedModel}
+                          onChange={e => setConfirmedModel(e.target.value)}
+                          placeholder={getModelPlaceholder(dvlaVehicle.make)}
+                          className="rounded-xl bg-secondary border-border"
+                        />
+                      )}
+                      <p className="text-[10px] text-muted-foreground mt-1">DVLA doesn't provide the model — please select or enter it for accurate search results.</p>
                     </div>
                   </div>
                 )}
@@ -303,16 +301,25 @@ const Garage = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="text-xs text-muted-foreground mb-1 block">Make *</label>
-                        <Select value={make} onValueChange={setMake}>
+                        <Select value={make} onValueChange={(v) => { setMake(v); setModel(""); setYear(""); }}>
                           <SelectTrigger className="rounded-xl bg-secondary border-border"><SelectValue placeholder="Select make" /></SelectTrigger>
                           <SelectContent>
-                            {CAR_MAKES.map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                            {getMakes().map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
                           </SelectContent>
                         </Select>
                       </div>
                       <div>
                         <label className="text-xs text-muted-foreground mb-1 block">Model *</label>
-                        <Input value={model} onChange={e => setModel(e.target.value)} placeholder={getModelPlaceholder(make)} className="rounded-xl bg-secondary border-border" />
+                        {make && getModels(make).length > 0 ? (
+                          <Select value={model} onValueChange={(v) => { setModel(v); setYear(""); }}>
+                            <SelectTrigger className="rounded-xl bg-secondary border-border"><SelectValue placeholder="Select model" /></SelectTrigger>
+                            <SelectContent>
+                              {getModels(make).map(m => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Input value={model} onChange={e => setModel(e.target.value)} placeholder={getModelPlaceholder(make)} className="rounded-xl bg-secondary border-border" />
+                        )}
                       </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -320,7 +327,11 @@ const Garage = () => {
                         <label className="text-xs text-muted-foreground mb-1 block">Year *</label>
                         <Select value={year} onValueChange={setYear}>
                           <SelectTrigger className="rounded-xl bg-secondary border-border"><SelectValue placeholder="Select year" /></SelectTrigger>
-                          <SelectContent>{YEARS.map(y => <SelectItem key={y} value={y.toString()}>{y}</SelectItem>)}</SelectContent>
+                          <SelectContent>
+                            {(make && model ? getYears(make, model) : getAllYears()).map(y => (
+                              <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                            ))}
+                          </SelectContent>
                         </Select>
                       </div>
                       <div>
