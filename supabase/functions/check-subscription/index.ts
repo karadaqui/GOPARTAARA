@@ -9,7 +9,8 @@ const corsHeaders = {
 
 const PRODUCT_TO_PLAN: Record<string, string> = {
   prod_UI08qGZRqV94r2: "pro",
-  prod_UIBpaMM0bdRgJ9: "business",
+  prod_UIBpaMM0bdRgJ9: "elite",
+  prod_UJCdn59OHrLmWH: "elite",
   prod_UJ70agh953wzal: "basic_seller",
   prod_UJ71rmu9dJVO1S: "featured_seller",
   prod_UJ72euxyB9sZcz: "pro_seller",
@@ -26,7 +27,7 @@ serve(async (req) => {
   }
 
   // Plans that should never be overwritten by Stripe sync (manually assigned)
-  const PROTECTED_PLANS = ["basic_seller", "featured_seller", "pro_seller", "admin", "business", "pro"];
+  const PROTECTED_PLANS = ["basic_seller", "featured_seller", "pro_seller", "admin", "elite", "pro"];
 
   try {
     const authHeader = req.headers.get("Authorization");

@@ -10,7 +10,7 @@ const ComingSoonFeatures = () => (
   <div className="glass rounded-2xl p-6 sm:p-8">
     <h2 className="font-display text-lg font-semibold flex items-center gap-2 mb-4">
       <Sparkles size={18} className="text-amber-400" />
-      Coming Soon — Business Exclusives
+      Coming Soon — Elite Exclusives
     </h2>
     <div className="grid gap-3">
       {COMING_SOON.map((f) => (

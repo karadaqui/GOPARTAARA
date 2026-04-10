@@ -7,7 +7,7 @@ import HowItWorksSection from "@/components/HowItWorksSection";
 import SuppliersSection from "@/components/SuppliersSection";
 import StatsSection from "@/components/StatsSection";
 import PricingSection from "@/components/PricingSection";
-import SellerPricingSection from "@/components/SellerPricingSection";
+
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
@@ -53,7 +53,7 @@ const Index = () => {
       <SuppliersSection />
       <StatsSection />
       <PricingSection />
-      <SellerPricingSection />
+      
       <Footer />
       <BackToTop />
     </div>

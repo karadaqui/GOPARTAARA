@@ -276,7 +276,7 @@ const SearchResults = () => {
     }
     // Block photo search for free users
     if (!searchLimit.isPro) {
-      toast({ title: "Photo search is available on Pro and Business plans", description: "Upgrade to unlock photo search.", variant: "destructive" });
+      toast({ title: "Photo search is available on Pro and Elite plans", description: "Upgrade to unlock photo search.", variant: "destructive" });
       navigate("/pricing");
       if (photoInputRef.current) photoInputRef.current.value = "";
       return;

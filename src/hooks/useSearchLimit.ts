@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const FREE_LIMIT = 5;
 // Only these plans grant unlimited searches - seller plans do NOT
-const UNLIMITED_SEARCH_PLANS = ["pro", "business", "admin"];
+const UNLIMITED_SEARCH_PLANS = ["pro", "elite", "admin"];
 
 export const useSearchLimit = () => {
   const { user } = useAuth();
