@@ -7,8 +7,9 @@ import BackToTop from "@/components/BackToTop";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Store, Eye, Package } from "lucide-react";
+import { Search, Store, Eye, Package, Scale } from "lucide-react";
 import VerifiedSellerBadge from "@/components/badges/VerifiedSellerBadge";
+import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsComparison";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthGateModal from "@/components/AuthGateModal";
@@ -49,6 +50,8 @@ const Marketplace = () => {
   const [category, setCategory] = useState("All");
   const [vehicleFilter, setVehicleFilter] = useState("");
   const [authGateOpen, setAuthGateOpen] = useState(false);
+  const [compareParts, setCompareParts] = useState<CompareItem[]>([]);
+  const [showCompare, setShowCompare] = useState(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -93,6 +96,25 @@ const Marketplace = () => {
   const sorted = [...filtered].sort((a, b) =>
     (tierOrder[a.seller_profiles.seller_tier] ?? 3) - (tierOrder[b.seller_profiles.seller_tier] ?? 3)
   );
+
+  const toggleCompare = (listing: ListingWithSeller) => {
+    const isSelected = compareParts.some((p) => p.id === listing.id);
+    if (isSelected) {
+      setCompareParts((prev) => prev.filter((p) => p.id !== listing.id));
+    } else if (compareParts.length < 3) {
+      setCompareParts((prev) => [...prev, {
+        id: listing.id,
+        title: listing.title,
+        price: listing.price,
+        sellerName: listing.seller_profiles.business_name,
+        sellerTier: listing.seller_profiles.seller_tier,
+        category: listing.category || undefined,
+        compatibleVehicles: listing.compatible_vehicles,
+        imageUrl: listing.photos[0] || undefined,
+        source: "marketplace" as const,
+      }]);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -186,48 +208,66 @@ const Marketplace = () => {
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
                 {sorted.map(listing => {
                   const isFeatured = listing.seller_profiles.seller_tier === "featured" || listing.seller_profiles.seller_tier === "pro";
+                  const isComparing = compareParts.some((p) => p.id === listing.id);
                   return (
-                    <button
+                    <div
                       key={listing.id}
-                      onClick={() => navigate(`/listing/${listing.id}`)}
-                      className={`text-left glass rounded-xl overflow-hidden transition-all hover:scale-[1.02] ${
+                      className={`text-left glass rounded-xl overflow-hidden card-hover relative ${
                         isFeatured ? "ring-1 ring-primary/30" : ""
-                      }`}
+                      } ${isComparing ? "ring-2 ring-primary/50" : ""}`}
                     >
-                      {listing.photos[0] ? (
-                        <img src={listing.photos[0]} alt={listing.title} className="w-full h-44 object-cover" />
-                      ) : (
-                        <div className="w-full h-44 bg-secondary flex items-center justify-center">
-                          <Package size={32} className="text-muted-foreground" />
+                      <button
+                        onClick={() => navigate(`/listing/${listing.id}`)}
+                        className="w-full text-left"
+                      >
+                        {listing.photos[0] ? (
+                          <img src={listing.photos[0]} alt={listing.title} className="w-full h-44 object-cover" />
+                        ) : (
+                          <div className="w-full h-44 bg-secondary flex items-center justify-center">
+                            <Package size={32} className="text-muted-foreground" />
+                          </div>
+                        )}
+                        <div className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <h3 className="font-display font-bold text-sm line-clamp-2 flex-1">{listing.title}</h3>
+                            {listing.price && <span className="text-primary font-bold ml-2">£{listing.price.toFixed(2)}</span>}
+                          </div>
+                          <div className="flex items-center gap-2 mb-3">
+                            {listing.seller_profiles.logo_url ? (
+                              <img src={listing.seller_profiles.logo_url} alt="" className="w-5 h-5 rounded-full object-cover" />
+                            ) : (
+                              <Store size={14} className="text-muted-foreground" />
+                            )}
+                            <span className="text-xs text-muted-foreground">{listing.seller_profiles.business_name}</span>
+                            {listing.seller_profiles.seller_tier === "pro" && (
+                              <VerifiedSellerBadge variant="pro_seller" size="sm" />
+                            )}
+                          </div>
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {listing.category && <Badge variant="outline" className="text-[10px]">{listing.category}</Badge>}
+                            {listing.tags.slice(0, 2).map(t => (
+                              <Badge key={t} variant="secondary" className="text-[10px]">{t}</Badge>
+                            ))}
+                          </div>
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1"><Eye size={12} /> {listing.view_count}</span>
+                          </div>
                         </div>
-                      )}
-                      <div className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <h3 className="font-display font-bold text-sm line-clamp-2 flex-1">{listing.title}</h3>
-                          {listing.price && <span className="text-primary font-bold ml-2">£{listing.price.toFixed(2)}</span>}
-                        </div>
-                        <div className="flex items-center gap-2 mb-3">
-                          {listing.seller_profiles.logo_url ? (
-                            <img src={listing.seller_profiles.logo_url} alt="" className="w-5 h-5 rounded-full object-cover" />
-                          ) : (
-                            <Store size={14} className="text-muted-foreground" />
-                          )}
-                          <span className="text-xs text-muted-foreground">{listing.seller_profiles.business_name}</span>
-                          {listing.seller_profiles.seller_tier === "pro" && (
-                            <VerifiedSellerBadge variant="pro_seller" size="sm" />
-                          )}
-                        </div>
-                        <div className="flex flex-wrap gap-1 mb-2">
-                          {listing.category && <Badge variant="outline" className="text-[10px]">{listing.category}</Badge>}
-                          {listing.tags.slice(0, 2).map(t => (
-                            <Badge key={t} variant="secondary" className="text-[10px]">{t}</Badge>
-                          ))}
-                        </div>
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                          <span className="flex items-center gap-1"><Eye size={12} /> {listing.view_count}</span>
-                        </div>
-                      </div>
-                    </button>
+                      </button>
+                      {/* Compare button */}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); toggleCompare(listing); }}
+                        disabled={!isComparing && compareParts.length >= 3}
+                        className={`absolute top-2 right-2 h-8 w-8 rounded-lg flex items-center justify-center transition-all ${
+                          isComparing
+                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30"
+                            : "bg-background/80 backdrop-blur-sm text-muted-foreground hover:text-foreground border border-border/50"
+                        } ${!isComparing && compareParts.length >= 3 ? "opacity-40 cursor-not-allowed" : ""}`}
+                        title={isComparing ? "Remove from compare" : "Add to compare"}
+                      >
+                        <Scale size={14} />
+                      </button>
+                    </div>
                   );
                 })}
               </div>
@@ -244,6 +284,20 @@ const Marketplace = () => {
           </>
         )}
       </div>
+
+      <CompareBar
+        items={compareParts}
+        onOpen={() => setShowCompare(true)}
+        onClear={() => setCompareParts([])}
+      />
+      {showCompare && (
+        <CompareModal
+          items={compareParts}
+          onRemove={(id) => setCompareParts((prev) => prev.filter((p) => p.id !== id))}
+          onClose={() => setShowCompare(false)}
+        />
+      )}
+
       <Footer />
       <BackToTop />
     </div>
