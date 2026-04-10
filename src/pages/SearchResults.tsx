@@ -17,7 +17,7 @@ import VehicleLookup from "@/components/VehicleLookup";
 import VehicleFilterButton from "@/components/VehicleFilterButton";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
 import SearchCounter from "@/components/SearchCounter";
-import PartsComparison, { type ComparePart } from "@/components/PartsComparison";
+import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsComparison";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
