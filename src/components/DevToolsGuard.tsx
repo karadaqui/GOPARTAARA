@@ -6,13 +6,21 @@ const DevToolsGuard = () => {
 
   useEffect(() => {
     // Console warning for devtools
-    const warningStyle = "color: red; font-size: 18px; font-weight: bold;";
-    const normalStyle = "font-size: 14px;";
+    const warningStyle = "color: red; font-size: 24px; font-weight: bold;";
+    const normalStyle = "font-size: 16px; color: #333;";
     console.log(
-      "%c⚠ Warning!\n%cThis is a browser feature intended for developers.\nDo not paste or type code here that you do not understand.\nThis could allow attackers to steal your information or impersonate you.\n\nIf someone told you to paste something here, it is likely a scam.",
+      "%c⛔ STOP!\n%cWarning: Do not paste code here that you do not understand.\nThis could allow attackers to steal your information.\n\nIf someone told you to copy/paste something here, it is a scam.\nFor more info see https://en.wikipedia.org/wiki/Self-XSS",
       warningStyle,
       normalStyle
     );
+    // Repeat periodically so it's visible when console is opened later
+    const interval = setInterval(() => {
+      console.log(
+        "%c⛔ Warning: Do not paste code here that you do not understand. This could allow attackers to steal your information.",
+        "color: red; font-size: 14px; font-weight: bold;"
+      );
+    }, 10000);
+    return () => clearInterval(interval);
 
     const handler = (e: KeyboardEvent) => {
       // F12
