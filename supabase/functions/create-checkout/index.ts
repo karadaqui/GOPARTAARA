@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
       customer_email: customerId ? undefined : auth.email,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: checkoutMode,
-      success_url: `https://gopartara.com/dashboard?checkout=success`,
+      success_url: `https://gopartara.com/?checkout=success`,
       cancel_url: `https://gopartara.com/pricing`,
     });
 
