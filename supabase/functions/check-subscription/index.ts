@@ -78,9 +78,9 @@ serve(async (req) => {
       .single();
 
     const currentPlan = profileData?.subscription_plan;
-    if (currentPlan && SELLER_PLANS.includes(currentPlan)) {
-      logStep("User has seller plan, skipping Stripe sync", { currentPlan });
-      return new Response(JSON.stringify({ subscribed: true, plan: currentPlan, seller_plan: true }), {
+    if (currentPlan && PROTECTED_PLANS.includes(currentPlan)) {
+      logStep("User has protected plan, skipping Stripe sync", { currentPlan });
+      return new Response(JSON.stringify({ subscribed: true, plan: currentPlan, protected_plan: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
