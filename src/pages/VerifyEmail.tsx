@@ -13,15 +13,21 @@ const VerifyEmail = () => {
   const { toast } = useToast();
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
+  const [showFallback, setShowFallback] = useState(false);
 
-  // 1) Instant same-browser detection via localStorage storage event
-  // 2) Cross-device detection via visibility/focus re-check
   useEffect(() => {
     let redirected = false;
-    const doRedirect = () => {
+    const doRedirectHome = () => {
       if (!redirected) {
         redirected = true;
         navigate("/", { replace: true });
+      }
+    };
+    const doRedirectAuth = () => {
+      if (!redirected) {
+        redirected = true;
+        toast({ title: "Email verified!", description: "Please sign in to continue." });
+        navigate("/auth", { replace: true });
       }
     };
 
@@ -29,33 +35,43 @@ const VerifyEmail = () => {
     const handleStorageChange = async (e: StorageEvent) => {
       if (e.key && e.key.includes("supabase") && e.newValue) {
         const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) doRedirect();
+        if (session?.user) doRedirectHome();
       }
     };
     window.addEventListener("storage", handleStorageChange);
 
     // onAuthStateChange as backup for same-browser
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session?.user) doRedirect();
+      if (event === "SIGNED_IN" && session?.user) doRedirectHome();
     });
 
-    // Cross-device: when user returns to this tab/window, re-check session
-    const handleVisibility = async () => {
-      if (document.visibilityState === "visible") {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) doRedirect();
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibility);
-    window.addEventListener("focus", handleVisibility);
+    // Cross-device polling: check backend every 3 seconds
+    let pollInterval: ReturnType<typeof setInterval> | null = null;
+    if (email) {
+      pollInterval = setInterval(async () => {
+        try {
+          const { data, error } = await supabase.functions.invoke("check-email-verified", {
+            body: { email },
+          });
+          if (!error && data?.verified) {
+            doRedirectAuth();
+          }
+        } catch {
+          // silently ignore polling errors
+        }
+      }, 3000);
+    }
+
+    // Show fallback button after 60 seconds
+    const fallbackTimeout = setTimeout(() => setShowFallback(true), 60000);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
-      document.removeEventListener("visibilitychange", handleVisibility);
-      window.removeEventListener("focus", handleVisibility);
       subscription.unsubscribe();
+      if (pollInterval) clearInterval(pollInterval);
+      clearTimeout(fallbackTimeout);
     };
-  }, [navigate]);
+  }, [navigate, email, toast]);
 
   const handleResend = async () => {
     if (!email) return;
@@ -115,7 +131,7 @@ const VerifyEmail = () => {
 
           <div className="bg-secondary/50 rounded-xl p-4 mb-6 text-left">
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Click the link in your email to verify your account. Once verified, you'll be automatically signed in and redirected to PARTARA.
+              Click the link in your email to verify your account. Once verified, you'll be automatically redirected to sign in.
             </p>
           </div>
 
@@ -143,6 +159,15 @@ const VerifyEmail = () => {
               </span>
             )}
           </Button>
+
+          {showFallback && (
+            <button
+              onClick={() => navigate("/auth")}
+              className="mt-4 text-sm text-primary hover:underline"
+            >
+              Already verified? Continue to sign in →
+            </button>
+          )}
         </div>
       </div>
     </div>
