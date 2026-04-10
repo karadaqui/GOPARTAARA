@@ -742,6 +742,7 @@ export type Database = {
         Args: { p_listing_id: string; p_viewer_id?: string }
         Returns: undefined
       }
+      is_email_confirmed: { Args: { p_email: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
           dlq_name: string
