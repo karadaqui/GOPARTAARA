@@ -142,6 +142,40 @@ const MyMarket = () => {
         .eq("seller_id", sp.id)
         .order("created_at", { ascending: false });
       setListings((ls as Listing[]) || []);
+
+      // Load disputed reviews for this seller's listings
+      const listingIds = (ls || []).map((l: any) => l.id);
+      if (listingIds.length > 0) {
+        const { data: reviews } = await supabase
+          .from("listing_reviews")
+          .select("id, listing_id, rating, comment, dispute_status, dispute_reason, dispute_admin_note, user_id")
+          .in("listing_id", listingIds)
+          .neq("dispute_status", "none");
+
+        if (reviews && reviews.length > 0) {
+          const reviewerIds = [...new Set(reviews.map((r: any) => r.user_id))];
+          const { data: reviewerProfiles } = await supabase
+            .from("profiles")
+            .select("user_id, display_name")
+            .in("user_id", reviewerIds);
+          const profileMap = new Map((reviewerProfiles || []).map((p: any) => [p.user_id, p.display_name]));
+          const listingMap = new Map((ls || []).map((l: any) => [l.id, l.title]));
+
+          setDisputedReviews(reviews.map((r: any) => ({
+            id: r.id,
+            listing_id: r.listing_id,
+            rating: r.rating,
+            comment: r.comment,
+            dispute_status: r.dispute_status,
+            dispute_reason: r.dispute_reason,
+            dispute_admin_note: r.dispute_admin_note,
+            listing_title: listingMap.get(r.listing_id) || "Unknown",
+            reviewer_name: profileMap.get(r.user_id) || "Anonymous",
+          })));
+        } else {
+          setDisputedReviews([]);
+        }
+      }
     }
     setLoading(false);
   };
