@@ -812,6 +812,38 @@ const SearchResults = () => {
                                   </a>
                                 </Button>
                                 <button
+                                  onClick={() => {
+                                    const isSelected = compareParts.some((p) => p.id === item.id);
+                                    if (isSelected) {
+                                      setCompareParts((prev) => prev.filter((p) => p.id !== item.id));
+                                    } else if (compareParts.length < 3) {
+                                      setCompareParts((prev) => [...prev, {
+                                        id: item.id,
+                                        title: item.partName,
+                                        price: item.price,
+                                        condition: item.condition,
+                                        sellerName: item.sellerUsername,
+                                        sellerRating: item.sellerPositivePercent,
+                                        freeShipping: item.freeShipping,
+                                        shippingCost: item.shippingCost,
+                                        location: item.itemLocation,
+                                        url: item.url,
+                                        imageUrl: item.imageUrl,
+                                        source: "ebay" as const,
+                                      }]);
+                                    }
+                                  }}
+                                  className={`h-7 w-7 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl border flex items-center justify-center transition-colors shrink-0 ${
+                                    compareParts.some((p) => p.id === item.id)
+                                      ? "border-primary bg-primary/20 text-primary"
+                                      : "border-border bg-secondary hover:bg-secondary/80 text-muted-foreground"
+                                  }`}
+                                  title={compareParts.some((p) => p.id === item.id) ? "Remove from compare" : compareParts.length >= 3 ? "Max 3 items" : "Add to compare"}
+                                  disabled={!compareParts.some((p) => p.id === item.id) && compareParts.length >= 3}
+                                >
+                                  <Scale size={10} className="sm:w-[14px] sm:h-[14px]" />
+                                </button>
+                                <button
                                   onClick={() => handleSave(item)}
                                   disabled={savingId === item.id}
                                   className="h-7 w-7 sm:h-9 sm:w-9 rounded-lg sm:rounded-xl border border-border bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors shrink-0"
