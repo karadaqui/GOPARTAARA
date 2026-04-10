@@ -50,6 +50,18 @@ interface Listing {
   created_at: string;
 }
 
+interface DisputedReview {
+  id: string;
+  listing_id: string;
+  rating: number;
+  comment: string | null;
+  dispute_status: string;
+  dispute_reason: string | null;
+  dispute_admin_note: string | null;
+  listing_title: string;
+  reviewer_name: string;
+}
+
 const CATEGORIES = [
   "Engine Parts", "Body Parts", "Brakes", "Suspension", "Electrical",
   "Filters", "Exhaust", "Interior", "Cooling", "Transmission",
