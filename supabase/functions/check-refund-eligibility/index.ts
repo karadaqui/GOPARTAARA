@@ -20,20 +20,21 @@ Deno.serve(async (req) => {
       });
     }
 
-    const userClient = createClient(
+    const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } }, auth: { persistSession: false } }
+      { global: { headers: { Authorization: authHeader } } }
     );
 
-    const { data: userData, error: userError } = await userClient.auth.getUser();
-    if (userError || !userData?.user) {
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
       return new Response(JSON.stringify({ eligible: false, reason: "Auth failed" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const user = userData.user;
+    const user = { id: claimsData.claims.sub as string, email: claimsData.claims.email as string };
 
     const adminClient = createClient(
       Deno.env.get("SUPABASE_URL")!,

@@ -36,22 +36,30 @@ serve(async (req) => {
       });
     }
 
-    // User-context client to get the authenticated user
-    const userClient = createClient(
+    // Validate JWT via getClaims
+    const supabase = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_ANON_KEY") ?? "",
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const { data: userData, error: userError } = await userClient.auth.getUser();
-    if (userError || !userData?.user?.email) {
-      logStep("Auth failed, returning subscribed:false", { message: userError?.message });
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      logStep("Auth failed, returning subscribed:false", { message: claimsError?.message });
       return new Response(JSON.stringify({ subscribed: false }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
     }
-    const user = userData.user;
+    const user = { id: claimsData.claims.sub as string, email: claimsData.claims.email as string };
+    if (!user.email) {
+      logStep("No email in token, returning subscribed:false");
+      return new Response(JSON.stringify({ subscribed: false }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
     logStep("User authenticated", { userId: user.id, email: user.email });
 
     // Service-role client for DB mutations
