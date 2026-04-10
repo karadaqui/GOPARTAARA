@@ -384,6 +384,39 @@ const MyMarket = () => {
 
   if (!user) return null;
 
+  if (showSellerGate) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="container max-w-lg py-24 px-6">
+          <div className="glass rounded-2xl p-8 text-center">
+            <Store size={48} className="text-primary mx-auto mb-4" />
+            <h1 className="font-display text-2xl font-bold mb-2">Seller Account Required</h1>
+            <p className="text-muted-foreground mb-6">You need a seller subscription to list parts on PARTARA.</p>
+            <div className="space-y-3 mb-6">
+              <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/50 border border-border">
+                <span className="text-sm font-medium">Basic Seller</span>
+                <span className="text-sm font-bold text-primary">£9.99/mo</span>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/50 border border-primary/30">
+                <span className="text-sm font-medium">Featured Seller</span>
+                <span className="text-sm font-bold text-primary">£24.99/mo</span>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/50 border border-border">
+                <span className="text-sm font-medium">Pro Seller</span>
+                <span className="text-sm font-bold text-primary">£49.99/mo</span>
+              </div>
+            </div>
+            <Button onClick={() => navigate("/pricing")} className="w-full rounded-xl">
+              See Pricing
+            </Button>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
