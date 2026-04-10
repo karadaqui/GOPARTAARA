@@ -9,7 +9,7 @@ const Pricing = () => (
   <div className="min-h-screen bg-background">
     <SEOHead
       title="Pricing | PARTARA"
-      description="Compare PARTARA plans — Free, Pro, and Business. Find the right plan for searching and comparing car parts across 15+ UK suppliers."
+      description="Compare PARTARA plans — Free, Pro, and Business. Search 1,000,000+ parts from trusted UK &amp; global suppliers."
       path="/pricing"
       jsonLd={{
         "@context": "https://schema.org",
