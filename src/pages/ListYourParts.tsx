@@ -247,6 +247,7 @@ const PlanCard = ({ name, tagline, price, period, features, searchFeatures, sell
       </Button>
     </div>
   );
+};
 
 /* ── Component ────────────────────────────────────────── */
 
