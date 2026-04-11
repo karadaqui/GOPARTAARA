@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CountryProvider } from "@/contexts/CountryContext";
+import { LocaleProvider } from "@/contexts/LocaleContext";
 import PageLoader from "@/components/PageLoader";
 import CookieConsent from "./components/CookieConsent.tsx";
 import DevToolsGuard from "./components/DevToolsGuard.tsx";
