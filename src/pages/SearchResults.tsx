@@ -755,6 +755,16 @@ const SearchResults = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 mb-10">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
+            ) : liveResults.length > 0 && filteredResults.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 mb-8">
+                <div className="text-5xl mb-4 opacity-30">🔍</div>
+                <p className="text-lg font-semibold text-white mb-1">No results match your filters</p>
+                <p className="text-sm text-zinc-500 mb-4">Try adjusting your filters to see more results</p>
+                <button onClick={clearAllFilters}
+                  className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors">
+                  Clear all filters
+                </button>
+              </div>
             ) : filteredResults.length > 0 ? (
               <div className="mb-10 animate-fade-in">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
