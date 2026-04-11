@@ -37,7 +37,8 @@ const bundles = [
     priceId: STRIPE.pro_basic_seller,
     popular: false,
     icon: Store,
-    features: ["Unlimited searches", "Photo search", "Price alerts", "20 listings", "Basic analytics"],
+    searchFeatures: ["Unlimited searches", "Photo search", "Unlimited parts & alerts", "Unlimited garage", "Search history", "Price alerts"],
+    sellerFeatures: ["20 listings", "Basic analytics"],
   },
   {
     name: "Pro + Featured Seller",
@@ -49,7 +50,8 @@ const bundles = [
     priceId: STRIPE.pro_featured_seller,
     popular: true,
     icon: Star,
-    features: ["Unlimited searches", "Photo search", "Price alerts", "100 listings", "Featured placement", "Advanced analytics"],
+    searchFeatures: ["Unlimited searches", "Photo search", "Unlimited parts & alerts", "Unlimited garage", "Search history", "Price alerts"],
+    sellerFeatures: ["100 listings", "Featured placement", "Advanced analytics"],
   },
   {
     name: "Pro + Pro Seller",
@@ -61,7 +63,8 @@ const bundles = [
     priceId: STRIPE.pro_pro_seller,
     popular: false,
     icon: Crown,
-    features: ["Unlimited searches", "Photo search", "Price alerts", "Unlimited listings", "Top placement", "Verified badge"],
+    searchFeatures: ["Unlimited searches", "Photo search", "Unlimited parts & alerts", "Unlimited garage", "Search history", "Price alerts"],
+    sellerFeatures: ["Unlimited listings", "Top placement", "Verified badge"],
   },
   {
     name: "Elite + Basic Seller",
@@ -73,7 +76,8 @@ const bundles = [
     priceId: STRIPE.elite_basic_seller,
     popular: false,
     icon: Gem,
-    features: ["Everything in Pro", "CSV export", "30-day tracking", "Vehicle notes", "20 listings"],
+    searchFeatures: ["Unlimited searches", "Photo search", "Unlimited parts & alerts", "Unlimited garage", "Search history", "Price alerts", "Export search history CSV", "30-day price tracking", "Vehicle notes & history", "Early access to features", "Priority email support"],
+    sellerFeatures: ["20 listings", "Basic analytics"],
   },
   {
     name: "Elite + Featured Seller",
@@ -85,7 +89,8 @@ const bundles = [
     priceId: STRIPE.elite_featured_seller,
     popular: false,
     icon: Gem,
-    features: ["Everything in Pro", "CSV export", "30-day tracking", "100 listings", "Featured placement"],
+    searchFeatures: ["Unlimited searches", "Photo search", "Unlimited parts & alerts", "Unlimited garage", "Search history", "Price alerts", "Export search history CSV", "30-day price tracking", "Vehicle notes & history", "Early access to features", "Priority email support"],
+    sellerFeatures: ["100 listings", "Featured placement", "Advanced analytics"],
   },
   {
     name: "Elite + Pro Seller",
@@ -97,7 +102,8 @@ const bundles = [
     priceId: STRIPE.elite_pro_seller,
     popular: false,
     icon: Gem,
-    features: ["Everything in Pro", "CSV export", "30-day tracking", "Unlimited listings", "Top placement"],
+    searchFeatures: ["Unlimited searches", "Photo search", "Unlimited parts & alerts", "Unlimited garage", "Search history", "Price alerts", "Export search history CSV", "30-day price tracking", "Vehicle notes & history", "Early access to features", "Priority email support"],
+    sellerFeatures: ["Unlimited listings", "Top placement", "Verified badge"],
   },
 ];
 
