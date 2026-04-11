@@ -69,7 +69,7 @@ const About = () => (
         "@context": "https://schema.org",
         "@type": "AboutPage",
         "name": "About PARTARA",
-        "url": "https://car-part-search.lovable.app/about",
+        "url": "https://gopartara.com/about",
         "description": "Learn how PARTARA is revolutionising car part search in the UK."
       }}
     />

@@ -37,7 +37,7 @@ const Index = () => {
           "@context": "https://schema.org",
           "@type": "WebApplication",
           "name": "PARTARA",
-          "url": "https://car-part-search.lovable.app",
+          "url": "https://gopartara.com",
           "description": "Search 1,000,000+ car parts from trusted UK &amp; global suppliers.",
           "applicationCategory": "AutomotiveApplication",
           "operatingSystem": "Web",

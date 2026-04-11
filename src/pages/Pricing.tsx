@@ -14,7 +14,7 @@ const Pricing = () => (
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "PARTARA Pricing",
-        "url": "https://car-part-search.lovable.app/pricing",
+        "url": "https://gopartara.com/pricing",
         "description": "Compare PARTARA subscription plans for car parts search."
       }}
     />

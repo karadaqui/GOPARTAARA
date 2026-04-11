@@ -9,7 +9,7 @@ interface SEOHeadProps {
   jsonLd?: Record<string, any>;
 }
 
-const BASE_URL = "https://car-part-search.lovable.app";
+const BASE_URL = "https://gopartara.com";
 const DEFAULT_IMAGE = `${BASE_URL}/og-image.png`;
 
 const SEOHead = ({ title, description, path = "", type = "website", image, jsonLd }: SEOHeadProps) => {
