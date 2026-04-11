@@ -874,7 +874,7 @@ const SearchResults = () => {
               <div className="mb-10 animate-fade-in">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
                   {filteredResults.slice(0, 12).map((item: any, idx: number) => {
-                    const priceBadge = getPriceBadge(item.price, item.title);
+                    const priceBadge = getPriceBadge(item.price);
                     const conditionNorm = (item.condition || "").trim().toLowerCase();
                     const conditionBarStyle = conditionNorm === "new"
                       ? { background: "#14532d", color: "#4ade80" }
