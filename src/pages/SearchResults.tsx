@@ -25,6 +25,7 @@ import { useCountry } from "@/hooks/useCountry";
 import { useLocale } from "@/contexts/LocaleContext";
 import CountryFlag from "@/components/CountryFlag";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import FilterBar from "@/components/FilterBar";
 
 
 // ── Twemoji helper ──
@@ -313,20 +314,7 @@ const SearchResults = () => {
   const [priceRangeIdx, setPriceRangeIdx] = useState(0);
   const [brandFilter, setBrandFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All Parts");
-  const [openFilter, setOpenFilter] = useState<string | null>(null);
   const filterBarRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    const close = () => setOpenFilter(null);
-    document.addEventListener("click", close);
-    return () => document.removeEventListener("click", close);
-  }, []);
-
-  const handleFilterClick = (e: React.MouseEvent, name: string) => {
-    e.stopPropagation();
-    setOpenFilter(prev => prev === name ? null : name);
-  };
 
   // Parse twemoji after results render
   useEffect(() => {
