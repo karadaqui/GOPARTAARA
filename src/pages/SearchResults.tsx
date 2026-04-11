@@ -232,7 +232,7 @@ const SearchResults = () => {
     };
     fetchLive();
     return () => { cancelled = true; };
-  }, [activeQuery, selectedCategory, currentPage, user]);
+  }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace]);
 
   // Fetch catalog results in parallel
   useEffect(() => {
@@ -495,6 +495,7 @@ const SearchResults = () => {
         </div>
       </div>
       <div className="container max-w-5xl flex-1 px-3 sm:px-4 py-4 sm:py-8">
+        <LocationNudge />
         {activeQuery ? (
           <>
             {vehicleInfo && (
