@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import {
   Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star,
-  Truck, Bookmark, BookmarkCheck, MapPin, Clock,
+  Truck, Bookmark, BookmarkCheck, Clock,
   Heart, AlertCircle, Zap, Filter as FilterIcon,
   ChevronLeft, ChevronRight, ChevronDown, Pencil, Calendar, Palette, Fuel, Gauge,
   ShieldCheck, Receipt, Check, X as XIcon,
