@@ -240,7 +240,7 @@ const FilterDropdown = ({
   label: string;
   isActive: boolean;
   openFilter: string | null;
-  toggleFilter: (name: string) => void;
+  toggleFilter: (e: React.MouseEvent, name: string) => void;
   children: React.ReactNode;
   alignRight?: boolean;
   panelWidth?: string;
@@ -248,7 +248,7 @@ const FilterDropdown = ({
   <div style={{ position: "relative" }} className="shrink-0">
     <button
       type="button"
-      onClick={(e) => { e.stopPropagation(); toggleFilter(filterKey); }}
+      onClick={(e) => toggleFilter(e, filterKey)}
       className={`flex min-h-[44px] items-center gap-2 rounded-xl border px-4 py-2 text-sm whitespace-nowrap transition-all duration-200 ${
         isActive
           ? "border-red-500/40 bg-red-500/10 text-red-400"
