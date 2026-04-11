@@ -2,8 +2,6 @@ import { X, Scale, Star, MapPin, Truck, Package, ExternalLink, Zap } from "lucid
 import { Button } from "@/components/ui/button";
 import VerifiedSellerBadge from "@/components/badges/VerifiedSellerBadge";
 import { useLocale } from "@/contexts/LocaleContext";
-import CountryFlag from "@/components/CountryFlag";
-import { useCountry } from "@/hooks/useCountry";
 
 export interface CompareItem {
   id: string;
@@ -72,7 +70,6 @@ interface CompareModalProps {
 
 export const CompareModal = ({ items, onRemove, onClose }: CompareModalProps) => {
   const locale = useLocale();
-  const { country } = useCountry();
 
   if (items.length < 2) return null;
 
