@@ -11,6 +11,8 @@ import PageLoader from "@/components/PageLoader";
 import CookieConsent from "./components/CookieConsent.tsx";
 import DevToolsGuard from "./components/DevToolsGuard.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
+import ErrorBoundary from "./components/ErrorBoundary.tsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
 // Eager load critical route
 import Index from "./pages/Index.tsx";
@@ -41,7 +43,6 @@ const Refund = lazy(() => import("./pages/Refund.tsx"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail.tsx"));
 const SubscriptionPolicy = lazy(() => import("./pages/SubscriptionPolicy.tsx"));
 
-
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -54,14 +55,15 @@ const App = () => (
           <CountryProvider>
           <LocaleProvider>
           <ScrollToTop />
+          <ErrorBoundary>
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/search" element={<SearchResults />} />
-              <Route path="/saved" element={<SavedParts />} />
+              <Route path="/saved" element={<ProtectedRoute><SavedParts /></ProtectedRoute>} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
@@ -71,19 +73,20 @@ const App = () => (
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPostPage />} />
               <Route path="/list-your-parts" element={<ListYourParts />} />
-              <Route path="/my-market" element={<MyMarket />} />
+              <Route path="/my-market" element={<ProtectedRoute><MyMarket /></ProtectedRoute>} />
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/listing/:id" element={<ListingDetail />} />
               <Route path="/seller/:id" element={<SellerProfile />} />
               <Route path="/pricing" element={<Pricing />} />
-              <Route path="/garage" element={<Garage />} />
+              <Route path="/garage" element={<ProtectedRoute><Garage /></ProtectedRoute>} />
               <Route path="/refund" element={<Refund />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/subscription-policy" element={<SubscriptionPolicy />} />
-              <Route path="/admin" element={<Admin />} />
+              <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
+          </ErrorBoundary>
           <CookieConsent />
           <DevToolsGuard />
           </LocaleProvider>
