@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useCountry } from "@/hooks/useCountry";
 
 const LocationBanner = () => {
-  const { showBanner, dismissBanner, setCountry, detectLocation } = useCountry();
+  const { showBanner, dismissBanner, setCountry, detectLocation, setSelectorHighlighted } = useCountry();
   const [detecting, setDetecting] = useState(false);
 
   if (!showBanner) return null;
@@ -15,11 +15,16 @@ const LocationBanner = () => {
       const detected = await detectLocation();
       setCountry(detected);
     } catch {
-      // Permission denied — dismiss banner, nudge will show later
       dismissBanner();
     } finally {
       setDetecting(false);
     }
+  };
+
+  const handleChooseManually = () => {
+    dismissBanner();
+    // Highlight the navbar country selector and open it
+    setSelectorHighlighted(true);
   };
 
   return (
@@ -49,7 +54,7 @@ const LocationBanner = () => {
             <Button
               size="sm"
               variant="outline"
-              onClick={dismissBanner}
+              onClick={handleChooseManually}
               className="rounded-xl text-xs border-zinc-600 text-zinc-300 hover:bg-zinc-800"
             >
               Choose Manually
