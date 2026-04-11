@@ -221,6 +221,15 @@ const SearchResults = () => {
   const [catalogLoading, setCatalogLoading] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
 
+  // ── Filter & Sort State ──
+  const [sortBy, setSortBy] = useState<typeof SORT_OPTIONS[number]["value"]>("best_match");
+  const [conditionFilter, setConditionFilter] = useState("All");
+  const [shippingFilter, setShippingFilter] = useState("All");
+  const [priceRangeIdx, setPriceRangeIdx] = useState(0);
+  const [brandFilter, setBrandFilter] = useState("All Brands");
+  const [categoryFilter, setCategoryFilter] = useState("All Parts");
+  const [sortOpen, setSortOpen] = useState(false);
+
   // Parse twemoji after results render
   useEffect(() => {
     const timer = setTimeout(parseTwemoji, 100);
