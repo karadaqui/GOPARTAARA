@@ -380,11 +380,12 @@ const SearchResults = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) { setAuthGateOpen(true); return; }
-    if (!query.trim()) return;
+    const sanitized = sanitizeInput(query.trim());
+    if (!sanitized) return;
     if (searchLimit.limitReached) { toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" }); return; }
-    const q = query.trim();
+    if (!checkRateLimit(`search_${user.id}`, 10, 60_000)) { toast({ title: "Slow down", description: "You're searching too fast. Please wait a moment.", variant: "destructive" }); return; }
     internalSearchRef.current = true;
-    setActiveQuery(q); setSelectedCategory(null); setCurrentPage(1); setSearchParams({ q });
+    setActiveQuery(sanitized); setSelectedCategory(null); setCurrentPage(1); setSearchParams({ q: sanitized });
     if (user) searchLimit.recordSearch();
   };
 
