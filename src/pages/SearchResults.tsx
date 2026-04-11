@@ -902,6 +902,7 @@ const SearchResults = () => {
                                         freeShipping: item.freeShipping,
                                         shippingCost: item.shippingCost,
                                         location: item.itemLocation,
+                                        itemCountry: item.itemCountry,
                                         url: item.url,
                                         imageUrl: item.imageUrl,
                                         source: "ebay" as const,
