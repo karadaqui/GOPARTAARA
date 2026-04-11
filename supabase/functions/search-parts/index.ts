@@ -10,10 +10,13 @@ const EBAY_AFFILIATE_CAMPID = "5339148333";
 const FREE_LIMIT = 5;
 const UNLIMITED_PLANS = ["pro", "elite", "admin"];
 
+const VALID_MARKETPLACES = ["EBAY_GB", "EBAY_DE", "EBAY_FR", "EBAY_IT", "EBAY_ES", "EBAY_AU", "EBAY_US", "EBAY_ENCA"];
+
 const BodySchema = z.object({
   query: z.string().min(1).max(500),
   category: z.string().max(100).optional(),
   offset: z.number().int().min(0).optional().default(0).transform((v) => Math.min(v, 9999)),
+  marketplace: z.string().max(20).optional(),
 });
 
 let oauthToken: { token: string; expiresAt: number } | null = null;
@@ -104,7 +107,8 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: parsed.error.flatten().fieldErrors, results: [] }, 400, corsHeaders);
     }
 
-    const { query, category, offset } = parsed.data;
+    const { query, category, offset, marketplace } = parsed.data;
+    const ebayMarketplace = (marketplace && VALID_MARKETPLACES.includes(marketplace)) ? marketplace : "EBAY_GB";
 
     // Check monthly limit for non-unlimited plans (only on first page)
     if (!isUnlimited && offset === 0) {
@@ -130,7 +134,7 @@ Deno.serve(async (req) => {
     }
 
     const searchQuery = category ? `${query} ${category}` : query;
-    const cacheKey = `${searchQuery.toLowerCase().trim()}:${offset || 0}`;
+    const cacheKey = `${ebayMarketplace}:${searchQuery.toLowerCase().trim()}:${offset || 0}`;
 
     const cached = getCached(cacheKey);
     if (cached) return jsonResponse(cached, 200, corsHeaders);
@@ -164,7 +168,7 @@ Deno.serve(async (req) => {
 
     const requestHeaders: Record<string, string> = {
       "Authorization": `Bearer ${token}`,
-      "X-EBAY-C-MARKETPLACE-ID": "EBAY_GB",
+      "X-EBAY-C-MARKETPLACE-ID": ebayMarketplace,
       "X-EBAY-C-ENDUSERCTX": `affiliateCampaignId=${EBAY_AFFILIATE_CAMPID},affiliateReferenceId=partara`,
     };
 

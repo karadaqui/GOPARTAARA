@@ -4,6 +4,7 @@ import { Menu, X, LogOut, User, ChevronDown, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationBell from "@/components/NotificationBell";
+import CountrySelector from "@/components/CountrySelector";
 
 const primaryLinks = [
   { label: "Home", href: "/" },
@@ -153,6 +154,7 @@ const Navbar = () => {
             )}
           </div>
 
+          <CountrySelector />
           {!loading && user && <NotificationBell />}
 
           <button className="md:hidden text-foreground" onClick={() => setOpen(!open)}>

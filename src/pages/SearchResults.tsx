@@ -22,6 +22,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
+import LocationNudge from "@/components/LocationNudge";
+import { useCountry } from "@/hooks/useCountry";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -107,6 +109,7 @@ const SearchResults = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const searchLimit = useSearchLimit();
+  const { country } = useCountry();
   const urlQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(urlQuery);
   // Auto-execute search from URL query parameter
@@ -180,7 +183,7 @@ const SearchResults = () => {
       try {
         const offset = (currentPage - 1) * ITEMS_PER_PAGE;
         const { data, error } = await supabase.functions.invoke("search-parts", {
-          body: { query: activeQuery, category: selectedCategory || undefined, offset },
+          body: { query: activeQuery, category: selectedCategory || undefined, offset, marketplace: country.ebayMarketplace },
         });
         if (error) {
           // Handle server-side auth/limit errors
@@ -229,7 +232,7 @@ const SearchResults = () => {
     };
     fetchLive();
     return () => { cancelled = true; };
-  }, [activeQuery, selectedCategory, currentPage, user]);
+  }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace]);
 
   // Fetch catalog results in parallel
   useEffect(() => {
@@ -492,6 +495,7 @@ const SearchResults = () => {
         </div>
       </div>
       <div className="container max-w-5xl flex-1 px-3 sm:px-4 py-4 sm:py-8">
+        <LocationNudge />
         {activeQuery ? (
           <>
             {vehicleInfo && (
@@ -782,6 +786,9 @@ const SearchResults = () => {
                                   <Shield size={8} className="sm:w-[10px] sm:h-[10px]" /> Top Rated
                                 </span>
                               )}
+                              <span className="absolute bottom-1 right-1 sm:bottom-3 sm:right-3 text-xs sm:text-sm leading-none" title={country.name}>
+                                {country.flag}
+                              </span>
                             </div>
                           </a>
                             <div className="p-2 sm:p-4 flex-1 flex flex-col min-w-0">
