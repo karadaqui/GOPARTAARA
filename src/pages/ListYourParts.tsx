@@ -157,7 +157,7 @@ interface CardProps {
   onSelect: () => void;
   was?: string;
   saving?: string;
-  icon?: React.ComponentType<{ size?: number; className?: string }>;
+  icon?: React.ForwardRefExoticComponent<React.RefAttributes<SVGSVGElement> & Record<string, any>>;
 }
 
 const PlanCard = ({ name, tagline, price, period, features, cta, popular, loading, slowWarning, onSelect, was, saving, icon: Icon }: CardProps) => (
