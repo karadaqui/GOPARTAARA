@@ -758,10 +758,10 @@ const SearchResults = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 mb-10">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
-            ) : liveResults.length > 0 ? (
-              <div className="mb-10">
+            ) : filteredResults.length > 0 ? (
+              <div className="mb-10 animate-fade-in">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-                  {liveResults.map((item: any, idx: number) => {
+                  {filteredResults.map((item: any, idx: number) => {
                     const priceBadge = getPriceBadge(item.price, item.title);
                     const conditionKey = item.condition === "New" ? "new" : item.condition === "Used" ? "used" : item.condition === "Refurbished" ? "refurbished" : "not_specified";
                     const conditionStyles = {
