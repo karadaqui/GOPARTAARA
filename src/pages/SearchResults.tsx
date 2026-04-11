@@ -27,6 +27,7 @@ import { useCountry } from "@/hooks/useCountry";
 import { useLocale } from "@/contexts/LocaleContext";
 import CountryFlag from "@/components/CountryFlag";
 
+
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
@@ -111,7 +112,7 @@ const SearchResults = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const searchLimit = useSearchLimit();
-  const { country } = useCountry();
+  const { country, isGlobal } = useCountry();
   const locale = useLocale();
   const urlQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(urlQuery);
@@ -762,7 +763,7 @@ const SearchResults = () => {
                     return liveResults.map((item: any) => {
                       const priceBadge = getPriceBadge(item.price, item.title);
                       return (
-                        <div key={item.id} className="group glass rounded-xl sm:rounded-2xl overflow-hidden hover:border-primary/30 card-hover flex flex-col relative">
+                        <div key={item.id} className="group rounded-2xl overflow-hidden border border-white/[0.08] bg-zinc-900 hover:border-white/20 hover:shadow-lg hover:shadow-black/50 transition-all duration-200 flex flex-col relative">
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
                             <div className="aspect-square sm:aspect-[4/3] bg-secondary/50 overflow-hidden relative">
                               <img
@@ -789,8 +790,19 @@ const SearchResults = () => {
                                   <Shield size={8} className="sm:w-[10px] sm:h-[10px]" /> {locale.t("top_rated")}
                                 </span>
                               )}
-                              <span className="absolute bottom-1 right-1 sm:bottom-3 sm:right-3" title={country.name}>
-                                <CountryFlag countryCode={country.code} emoji={country.flag} size={16} />
+                              <span className="absolute bottom-1 right-1 sm:bottom-3 sm:right-3" title={isGlobal ? (item.itemCountry || "Global") : country.name}>
+                                {isGlobal ? (
+                                  <span className="flex items-center gap-1">
+                                    <span className="text-sm">🌍</span>
+                                    {item.itemCountry && (
+                                      <span className="text-[8px] bg-black/60 backdrop-blur-sm text-white/80 px-1 py-0.5 rounded">
+                                        <CountryFlag countryCode={item.itemCountry} emoji={countryFlags[item.itemCountry] || "🌍"} size={12} />
+                                      </span>
+                                    )}
+                                  </span>
+                                ) : (
+                                  <CountryFlag countryCode={country.code} emoji={country.flag} size={16} />
+                                )}
                               </span>
                             </div>
                           </a>
@@ -820,36 +832,36 @@ const SearchResults = () => {
                                     ✓ {locale.t("in_stock")}
                                   </span>
                                 )}
-                                <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
+                                <div className="flex items-center gap-1.5 flex-wrap text-xs">
                                   {item.freeShipping ? (
-                                    <span className="flex items-center gap-1 text-emerald-400 font-medium">
-                                      <Truck size={12} /> {locale.t("free_shipping")}
+                                    <span className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                                      <Zap size={11} /> {locale.t("free_shipping")}
                                     </span>
                                   ) : item.shippingCost > 0 ? (
-                                    <span className="flex items-center gap-1">
+                                    <span className="inline-flex items-center gap-1 text-muted-foreground">
                                       <Truck size={12} /> +{locale.formatPrice(item.shippingCost)} P&P
                                     </span>
                                   ) : null}
                                   {item.expedited && (
-                                    <span className="flex items-center gap-1 text-primary">
+                                    <span className="inline-flex items-center gap-1 text-primary">
                                       <Zap size={11} /> Express
                                     </span>
                                   )}
                                   {item.handlingTime && (
-                                    <span className="flex items-center gap-1">
+                                    <span className="inline-flex items-center gap-1 text-muted-foreground">
                                       <Clock size={11} /> {item.handlingTime}{locale.t("handling_days")}
                                     </span>
                                   )}
                                 </div>
                                 {/* Shipping to user's location */}
                                 {item.itemCountry !== locale.locationCountry && (
-                                  <div className="flex items-center gap-1 text-xs">
+                                  <div className="flex items-center gap-1">
                                     {item.shipsToUK ? (
-                                      <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                                      <span className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                                         <Truck size={11} /> {locale.t("ships_to")} {locale.getCountryName(locale.locationCountry)}
                                       </span>
                                     ) : (
-                                      <span className="flex items-center gap-1 text-red-400 font-medium">
+                                      <span className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium bg-red-500/15 text-red-400 border border-red-500/30">
                                         🚫 {locale.t("no_ship")} {locale.getCountryName(locale.locationCountry)}
                                       </span>
                                     )}

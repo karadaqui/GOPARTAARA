@@ -7,6 +7,13 @@ export interface Country {
   ebayMarketplace: string;
 }
 
+export const GLOBAL_MARKETPLACE: Country = {
+  code: "GLOBAL",
+  name: "Global",
+  flag: "🌍",
+  ebayMarketplace: "EBAY_ENTH",
+};
+
 export const SUPPORTED_COUNTRIES: Country[] = [
   { code: "GB", name: "United Kingdom", flag: "🇬🇧", ebayMarketplace: "EBAY_GB" },
   { code: "DE", name: "Germany", flag: "🇩🇪", ebayMarketplace: "EBAY_DE" },
@@ -18,17 +25,31 @@ export const SUPPORTED_COUNTRIES: Country[] = [
   { code: "CA", name: "Canada", flag: "🇨🇦", ebayMarketplace: "EBAY_ENCA" },
 ];
 
-const LS_KEY = "partara_country";
+/** All selectable options including Global */
+export const ALL_MARKETPLACE_OPTIONS: Country[] = [GLOBAL_MARKETPLACE, ...SUPPORTED_COUNTRIES];
+
+const LS_MARKETPLACE_KEY = "partara_selected_marketplace";
 const LS_BANNER_DISMISSED = "partara_location_banner_dismissed";
 const SS_NUDGE_DISMISSED = "partara_location_nudge_dismissed";
-const DEFAULT_COUNTRY = SUPPORTED_COUNTRIES[0];
+const DEFAULT_COUNTRY = SUPPORTED_COUNTRIES[0]; // GB
 
-function getStoredCountry(): Country | null {
+function getStoredMarketplace(): Country | null {
   try {
-    const stored = localStorage.getItem(LS_KEY);
+    const stored = localStorage.getItem(LS_MARKETPLACE_KEY);
     if (stored) {
+      if (stored === "GLOBAL") return GLOBAL_MARKETPLACE;
       const found = SUPPORTED_COUNTRIES.find((c) => c.code === stored);
       if (found) return found;
+    }
+    // Migrate old key
+    const old = localStorage.getItem("partara_country");
+    if (old) {
+      localStorage.removeItem("partara_country");
+      const found = SUPPORTED_COUNTRIES.find((c) => c.code === old);
+      if (found) {
+        localStorage.setItem(LS_MARKETPLACE_KEY, found.code);
+        return found;
+      }
     }
   } catch {}
   return null;
@@ -51,6 +72,7 @@ export function useNeedsFlagPolyfill(): boolean {
 }
 
 interface CountryContextValue {
+  /** The selected marketplace (for eBay search) */
   country: Country;
   setCountry: (c: Country) => void;
   showBanner: boolean;
@@ -61,13 +83,14 @@ interface CountryContextValue {
   detectLocation: () => Promise<Country>;
   selectorHighlighted: boolean;
   setSelectorHighlighted: (v: boolean) => void;
+  isGlobal: boolean;
 }
 
 const CountryContext = createContext<CountryContextValue | null>(null);
 
 export function CountryProvider({ children }: { children: ReactNode }) {
   const [country, setCountryState] = useState<Country>(
-    () => getStoredCountry() || DEFAULT_COUNTRY
+    () => getStoredMarketplace() || DEFAULT_COUNTRY
   );
   const [bannerDismissed, setBannerDismissed] = useState(() => {
     try { return localStorage.getItem(LS_BANNER_DISMISSED) === "true"; } catch { return false; }
@@ -75,7 +98,7 @@ export function CountryProvider({ children }: { children: ReactNode }) {
   const [nudgeDismissed, setNudgeDismissed] = useState(() => {
     try { return sessionStorage.getItem(SS_NUDGE_DISMISSED) === "true"; } catch { return false; }
   });
-  const [hasChosenCountry, setHasChosenCountry] = useState(() => !!getStoredCountry());
+  const [hasChosenCountry, setHasChosenCountry] = useState(() => !!getStoredMarketplace());
   const [selectorHighlighted, setSelectorHighlighted] = useState(false);
 
   const setCountry = useCallback((c: Country) => {
@@ -83,7 +106,7 @@ export function CountryProvider({ children }: { children: ReactNode }) {
     setHasChosenCountry(true);
     setSelectorHighlighted(false);
     try {
-      localStorage.setItem(LS_KEY, c.code);
+      localStorage.setItem(LS_MARKETPLACE_KEY, c.code);
       localStorage.setItem(LS_BANNER_DISMISSED, "true");
     } catch {}
     setBannerDismissed(true);
@@ -137,6 +160,7 @@ export function CountryProvider({ children }: { children: ReactNode }) {
         detectLocation,
         selectorHighlighted,
         setSelectorHighlighted,
+        isGlobal: country.code === "GLOBAL",
       }}
     >
       {children}
