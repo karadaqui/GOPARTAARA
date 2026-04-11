@@ -25,7 +25,6 @@ import { useCountry } from "@/hooks/useCountry";
 import { useLocale } from "@/contexts/LocaleContext";
 import CountryFlag from "@/components/CountryFlag";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 
 // ── Twemoji helper ──
@@ -170,6 +169,50 @@ const medianOf = (arr: number[]) => {
   return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
 };
 
+const matchesConditionFilter = (condition: string | undefined, filter: string) => {
+  const normalized = condition?.trim().toLowerCase() || "";
+
+  if (filter === "All") return true;
+  if (filter === "New") return normalized === "new";
+  if (filter === "Used") return normalized === "used" || normalized.includes("pre-owned");
+  if (filter === "Refurbished") return normalized.includes("refurb");
+
+  return true;
+};
+
+const getConditionMeta = (condition: string | undefined) => {
+  const label = condition?.trim() || "Unknown";
+  const normalized = label.toLowerCase();
+
+  if (normalized === "new") {
+    return { label, classes: "bg-emerald-900/60 text-emerald-400 border-b border-emerald-500/20" };
+  }
+
+  if (normalized === "used" || normalized.includes("pre-owned")) {
+    return { label, classes: "bg-amber-900/60 text-amber-400 border-b border-amber-500/20" };
+  }
+
+  if (normalized.includes("refurb")) {
+    return { label, classes: "bg-blue-900/60 text-blue-400 border-b border-blue-500/20" };
+  }
+
+  if (normalized.includes("for parts") || normalized.includes("not working")) {
+    return { label, classes: "bg-red-900/60 text-red-400 border-b border-red-500/20" };
+  }
+
+  return { label, classes: "bg-zinc-800/80 text-zinc-400 border-b border-white/10" };
+};
+
+const RESULT_ICON_BUTTON_CLASS = "w-8 h-8 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-200";
+
+const getPriceBadgeClasses = (variant: "great" | "good" | "high" | "top") => {
+  if (variant === "great") return "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25";
+  if (variant === "good") return "bg-blue-500/15 text-blue-400 border border-blue-500/25";
+  if (variant === "high") return "bg-red-500/15 text-red-400 border border-red-500/25";
+
+  return "bg-amber-500/15 text-amber-400 border border-amber-500/25";
+};
+
 // ── Skeleton Card ──
 const SkeletonCard = () => (
   <div className="rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111111]">
@@ -183,40 +226,44 @@ const SkeletonCard = () => (
   </div>
 );
 
-// ── Filter Dropdown Component (desktop dropdown / mobile bottom sheet) ──
-const FilterDropdown = ({ label, isActive, isOpen, onToggle, onClose, isMobile: mobile, children, alignRight, wider }: {
-  label: string; isActive: boolean; isOpen: boolean; onToggle: () => void; onClose: () => void;
-  isMobile: boolean; children: React.ReactNode; alignRight?: boolean; wider?: boolean;
+const FilterDropdown = ({
+  filterKey,
+  label,
+  isActive,
+  openFilter,
+  toggleFilter,
+  children,
+  alignRight,
+  panelWidth = "min-w-[160px]",
+}: {
+  filterKey: string;
+  label: string;
+  isActive: boolean;
+  openFilter: string | null;
+  toggleFilter: (name: string) => void;
+  children: React.ReactNode;
+  alignRight?: boolean;
+  panelWidth?: string;
 }) => (
-  <div className="relative shrink-0">
+  <div className="filter-dropdown relative shrink-0">
     <button
-      onClick={(e) => { e.stopPropagation(); onToggle(); }}
-      className={`flex items-center gap-1.5 px-3 py-2 sm:px-4 rounded-xl text-xs sm:text-sm transition-all duration-150 min-h-[44px] whitespace-nowrap ${
+      type="button"
+      onClick={() => toggleFilter(filterKey)}
+      className={`filter-dropdown flex min-h-[44px] items-center gap-2 rounded-xl border px-4 py-2 text-sm whitespace-nowrap transition-all duration-200 ${
         isActive
-          ? "border border-red-500/40 text-red-400 bg-red-500/10"
-          : "bg-[#111]/60 border border-white/[0.08] text-zinc-300 hover:border-white/20 hover:text-white"
+          ? "border-red-500/40 bg-red-500/10 text-red-400"
+          : "border-white/[0.08] bg-zinc-900/60 text-zinc-300 hover:border-white/20 hover:text-white"
       }`}
     >
-      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
-      {label} <ChevronDown size={13} className="text-zinc-500" />
+      {isActive && <span className="h-2 w-2 rounded-full bg-red-500" />}
+      <span>{label}</span>
+      <ChevronDown size={14} className={`transition-transform duration-200 ${openFilter === filterKey ? "rotate-180 text-red-400" : "text-zinc-500"}`} />
     </button>
-    {isOpen && (
-      <>
-        {/* Backdrop */}
-        <div className="fixed inset-0 z-40" onClick={(e) => { e.stopPropagation(); onClose(); }} />
-        {/* Panel: bottom sheet on mobile, dropdown on desktop */}
-        {mobile ? (
-          <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#141414] border-t border-white/10 rounded-t-3xl p-6 animate-in slide-in-from-bottom duration-200 max-h-[70vh] overflow-y-auto">
-            <div className="w-10 h-1 rounded-full bg-zinc-700 mx-auto mb-4" />
-            <p className="text-xs uppercase tracking-wider text-zinc-500 font-semibold mb-3">{label}</p>
-            <div className="space-y-1">{children}</div>
-          </div>
-        ) : (
-          <div className={`absolute top-full mt-2 ${alignRight ? "right-0" : "left-0"} bg-[#141414] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-2 ${wider ? "min-w-[220px]" : "min-w-[180px]"} z-50 animate-in fade-in slide-in-from-top-2 duration-150 max-h-[360px] overflow-y-auto`}>
-            {children}
-          </div>
-        )}
-      </>
+
+    {openFilter === filterKey && (
+      <div className={`filter-dropdown absolute top-[calc(100%+8px)] ${alignRight ? "right-0 left-auto" : "left-0"} z-[9999] rounded-2xl border border-white/10 bg-zinc-900 p-2 shadow-2xl max-h-[360px] overflow-y-auto ${panelWidth}`}>
+        {children}
+      </div>
     )}
   </div>
 );
