@@ -2,6 +2,7 @@ import { useState } from "react";
 import { MapPin, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCountry } from "@/hooks/useCountry";
+import { setDetectedLocation } from "@/contexts/LocaleContext";
 
 const LocationBanner = () => {
   const { showBanner, dismissBanner, setCountry, detectLocation, setSelectorHighlighted } = useCountry();
@@ -14,6 +15,8 @@ const LocationBanner = () => {
     try {
       const detected = await detectLocation();
       setCountry(detected);
+      // Store physical location separately for locale system
+      setDetectedLocation(detected.code);
     } catch {
       dismissBanner();
     } finally {

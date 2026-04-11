@@ -51,6 +51,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <CountryProvider>
+          <LocaleProvider>
           <ScrollToTop />
           <Suspense fallback={<PageLoader />}>
             <Routes>
@@ -84,6 +85,7 @@ const App = () => (
           </Suspense>
           <CookieConsent />
           <DevToolsGuard />
+          </LocaleProvider>
           </CountryProvider>
         </AuthProvider>
       </BrowserRouter>
