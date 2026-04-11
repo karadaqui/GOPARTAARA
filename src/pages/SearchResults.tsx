@@ -991,7 +991,7 @@ const SearchResults = () => {
                           </div>
 
                           {/* ── Action Buttons ── */}
-                          <div className="flex gap-2">
+                          <div className="flex flex-col sm:flex-row gap-2">
                             <a href={item.url} target="_blank" rel="noopener noreferrer"
                               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150">
                               <ExternalLink size={14} /> View on eBay
