@@ -786,6 +786,9 @@ const SearchResults = () => {
                                   <Shield size={8} className="sm:w-[10px] sm:h-[10px]" /> Top Rated
                                 </span>
                               )}
+                              <span className="absolute bottom-1 right-1 sm:bottom-3 sm:right-3 text-xs sm:text-sm leading-none" title={country.name}>
+                                {country.flag}
+                              </span>
                             </div>
                           </a>
                             <div className="p-2 sm:p-4 flex-1 flex flex-col min-w-0">
