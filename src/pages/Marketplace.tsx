@@ -126,7 +126,7 @@ const Marketplace = () => {
           "@context": "https://schema.org",
           "@type": "CollectionPage",
           "name": "PARTARA Parts Marketplace",
-          "url": "https://car-part-search.lovable.app/marketplace",
+          "url": "https://gopartara.com/marketplace",
           "description": "Browse and buy car parts from verified UK sellers."
         }}
       />

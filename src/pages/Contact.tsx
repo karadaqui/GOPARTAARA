@@ -85,7 +85,7 @@ const Contact = () => {
           "@context": "https://schema.org",
           "@type": "ContactPage",
           "name": "Contact PARTARA",
-          "url": "https://car-part-search.lovable.app/contact"
+          "url": "https://gopartara.com/contact"
         }}
       />
       <Navbar />

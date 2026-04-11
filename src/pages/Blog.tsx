@@ -97,7 +97,7 @@ const Blog = () => {
           "@context": "https://schema.org",
           "@type": "Blog",
           "name": "PARTARA Blog",
-          "url": "https://car-part-search.lovable.app/blog",
+          "url": "https://gopartara.com/blog",
           "description": "Expert advice on car parts, maintenance tips, and industry insights."
         }}
       />
