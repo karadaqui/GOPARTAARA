@@ -51,6 +51,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <CountryProvider>
+          <ScrollToTop />
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />
