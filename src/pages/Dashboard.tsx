@@ -239,7 +239,7 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
 
-      <div className="container relative z-10 max-w-2xl py-12 px-4">
+      <div className="container relative z-10 max-w-2xl pt-24 pb-12 px-4">
         <button
           onClick={() => navigate("/")}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
