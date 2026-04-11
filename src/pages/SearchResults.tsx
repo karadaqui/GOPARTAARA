@@ -720,7 +720,7 @@ const SearchResults = () => {
                 brandFilter={brandFilter}
                 setBrandFilter={setBrandFilter}
                 sortBy={sortBy}
-                setSortBy={setSortBy}
+                setSortBy={(v) => setSortBy(v as typeof SORT_OPTIONS[number]["value"])}
                 activeFilterCount={activeFilterCount}
                 clearAllFilters={clearAllFilters}
                 shipsToLabel={locale.getCountryName(locale.locationCountry)}
