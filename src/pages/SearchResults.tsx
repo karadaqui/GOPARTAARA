@@ -57,15 +57,43 @@ const globalSuppliers: { name: string; flag: string; region: string; gradient: s
 ];
 
 const PART_CATEGORIES = [
-  { label: "Engine Parts", icon: "⚙️" },
-  { label: "Body Parts", icon: "🚗" },
+  { label: "All Parts", icon: "🔧" },
+  { label: "Engine", icon: "⚙️" },
   { label: "Brakes", icon: "🛑" },
   { label: "Suspension", icon: "🔧" },
   { label: "Electrical", icon: "⚡" },
-  { label: "Filters", icon: "🔍" },
+  { label: "Body Panels", icon: "🚗" },
   { label: "Exhaust", icon: "💨" },
+  { label: "Filters", icon: "🔍" },
+  { label: "Lighting", icon: "💡" },
+  { label: "Transmission", icon: "⚙️" },
   { label: "Interior", icon: "🪑" },
 ];
+
+const SORT_OPTIONS = [
+  { value: "best_match", label: "Best Match", icon: "✦" },
+  { value: "price_asc", label: "Price: Low to High", icon: "💰" },
+  { value: "price_desc", label: "Price: High to Low", icon: "💰" },
+  { value: "fastest_ship", label: "Fastest Shipping", icon: "⚡" },
+  { value: "slowest_ship", label: "Slowest Shipping", icon: "🐢" },
+  { value: "top_rated", label: "Top Rated Sellers", icon: "⭐" },
+  { value: "newly_listed", label: "Newly Listed", icon: "🆕" },
+  { value: "most_viewed", label: "Most Viewed", icon: "🔥" },
+] as const;
+
+type SortValue = typeof SORT_OPTIONS[number]["value"];
+
+const CONDITION_FILTERS = ["All", "New", "Used", "Refurbished"] as const;
+const SHIPPING_FILTERS = ["All", "Free Shipping", "Ships to Country", "Fast"] as const;
+const PRICE_RANGES = [
+  { label: "All Prices", min: 0, max: Infinity },
+  { label: "Under £25", min: 0, max: 25 },
+  { label: "£25 – £100", min: 25, max: 100 },
+  { label: "£100 – £500", min: 100, max: 500 },
+  { label: "Over £500", min: 500, max: Infinity },
+] as const;
+
+const TRUSTED_BRANDS = ["All Brands", "Bosch", "Brembo", "Mintex", "Febi Bilstein", "Gates", "SKF", "NGK", "Valeo", "Monroe", "Delphi"] as const;
 
 const oemBrands: { brand: string; pattern: RegExp; label: string; url: (q: string) => string; gradient: string }[] = [
   { brand: "BMW", pattern: /bmw/i, label: "BMW OEM Catalog", url: (q) => `https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(q)}`, gradient: "from-[#1C69D4] to-[#0A3D91]" },
