@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Search, ExternalLink, Loader2, Camera, Car, Scale, Star,
   Truck, Bookmark, BookmarkCheck, Clock,
-  Heart, AlertCircle, Zap, Filter as FilterIcon,
+  Heart, AlertCircle, Zap,
   ChevronLeft, ChevronRight, ChevronDown, Pencil, Calendar, Palette, Fuel, Gauge,
   ShieldCheck, Receipt, Check,
 } from "lucide-react";
@@ -26,7 +26,7 @@ import { useCountry } from "@/hooks/useCountry";
 import { useLocale } from "@/contexts/LocaleContext";
 import CountryFlag from "@/components/CountryFlag";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
 
 // ── Twemoji helper ──
 const parseTwemoji = () => {
@@ -90,7 +90,8 @@ const PRICE_RANGES = [
   { label: "Over £500", min: 500, max: Infinity },
 ] as const;
 
-const TRUSTED_BRANDS = ["All Brands", "Bosch", "Brembo", "Mintex", "Febi Bilstein", "Gates", "SKF", "NGK", "Valeo", "Monroe", "Delphi"] as const;
+const BRAND_SOURCES_ACTIVE = ["eBay", "Amazon"] as const;
+const BRAND_SOURCES_COMING = ["Autodoc", "Euro Car Parts", "GSF Car Parts", "Car Parts 4 Less"] as const;
 
 const oemBrands: { brand: string; pattern: RegExp; label: string; url: (q: string) => string; gradient: string }[] = [
   { brand: "BMW", pattern: /bmw/i, label: "BMW OEM Catalog", url: (q) => `https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(q)}`, gradient: "from-[#1C69D4] to-[#0A3D91]" },
@@ -223,9 +224,9 @@ const SearchResults = () => {
   const [conditionFilter, setConditionFilter] = useState("All");
   const [shippingFilter, setShippingFilter] = useState("All");
   const [priceRangeIdx, setPriceRangeIdx] = useState(0);
-  const [brandFilter, setBrandFilter] = useState("All Brands");
+  const [brandFilter, setBrandFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All Parts");
-  const [sortOpen, setSortOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   // Parse twemoji after results render
   useEffect(() => {
@@ -431,7 +432,7 @@ const SearchResults = () => {
   const getFlag = (code: string) => countryFlags[code] || "🌍";
 
   // ── Filtered & Sorted Results ──
-  const activeFilterCount = [conditionFilter !== "All", shippingFilter !== "All", priceRangeIdx !== 0, brandFilter !== "All Brands", categoryFilter !== "All Parts"].filter(Boolean).length;
+  const activeFilterCount = [conditionFilter !== "All", shippingFilter !== "All", priceRangeIdx !== 0, brandFilter !== "All", categoryFilter !== "All Parts"].filter(Boolean).length;
 
   const filteredResults = (() => {
     let results = [...liveResults];
@@ -456,10 +457,7 @@ const SearchResults = () => {
       results = results.filter((item) => item.price >= range.min && item.price < (range.max === Infinity ? 999999999 : range.max));
     }
 
-    // Brand filter
-    if (brandFilter !== "All Brands") {
-      results = results.filter((item) => (item.partName || item.title || "").toLowerCase().includes(brandFilter.toLowerCase()));
-    }
+    // Brand/source filter (eBay results are already eBay, so this is a no-op for eBay; Amazon handled elsewhere)
 
     // Category filter
     if (categoryFilter !== "All Parts") {
@@ -486,7 +484,7 @@ const SearchResults = () => {
     setConditionFilter("All");
     setShippingFilter("All");
     setPriceRangeIdx(0);
-    setBrandFilter("All Brands");
+    setBrandFilter("All");
     setCategoryFilter("All Parts");
     setSortBy("best_match");
   };
@@ -649,102 +647,173 @@ const SearchResults = () => {
               </div>
             </div>
 
-            {/* ── Sort & Filter Bar ── */}
+            {/* ── Sort & Filter Bar (Dropdowns) ── */}
             {liveResults.length > 0 && !liveLoading && (
-              <div className="bg-[#111]/40 backdrop-blur-sm border border-white/[0.06] rounded-2xl p-4 mb-6 space-y-3">
-                {/* Top row: active filter count + sort dropdown */}
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-zinc-500 flex items-center gap-1.5">
-                      <FilterIcon size={12} /> Filters
-                    </span>
-                    {activeFilterCount > 0 && (
+              <div className="bg-[#111]/40 backdrop-blur-sm border border-white/[0.06] rounded-2xl px-3 py-2.5 mb-6">
+                <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+                  {/* Active filter count */}
+                  {activeFilterCount > 0 && (
+                    <div className="flex items-center gap-1.5 shrink-0 pr-2 border-r border-white/10">
+                      <span className="bg-red-600 text-white text-[10px] font-bold rounded-full px-2 py-0.5">{activeFilterCount}</span>
+                      <button onClick={clearAllFilters} className="text-[11px] text-zinc-500 hover:text-white transition-colors whitespace-nowrap">Clear all</button>
+                    </div>
+                  )}
+
+                  {/* Condition Dropdown */}
+                  <div className="relative shrink-0">
+                    <button onClick={() => setOpenDropdown(openDropdown === "condition" ? null : "condition")}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm transition-all duration-150 ${conditionFilter !== "All" ? "border border-red-500/40 text-red-400 bg-red-500/10" : "bg-[#111]/60 border border-white/[0.08] text-zinc-300 hover:border-white/20 hover:text-white"}`}>
+                      {conditionFilter !== "All" && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
+                      Condition <ChevronDown size={13} className="text-zinc-500" />
+                    </button>
+                    {openDropdown === "condition" && (
                       <>
-                        <span className="bg-red-600 text-white text-[10px] font-bold rounded-full px-2 py-0.5">{activeFilterCount}</span>
-                        <button onClick={clearAllFilters} className="text-[11px] text-zinc-500 hover:text-white transition-colors">Clear all</button>
+                        <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
+                        <div className="absolute top-full mt-2 left-0 bg-[#141414] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-2 min-w-[180px] z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                          {(["All", "New", "Used", "Refurbished"] as const).map((c) => (
+                            <button key={c} onClick={() => { setConditionFilter(c); setOpenDropdown(null); }}
+                              className={`w-full px-3 py-2 rounded-xl text-sm text-left transition-all ${conditionFilter === c ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
+                              {c === "All" ? "All Conditions" : c}
+                            </button>
+                          ))}
+                        </div>
                       </>
                     )}
                   </div>
-                  {/* Sort dropdown */}
-                  <Popover open={sortOpen} onOpenChange={setSortOpen}>
-                    <PopoverTrigger asChild>
-                      <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1a1a1a] border border-white/10 text-sm text-white hover:border-white/20 transition-all">
-                        <span className="text-zinc-500 text-xs">Sort by</span>
-                        <span className="font-medium">{SORT_OPTIONS.find(s => s.value === sortBy)?.icon} {SORT_OPTIONS.find(s => s.value === sortBy)?.label}</span>
-                        <ChevronDown size={14} className="text-zinc-500" />
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-56 p-1.5 bg-[#141414] border-white/10" align="end">
-                      {SORT_OPTIONS.map((opt) => (
-                        <button key={opt.value} onClick={() => { setSortBy(opt.value); setSortOpen(false); }}
-                          className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all text-left ${sortBy === opt.value ? "bg-red-600/20 text-red-400 font-semibold" : "text-zinc-400 hover:text-white hover:bg-[#1a1a1a]"}`}>
-                          <span>{opt.icon}</span> {opt.label}
-                        </button>
-                      ))}
-                    </PopoverContent>
-                  </Popover>
-                </div>
 
-                {/* Filter rows */}
-                <div className="space-y-2">
-                  {/* Condition */}
-                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5">
-                    <span className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold shrink-0 w-16">Condition</span>
-                    {(["All", "New", "Used", "Refurbished"] as const).map((c) => (
-                      <button key={c} onClick={() => setConditionFilter(c)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-150 ${conditionFilter === c ? "bg-red-600/20 border border-red-500/40 text-red-400 font-semibold" : "bg-[#1a1a1a] border border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/20 hover:bg-[#222]"}`}>
-                        {c === "All" ? "All Conditions" : c}
-                      </button>
-                    ))}
+                  {/* Shipping Dropdown */}
+                  <div className="relative shrink-0">
+                    <button onClick={() => setOpenDropdown(openDropdown === "shipping" ? null : "shipping")}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm transition-all duration-150 ${shippingFilter !== "All" ? "border border-red-500/40 text-red-400 bg-red-500/10" : "bg-[#111]/60 border border-white/[0.08] text-zinc-300 hover:border-white/20 hover:text-white"}`}>
+                      {shippingFilter !== "All" && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
+                      Shipping <ChevronDown size={13} className="text-zinc-500" />
+                    </button>
+                    {openDropdown === "shipping" && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
+                        <div className="absolute top-full mt-2 left-0 bg-[#141414] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-2 min-w-[200px] z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                          {([
+                            { key: "All", label: "All", icon: "" },
+                            { key: "Free Shipping", label: "⚡ Free Shipping", icon: "" },
+                            { key: "Ships to Country", label: `📦 Ships to ${locale.getCountryName(locale.locationCountry)}`, icon: "" },
+                            { key: "Fast", label: "🚀 Fast (< 5 days)", icon: "" },
+                          ] as const).map((s) => (
+                            <button key={s.key} onClick={() => { setShippingFilter(s.key); setOpenDropdown(null); }}
+                              className={`w-full px-3 py-2 rounded-xl text-sm text-left transition-all ${shippingFilter === s.key ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
+                              {s.label}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
 
-                  {/* Shipping */}
-                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5">
-                    <span className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold shrink-0 w-16">Shipping</span>
-                    {([
-                      { key: "All", label: "All", icon: "" },
-                      { key: "Free Shipping", label: "Free Shipping", icon: "⚡" },
-                      { key: "Ships to Country", label: `Ships to ${locale.getCountryName(locale.locationCountry)}`, icon: "📦" },
-                      { key: "Fast", label: "Fast (< 5 days)", icon: "🚀" },
-                    ] as const).map((s) => (
-                      <button key={s.key} onClick={() => setShippingFilter(s.key)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-150 ${shippingFilter === s.key ? "bg-red-600/20 border border-red-500/40 text-red-400 font-semibold" : "bg-[#1a1a1a] border border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/20 hover:bg-[#222]"}`}>
-                        {s.icon && <span className="mr-1">{s.icon}</span>}{s.label}
-                      </button>
-                    ))}
+                  {/* Price Dropdown */}
+                  <div className="relative shrink-0">
+                    <button onClick={() => setOpenDropdown(openDropdown === "price" ? null : "price")}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm transition-all duration-150 ${priceRangeIdx !== 0 ? "border border-red-500/40 text-red-400 bg-red-500/10" : "bg-[#111]/60 border border-white/[0.08] text-zinc-300 hover:border-white/20 hover:text-white"}`}>
+                      {priceRangeIdx !== 0 && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
+                      Price <ChevronDown size={13} className="text-zinc-500" />
+                    </button>
+                    {openDropdown === "price" && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
+                        <div className="absolute top-full mt-2 left-0 bg-[#141414] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-2 min-w-[180px] z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                          {PRICE_RANGES.map((range, idx) => (
+                            <button key={range.label} onClick={() => { setPriceRangeIdx(idx); setOpenDropdown(null); }}
+                              className={`w-full px-3 py-2 rounded-xl text-sm text-left transition-all ${priceRangeIdx === idx ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
+                              {range.label}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
 
-                  {/* Price Range */}
-                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5">
-                    <span className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold shrink-0 w-16">Price</span>
-                    {PRICE_RANGES.map((range, idx) => (
-                      <button key={range.label} onClick={() => setPriceRangeIdx(idx)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-150 ${priceRangeIdx === idx ? "bg-red-600/20 border border-red-500/40 text-red-400 font-semibold" : "bg-[#1a1a1a] border border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/20 hover:bg-[#222]"}`}>
-                        {range.label}
-                      </button>
-                    ))}
+                  {/* Category Dropdown */}
+                  <div className="relative shrink-0">
+                    <button onClick={() => setOpenDropdown(openDropdown === "category" ? null : "category")}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm transition-all duration-150 ${categoryFilter !== "All Parts" ? "border border-red-500/40 text-red-400 bg-red-500/10" : "bg-[#111]/60 border border-white/[0.08] text-zinc-300 hover:border-white/20 hover:text-white"}`}>
+                      {categoryFilter !== "All Parts" && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
+                      Category <ChevronDown size={13} className="text-zinc-500" />
+                    </button>
+                    {openDropdown === "category" && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
+                        <div className="absolute top-full mt-2 left-0 bg-[#141414] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-2 min-w-[180px] z-50 animate-in fade-in slide-in-from-top-2 duration-150 max-h-[320px] overflow-y-auto">
+                          {PART_CATEGORIES.map((cat) => (
+                            <button key={cat.label} onClick={() => { setCategoryFilter(cat.label); setOpenDropdown(null); }}
+                              className={`w-full px-3 py-2 rounded-xl text-sm text-left transition-all flex items-center gap-2 ${categoryFilter === cat.label ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
+                              <span>{cat.icon}</span> {cat.label}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
 
-                  {/* Trusted Brands */}
-                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5">
-                    <span className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold shrink-0 w-16">Brand</span>
-                    {TRUSTED_BRANDS.map((b) => (
-                      <button key={b} onClick={() => setBrandFilter(b)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-150 ${brandFilter === b ? "bg-red-600/20 border border-red-500/40 text-red-400 font-semibold" : "bg-[#1a1a1a] border border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/20 hover:bg-[#222]"}`}>
-                        {b}
-                      </button>
-                    ))}
+                  {/* Brand Dropdown */}
+                  <div className="relative shrink-0">
+                    <button onClick={() => setOpenDropdown(openDropdown === "brand" ? null : "brand")}
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm transition-all duration-150 ${brandFilter !== "All" ? "border border-red-500/40 text-red-400 bg-red-500/10" : "bg-[#111]/60 border border-white/[0.08] text-zinc-300 hover:border-white/20 hover:text-white"}`}>
+                      {brandFilter !== "All" && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
+                      Brand <ChevronDown size={13} className="text-zinc-500" />
+                    </button>
+                    {openDropdown === "brand" && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
+                        <div className="absolute top-full mt-2 left-0 bg-[#141414] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-2 min-w-[220px] z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                          <button onClick={() => { setBrandFilter("All"); setOpenDropdown(null); }}
+                            className={`w-full px-3 py-2 rounded-xl text-sm text-left transition-all ${brandFilter === "All" ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
+                            All Sources
+                          </button>
+                          <p className="px-3 pt-2 pb-1 text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Available Now</p>
+                          {BRAND_SOURCES_ACTIVE.map((b) => (
+                            <button key={b} onClick={() => { setBrandFilter(b); setOpenDropdown(null); }}
+                              className={`w-full px-3 py-2 rounded-xl text-sm text-left transition-all ${brandFilter === b ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
+                              {b}
+                            </button>
+                          ))}
+                          <p className="px-3 pt-3 pb-1 text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Coming Soon</p>
+                          {BRAND_SOURCES_COMING.map((b) => (
+                            <div key={b} className="relative overflow-hidden rounded-xl px-3 py-2 cursor-not-allowed">
+                              <div className="absolute inset-0 bg-gradient-to-r from-red-900/20 via-red-600/10 to-red-900/20 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] blur-sm" />
+                              <span className="relative text-zinc-600 text-sm flex items-center gap-2">
+                                {b}
+                                <span className="bg-red-900/40 border border-red-500/30 text-red-400 text-[10px] px-1.5 py-0.5 rounded-full font-medium">Soon</span>
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
 
-                  {/* Part Category */}
-                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5">
-                    <span className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold shrink-0 w-16">Category</span>
-                    {PART_CATEGORIES.map((cat) => (
-                      <button key={cat.label} onClick={() => setCategoryFilter(cat.label)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-150 ${categoryFilter === cat.label ? "bg-red-600/20 border border-red-500/40 text-red-400 font-semibold" : "bg-[#1a1a1a] border border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/20 hover:bg-[#222]"}`}>
-                        <span className="mr-1">{cat.icon}</span>{cat.label}
-                      </button>
-                    ))}
+                  {/* Spacer + Divider */}
+                  <div className="flex-1" />
+                  <div className="border-l border-white/10 h-6 shrink-0" />
+
+                  {/* Sort Dropdown */}
+                  <div className="relative shrink-0">
+                    <button onClick={() => setOpenDropdown(openDropdown === "sort" ? null : "sort")}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm bg-[#111]/60 border border-white/[0.08] text-zinc-300 hover:border-white/20 hover:text-white transition-all duration-150">
+                      <span className="text-zinc-500 text-xs">Sort:</span>
+                      <span className="font-medium whitespace-nowrap">{SORT_OPTIONS.find(s => s.value === sortBy)?.label}</span>
+                      <ChevronDown size={13} className="text-zinc-500" />
+                    </button>
+                    {openDropdown === "sort" && (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
+                        <div className="absolute top-full mt-2 right-0 bg-[#141414] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-2 min-w-[220px] z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                          {SORT_OPTIONS.map((opt) => (
+                            <button key={opt.value} onClick={() => { setSortBy(opt.value); setOpenDropdown(null); }}
+                              className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all text-left ${sortBy === opt.value ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
+                              <span>{opt.icon}</span> {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -798,26 +867,8 @@ const SearchResults = () => {
                           <div className="h-52 bg-[#0d0d0d] overflow-hidden relative">
                             <img src={item.imageUrl} alt={item.partName} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }} />
                             
-                            {/* ── Price Quality Badge (Bottom Overlay of Image) ── */}
-                            {(priceBadge || item.topRatedSeller) && (
-                              <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-black/80 to-transparent flex items-center justify-center">
-                                {priceBadge && (
-                                  <span className={`text-xs font-bold tracking-wider uppercase flex items-center gap-1 ${priceBadgeStyles[priceBadge.variant as keyof typeof priceBadgeStyles]?.text || "text-zinc-400"}`}>
-                                    <span>{priceBadgeStyles[priceBadge.variant as keyof typeof priceBadgeStyles]?.icon || "✦"}</span>
-                                    {priceBadge.label}
-                                  </span>
-                                )}
-                                {!priceBadge && item.topRatedSeller && (
-                                  <span className="text-xs font-bold tracking-wider uppercase flex items-center gap-1 text-amber-400">
-                                    <span>★</span>
-                                    {locale.t("top_rated")}
-                                  </span>
-                                )}
-                              </div>
-                            )}
-                            
-                            {/* ── Flag (Bottom Right, above price badge) ── */}
-                            <span className="absolute bottom-9 right-2 text-xl" title={isGlobal ? (item.itemCountry || "Global") : country.name}>
+                            {/* ── Flag (Bottom Right) ── */}
+                            <span className="absolute bottom-2 right-2 text-xl" title={isGlobal ? (item.itemCountry || "Global") : country.name}>
                               {isGlobal ? (
                                 <span className="flex items-center gap-1">
                                   <span>🌍</span>
@@ -844,6 +895,24 @@ const SearchResults = () => {
                               return conv ? <p className="text-xs text-zinc-500 mt-0.5">≈ {conv.symbol}{conv.converted.toFixed(2)}</p> : null;
                             })()}
                           </div>
+
+                          {/* ── Price Quality Badge (Card Body) ── */}
+                          {priceBadge && (
+                            <div className={`w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold mt-1 ${
+                              priceBadge.variant === "great" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25" :
+                              priceBadge.variant === "good" ? "bg-blue-500/15 text-blue-400 border border-blue-500/25" :
+                              priceBadge.variant === "high" ? "bg-red-500/15 text-red-400 border border-red-500/25" :
+                              "bg-amber-500/15 text-amber-400 border border-amber-500/25"
+                            }`}>
+                              <span>{priceBadgeStyles[priceBadge.variant as keyof typeof priceBadgeStyles]?.icon || "✦"}</span>
+                              {priceBadge.label}
+                            </div>
+                          )}
+                          {!priceBadge && item.topRatedSeller && (
+                            <div className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold mt-1 bg-amber-500/15 text-amber-400 border border-amber-500/25">
+                              <span>★</span> {locale.t("top_rated")}
+                            </div>
+                          )}
 
                           {/* ── Shipping Section ── */}
                           <div className="flex flex-col gap-1.5">
