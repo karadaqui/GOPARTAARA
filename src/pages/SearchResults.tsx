@@ -265,6 +265,10 @@ const SearchResults = () => {
   const [supplierBannerDismissed, setSupplierBannerDismissed] = useState(() => localStorage.getItem("supplier_banner_dismissed") === "1");
   const resultsRef = useRef<HTMLDivElement>(null);
 
+  // ── ScaleSERP state ──
+  const [scaleSerpResults, setScaleSerpResults] = useState<any[]>([]);
+  const [scaleSerpLoading, setScaleSerpLoading] = useState(false);
+
   // ── Filter & Sort State ──
   const [sortBy, setSortByRaw] = useState<typeof SORT_OPTIONS[number]["value"]>("best_match");
   const [conditionFilter, setConditionFilterRaw] = useState("All");
