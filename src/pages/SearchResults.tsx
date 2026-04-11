@@ -24,6 +24,8 @@ import { useSearchLimit } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
 import LocationNudge from "@/components/LocationNudge";
 import { useCountry } from "@/hooks/useCountry";
+import { useLocale } from "@/contexts/LocaleContext";
+import CountryFlag from "@/components/CountryFlag";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -110,6 +112,7 @@ const SearchResults = () => {
   const { toast } = useToast();
   const searchLimit = useSearchLimit();
   const { country } = useCountry();
+  const locale = useLocale();
   const urlQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(urlQuery);
   // Auto-execute search from URL query parameter
