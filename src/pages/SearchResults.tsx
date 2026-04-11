@@ -261,12 +261,20 @@ const SearchResults = () => {
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // ── Filter & Sort State ──
-  const [sortBy, setSortBy] = useState<typeof SORT_OPTIONS[number]["value"]>("best_match");
-  const [conditionFilter, setConditionFilter] = useState("All");
-  const [shippingFilter, setShippingFilter] = useState("All");
-  const [priceRangeIdx, setPriceRangeIdx] = useState(0);
-  const [brandFilter, setBrandFilter] = useState("All");
-  const [categoryFilter, setCategoryFilter] = useState("All Parts");
+  const [sortBy, setSortByRaw] = useState<typeof SORT_OPTIONS[number]["value"]>("best_match");
+  const [conditionFilter, setConditionFilterRaw] = useState("All");
+  const [shippingFilter, setShippingFilterRaw] = useState("All");
+  const [priceRangeIdx, setPriceRangeIdxRaw] = useState(0);
+  const [brandFilter, setBrandFilterRaw] = useState("All");
+  const [categoryFilter, setCategoryFilterRaw] = useState("All Parts");
+
+  // Wrap setters to reset page on filter change
+  const setSortBy = (v: typeof SORT_OPTIONS[number]["value"]) => { setSortByRaw(v); setCurrentPage(1); };
+  const setConditionFilter = (v: string) => { setConditionFilterRaw(v); setCurrentPage(1); };
+  const setShippingFilter = (v: string) => { setShippingFilterRaw(v); setCurrentPage(1); };
+  const setPriceRangeIdx = (v: number) => { setPriceRangeIdxRaw(v); setCurrentPage(1); };
+  const setBrandFilter = (v: string) => { setBrandFilterRaw(v); setCurrentPage(1); };
+  const setCategoryFilter = (v: string) => { setCategoryFilterRaw(v); setCurrentPage(1); };
   
 
   // Parse twemoji after results render
@@ -299,9 +307,25 @@ const SearchResults = () => {
       setEbayFallback(false);
       try {
         const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-        const { data, error } = await supabase.functions.invoke("search-parts", {
-          body: { query: activeQuery, category: selectedCategory || undefined, offset, marketplace: country.ebayMarketplace },
-        });
+        const priceRange = PRICE_RANGES[priceRangeIdx];
+        const body: Record<string, any> = {
+          query: activeQuery,
+          category: selectedCategory || undefined,
+          offset,
+          marketplace: country.ebayMarketplace,
+        };
+        // Pass filter params to edge function
+        if (conditionFilter !== "All") body.conditionFilter = conditionFilter;
+        if (shippingFilter !== "All") body.shippingFilter = shippingFilter;
+        if (priceRangeIdx > 0) {
+          body.priceMin = priceRange.min;
+          if (priceRange.max !== Infinity) body.priceMax = priceRange.max;
+        }
+        if (sortBy !== "best_match") body.sortBy = sortBy;
+        if (categoryFilter !== "All Parts") body.categoryFilter = categoryFilter;
+        if (brandFilter !== "All") body.brandFilter = brandFilter;
+
+        const { data, error } = await supabase.functions.invoke("search-parts", { body });
         if (error) {
           const msg = (error as any)?.message || "";
           if (msg.includes("UNAUTHORIZED") || msg.includes("401")) { if (!cancelled) setAuthGateOpen(true); return; }
@@ -324,7 +348,7 @@ const SearchResults = () => {
     };
     fetchLive();
     return () => { cancelled = true; };
-  }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace]);
+  }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter]);
 
 
   // ── Saved parts ──
@@ -450,44 +474,11 @@ const SearchResults = () => {
   const filteredResults = (() => {
     let results = [...liveResults];
 
-    // Condition filter
-    if (conditionFilter !== "All") {
-      results = results.filter((item) => item.condition === conditionFilter);
-    }
-
-    // Shipping filter
-    if (shippingFilter === "Free Shipping") {
-      results = results.filter((item) => item.freeShipping);
-    } else if (shippingFilter === "Ships to Country") {
-      results = results.filter((item) => item.shipsToUK);
-    } else if (shippingFilter === "Fast") {
-      results = results.filter((item) => item.handlingTime && item.handlingTime <= 5);
-    }
-
-    // Price range filter
-    if (priceRangeIdx > 0) {
-      const range = PRICE_RANGES[priceRangeIdx];
-      results = results.filter((item) => item.price >= range.min && item.price < (range.max === Infinity ? 999999999 : range.max));
-    }
-
-    // Brand/source filter (eBay results are already eBay, so this is a no-op for eBay; Amazon handled elsewhere)
-
-    // Category filter
-    if (categoryFilter !== "All Parts") {
-      results = results.filter((item) => {
-        const t = (item.partName || item.title || "").toLowerCase();
-        const catLower = categoryFilter.toLowerCase();
-        return t.includes(catLower) || (item.category && item.category.toLowerCase().includes(catLower));
-      });
-    }
-
-    // Sort
-    if (sortBy === "price_asc") results.sort((a, b) => (a.price || 0) - (b.price || 0));
-    else if (sortBy === "price_desc") results.sort((a, b) => (b.price || 0) - (a.price || 0));
-    else if (sortBy === "fastest_ship") results.sort((a, b) => (a.handlingTime || 99) - (b.handlingTime || 99));
+    // Sorting is handled server-side now, but keep client-side sort as fallback
+    // for sorts that eBay doesn't natively support
+    if (sortBy === "fastest_ship") results.sort((a, b) => (a.handlingTime || 99) - (b.handlingTime || 99));
     else if (sortBy === "slowest_ship") results.sort((a, b) => (b.handlingTime || 0) - (a.handlingTime || 0));
     else if (sortBy === "top_rated") results.sort((a, b) => (b.sellerPositivePercent || 0) - (a.sellerPositivePercent || 0));
-    else if (sortBy === "newly_listed") results.sort((a, b) => new Date(b.listingDate || 0).getTime() - new Date(a.listingDate || 0).getTime());
     else if (sortBy === "most_viewed") results.sort((a, b) => (b.watchCount || 0) - (a.watchCount || 0));
 
     return results;

@@ -12,11 +12,33 @@ const UNLIMITED_PLANS = ["pro", "elite", "admin"];
 
 const VALID_MARKETPLACES = ["EBAY_GB", "EBAY_DE", "EBAY_FR", "EBAY_IT", "EBAY_ES", "EBAY_AU", "EBAY_US", "EBAY_ENCA"];
 
+const CONDITION_MAP: Record<string, string> = {
+  "New": "1000",
+  "Used": "3000",
+  "Refurbished": "2500",
+  "For parts": "7000",
+};
+
+const SORT_MAP: Record<string, string> = {
+  "price_asc": "price",
+  "price_desc": "-price",
+  "newly_listed": "newlyListed",
+  "top_rated": "price",  // eBay Browse API doesn't have a "top rated" sort; fallback
+  "best_match": "",
+};
+
 const BodySchema = z.object({
   query: z.string().min(1).max(500),
   category: z.string().max(100).optional(),
   offset: z.number().int().min(0).optional().default(0).transform((v) => Math.min(v, 9999)),
   marketplace: z.string().max(20).optional(),
+  conditionFilter: z.string().max(50).optional(),
+  shippingFilter: z.string().max(50).optional(),
+  priceMin: z.number().min(0).optional(),
+  priceMax: z.number().min(0).optional(),
+  sortBy: z.string().max(50).optional(),
+  categoryFilter: z.string().max(100).optional(),
+  brandFilter: z.string().max(100).optional(),
 });
 
 let oauthToken: { token: string; expiresAt: number } | null = null;
@@ -64,11 +86,9 @@ Deno.serve(async (req) => {
 
   if (req.method === "OPTIONS") return corsPreflightResponse(corsHeaders);
 
-  // Request size limit (512KB for search)
   const sizeCheck = checkRequestSize(req, 524_288);
   if (sizeCheck) return sizeCheck;
 
-  // Rate limit by IP (30/min)
   const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   const { allowed } = await checkRateLimit(clientIp, "search-parts");
   if (!allowed) {
@@ -76,7 +96,6 @@ Deno.serve(async (req) => {
     return rateLimitResponse(corsHeaders);
   }
 
-  // JWT validation (mandatory)
   const auth = await validateJWT(req, corsHeaders);
   if (auth.error) {
     await logSecurityEvent("unauthenticated_access", req, undefined, "search-parts");
@@ -89,7 +108,6 @@ Deno.serve(async (req) => {
     { auth: { persistSession: false } }
   );
 
-  // Check search limits from DB (never trust frontend)
   const { data: profile } = await supabaseAdmin
     .from("profiles")
     .select("subscription_plan, bonus_searches")
@@ -107,10 +125,9 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: parsed.error.flatten().fieldErrors, results: [] }, 400, corsHeaders);
     }
 
-    const { query, category, offset, marketplace } = parsed.data;
+    const { query, category, offset, marketplace, conditionFilter, shippingFilter, priceMin, priceMax, sortBy, categoryFilter, brandFilter } = parsed.data;
     const ebayMarketplace = (marketplace && VALID_MARKETPLACES.includes(marketplace)) ? marketplace : "EBAY_GB";
 
-    // Check monthly limit for non-unlimited plans (only on first page)
     if (!isUnlimited && offset === 0) {
       const startOfMonth = new Date();
       startOfMonth.setDate(1);
@@ -133,14 +150,42 @@ Deno.serve(async (req) => {
       }
     }
 
-    const searchQuery = category ? `${query} ${category}` : query;
-    const cacheKey = `${ebayMarketplace}:${searchQuery.toLowerCase().trim()}:${offset || 0}`;
+    // Build search query with category/brand appended
+    let searchQuery = query;
+    if (category) searchQuery += ` ${category}`;
+    if (categoryFilter && categoryFilter !== "All Parts") searchQuery += ` ${categoryFilter}`;
+    if (brandFilter && brandFilter !== "All") searchQuery += ` ${brandFilter}`;
+
+    // Build eBay filter string
+    const filterParts: string[] = [];
+
+    if (conditionFilter && conditionFilter !== "All" && CONDITION_MAP[conditionFilter]) {
+      filterParts.push(`conditionIds:{${CONDITION_MAP[conditionFilter]}}`);
+    }
+
+    if (shippingFilter === "Free Shipping") {
+      filterParts.push("maxDeliveryCost:0");
+    }
+    if (shippingFilter === "Fast") {
+      filterParts.push("guaranteedDeliveryInDays:[1..5]");
+    }
+
+    if (priceMin !== undefined && priceMax !== undefined && priceMax > 0) {
+      const currency = ebayMarketplace === "EBAY_US" ? "USD" : ebayMarketplace === "EBAY_DE" || ebayMarketplace === "EBAY_FR" || ebayMarketplace === "EBAY_ES" || ebayMarketplace === "EBAY_IT" ? "EUR" : ebayMarketplace === "EBAY_AU" ? "AUD" : ebayMarketplace === "EBAY_ENCA" ? "CAD" : "GBP";
+      filterParts.push(`price:[${priceMin}..${priceMax}],priceCurrency:${currency}`);
+    } else if (priceMin !== undefined && priceMin > 0) {
+      const currency = ebayMarketplace === "EBAY_US" ? "USD" : ebayMarketplace === "EBAY_DE" || ebayMarketplace === "EBAY_FR" || ebayMarketplace === "EBAY_ES" || ebayMarketplace === "EBAY_IT" ? "EUR" : ebayMarketplace === "EBAY_AU" ? "AUD" : ebayMarketplace === "EBAY_ENCA" ? "CAD" : "GBP";
+      filterParts.push(`price:[${priceMin}..],priceCurrency:${currency}`);
+    }
+
+    // Build cache key including filters
+    const cacheKey = `${ebayMarketplace}:${searchQuery.toLowerCase().trim()}:${offset || 0}:${conditionFilter || ""}:${shippingFilter || ""}:${priceMin || 0}:${priceMax || 0}:${sortBy || ""}`;
 
     const cached = getCached(cacheKey);
     if (cached) return jsonResponse(cached, 200, corsHeaders);
 
-    // Record search atomically (only first page)
-    if (offset === 0) {
+    // Record search atomically (only first page, only when no filters applied to avoid double-counting)
+    if (offset === 0 && !conditionFilter && !shippingFilter && !priceMin && !sortBy && !categoryFilter && !brandFilter) {
       await supabaseAdmin.from("search_history").insert({
         user_id: auth.userId,
         query: query,
@@ -165,6 +210,17 @@ Deno.serve(async (req) => {
       q: searchQuery, category_ids: "6030", limit: "12",
       offset: String(offset || 0), fieldgroups: "MATCHING_ITEMS",
     });
+
+    // Add filter param
+    if (filterParts.length > 0) {
+      params.set("filter", filterParts.join(","));
+    }
+
+    // Add sort param
+    const ebaySort = sortBy ? SORT_MAP[sortBy] : "";
+    if (ebaySort) {
+      params.set("sort", ebaySort);
+    }
 
     const requestHeaders: Record<string, string> = {
       "Authorization": `Bearer ${token}`,
