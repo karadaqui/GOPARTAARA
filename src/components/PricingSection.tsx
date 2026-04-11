@@ -208,7 +208,7 @@ const PricingSection = () => {
   /* ─────────────────── Render ─────────────────── */
 
   return (
-    <div className="space-y-32">
+    <div className="space-y-16">
       {/* ── BUNDLE PLANS ─────────────────────────────── */}
       <section className="py-24">
         <div className="container px-4">

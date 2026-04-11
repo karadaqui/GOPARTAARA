@@ -8,6 +8,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import PageLoader from "@/components/PageLoader";
 import CookieConsent from "./components/CookieConsent.tsx";
 import DevToolsGuard from "./components/DevToolsGuard.tsx";
+import ScrollToTop from "./components/ScrollToTop.tsx";
 
 // Eager load critical route
 import Index from "./pages/Index.tsx";
@@ -48,6 +49,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <ScrollToTop />
           <Suspense fallback={<PageLoader />}>
             <Routes>
               <Route path="/" element={<Index />} />
