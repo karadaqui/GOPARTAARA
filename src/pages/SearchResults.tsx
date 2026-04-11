@@ -802,18 +802,22 @@ const SearchResults = () => {
                             </a>
                             <div className="mt-auto space-y-1.5 sm:space-y-3">
                               <div className="flex items-center gap-1.5 flex-wrap">
-                                <span className="text-sm sm:text-2xl font-bold text-primary whitespace-nowrap">£{item.price.toFixed(2)}</span>
+                                <span className="text-sm sm:text-2xl font-bold text-primary whitespace-nowrap">{locale.formatPrice(item.price)}</span>
+                                {(() => {
+                                  const conv = locale.convertPrice(item.price);
+                                  return conv ? <span className="text-[9px] sm:text-xs text-muted-foreground whitespace-nowrap">≈ {conv.symbol}{conv.converted.toFixed(2)}</span> : null;
+                                })()}
                               </div>
                               {/* Desktop-only details */}
                               <div className="hidden sm:block">
                                 {item.quantityAvailable != null && item.quantityAvailable > 0 && item.quantityAvailable <= 5 && (
                                   <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-400">
-                                    <AlertCircle size={11} /> Only {item.quantityAvailable} left
+                                    <AlertCircle size={11} /> {locale.t("left_only", { n: item.quantityAvailable })}
                                   </span>
                                 )}
                                 {item.quantityAvailable != null && item.quantityAvailable > 5 && (
                                   <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400">
-                                    ✓ In stock
+                                    ✓ {locale.t("in_stock")}
                                   </span>
                                 )}
                                 <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
