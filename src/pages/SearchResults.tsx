@@ -2,6 +2,8 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { X } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { sanitizeInput, checkRateLimit, getCachedSearch, setCachedSearch } from "@/lib/sanitize";
+import { useScaleSERP } from "@/lib/featureFlags";
+import SafeImage from "@/components/SafeImage";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -263,6 +265,10 @@ const SearchResults = () => {
   const [supplierBannerDismissed, setSupplierBannerDismissed] = useState(() => localStorage.getItem("supplier_banner_dismissed") === "1");
   const resultsRef = useRef<HTMLDivElement>(null);
 
+  // ── ScaleSERP state ──
+  const [scaleSerpResults, setScaleSerpResults] = useState<any[]>([]);
+  const [scaleSerpLoading, setScaleSerpLoading] = useState(false);
+
   // ── Filter & Sort State ──
   const [sortBy, setSortByRaw] = useState<typeof SORT_OPTIONS[number]["value"]>("best_match");
   const [conditionFilter, setConditionFilterRaw] = useState("All");
@@ -380,6 +386,38 @@ const SearchResults = () => {
       if (data) setSavedIds(new Set(data.map((d) => d.part_number).filter(Boolean) as string[]));
     });
   }, [user]);
+
+  // ── ScaleSERP fetch ──
+  useEffect(() => {
+    if (!useScaleSERP || !activeQuery.trim() || !user) return;
+    let cancelled = false;
+
+    const cacheKey = `scaleserp:${activeQuery.toLowerCase()}`;
+    try {
+      const raw = sessionStorage.getItem(cacheKey);
+      if (raw) {
+        const { data, ts } = JSON.parse(raw);
+        if (Date.now() - ts < 15 * 60 * 1000) {
+          setScaleSerpResults(data);
+          return;
+        }
+        sessionStorage.removeItem(cacheKey);
+      }
+    } catch {}
+
+    setScaleSerpLoading(true);
+    supabase.functions.invoke("search-scaleserp", { body: { query: activeQuery } })
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error || !data?.results) { setScaleSerpResults([]); return; }
+        setScaleSerpResults(data.results);
+        try { sessionStorage.setItem(cacheKey, JSON.stringify({ data: data.results, ts: Date.now() })); } catch {}
+      })
+      .catch(() => { if (!cancelled) setScaleSerpResults([]); })
+      .finally(() => { if (!cancelled) setScaleSerpLoading(false); });
+
+    return () => { cancelled = true; };
+  }, [activeQuery, user]);
 
   // ── Handlers ──
   const handleVehicleLookupStart = () => {
@@ -896,6 +934,63 @@ const SearchResults = () => {
                     );
                   })}
                 </div>
+
+                {/* ── 🔥 More Deals (ScaleSERP) ── */}
+                {useScaleSERP && scaleSerpLoading && (
+                  <div className="my-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-lg">🔥</span>
+                      <h3 className="text-base sm:text-lg font-bold text-white">More Deals</h3>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-500 font-medium">Google Shopping</span>
+                    </div>
+                    <div className="flex gap-3 overflow-x-auto pb-2">
+                      {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="shrink-0 w-[200px] rounded-2xl border border-white/[0.06] bg-[#111] overflow-hidden">
+                          <div className="h-32 bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
+                          <div className="p-3 space-y-2">
+                            <div className="h-3 w-3/4 rounded-full bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
+                            <div className="h-4 w-1/2 rounded-full bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {useScaleSERP && scaleSerpResults.length > 0 && !scaleSerpLoading && (
+                  <div className="my-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-lg">🔥</span>
+                      <h3 className="text-base sm:text-lg font-bold text-white">More Deals</h3>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-500 font-medium">Google Shopping</span>
+                    </div>
+                    <ScrollArea className="w-full">
+                      <div className="flex gap-3 pb-2">
+                        {scaleSerpResults.map((item: any, idx: number) => (
+                          <a key={idx} href={item.link} target="_blank" rel="noopener noreferrer"
+                            className="shrink-0 w-[200px] group rounded-2xl overflow-hidden border border-white/[0.06] bg-[#111] hover:border-white/[0.15] transition-all hover:scale-[1.02] flex flex-col">
+                            <div className="h-32 bg-[#0d0d0d] overflow-hidden flex items-center justify-center">
+                              <SafeImage src={item.image} alt={item.title} className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500" fallbackClassName="w-full h-full" />
+                            </div>
+                            <div className="p-3 flex-1 flex flex-col gap-1.5">
+                              <p className="text-xs font-medium text-white leading-snug line-clamp-2 min-h-[2rem] group-hover:text-red-400 transition-colors">{item.title}</p>
+                              {item.price && <p className="text-sm font-bold text-red-500">{item.price}</p>}
+                              <div className="flex items-center justify-between mt-auto pt-1 border-t border-white/[0.06]">
+                                <span className="text-[10px] text-zinc-500 truncate max-w-[120px]">{item.source}</span>
+                                {item.rating && (
+                                  <span className="flex items-center gap-0.5 text-[10px] text-amber-400">
+                                    <Star size={9} className="fill-amber-400" /> {item.rating}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </a>
+                        ))}
+                      </div>
+                      <ScrollBar orientation="horizontal" />
+                    </ScrollArea>
+                  </div>
+                )}
 
                 {/* More sources coming soon banner */}
                 <div className="my-6 p-4 rounded-2xl bg-zinc-900/50 border border-white/[0.06] text-center">
