@@ -823,11 +823,11 @@ const SearchResults = () => {
                                 <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
                                   {item.freeShipping ? (
                                     <span className="flex items-center gap-1 text-emerald-400 font-medium">
-                                      <Truck size={12} /> Free P&P
+                                      <Truck size={12} /> {locale.t("free_shipping")}
                                     </span>
                                   ) : item.shippingCost > 0 ? (
                                     <span className="flex items-center gap-1">
-                                      <Truck size={12} /> +£{item.shippingCost.toFixed(2)} P&P
+                                      <Truck size={12} /> +{locale.formatPrice(item.shippingCost)} P&P
                                     </span>
                                   ) : null}
                                   {item.expedited && (
@@ -837,16 +837,27 @@ const SearchResults = () => {
                                   )}
                                   {item.handlingTime && (
                                     <span className="flex items-center gap-1">
-                                      <Clock size={11} /> {item.handlingTime}d handling
+                                      <Clock size={11} /> {item.handlingTime}{locale.t("handling_days")}
                                     </span>
                                   )}
                                 </div>
+                                {/* Shipping to user's location */}
+                                {item.itemCountry !== locale.locationCountry && (
+                                  <div className="flex items-center gap-1 text-xs">
+                                    {item.shipsToUK ? (
+                                      <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                                        <Truck size={11} /> {locale.t("ships_to")} {locale.getCountryName(locale.locationCountry)}
+                                      </span>
+                                    ) : (
+                                      <span className="flex items-center gap-1 text-red-400 font-medium">
+                                        🚫 {locale.t("no_ship")} {locale.getCountryName(locale.locationCountry)}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                   <MapPin size={11} />
                                   <span>{getFlag(item.itemCountry)} {item.itemLocation}</span>
-                                  {item.shipsToUK && item.itemCountry !== "GB" && (
-                                    <span className="text-emerald-400 font-medium">• Ships to UK</span>
-                                  )}
                                 </div>
                               </div>
                               {/* Seller rating - compact on mobile */}
