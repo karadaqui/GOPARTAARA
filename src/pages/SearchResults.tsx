@@ -304,8 +304,6 @@ const SearchResults = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const internalSearchRef = useRef(false);
   const [authGateOpen, setAuthGateOpen] = useState(false);
-  const [catalogResults, setCatalogResults] = useState<any[]>([]);
-  const [catalogLoading, setCatalogLoading] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // ── Filter & Sort State ──
