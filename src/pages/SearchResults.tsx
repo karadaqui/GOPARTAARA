@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import {
-  Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star,
+  Search, ExternalLink, Loader2, Camera, Car, Scale, Star,
   Truck, Bookmark, BookmarkCheck, Clock,
   Heart, AlertCircle, Zap, Filter as FilterIcon,
   ChevronLeft, ChevronRight, ChevronDown, Pencil, Calendar, Palette, Fuel, Gauge,
