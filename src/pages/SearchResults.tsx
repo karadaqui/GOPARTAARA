@@ -8,7 +8,7 @@ import {
   Truck, Bookmark, BookmarkCheck, Clock,
   Heart, AlertCircle, Zap, Filter as FilterIcon,
   ChevronLeft, ChevronRight, ChevronDown, Pencil, Calendar, Palette, Fuel, Gauge,
-  ShieldCheck, Receipt, Check, X as XIcon,
+  ShieldCheck, Receipt, Check,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { useAuth } from "@/contexts/AuthContext";
@@ -81,10 +81,7 @@ const SORT_OPTIONS = [
   { value: "most_viewed", label: "Most Viewed", icon: "🔥" },
 ] as const;
 
-type SortValue = typeof SORT_OPTIONS[number]["value"];
 
-const CONDITION_FILTERS = ["All", "New", "Used", "Refurbished"] as const;
-const SHIPPING_FILTERS = ["All", "Free Shipping", "Ships to Country", "Fast"] as const;
 const PRICE_RANGES = [
   { label: "All Prices", min: 0, max: Infinity },
   { label: "Under £25", min: 0, max: 25 },
@@ -337,7 +334,7 @@ const SearchResults = () => {
     if (user) searchLimit.recordSearch();
   };
 
-  const handleCategorySelect = (cat: string) => { setSelectedCategory(selectedCategory === cat ? null : cat); setCurrentPage(1); };
+  
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
