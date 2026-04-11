@@ -12,6 +12,7 @@ import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
 import WelcomeModal from "@/components/WelcomeModal";
+import LocationBanner from "@/components/LocationBanner";
 
 const Index = () => {
   const location = useLocation();
@@ -57,6 +58,7 @@ const Index = () => {
       <Footer />
       <BackToTop />
       <WelcomeModal />
+      <LocationBanner />
     </div>
   );
 };
