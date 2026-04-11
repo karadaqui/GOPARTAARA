@@ -245,11 +245,11 @@ const FilterDropdown = ({
   alignRight?: boolean;
   panelWidth?: string;
 }) => (
-  <div className="filter-dropdown relative shrink-0">
+  <div style={{ position: "relative" }} className="shrink-0">
     <button
       type="button"
-      onClick={() => toggleFilter(filterKey)}
-      className={`filter-dropdown flex min-h-[44px] items-center gap-2 rounded-xl border px-4 py-2 text-sm whitespace-nowrap transition-all duration-200 ${
+      onClick={(e) => { e.stopPropagation(); toggleFilter(filterKey); }}
+      className={`flex min-h-[44px] items-center gap-2 rounded-xl border px-4 py-2 text-sm whitespace-nowrap transition-all duration-200 ${
         isActive
           ? "border-red-500/40 bg-red-500/10 text-red-400"
           : "border-white/[0.08] bg-zinc-900/60 text-zinc-300 hover:border-white/20 hover:text-white"
@@ -261,7 +261,11 @@ const FilterDropdown = ({
     </button>
 
     {openFilter === filterKey && (
-      <div className={`filter-dropdown absolute top-[calc(100%+8px)] ${alignRight ? "right-0 left-auto" : "left-0"} z-[9999] rounded-2xl border border-white/10 bg-zinc-900 p-2 shadow-2xl max-h-[360px] overflow-y-auto ${panelWidth}`}>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{ position: "absolute", zIndex: 9999, top: "100%", left: alignRight ? "auto" : 0, right: alignRight ? 0 : "auto", marginTop: 8 }}
+        className={`rounded-2xl border border-white/10 bg-zinc-900 p-2 shadow-2xl max-h-[360px] overflow-y-auto ${panelWidth}`}
+      >
         {children}
       </div>
     )}
