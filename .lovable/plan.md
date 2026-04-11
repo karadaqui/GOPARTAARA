@@ -1,41 +1,76 @@
 
 
-## Problem
+# ScaleSERP Integration Plan — "More Deals" Section
 
-When you confirm your email on your phone, the PC's `/verify-email` page stays stuck. This happens because:
-- The `storage` event listener only works between tabs in the **same browser** — it cannot detect logins on a different device
-- The `visibilitychange`/`focus` listener calls `getSession()`, but the PC has **no session** (it was signed out after signup to prevent pre-verification login)
-- The phone creates its own session — the PC never gets one
+## Overview
+Add ScaleSERP Google Shopping results as a separate, optional data source displayed in a "More Deals" section on the search results page. No existing search logic will be modified.
 
-The PC has no way to know the email was confirmed because there is no session to detect.
+## Architecture
 
-## Solution
+```text
+SearchResults.tsx
+├── Existing eBay results (unchanged)
+├── Amazon card (unchanged)
+├── NEW: "More Deals" section ← ScaleSERP results
+├── Global Suppliers (unchanged)
+└── Pagination (unchanged)
+```
 
-Create a backend function that checks whether an email address has been confirmed, and poll it from the `/verify-email` page every 3 seconds. Once confirmed, redirect the user to the sign-in page with a success message.
+## Step 1: Add ScaleSERP API Key as a Secret
+- Use `add_secret` to request `SCALESERP_API_KEY` from the user
+- The key is only used server-side in the edge function
 
-### Step 1: Create edge function `check-email-verified`
+## Step 2: Create Edge Function `search-scaleserp`
+**File:** `supabase/functions/search-scaleserp/index.ts`
 
-A lightweight function that accepts an email address and queries `auth.users` (using the service role key) to check if `email_confirmed_at` is set.
+- Accepts `{ query: string }` via POST
+- Validates JWT (authenticated users only)
+- Validates/sanitizes input with Zod (max 200 chars)
+- Calls `https://api.scaleserp.com/search` with:
+  - `api_key` from env, `search_type: "shopping"`, `q: query`, `num: 8`
+- In-memory cache with 15-minute TTL (keyed by query)
+- Returns simplified array:
+  ```json
+  [{ "title", "price", "source", "link", "image", "rating" }]
+  ```
+- CORS headers from shared security module
+- Graceful fallback: returns empty array on any error (never breaks the page)
 
-- Returns `{ verified: true }` or `{ verified: false }`
-- Rate-limited by design (only called every 3 seconds from one page)
+## Step 3: Add Feature Flag
+**File:** `src/lib/featureFlags.ts` (new)
 
-### Step 2: Update `/verify-email` page
+```ts
+export const useScaleSERP = true;
+```
 
-Replace the current storage/visibility listeners with:
-- **Poll every 3 seconds**: Call `check-email-verified` with the user's email
-- **On verified**: Navigate to `/auth` and show a toast: "Email verified! Please sign in."
-- **Keep existing listeners** as bonus for same-browser tab detection (instant redirect if confirmed in another tab on the same PC)
-- **Fallback button**: After 60 seconds, show a "Continue to sign in" link in case polling fails
+Simple boolean constant. Can be toggled to `false` to disable the feature instantly without removing code.
 
-### Step 3: Keep same-browser detection
+## Step 4: Frontend — "More Deals" Section
+**File:** `src/pages/SearchResults.tsx` (additions only, no existing code modified)
 
-The existing `storage` event and `onAuthStateChange` listeners stay as-is for the case where the user confirms in another tab on the same computer (instant detection). The polling handles the cross-device case.
+- Add state: `scaleSerpResults`, `scaleSerpLoading`
+- Add a separate `useEffect` that fires when `activeQuery` changes AND `useScaleSERP` is `true`:
+  - Check `sessionStorage` cache (key: `scaleserp:{query}`, 15-min TTL)
+  - If miss, call `supabase.functions.invoke("search-scaleserp", { body: { query } })`
+  - Store results in state + sessionStorage
+- Render a "More Deals" card section between the "More sources coming soon" banner and the Amazon card:
+  - Header: "🔥 More Deals" with a subtle "Google Shopping" badge
+  - Horizontal scroll row of compact product cards (image, title, price, source, external link)
+  - Skeleton loading state while fetching
+  - If no results or feature disabled: section hidden entirely (no empty state)
+- Each card opens the product link in a new tab
+
+## Step 5: Deploy Edge Function
+- Deploy `search-scaleserp` via the deploy tool
+
+## What stays untouched
+- `search-parts` edge function (eBay) — zero changes
+- All filter logic, FilterBar, sort, pagination — zero changes
+- Existing result cards, saved parts, compare — zero changes
 
 ## Technical Details
-
-- Edge function uses `SUPABASE_SERVICE_ROLE_KEY` to query `auth.users` by email
-- Only returns a boolean — no sensitive data exposed
-- The polling interval cleans up on unmount
-- No database migration needed
+- **Caching:** 15-min in-memory cache server-side + 15-min sessionStorage client-side = no duplicate API calls
+- **Security:** JWT required, input sanitized, API key server-side only
+- **Performance:** Separate useEffect, independent of eBay fetch; lazy/non-blocking
+- **Kill switch:** Set `useScaleSERP = false` to disable instantly
 
