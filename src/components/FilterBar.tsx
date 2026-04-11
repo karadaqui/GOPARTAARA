@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { ChevronDown } from "lucide-react";
 
 type FilterOption = { label: string; value: string };
@@ -17,7 +18,19 @@ const FilterDropdown = ({
   alignRight?: boolean;
 }) => {
   const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
   const ref = useRef<HTMLDivElement>(null);
+
+  const updatePos = useCallback(() => {
+    if (ref.current) {
+      const rect = ref.current.getBoundingClientRect();
+      setPos({
+        top: rect.bottom + 8,
+        left: alignRight ? rect.right - 180 : rect.left,
+        width: Math.max(rect.width, 180),
+      });
+    }
+  }, [alignRight]);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -29,10 +42,22 @@ const FilterDropdown = ({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  useEffect(() => {
+    if (open) {
+      updatePos();
+      window.addEventListener("scroll", updatePos, true);
+      window.addEventListener("resize", updatePos);
+      return () => {
+        window.removeEventListener("scroll", updatePos, true);
+        window.removeEventListener("resize", updatePos);
+      };
+    }
+  }, [open, updatePos]);
+
   const isActive = value !== options[0]?.value;
 
   return (
-    <div ref={ref} style={{ position: "relative" }} className="shrink-0">
+    <div ref={ref} className="shrink-0">
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -50,17 +75,18 @@ const FilterDropdown = ({
         />
       </button>
 
-      {open && (
+      {open && createPortal(
         <div
           style={{
-            position: "absolute",
+            position: "fixed",
             zIndex: 9999,
-            top: "calc(100% + 8px)",
-            left: alignRight ? "auto" : 0,
-            right: alignRight ? 0 : "auto",
-            minWidth: 180,
+            top: pos.top,
+            left: pos.left,
+            minWidth: pos.width,
           }}
           className="rounded-2xl border border-white/10 bg-zinc-900 p-2 shadow-2xl max-h-[360px] overflow-y-auto"
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
         >
           {options.map((opt) => (
             <button
@@ -78,7 +104,8 @@ const FilterDropdown = ({
               {opt.label}
             </button>
           ))}
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
