@@ -466,44 +466,11 @@ const SearchResults = () => {
   const filteredResults = (() => {
     let results = [...liveResults];
 
-    // Condition filter
-    if (conditionFilter !== "All") {
-      results = results.filter((item) => item.condition === conditionFilter);
-    }
-
-    // Shipping filter
-    if (shippingFilter === "Free Shipping") {
-      results = results.filter((item) => item.freeShipping);
-    } else if (shippingFilter === "Ships to Country") {
-      results = results.filter((item) => item.shipsToUK);
-    } else if (shippingFilter === "Fast") {
-      results = results.filter((item) => item.handlingTime && item.handlingTime <= 5);
-    }
-
-    // Price range filter
-    if (priceRangeIdx > 0) {
-      const range = PRICE_RANGES[priceRangeIdx];
-      results = results.filter((item) => item.price >= range.min && item.price < (range.max === Infinity ? 999999999 : range.max));
-    }
-
-    // Brand/source filter (eBay results are already eBay, so this is a no-op for eBay; Amazon handled elsewhere)
-
-    // Category filter
-    if (categoryFilter !== "All Parts") {
-      results = results.filter((item) => {
-        const t = (item.partName || item.title || "").toLowerCase();
-        const catLower = categoryFilter.toLowerCase();
-        return t.includes(catLower) || (item.category && item.category.toLowerCase().includes(catLower));
-      });
-    }
-
-    // Sort
-    if (sortBy === "price_asc") results.sort((a, b) => (a.price || 0) - (b.price || 0));
-    else if (sortBy === "price_desc") results.sort((a, b) => (b.price || 0) - (a.price || 0));
-    else if (sortBy === "fastest_ship") results.sort((a, b) => (a.handlingTime || 99) - (b.handlingTime || 99));
+    // Sorting is handled server-side now, but keep client-side sort as fallback
+    // for sorts that eBay doesn't natively support
+    if (sortBy === "fastest_ship") results.sort((a, b) => (a.handlingTime || 99) - (b.handlingTime || 99));
     else if (sortBy === "slowest_ship") results.sort((a, b) => (b.handlingTime || 0) - (a.handlingTime || 0));
     else if (sortBy === "top_rated") results.sort((a, b) => (b.sellerPositivePercent || 0) - (a.sellerPositivePercent || 0));
-    else if (sortBy === "newly_listed") results.sort((a, b) => new Date(b.listingDate || 0).getTime() - new Date(a.listingDate || 0).getTime());
     else if (sortBy === "most_viewed") results.sort((a, b) => (b.watchCount || 0) - (a.watchCount || 0));
 
     return results;
