@@ -313,15 +313,20 @@ const SearchResults = () => {
   const [priceRangeIdx, setPriceRangeIdx] = useState(0);
   const [brandFilter, setBrandFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All Parts");
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [openFilter, setOpenFilter] = useState<string | null>(null);
   const filterBarRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click
   useEffect(() => {
-    const close = () => setOpenDropdown(null);
+    const close = () => setOpenFilter(null);
     document.addEventListener("click", close);
     return () => document.removeEventListener("click", close);
   }, []);
+
+  const handleFilterClick = (e: React.MouseEvent, name: string) => {
+    e.stopPropagation();
+    setOpenFilter(prev => prev === name ? null : name);
+  };
 
   // Parse twemoji after results render
   useEffect(() => {
