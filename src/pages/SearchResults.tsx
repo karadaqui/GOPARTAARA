@@ -8,7 +8,7 @@ import {
   Truck, Bookmark, BookmarkCheck, Clock,
   Heart, AlertCircle, Zap,
   ChevronLeft, ChevronRight, ChevronDown, Pencil, Calendar, Palette, Fuel, Gauge,
-  ShieldCheck, Receipt, Check, X,
+  ShieldCheck, Receipt, Check,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { useAuth } from "@/contexts/AuthContext";
