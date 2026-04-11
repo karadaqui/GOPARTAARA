@@ -8,7 +8,7 @@ const LocationNudge = () => {
 
   return (
     <div className="relative mx-auto max-w-2xl mb-4 animate-in fade-in-50 slide-in-from-top-2 duration-500">
-      <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm px-4 py-2.5 text-sm text-muted-foreground animate-pulse-slow">
+      <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 backdrop-blur-sm px-4 py-2.5 text-sm text-muted-foreground">
         <span>🌍</span>
         <span>For more accurate results, select your country</span>
         <span className="text-primary">→</span>
