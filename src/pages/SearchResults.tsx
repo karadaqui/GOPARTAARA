@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import {
-  Search, ExternalLink, Loader2, Camera, Car, Shield, Scale, Star,
+  Search, ExternalLink, Loader2, Camera, Car, Scale, Star,
   Truck, Bookmark, BookmarkCheck, Clock,
   Heart, AlertCircle, Zap, Filter as FilterIcon,
   ChevronLeft, ChevronRight, ChevronDown, Pencil, Calendar, Palette, Fuel, Gauge,
@@ -590,39 +590,54 @@ const SearchResults = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
                   {liveResults.map((item: any, idx: number) => {
                     const priceBadge = getPriceBadge(item.price, item.title);
+                    const conditionKey = item.condition === "New" ? "new" : item.condition === "Used" ? "used" : item.condition === "Refurbished" ? "refurbished" : "not_specified";
+                    const conditionStyles = {
+                      new: "bg-zinc-700/90 text-zinc-200 border-b border-white/10",
+                      used: "bg-amber-900/40 text-amber-300 border-b border-amber-500/20",
+                      refurbished: "bg-blue-900/40 text-blue-300 border-b border-blue-500/20",
+                      not_specified: "bg-zinc-800/90 text-zinc-400 border-b border-white/10",
+                    };
+                    const priceBadgeStyles = {
+                      great: { text: "text-emerald-400", icon: "✦" },
+                      good: { text: "text-blue-400", icon: "✦" },
+                      high: { text: "text-red-400", icon: "↑" },
+                      top: { text: "text-amber-400", icon: "★" },
+                    };
                     return (
                       <div key={item.id}
-                        className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-all duration-300 flex flex-col relative cursor-pointer"
+                        className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-all duration-300 flex flex-col relative cursor-pointer animate-fade-in"
                         style={{ animationDelay: `${idx * 50}ms` }}>
-                        {/* Image */}
-                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
+                        
+                        {/* ── Condition Badge (Top Bar) ── */}
+                        <div className={`h-7 flex items-center justify-center text-xs font-semibold tracking-wide uppercase ${conditionStyles[conditionKey as keyof typeof conditionStyles]}`}>
+                          {locale.t(conditionKey)}
+                        </div>
+
+                        {/* ── Image Section ── */}
+                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="block relative">
                           <div className="h-52 bg-[#0d0d0d] overflow-hidden relative">
                             <img src={item.imageUrl} alt={item.partName} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }} />
-                            {/* Condition badge */}
-                            <span className={`absolute top-3 left-3 text-[10px] font-semibold px-2.5 py-1 rounded-full backdrop-blur-md border ${
-                              item.condition === "New" ? "bg-[#1a1a1a]/80 text-white border-white/10"
-                              : item.condition === "Used" ? "bg-[#1a1a1a]/80 text-amber-300 border-amber-500/20"
-                              : "bg-[#1a1a1a]/80 text-zinc-400 border-white/10"
-                            }`}>
-                              {item.condition === "New" ? locale.t("new") : item.condition === "Used" ? locale.t("used") : locale.t("not_specified")}
-                            </span>
-                            {/* Price badge */}
-                            {priceBadge && (
-                              <span className={`absolute top-10 left-3 text-[10px] font-semibold px-2.5 py-1 rounded-full border ${
-                                priceBadge.variant === "great" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
-                                : priceBadge.variant === "good" ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
-                                : "bg-red-500/20 text-red-400 border-red-500/30"
-                              }`}>
-                                {priceBadge.label}
-                              </span>
+                            
+                            {/* ── Price Quality Badge (Bottom Overlay of Image) ── */}
+                            {(priceBadge || item.topRatedSeller) && (
+                              <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-black/80 to-transparent flex items-center justify-center">
+                                {priceBadge && (
+                                  <span className={`text-xs font-bold tracking-wider uppercase flex items-center gap-1 ${priceBadgeStyles[priceBadge.variant as keyof typeof priceBadgeStyles]?.text || "text-zinc-400"}`}>
+                                    <span>{priceBadgeStyles[priceBadge.variant as keyof typeof priceBadgeStyles]?.icon || "✦"}</span>
+                                    {priceBadge.label}
+                                  </span>
+                                )}
+                                {!priceBadge && item.topRatedSeller && (
+                                  <span className="text-xs font-bold tracking-wider uppercase flex items-center gap-1 text-amber-400">
+                                    <span>★</span>
+                                    {locale.t("top_rated")}
+                                  </span>
+                                )}
+                              </div>
                             )}
-                            {item.topRatedSeller && (
-                              <span className="absolute bottom-3 left-3 text-[10px] font-semibold px-2.5 py-1 rounded-full bg-red-600/90 text-white flex items-center gap-1">
-                                <Shield size={10} /> {locale.t("top_rated")}
-                              </span>
-                            )}
-                            {/* Flag — Twemoji rendered, NO text codes */}
-                            <span className="absolute bottom-2 right-2 text-xl" title={isGlobal ? (item.itemCountry || "Global") : country.name}>
+                            
+                            {/* ── Flag (Bottom Right, above price badge) ── */}
+                            <span className="absolute bottom-9 right-2 text-xl" title={isGlobal ? (item.itemCountry || "Global") : country.name}>
                               {isGlobal ? (
                                 <span className="flex items-center gap-1">
                                   <span>🌍</span>
@@ -635,13 +650,13 @@ const SearchResults = () => {
                           </div>
                         </a>
 
-                        {/* Card body */}
+                        {/* ── Card Body ── */}
                         <div className="p-4 flex-1 flex flex-col gap-3">
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
                             <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.partName}</p>
                           </a>
 
-                          {/* Price */}
+                          {/* ── Price ── */}
                           <div>
                             <span className="text-2xl font-bold text-red-500">{locale.formatPrice(item.price)}</span>
                             {(() => {
@@ -650,7 +665,7 @@ const SearchResults = () => {
                             })()}
                           </div>
 
-                          {/* Shipping section */}
+                          {/* ── Shipping Section ── */}
                           <div className="flex flex-col gap-1.5">
                             {item.freeShipping ? (
                               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 w-fit">
@@ -679,7 +694,7 @@ const SearchResults = () => {
                             )}
                           </div>
 
-                          {/* Stock */}
+                          {/* ── Stock ── */}
                           {item.quantityAvailable != null && item.quantityAvailable > 0 && item.quantityAvailable <= 5 && (
                             <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-400">
                               <AlertCircle size={11} /> {locale.t("left_only", { n: item.quantityAvailable })}
@@ -689,7 +704,7 @@ const SearchResults = () => {
                             <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400">✓ {locale.t("in_stock")}</span>
                           )}
 
-                          {/* Seller info */}
+                          {/* ── Seller Info ── */}
                           <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
                             <span className="flex items-center gap-0.5 text-amber-400">
                               <Star size={11} className="fill-amber-400" /> {item.sellerPositivePercent?.toFixed(0)}%
@@ -701,7 +716,7 @@ const SearchResults = () => {
                             )}
                           </div>
 
-                          {/* Action buttons */}
+                          {/* ── Action Buttons ── */}
                           <div className="flex gap-2">
                             <a href={item.url} target="_blank" rel="noopener noreferrer"
                               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150">

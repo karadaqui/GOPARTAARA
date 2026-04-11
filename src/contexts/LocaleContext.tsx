@@ -20,12 +20,12 @@ const COUNTRY_LANG: Record<string, string> = {
 };
 
 // ── Translations ──
-type TranslationKey = "new" | "used" | "not_specified" | "great_price" | "good_price" | "high_price"
+type TranslationKey = "new" | "used" | "refurbished" | "not_specified" | "great_price" | "good_price" | "high_price"
   | "free_shipping" | "ships_to" | "no_ship" | "shipping_check" | "handling_days" | "est_delivery" | "top_rated" | "in_stock" | "left_only";
 
 const TRANSLATIONS: Record<string, Record<TranslationKey, string>> = {
   en: {
-    new: "New", used: "Used", not_specified: "Not specified",
+    new: "New", used: "Used", refurbished: "Refurbished", not_specified: "Not specified",
     great_price: "Great Price", good_price: "Good Price", high_price: "High Price",
     free_shipping: "Free P&P", ships_to: "Ships to", no_ship: "Doesn't ship to",
     shipping_check: "Shipping: check listing", handling_days: "d handling",
@@ -33,7 +33,7 @@ const TRANSLATIONS: Record<string, Record<TranslationKey, string>> = {
     left_only: "Only {n} left",
   },
   de: {
-    new: "Neu", used: "Gebraucht", not_specified: "Nicht angegeben",
+    new: "Neu", used: "Gebraucht", refurbished: "Generalüberholt", not_specified: "Nicht angegeben",
     great_price: "Top-Preis", good_price: "Guter Preis", high_price: "Hoher Preis",
     free_shipping: "Kostenloser Versand", ships_to: "Versand nach", no_ship: "Kein Versand nach",
     shipping_check: "Versand: siehe Angebot", handling_days: "T Bearbeitung",
@@ -41,7 +41,7 @@ const TRANSLATIONS: Record<string, Record<TranslationKey, string>> = {
     left_only: "Nur {n} übrig",
   },
   fr: {
-    new: "Neuf", used: "Occasion", not_specified: "Non spécifié",
+    new: "Neuf", used: "Occasion", refurbished: "Reconditionné", not_specified: "Non spécifié",
     great_price: "Excellent prix", good_price: "Bon prix", high_price: "Prix élevé",
     free_shipping: "Livraison gratuite", ships_to: "Expédié vers", no_ship: "Pas d'expédition vers",
     shipping_check: "Livraison : voir annonce", handling_days: "j de traitement",
@@ -49,7 +49,7 @@ const TRANSLATIONS: Record<string, Record<TranslationKey, string>> = {
     left_only: "Plus que {n}",
   },
   it: {
-    new: "Nuovo", used: "Usato", not_specified: "Non specificato",
+    new: "Nuovo", used: "Usato", refurbished: "Rigenerato", not_specified: "Non specificato",
     great_price: "Ottimo prezzo", good_price: "Buon prezzo", high_price: "Prezzo alto",
     free_shipping: "Spedizione gratuita", ships_to: "Spedisce in", no_ship: "Non spedisce in",
     shipping_check: "Spedizione: vedi annuncio", handling_days: "g lavorazione",
@@ -57,7 +57,7 @@ const TRANSLATIONS: Record<string, Record<TranslationKey, string>> = {
     left_only: "Solo {n} rimasti",
   },
   es: {
-    new: "Nuevo", used: "Usado", not_specified: "No especificado",
+    new: "Nuevo", used: "Usado", refurbished: "Reacondicionado", not_specified: "No especificado",
     great_price: "Gran precio", good_price: "Buen precio", high_price: "Precio alto",
     free_shipping: "Envío gratis", ships_to: "Envío a", no_ship: "Sin envío a",
     shipping_check: "Envío: ver anuncio", handling_days: "d de preparación",
