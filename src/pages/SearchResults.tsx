@@ -320,17 +320,9 @@ const SearchResults = () => {
 
   // Close dropdown on outside click
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (filterBarRef.current && !filterBarRef.current.contains(e.target as Node)) {
-        setOpenDropdown(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside as any);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside as any);
-    };
+    const close = () => setOpenDropdown(null);
+    document.addEventListener("click", close);
+    return () => document.removeEventListener("click", close);
   }, []);
 
   // Parse twemoji after results render
@@ -890,7 +882,7 @@ const SearchResults = () => {
 
             {/* ── Results Grid ── */}
             {liveLoading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5 mb-10">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-10">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
             ) : liveResults.length > 0 && filteredResults.length === 0 ? (
@@ -905,16 +897,17 @@ const SearchResults = () => {
               </div>
             ) : filteredResults.length > 0 ? (
               <div className="mb-10 animate-fade-in">
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
-                  {filteredResults.map((item: any, idx: number) => {
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+                  {filteredResults.slice(0, 12).map((item: any, idx: number) => {
                     const priceBadge = getPriceBadge(item.price, item.title);
-                    const conditionKey = item.condition === "New" ? "new" : item.condition === "Used" ? "used" : item.condition === "Refurbished" ? "refurbished" : "not_specified";
-                    const conditionStyles = {
-                      new: "bg-zinc-700/90 text-zinc-200 border-b border-white/10",
-                      used: "bg-amber-900/40 text-amber-300 border-b border-amber-500/20",
-                      refurbished: "bg-blue-900/40 text-blue-300 border-b border-blue-500/20",
-                      not_specified: "bg-zinc-800/90 text-zinc-400 border-b border-white/10",
-                    };
+                    const conditionNorm = (item.condition || "").trim().toLowerCase();
+                    const conditionBarStyle = conditionNorm === "new"
+                      ? { background: "#14532d", color: "#4ade80" }
+                      : conditionNorm === "used" || conditionNorm.includes("pre-owned")
+                      ? { background: "#78350f", color: "#fbbf24" }
+                      : conditionNorm.includes("refurb")
+                      ? { background: "#1e3a5f", color: "#60a5fa" }
+                      : { background: "#27272a", color: "#a1a1aa" };
                     const priceBadgeStyles = {
                       great: { text: "text-emerald-400", icon: "✦" },
                       good: { text: "text-blue-400", icon: "✦" },
@@ -927,8 +920,8 @@ const SearchResults = () => {
                         style={{ animationDelay: `${idx * 50}ms` }}>
                         
                         {/* ── Condition Badge (Top Bar) ── */}
-                        <div className={`h-7 flex items-center justify-center text-xs font-semibold tracking-wide uppercase ${conditionStyles[conditionKey as keyof typeof conditionStyles]}`}>
-                          {locale.t(conditionKey)}
+                        <div className="h-7 flex items-center justify-center text-xs font-semibold tracking-wide uppercase border-b border-white/10" style={conditionBarStyle}>
+                          {item.condition || "Unknown"}
                         </div>
 
                         {/* ── Image Section ── */}
