@@ -753,9 +753,9 @@ const SearchResults = () => {
                       const median = medianOf(group);
                       if (median === 0) return null;
                       const ratio = price / median;
-                      if (ratio <= 0.75) return { label: "Great Price", className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" };
-                      if (ratio <= 0.90) return { label: "Good Price", className: "bg-sky-500/20 text-sky-400 border-sky-500/30" };
-                      if (ratio >= 1.25) return { label: "High Price", className: "bg-red-500/20 text-red-400 border-red-500/30" };
+                      if (ratio <= 0.75) return { label: locale.t("great_price"), className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" };
+                      if (ratio <= 0.90) return { label: locale.t("good_price"), className: "bg-sky-500/20 text-sky-400 border-sky-500/30" };
+                      if (ratio >= 1.25) return { label: locale.t("high_price"), className: "bg-red-500/20 text-red-400 border-red-500/30" };
                       return null;
                     };
 
