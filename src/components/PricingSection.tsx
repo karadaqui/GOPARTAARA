@@ -342,7 +342,7 @@ interface PlanCardProps {
   onSelect: () => void;
   was?: string;
   saving?: string;
-  icon?: React.ForwardRefExoticComponent<Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>>;
+  icon?: React.ElementType;
 }
 
 const PlanCard = ({
