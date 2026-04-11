@@ -488,30 +488,17 @@ const SearchResults = () => {
 
   const matchedOemBrands = activeQuery ? oemBrands.filter((b) => b.pattern.test(activeQuery)) : [];
 
-  // ── Price badge computation ──
-  const priceGroups = (() => {
-    const groups: Record<string, number[]> = {};
-    for (const item of liveResults) {
-      if (item.price > 0) {
-        const type = extractPartType(item.title || "");
-        if (!groups[type]) groups[type] = [];
-        groups[type].push(item.price);
-      }
-    }
-    return groups;
-  })();
+  // ── Price badge computation (relative to current results) ──
+  const allPrices = liveResults.filter((r: any) => r.price > 0).map((r: any) => r.price as number);
 
-  const getPriceBadge = (price: number, title: string) => {
-    const type = extractPartType(title || "");
-    const group = priceGroups[type];
-    if (!group || group.length < 3) return null;
-    const median = medianOf(group);
-    if (median === 0) return null;
-    const ratio = price / median;
-    if (ratio <= 0.75) return { label: locale.t("great_price"), variant: "great" as const };
-    if (ratio <= 0.90) return { label: locale.t("good_price"), variant: "good" as const };
-    if (ratio >= 1.25) return { label: locale.t("high_price"), variant: "high" as const };
-    return null;
+  const getPriceBadge = (price: number) => {
+    if (!price || allPrices.length < 2) return null;
+    const sorted = [...allPrices].sort((a, b) => a - b);
+    const low = sorted[Math.floor(sorted.length * 0.25)];
+    const high = sorted[Math.floor(sorted.length * 0.75)];
+    if (price <= low) return { label: locale.t("great_price"), variant: "great" as const };
+    if (price >= high) return { label: locale.t("high_price"), variant: "high" as const };
+    return { label: locale.t("good_price"), variant: "good" as const };
   };
 
   const getFlag = (code: string) => countryFlags[code] || "🌍";
@@ -887,7 +874,7 @@ const SearchResults = () => {
               <div className="mb-10 animate-fade-in">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
                   {filteredResults.slice(0, 12).map((item: any, idx: number) => {
-                    const priceBadge = getPriceBadge(item.price, item.title);
+                    const priceBadge = getPriceBadge(item.price);
                     const conditionNorm = (item.condition || "").trim().toLowerCase();
                     const conditionBarStyle = conditionNorm === "new"
                       ? { background: "#14532d", color: "#4ade80" }
