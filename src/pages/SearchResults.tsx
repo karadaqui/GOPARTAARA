@@ -8,7 +8,7 @@ import {
   Truck, Bookmark, BookmarkCheck, Clock,
   Heart, AlertCircle, Zap, Filter as FilterIcon,
   ChevronLeft, ChevronRight, ChevronDown, Pencil, Calendar, Palette, Fuel, Gauge,
-  ShieldCheck, Receipt, Check, X as XIcon,
+  ShieldCheck, Receipt, Check,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { useAuth } from "@/contexts/AuthContext";
@@ -57,15 +57,40 @@ const globalSuppliers: { name: string; flag: string; region: string; gradient: s
 ];
 
 const PART_CATEGORIES = [
-  { label: "Engine Parts", icon: "⚙️" },
-  { label: "Body Parts", icon: "🚗" },
+  { label: "All Parts", icon: "🔧" },
+  { label: "Engine", icon: "⚙️" },
   { label: "Brakes", icon: "🛑" },
   { label: "Suspension", icon: "🔧" },
   { label: "Electrical", icon: "⚡" },
-  { label: "Filters", icon: "🔍" },
+  { label: "Body Panels", icon: "🚗" },
   { label: "Exhaust", icon: "💨" },
+  { label: "Filters", icon: "🔍" },
+  { label: "Lighting", icon: "💡" },
+  { label: "Transmission", icon: "⚙️" },
   { label: "Interior", icon: "🪑" },
 ];
+
+const SORT_OPTIONS = [
+  { value: "best_match", label: "Best Match", icon: "✦" },
+  { value: "price_asc", label: "Price: Low to High", icon: "💰" },
+  { value: "price_desc", label: "Price: High to Low", icon: "💰" },
+  { value: "fastest_ship", label: "Fastest Shipping", icon: "⚡" },
+  { value: "slowest_ship", label: "Slowest Shipping", icon: "🐢" },
+  { value: "top_rated", label: "Top Rated Sellers", icon: "⭐" },
+  { value: "newly_listed", label: "Newly Listed", icon: "🆕" },
+  { value: "most_viewed", label: "Most Viewed", icon: "🔥" },
+] as const;
+
+
+const PRICE_RANGES = [
+  { label: "All Prices", min: 0, max: Infinity },
+  { label: "Under £25", min: 0, max: 25 },
+  { label: "£25 – £100", min: 25, max: 100 },
+  { label: "£100 – £500", min: 100, max: 500 },
+  { label: "Over £500", min: 500, max: Infinity },
+] as const;
+
+const TRUSTED_BRANDS = ["All Brands", "Bosch", "Brembo", "Mintex", "Febi Bilstein", "Gates", "SKF", "NGK", "Valeo", "Monroe", "Delphi"] as const;
 
 const oemBrands: { brand: string; pattern: RegExp; label: string; url: (q: string) => string; gradient: string }[] = [
   { brand: "BMW", pattern: /bmw/i, label: "BMW OEM Catalog", url: (q) => `https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(q)}`, gradient: "from-[#1C69D4] to-[#0A3D91]" },
@@ -193,6 +218,15 @@ const SearchResults = () => {
   const [catalogLoading, setCatalogLoading] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
 
+  // ── Filter & Sort State ──
+  const [sortBy, setSortBy] = useState<typeof SORT_OPTIONS[number]["value"]>("best_match");
+  const [conditionFilter, setConditionFilter] = useState("All");
+  const [shippingFilter, setShippingFilter] = useState("All");
+  const [priceRangeIdx, setPriceRangeIdx] = useState(0);
+  const [brandFilter, setBrandFilter] = useState("All Brands");
+  const [categoryFilter, setCategoryFilter] = useState("All Parts");
+  const [sortOpen, setSortOpen] = useState(false);
+
   // Parse twemoji after results render
   useEffect(() => {
     const timer = setTimeout(parseTwemoji, 100);
@@ -300,7 +334,7 @@ const SearchResults = () => {
     if (user) searchLimit.recordSearch();
   };
 
-  const handleCategorySelect = (cat: string) => { setSelectedCategory(selectedCategory === cat ? null : cat); setCurrentPage(1); };
+  
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -395,6 +429,67 @@ const SearchResults = () => {
   };
 
   const getFlag = (code: string) => countryFlags[code] || "🌍";
+
+  // ── Filtered & Sorted Results ──
+  const activeFilterCount = [conditionFilter !== "All", shippingFilter !== "All", priceRangeIdx !== 0, brandFilter !== "All Brands", categoryFilter !== "All Parts"].filter(Boolean).length;
+
+  const filteredResults = (() => {
+    let results = [...liveResults];
+
+    // Condition filter
+    if (conditionFilter !== "All") {
+      results = results.filter((item) => item.condition === conditionFilter);
+    }
+
+    // Shipping filter
+    if (shippingFilter === "Free Shipping") {
+      results = results.filter((item) => item.freeShipping);
+    } else if (shippingFilter === "Ships to Country") {
+      results = results.filter((item) => item.shipsToUK);
+    } else if (shippingFilter === "Fast") {
+      results = results.filter((item) => item.handlingTime && item.handlingTime <= 5);
+    }
+
+    // Price range filter
+    if (priceRangeIdx > 0) {
+      const range = PRICE_RANGES[priceRangeIdx];
+      results = results.filter((item) => item.price >= range.min && item.price < (range.max === Infinity ? 999999999 : range.max));
+    }
+
+    // Brand filter
+    if (brandFilter !== "All Brands") {
+      results = results.filter((item) => (item.partName || item.title || "").toLowerCase().includes(brandFilter.toLowerCase()));
+    }
+
+    // Category filter
+    if (categoryFilter !== "All Parts") {
+      results = results.filter((item) => {
+        const t = (item.partName || item.title || "").toLowerCase();
+        const catLower = categoryFilter.toLowerCase();
+        return t.includes(catLower) || (item.category && item.category.toLowerCase().includes(catLower));
+      });
+    }
+
+    // Sort
+    if (sortBy === "price_asc") results.sort((a, b) => (a.price || 0) - (b.price || 0));
+    else if (sortBy === "price_desc") results.sort((a, b) => (b.price || 0) - (a.price || 0));
+    else if (sortBy === "fastest_ship") results.sort((a, b) => (a.handlingTime || 99) - (b.handlingTime || 99));
+    else if (sortBy === "slowest_ship") results.sort((a, b) => (b.handlingTime || 0) - (a.handlingTime || 0));
+    else if (sortBy === "top_rated") results.sort((a, b) => (b.sellerPositivePercent || 0) - (a.sellerPositivePercent || 0));
+    else if (sortBy === "newly_listed") results.sort((a, b) => new Date(b.listingDate || 0).getTime() - new Date(a.listingDate || 0).getTime());
+    else if (sortBy === "most_viewed") results.sort((a, b) => (b.watchCount || 0) - (a.watchCount || 0));
+
+    return results;
+  })();
+
+  const clearAllFilters = () => {
+    setConditionFilter("All");
+    setShippingFilter("All");
+    setPriceRangeIdx(0);
+    setBrandFilter("All Brands");
+    setCategoryFilter("All Parts");
+    setSortBy("best_match");
+  };
 
   // Vehicle model confirm handler
   const confirmModel = useCallback(() => {
@@ -537,58 +632,143 @@ const SearchResults = () => {
             )}
 
             {/* ── Results Header ── */}
-            <div className="mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <div className="mb-4 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
               <div>
-                <p className="text-lg text-zinc-400 font-normal mb-1">{selectedCategory ? `${selectedCategory} for` : "Results for"}</p>
+                <p className="text-lg text-zinc-400 font-normal mb-1">{categoryFilter !== "All Parts" ? `${categoryFilter} for` : "Results for"}</p>
                 <h1 className="text-3xl md:text-4xl font-bold text-white">
                   <span className="text-red-500">"</span>{activeQuery}<span className="text-red-500">"</span>
                 </h1>
                 {totalResults > 0 && !liveLoading && (
                   <p className="text-sm text-zinc-500 mt-2 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    {startItem.toLocaleString()}-{endItem.toLocaleString()} of {totalResults.toLocaleString()} listings
+                    {activeFilterCount > 0
+                      ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
+                      : `${startItem.toLocaleString()}-${endItem.toLocaleString()} of ${totalResults.toLocaleString()} listings`}
                   </p>
                 )}
               </div>
+            </div>
 
-              {/* Filter + Category */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium border border-white/10 bg-[#111] text-zinc-300 hover:border-white/30 transition-all duration-200">
-                      <FilterIcon size={14} /> Filter by Category <ChevronDown size={14} />
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[280px] sm:w-[340px] p-3 bg-[#141414] border-white/10" align="end">
-                    <p className="text-xs font-medium text-zinc-500 mb-2">Select a category</p>
-                    <div className="grid grid-cols-2 gap-1.5">
-                      {PART_CATEGORIES.map((cat) => (
-                        <button key={cat.label} onClick={() => handleCategorySelect(cat.label)}
-                          className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all text-left ${selectedCategory === cat.label ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white hover:bg-[#222]"}`}>
-                          <span>{cat.icon}</span>{cat.label}
+            {/* ── Sort & Filter Bar ── */}
+            {liveResults.length > 0 && !liveLoading && (
+              <div className="bg-[#111]/40 backdrop-blur-sm border border-white/[0.06] rounded-2xl p-4 mb-6 space-y-3">
+                {/* Top row: active filter count + sort dropdown */}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-zinc-500 flex items-center gap-1.5">
+                      <FilterIcon size={12} /> Filters
+                    </span>
+                    {activeFilterCount > 0 && (
+                      <>
+                        <span className="bg-red-600 text-white text-[10px] font-bold rounded-full px-2 py-0.5">{activeFilterCount}</span>
+                        <button onClick={clearAllFilters} className="text-[11px] text-zinc-500 hover:text-white transition-colors">Clear all</button>
+                      </>
+                    )}
+                  </div>
+                  {/* Sort dropdown */}
+                  <Popover open={sortOpen} onOpenChange={setSortOpen}>
+                    <PopoverTrigger asChild>
+                      <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1a1a1a] border border-white/10 text-sm text-white hover:border-white/20 transition-all">
+                        <span className="text-zinc-500 text-xs">Sort by</span>
+                        <span className="font-medium">{SORT_OPTIONS.find(s => s.value === sortBy)?.icon} {SORT_OPTIONS.find(s => s.value === sortBy)?.label}</span>
+                        <ChevronDown size={14} className="text-zinc-500" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-56 p-1.5 bg-[#141414] border-white/10" align="end">
+                      {SORT_OPTIONS.map((opt) => (
+                        <button key={opt.value} onClick={() => { setSortBy(opt.value); setSortOpen(false); }}
+                          className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all text-left ${sortBy === opt.value ? "bg-red-600/20 text-red-400 font-semibold" : "text-zinc-400 hover:text-white hover:bg-[#1a1a1a]"}`}>
+                          <span>{opt.icon}</span> {opt.label}
                         </button>
                       ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-                {selectedCategory && (
-                  <button onClick={() => { setSelectedCategory(null); setCurrentPage(1); }}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-red-600 text-white hover:bg-red-500 transition-colors">
-                    {selectedCategory} <XIcon size={12} />
-                  </button>
-                )}
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                {/* Filter rows */}
+                <div className="space-y-2">
+                  {/* Condition */}
+                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5">
+                    <span className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold shrink-0 w-16">Condition</span>
+                    {(["All", "New", "Used", "Refurbished"] as const).map((c) => (
+                      <button key={c} onClick={() => setConditionFilter(c)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-150 ${conditionFilter === c ? "bg-red-600/20 border border-red-500/40 text-red-400 font-semibold" : "bg-[#1a1a1a] border border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/20 hover:bg-[#222]"}`}>
+                        {c === "All" ? "All Conditions" : c}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Shipping */}
+                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5">
+                    <span className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold shrink-0 w-16">Shipping</span>
+                    {([
+                      { key: "All", label: "All", icon: "" },
+                      { key: "Free Shipping", label: "Free Shipping", icon: "⚡" },
+                      { key: "Ships to Country", label: `Ships to ${locale.getCountryName(locale.locationCountry)}`, icon: "📦" },
+                      { key: "Fast", label: "Fast (< 5 days)", icon: "🚀" },
+                    ] as const).map((s) => (
+                      <button key={s.key} onClick={() => setShippingFilter(s.key)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-150 ${shippingFilter === s.key ? "bg-red-600/20 border border-red-500/40 text-red-400 font-semibold" : "bg-[#1a1a1a] border border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/20 hover:bg-[#222]"}`}>
+                        {s.icon && <span className="mr-1">{s.icon}</span>}{s.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Price Range */}
+                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5">
+                    <span className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold shrink-0 w-16">Price</span>
+                    {PRICE_RANGES.map((range, idx) => (
+                      <button key={range.label} onClick={() => setPriceRangeIdx(idx)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-150 ${priceRangeIdx === idx ? "bg-red-600/20 border border-red-500/40 text-red-400 font-semibold" : "bg-[#1a1a1a] border border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/20 hover:bg-[#222]"}`}>
+                        {range.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Trusted Brands */}
+                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5">
+                    <span className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold shrink-0 w-16">Brand</span>
+                    {TRUSTED_BRANDS.map((b) => (
+                      <button key={b} onClick={() => setBrandFilter(b)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-150 ${brandFilter === b ? "bg-red-600/20 border border-red-500/40 text-red-400 font-semibold" : "bg-[#1a1a1a] border border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/20 hover:bg-[#222]"}`}>
+                        {b}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Part Category */}
+                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5">
+                    <span className="text-[10px] uppercase tracking-wider text-zinc-600 font-semibold shrink-0 w-16">Category</span>
+                    {PART_CATEGORIES.map((cat) => (
+                      <button key={cat.label} onClick={() => setCategoryFilter(cat.label)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-150 ${categoryFilter === cat.label ? "bg-red-600/20 border border-red-500/40 text-red-400 font-semibold" : "bg-[#1a1a1a] border border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/20 hover:bg-[#222]"}`}>
+                        <span className="mr-1">{cat.icon}</span>{cat.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* ── Results Grid ── */}
             {liveLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 mb-10">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
-            ) : liveResults.length > 0 ? (
-              <div className="mb-10">
+            ) : liveResults.length > 0 && filteredResults.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 mb-8">
+                <div className="text-5xl mb-4 opacity-30">🔍</div>
+                <p className="text-lg font-semibold text-white mb-1">No results match your filters</p>
+                <p className="text-sm text-zinc-500 mb-4">Try adjusting your filters to see more results</p>
+                <button onClick={clearAllFilters}
+                  className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors">
+                  Clear all filters
+                </button>
+              </div>
+            ) : filteredResults.length > 0 ? (
+              <div className="mb-10 animate-fade-in">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-                  {liveResults.map((item: any, idx: number) => {
+                  {filteredResults.map((item: any, idx: number) => {
                     const priceBadge = getPriceBadge(item.price, item.title);
                     const conditionKey = item.condition === "New" ? "new" : item.condition === "Used" ? "used" : item.condition === "Refurbished" ? "refurbished" : "not_specified";
                     const conditionStyles = {
