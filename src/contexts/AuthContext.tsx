@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // Session timeout: auto-logout after 24 hours of inactivity
-    const SESSION_TIMEOUT_MS = 24 * 60 * 60 * 1000;
+    const SESSION_TIMEOUT_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
     let inactivityTimer: ReturnType<typeof setTimeout>;
     const resetTimer = () => {
       clearTimeout(inactivityTimer);
