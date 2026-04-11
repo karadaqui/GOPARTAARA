@@ -312,7 +312,6 @@ const SearchResults = () => {
   const [brandFilter, setBrandFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All Parts");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const isMobile = useIsMobile();
   const filterBarRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click
@@ -764,10 +763,9 @@ const SearchResults = () => {
                   <FilterDropdown
                     label="Condition"
                     isActive={conditionFilter !== "All"}
-                    isOpen={openDropdown === "condition"}
-                    onToggle={() => setOpenDropdown(openDropdown === "condition" ? null : "condition")}
-                    onClose={() => setOpenDropdown(null)}
-                    isMobile={isMobile}
+                    filterKey="condition"
+                    openFilter={openDropdown}
+                    toggleFilter={(name) => setOpenDropdown(openDropdown === name ? null : name)}
                   >
                     {(["All", "New", "Used", "Refurbished"] as const).map((c) => (
                       <button key={c} onClick={() => { setConditionFilter(c); setOpenDropdown(null); }}
@@ -781,10 +779,9 @@ const SearchResults = () => {
                   <FilterDropdown
                     label="Shipping"
                     isActive={shippingFilter !== "All"}
-                    isOpen={openDropdown === "shipping"}
-                    onToggle={() => setOpenDropdown(openDropdown === "shipping" ? null : "shipping")}
-                    onClose={() => setOpenDropdown(null)}
-                    isMobile={isMobile}
+                    filterKey="shipping"
+                    openFilter={openDropdown}
+                    toggleFilter={(name) => setOpenDropdown(openDropdown === name ? null : name)}
                   >
                     {([
                       { key: "All", label: "All" },
@@ -803,10 +800,9 @@ const SearchResults = () => {
                   <FilterDropdown
                     label="Price"
                     isActive={priceRangeIdx !== 0}
-                    isOpen={openDropdown === "price"}
-                    onToggle={() => setOpenDropdown(openDropdown === "price" ? null : "price")}
-                    onClose={() => setOpenDropdown(null)}
-                    isMobile={isMobile}
+                    filterKey="price"
+                    openFilter={openDropdown}
+                    toggleFilter={(name) => setOpenDropdown(openDropdown === name ? null : name)}
                   >
                     {PRICE_RANGES.map((range, idx) => (
                       <button key={range.label} onClick={() => { setPriceRangeIdx(idx); setOpenDropdown(null); }}
@@ -820,10 +816,9 @@ const SearchResults = () => {
                   <FilterDropdown
                     label="Category"
                     isActive={categoryFilter !== "All Parts"}
-                    isOpen={openDropdown === "category"}
-                    onToggle={() => setOpenDropdown(openDropdown === "category" ? null : "category")}
-                    onClose={() => setOpenDropdown(null)}
-                    isMobile={isMobile}
+                    filterKey="category"
+                    openFilter={openDropdown}
+                    toggleFilter={(name) => setOpenDropdown(openDropdown === name ? null : name)}
                   >
                     {PART_CATEGORIES.map((cat) => (
                       <button key={cat.label} onClick={() => { setCategoryFilter(cat.label); setOpenDropdown(null); }}
@@ -837,11 +832,10 @@ const SearchResults = () => {
                   <FilterDropdown
                     label="Brand"
                     isActive={brandFilter !== "All"}
-                    isOpen={openDropdown === "brand"}
-                    onToggle={() => setOpenDropdown(openDropdown === "brand" ? null : "brand")}
-                    onClose={() => setOpenDropdown(null)}
-                    isMobile={isMobile}
-                    wider
+                    filterKey="brand"
+                    openFilter={openDropdown}
+                    toggleFilter={(name) => setOpenDropdown(openDropdown === name ? null : name)}
+                    panelWidth="min-w-[220px]"
                   >
                     <button onClick={() => { setBrandFilter("All"); setOpenDropdown(null); }}
                       className={`w-full px-3 py-2.5 rounded-xl text-sm text-left transition-all min-h-[44px] flex items-center ${brandFilter === "All" ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
@@ -874,10 +868,9 @@ const SearchResults = () => {
                   <FilterDropdown
                     label={`Sort: ${SORT_OPTIONS.find(s => s.value === sortBy)?.label || "Best Match"}`}
                     isActive={false}
-                    isOpen={openDropdown === "sort"}
-                    onToggle={() => setOpenDropdown(openDropdown === "sort" ? null : "sort")}
-                    onClose={() => setOpenDropdown(null)}
-                    isMobile={isMobile}
+                    filterKey="sort"
+                    openFilter={openDropdown}
+                    toggleFilter={(name) => setOpenDropdown(openDropdown === name ? null : name)}
                     alignRight
                   >
                     {SORT_OPTIONS.map((opt) => (
