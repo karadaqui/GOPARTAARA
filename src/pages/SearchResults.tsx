@@ -26,7 +26,7 @@ import LocationNudge from "@/components/LocationNudge";
 import { useCountry } from "@/hooks/useCountry";
 import { useLocale } from "@/contexts/LocaleContext";
 import CountryFlag from "@/components/CountryFlag";
-import { Globe } from "lucide-react";
+
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -832,23 +832,23 @@ const SearchResults = () => {
                                     ✓ {locale.t("in_stock")}
                                   </span>
                                 )}
-                                <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
+                                <div className="flex items-center gap-1.5 flex-wrap text-xs">
                                   {item.freeShipping ? (
-                                    <span className="flex items-center gap-1 text-emerald-400 font-medium">
-                                      <Truck size={12} /> {locale.t("free_shipping")}
+                                    <span className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                                      <Zap size={11} /> {locale.t("free_shipping")}
                                     </span>
                                   ) : item.shippingCost > 0 ? (
-                                    <span className="flex items-center gap-1">
+                                    <span className="inline-flex items-center gap-1 text-muted-foreground">
                                       <Truck size={12} /> +{locale.formatPrice(item.shippingCost)} P&P
                                     </span>
                                   ) : null}
                                   {item.expedited && (
-                                    <span className="flex items-center gap-1 text-primary">
+                                    <span className="inline-flex items-center gap-1 text-primary">
                                       <Zap size={11} /> Express
                                     </span>
                                   )}
                                   {item.handlingTime && (
-                                    <span className="flex items-center gap-1">
+                                    <span className="inline-flex items-center gap-1 text-muted-foreground">
                                       <Clock size={11} /> {item.handlingTime}{locale.t("handling_days")}
                                     </span>
                                   )}
