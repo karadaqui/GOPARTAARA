@@ -83,6 +83,7 @@ const App = () => (
           </Suspense>
           <CookieConsent />
           <DevToolsGuard />
+          </CountryProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
