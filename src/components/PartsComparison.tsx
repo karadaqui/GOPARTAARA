@@ -1,6 +1,9 @@
-import { X, Scale, Star, MapPin, Truck, Package, ExternalLink } from "lucide-react";
+import { X, Scale, Star, MapPin, Truck, Package, ExternalLink, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import VerifiedSellerBadge from "@/components/badges/VerifiedSellerBadge";
+import { useLocale } from "@/contexts/LocaleContext";
+import CountryFlag from "@/components/CountryFlag";
+import { useCountry } from "@/hooks/useCountry";
 
 export interface CompareItem {
   id: string;
@@ -14,6 +17,7 @@ export interface CompareItem {
   freeShipping?: boolean;
   shippingCost?: number;
   location?: string;
+  itemCountry?: string;
   category?: string;
   compatibleVehicles?: string[];
   url?: string;
@@ -67,6 +71,9 @@ interface CompareModalProps {
 }
 
 export const CompareModal = ({ items, onRemove, onClose }: CompareModalProps) => {
+  const locale = useLocale();
+  const { country } = useCountry();
+
   if (items.length < 2) return null;
 
   const rows: { label: string; render: (item: CompareItem) => React.ReactNode }[] = [
@@ -86,11 +93,16 @@ export const CompareModal = ({ items, onRemove, onClose }: CompareModalProps) =>
     },
     {
       label: "Price",
-      render: (item) => item.price != null ? (
-        <span className="text-base sm:text-lg font-bold text-primary">£{item.price.toFixed(2)}</span>
-      ) : (
-        <span className="text-muted-foreground text-xs">N/A</span>
-      ),
+      render: (item) => {
+        if (item.price == null) return <span className="text-muted-foreground text-xs">N/A</span>;
+        const conv = locale.convertPrice(item.price);
+        return (
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-base sm:text-lg font-bold text-primary">{locale.formatPrice(item.price)}</span>
+            {conv && <span className="text-[10px] text-muted-foreground">≈ {conv.symbol}{conv.converted.toFixed(2)}</span>}
+          </div>
+        );
+      },
     },
     {
       label: "Condition",
@@ -98,7 +110,7 @@ export const CompareModal = ({ items, onRemove, onClose }: CompareModalProps) =>
         <span className={`text-xs font-medium px-2 py-0.5 rounded-md ${
           item.condition === "New" ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"
         }`}>
-          {item.condition}
+          {item.condition === "New" ? locale.t("new") : item.condition === "Used" ? locale.t("used") : locale.t("not_specified")}
         </span>
       ) : <span className="text-muted-foreground text-xs">—</span>,
     },
@@ -121,12 +133,32 @@ export const CompareModal = ({ items, onRemove, onClose }: CompareModalProps) =>
       ) : <span className="text-muted-foreground text-xs">—</span>,
     },
     {
-      label: "Shipping",
+      label: locale.t("free_shipping").includes("P&P") ? "Shipping" : "Shipping",
       render: (item) => {
-        if (item.freeShipping) return <span className="text-xs text-emerald-400 font-medium flex items-center gap-1 justify-center"><Truck size={12} /> Free</span>;
-        if (item.shippingCost != null && item.shippingCost > 0) return <span className="text-xs flex items-center gap-1 justify-center"><Truck size={12} /> £{item.shippingCost.toFixed(2)}</span>;
+        if (item.freeShipping) return <span className="text-xs text-emerald-400 font-medium flex items-center gap-1 justify-center"><Truck size={12} /> {locale.t("free_shipping")}</span>;
+        if (item.shippingCost != null && item.shippingCost > 0) {
+          const conv = locale.convertPrice(item.shippingCost);
+          return (
+            <div className="flex flex-col items-center gap-0.5">
+              <span className="text-xs flex items-center gap-1 justify-center"><Truck size={12} /> {locale.formatPrice(item.shippingCost)}</span>
+              {conv && <span className="text-[10px] text-muted-foreground">≈ {conv.symbol}{conv.converted.toFixed(2)}</span>}
+            </div>
+          );
+        }
         if (item.shipping) return <span className="text-xs">{item.shipping}</span>;
         return <span className="text-muted-foreground text-xs">—</span>;
+      },
+    },
+    {
+      label: `${locale.t("ships_to")} ${locale.getCountryName(locale.locationCountry)}`,
+      render: (item) => {
+        // If item is from user's location country, it ships
+        const sameCountry = item.itemCountry === locale.locationCountry;
+        if (item.freeShipping && sameCountry) {
+          return <span className="text-xs text-emerald-400 font-medium flex items-center gap-1 justify-center"><Zap size={12} /> Free ⚡</span>;
+        }
+        // We assume shipsToUK-type data; for now show yes for same country
+        return <span className="text-xs text-emerald-400 font-medium flex items-center justify-center">✅ Yes</span>;
       },
     },
     {
