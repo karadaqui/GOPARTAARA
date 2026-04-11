@@ -9,7 +9,6 @@ import { Check, Crown, Star, Store, Loader2, Sparkles, Zap, Gem } from "lucide-r
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
 
 /* ── Stripe Price IDs ─────────────────────────────────── */
 
@@ -30,8 +29,10 @@ const STRIPE = {
 const bundles = [
   {
     name: "Pro + Basic Seller",
+    tagline: "Search & sell essentials",
     price: "£16.99",
     was: "£19.98",
+    saving: "£3",
     period: "/mo",
     priceId: STRIPE.pro_basic_seller,
     popular: false,
@@ -40,8 +41,10 @@ const bundles = [
   },
   {
     name: "Pro + Featured Seller",
+    tagline: "The most popular combo",
     price: "£29.99",
     was: "£34.98",
+    saving: "£5",
     period: "/mo",
     priceId: STRIPE.pro_featured_seller,
     popular: true,
@@ -50,8 +53,10 @@ const bundles = [
   },
   {
     name: "Pro + Pro Seller",
+    tagline: "Full power search & selling",
     price: "£49.99",
     was: "£59.98",
+    saving: "£10",
     period: "/mo",
     priceId: STRIPE.pro_pro_seller,
     popular: false,
@@ -60,8 +65,10 @@ const bundles = [
   },
   {
     name: "Elite + Basic Seller",
+    tagline: "Premium search with seller access",
     price: "£25.99",
     was: "£29.98",
+    saving: "£4",
     period: "/mo",
     priceId: STRIPE.elite_basic_seller,
     popular: false,
@@ -70,8 +77,10 @@ const bundles = [
   },
   {
     name: "Elite + Featured Seller",
+    tagline: "Premium everything",
     price: "£37.99",
     was: "£44.98",
+    saving: "£7",
     period: "/mo",
     priceId: STRIPE.elite_featured_seller,
     popular: false,
@@ -80,8 +89,10 @@ const bundles = [
   },
   {
     name: "Elite + Pro Seller",
+    tagline: "The ultimate PARTARA plan",
     price: "£57.99",
     was: "£69.98",
+    saving: "£12",
     period: "/mo",
     priceId: STRIPE.elite_pro_seller,
     popular: false,
@@ -93,38 +104,118 @@ const bundles = [
 const sellerPlans = [
   {
     name: "Basic Seller",
+    tagline: "Get listed in the PARTARA marketplace",
     price: "£9.99",
     period: "/mo",
     priceId: STRIPE.basic_seller,
     popular: false,
     icon: Store,
-    description: "Get listed in the PARTARA marketplace",
     features: ["20 listings", "Basic analytics"],
+    cta: "Get Started",
   },
   {
     name: "Featured Seller",
+    tagline: "Stand out with premium placement",
     price: "£24.99",
     period: "/mo",
     priceId: STRIPE.featured_seller,
     popular: true,
     icon: Star,
-    description: "Stand out with premium placement",
     features: ["100 listings", "Featured placement", "Advanced analytics"],
+    cta: "Go Featured",
   },
   {
     name: "Pro Seller",
+    tagline: "Maximum visibility for your business",
     price: "£49.99",
     period: "/mo",
     priceId: STRIPE.pro_seller,
     popular: false,
     icon: Crown,
-    description: "Maximum visibility for your business",
     features: ["Unlimited listings", "Top placement", "Verified badge"],
+    cta: "Go Pro Seller",
   },
 ];
 
+type Tab = "bundles" | "seller";
+
 const SELLER_PLANS = ["basic_seller", "featured_seller", "pro_seller", "admin"];
 const CHECKOUT_TIMEOUT_MS = 10_000;
+
+/* ── Reusable Card ────────────────────────────────────── */
+
+interface CardProps {
+  name: string;
+  tagline: string;
+  price: string;
+  period: string;
+  features: string[];
+  cta: string;
+  popular: boolean;
+  loading: boolean;
+  slowWarning: boolean;
+  onSelect: () => void;
+  was?: string;
+  saving?: string;
+  icon?: React.ElementType;
+}
+
+const PlanCard = ({ name, tagline, price, period, features, cta, popular, loading, slowWarning, onSelect, was, saving, icon: Icon }: CardProps) => (
+  <div
+    className={`relative rounded-2xl p-8 flex flex-col transition-all duration-300 border ${
+      popular
+        ? "border-primary/60 shadow-[0_0_30px_-5px_hsl(var(--primary)/0.3)] scale-[1.02] z-10 bg-card"
+        : "border-border/30 bg-card/50 hover:border-border/60 hover:-translate-y-1"
+    }`}
+  >
+    {popular && (
+      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+        <span className="flex items-center gap-1 text-xs font-semibold px-4 py-1 rounded-full bg-primary text-primary-foreground shadow-md">
+          <Star size={10} fill="currentColor" /> Most Popular
+        </span>
+      </div>
+    )}
+    <div className="flex items-center gap-2 mb-1">
+      {Icon && <Icon size={18} className="text-primary" />}
+      <h3 className="font-display text-xl font-bold text-foreground">{name}</h3>
+    </div>
+    <p className="text-muted-foreground text-sm mb-6">{tagline}</p>
+    <div className="mb-1">
+      {was && <span className="text-muted-foreground/60 line-through text-sm mr-2">{was}</span>}
+    </div>
+    <div className="flex items-baseline gap-1 mb-2">
+      <span className="font-display text-5xl font-bold text-foreground tracking-tight">{price}</span>
+      <span className="text-muted-foreground text-base">{period}</span>
+    </div>
+    {saving ? (
+      <span className="inline-flex items-center gap-1 w-fit px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6">
+        <Zap size={10} /> Save {saving}/mo
+      </span>
+    ) : <div className="mb-6" />}
+    <div className="h-px bg-border/40 mb-6" />
+    <ul className="flex-1 space-y-3 mb-8">
+      {features.map((f) => (
+        <li key={f} className="flex items-start gap-3 text-sm text-secondary-foreground">
+          <Check size={16} className="text-primary shrink-0 mt-0.5" />
+          {f}
+        </li>
+      ))}
+    </ul>
+    <Button
+      variant={popular ? "default" : "outline"}
+      className="w-full rounded-xl h-11 text-sm font-medium"
+      disabled={loading}
+      onClick={onSelect}
+    >
+      {loading ? (
+        <span className="flex items-center gap-2">
+          <Loader2 size={16} className="animate-spin" />
+          {slowWarning ? "Taking longer than expected…" : "Redirecting…"}
+        </span>
+      ) : cta}
+    </Button>
+  </div>
+);
 
 /* ── Component ────────────────────────────────────────── */
 
@@ -133,13 +224,13 @@ const ListYourParts = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [checkingPlan, setCheckingPlan] = useState(true);
+  const [activeTab, setActiveTab] = useState<Tab>("bundles");
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [slowWarning, setSlowWarning] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
 
-  // Redirect existing sellers to /my-market
   useEffect(() => {
     if (!user) { setCheckingPlan(false); return; }
     supabase
@@ -187,6 +278,11 @@ const ListYourParts = () => {
     );
   }
 
+  const tabs: { key: Tab; label: string }[] = [
+    { key: "bundles", label: "Bundle & Save" },
+    { key: "seller", label: "Seller Only" },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
@@ -196,140 +292,89 @@ const ListYourParts = () => {
       />
       <Navbar />
 
-      <div className="container max-w-6xl py-20 px-4">
+      <div className="container max-w-5xl pt-24 pb-20 px-4 mx-auto">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">
+        <div className="text-center mb-12 space-y-4">
+          <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
             List Your Parts on <span className="text-primary">PARTARA</span>
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Reach thousands of car owners and mechanics searching for parts every day. Subscribe and start selling instantly.
+            Reach thousands of car owners and mechanics searching for parts every day.
           </p>
         </div>
 
-        {/* ── Section 1: Bundle Plans ──────────────────── */}
-        <section className="mb-20">
-          <div className="text-center mb-10 space-y-3">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/30 bg-primary/5 text-primary text-sm font-medium">
-              <Sparkles size={14} /> Best Value
+        {/* Tab Switcher */}
+        <div className="flex justify-center mb-12">
+          <div className="inline-flex items-center rounded-xl border border-border/50 bg-card/50 p-1 backdrop-blur-sm">
+            {tabs.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setActiveTab(t.key)}
+                className={`relative px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  activeTab === t.key
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {t.key === "bundles" && <Sparkles size={12} className="inline mr-1.5 -mt-0.5" />}
+                {t.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Bundles */}
+        {activeTab === "bundles" && (
+          <div>
+            <div className="text-center mb-10">
+              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium">
+                <Zap size={14} /> Save up to £12/mo with bundles
+              </span>
             </div>
-            <h2 className="font-display text-2xl md:text-3xl font-bold">
-              Individual + Seller <span className="text-primary">Bundles</span>
-            </h2>
-            <p className="text-muted-foreground max-w-lg mx-auto">Search + sell in one subscription. Save up to £12/mo.</p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {bundles.map((plan) => {
-              const Icon = plan.icon;
-              return (
-                <div
-                  key={plan.priceId}
-                  className={`relative glass rounded-2xl p-6 flex flex-col transition-all hover:border-primary/30 ${
-                    plan.popular ? "ring-2 ring-primary/40 glow-red" : ""
-                  }`}
-                >
-                  {plan.popular && (
-                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs px-3">
-                      Most Popular
-                    </Badge>
-                  )}
-                  <div className="flex items-center gap-2 mb-3">
-                    <Icon size={20} className="text-primary" />
-                    <h3 className="font-display text-lg font-bold">{plan.name}</h3>
-                  </div>
-                  <div className="mb-4">
-                    <span className="font-display text-3xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground text-sm">{plan.period}</span>
-                    <span className="ml-2 text-muted-foreground/60 line-through text-sm">{plan.was}</span>
-                  </div>
-                  <ul className="flex-1 space-y-2.5 mb-6">
-                    {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2.5 text-sm text-secondary-foreground">
-                        <Check size={14} className="text-primary shrink-0 mt-0.5" />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    onClick={() => startCheckout(plan.priceId)}
-                    disabled={isLoading(plan.priceId)}
-                    className="w-full rounded-xl"
-                    variant={plan.popular ? "default" : "outline"}
-                  >
-                    {isLoading(plan.priceId) ? (
-                      <span className="flex items-center gap-2">
-                        <Loader2 size={16} className="animate-spin" />
-                        {slowWarning ? "Taking longer than expected…" : "Redirecting…"}
-                      </span>
-                    ) : !user ? "Sign in to Subscribe" : "Subscribe Now"}
-                  </Button>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* ── Section 2: Seller-Only Plans ─────────────── */}
-        <section>
-          <div className="text-center mb-10 space-y-3">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border bg-secondary text-foreground text-sm font-medium">
-              <Store size={14} /> Seller Only
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {bundles.map((b) => (
+                <PlanCard
+                  key={b.priceId}
+                  name={b.name}
+                  tagline={b.tagline}
+                  price={b.price}
+                  period={b.period}
+                  was={b.was}
+                  saving={b.saving}
+                  features={b.features}
+                  cta={`Get ${b.name}`}
+                  popular={b.popular}
+                  loading={isLoading(b.priceId)}
+                  slowWarning={slowWarning}
+                  onSelect={() => startCheckout(b.priceId)}
+                  icon={b.icon}
+                />
+              ))}
             </div>
-            <h2 className="font-display text-2xl md:text-3xl font-bold">
-              Seller-Only <span className="text-primary">Plans</span>
-            </h2>
-            <p className="text-muted-foreground max-w-lg mx-auto">Already have a buyer plan? Add a seller subscription separately.</p>
           </div>
+        )}
 
-          <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {sellerPlans.map((plan) => {
-              const Icon = plan.icon;
-              return (
-                <div
-                  key={plan.priceId}
-                  className={`relative glass rounded-2xl p-6 flex flex-col transition-all hover:border-primary/30 ${
-                    plan.popular ? "ring-2 ring-primary/40 glow-red" : ""
-                  }`}
-                >
-                  {plan.popular && (
-                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs px-3">
-                      Most Popular
-                    </Badge>
-                  )}
-                  <Icon size={24} className="text-primary mb-3" />
-                  <h3 className="font-display text-xl font-bold mb-1">{plan.name}</h3>
-                  <p className="text-muted-foreground text-sm mb-4">{plan.description}</p>
-                  <div className="mb-5">
-                    <span className="font-display text-3xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground text-sm">{plan.period}</span>
-                  </div>
-                  <ul className="flex-1 space-y-2.5 mb-6">
-                    {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2.5 text-sm text-secondary-foreground">
-                        <Check size={14} className="text-primary shrink-0 mt-0.5" />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button
-                    onClick={() => startCheckout(plan.priceId)}
-                    disabled={isLoading(plan.priceId)}
-                    className="w-full rounded-xl"
-                    variant={plan.popular ? "default" : "outline"}
-                  >
-                    {isLoading(plan.priceId) ? (
-                      <span className="flex items-center gap-2">
-                        <Loader2 size={16} className="animate-spin" />
-                        {slowWarning ? "Taking longer than expected…" : "Redirecting…"}
-                      </span>
-                    ) : !user ? "Sign in to Subscribe" : plan.popular ? "Go Featured" : "Subscribe"}
-                  </Button>
-                </div>
-              );
-            })}
+        {/* Seller Only */}
+        {activeTab === "seller" && (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {sellerPlans.map((plan) => (
+              <PlanCard
+                key={plan.priceId}
+                name={plan.name}
+                tagline={plan.tagline}
+                price={plan.price}
+                period={plan.period}
+                features={plan.features}
+                cta={plan.cta}
+                popular={plan.popular}
+                loading={isLoading(plan.priceId)}
+                slowWarning={slowWarning}
+                onSelect={() => startCheckout(plan.priceId)}
+                icon={plan.icon}
+              />
+            ))}
           </div>
-        </section>
+        )}
       </div>
 
       <Footer />
