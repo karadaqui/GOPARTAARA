@@ -570,8 +570,7 @@ const SearchResults = () => {
                   </button>
                 </div>
               </form>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                <VehicleFilterButton onSelect={(vehicleQuery) => setQuery((prev) => prev.trim() ? `${vehicleQuery} ${prev.trim()}` : vehicleQuery)} />
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-end gap-2">
                 <div className="hidden sm:flex items-center gap-2">
                   {compareParts.length > 0 && (
                     <Button size="sm" variant="outline" className="rounded-full gap-1.5 text-xs h-8 border-white/10 bg-[#1a1a1a] hover:bg-[#222] text-zinc-300" onClick={() => setShowCompare(true)}>
