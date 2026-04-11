@@ -183,6 +183,44 @@ const SkeletonCard = () => (
   </div>
 );
 
+// ── Filter Dropdown Component (desktop dropdown / mobile bottom sheet) ──
+const FilterDropdown = ({ label, isActive, isOpen, onToggle, onClose, isMobile: mobile, children, alignRight, wider }: {
+  label: string; isActive: boolean; isOpen: boolean; onToggle: () => void; onClose: () => void;
+  isMobile: boolean; children: React.ReactNode; alignRight?: boolean; wider?: boolean;
+}) => (
+  <div className="relative shrink-0">
+    <button
+      onClick={(e) => { e.stopPropagation(); onToggle(); }}
+      className={`flex items-center gap-1.5 px-3 py-2 sm:px-4 rounded-xl text-xs sm:text-sm transition-all duration-150 min-h-[44px] whitespace-nowrap ${
+        isActive
+          ? "border border-red-500/40 text-red-400 bg-red-500/10"
+          : "bg-[#111]/60 border border-white/[0.08] text-zinc-300 hover:border-white/20 hover:text-white"
+      }`}
+    >
+      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
+      {label} <ChevronDown size={13} className="text-zinc-500" />
+    </button>
+    {isOpen && (
+      <>
+        {/* Backdrop */}
+        <div className="fixed inset-0 z-40" onClick={(e) => { e.stopPropagation(); onClose(); }} />
+        {/* Panel: bottom sheet on mobile, dropdown on desktop */}
+        {mobile ? (
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#141414] border-t border-white/10 rounded-t-3xl p-6 animate-in slide-in-from-bottom duration-200 max-h-[70vh] overflow-y-auto">
+            <div className="w-10 h-1 rounded-full bg-zinc-700 mx-auto mb-4" />
+            <p className="text-xs uppercase tracking-wider text-zinc-500 font-semibold mb-3">{label}</p>
+            <div className="space-y-1">{children}</div>
+          </div>
+        ) : (
+          <div className={`absolute top-full mt-2 ${alignRight ? "right-0" : "left-0"} bg-[#141414] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-2 ${wider ? "min-w-[220px]" : "min-w-[180px]"} z-50 animate-in fade-in slide-in-from-top-2 duration-150 max-h-[360px] overflow-y-auto`}>
+            {children}
+          </div>
+        )}
+      </>
+    )}
+  </div>
+);
+
 // ══════════════════════════════════════════════
 // ██  MAIN COMPONENT
 // ══════════════════════════════════════════════
