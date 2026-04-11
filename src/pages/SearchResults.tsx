@@ -24,6 +24,8 @@ import { useSearchLimit } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
 import LocationNudge from "@/components/LocationNudge";
 import { useCountry } from "@/hooks/useCountry";
+import { useLocale } from "@/contexts/LocaleContext";
+import CountryFlag from "@/components/CountryFlag";
 
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -110,6 +112,7 @@ const SearchResults = () => {
   const { toast } = useToast();
   const searchLimit = useSearchLimit();
   const { country } = useCountry();
+  const locale = useLocale();
   const urlQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(urlQuery);
   // Auto-execute search from URL query parameter
@@ -750,9 +753,9 @@ const SearchResults = () => {
                       const median = medianOf(group);
                       if (median === 0) return null;
                       const ratio = price / median;
-                      if (ratio <= 0.75) return { label: "Great Price", className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" };
-                      if (ratio <= 0.90) return { label: "Good Price", className: "bg-sky-500/20 text-sky-400 border-sky-500/30" };
-                      if (ratio >= 1.25) return { label: "High Price", className: "bg-red-500/20 text-red-400 border-red-500/30" };
+                      if (ratio <= 0.75) return { label: locale.t("great_price"), className: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" };
+                      if (ratio <= 0.90) return { label: locale.t("good_price"), className: "bg-sky-500/20 text-sky-400 border-sky-500/30" };
+                      if (ratio >= 1.25) return { label: locale.t("high_price"), className: "bg-red-500/20 text-red-400 border-red-500/30" };
                       return null;
                     };
 
@@ -774,7 +777,7 @@ const SearchResults = () => {
                                   : item.condition === "Used" ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
                                   : "bg-secondary/80 text-muted-foreground border border-border"
                               }`}>
-                                {item.condition}
+                                {item.condition === "New" ? locale.t("new") : item.condition === "Used" ? locale.t("used") : locale.t("not_specified")}
                               </span>
                               {priceBadge && (
                                 <span className={`absolute top-5 sm:top-10 left-1 sm:left-3 text-[8px] sm:text-[10px] font-bold px-1 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg border ${priceBadge.className}`}>
@@ -783,11 +786,11 @@ const SearchResults = () => {
                               )}
                               {item.topRatedSeller && (
                                 <span className="absolute bottom-1 left-1 sm:bottom-3 sm:left-3 text-[8px] sm:text-[10px] font-bold px-1 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg bg-primary/90 text-primary-foreground flex items-center gap-0.5 sm:gap-1">
-                                  <Shield size={8} className="sm:w-[10px] sm:h-[10px]" /> Top Rated
+                                  <Shield size={8} className="sm:w-[10px] sm:h-[10px]" /> {locale.t("top_rated")}
                                 </span>
                               )}
-                              <span className="absolute bottom-1 right-1 sm:bottom-3 sm:right-3 text-xs sm:text-sm leading-none" title={country.name}>
-                                {country.flag}
+                              <span className="absolute bottom-1 right-1 sm:bottom-3 sm:right-3" title={country.name}>
+                                <CountryFlag countryCode={country.code} emoji={country.flag} size={16} />
                               </span>
                             </div>
                           </a>
@@ -799,28 +802,32 @@ const SearchResults = () => {
                             </a>
                             <div className="mt-auto space-y-1.5 sm:space-y-3">
                               <div className="flex items-center gap-1.5 flex-wrap">
-                                <span className="text-sm sm:text-2xl font-bold text-primary whitespace-nowrap">£{item.price.toFixed(2)}</span>
+                                <span className="text-sm sm:text-2xl font-bold text-primary whitespace-nowrap">{locale.formatPrice(item.price)}</span>
+                                {(() => {
+                                  const conv = locale.convertPrice(item.price);
+                                  return conv ? <span className="text-[9px] sm:text-xs text-muted-foreground whitespace-nowrap">≈ {conv.symbol}{conv.converted.toFixed(2)}</span> : null;
+                                })()}
                               </div>
                               {/* Desktop-only details */}
                               <div className="hidden sm:block">
                                 {item.quantityAvailable != null && item.quantityAvailable > 0 && item.quantityAvailable <= 5 && (
                                   <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-400">
-                                    <AlertCircle size={11} /> Only {item.quantityAvailable} left
+                                    <AlertCircle size={11} /> {locale.t("left_only", { n: item.quantityAvailable })}
                                   </span>
                                 )}
                                 {item.quantityAvailable != null && item.quantityAvailable > 5 && (
                                   <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400">
-                                    ✓ In stock
+                                    ✓ {locale.t("in_stock")}
                                   </span>
                                 )}
                                 <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
                                   {item.freeShipping ? (
                                     <span className="flex items-center gap-1 text-emerald-400 font-medium">
-                                      <Truck size={12} /> Free P&P
+                                      <Truck size={12} /> {locale.t("free_shipping")}
                                     </span>
                                   ) : item.shippingCost > 0 ? (
                                     <span className="flex items-center gap-1">
-                                      <Truck size={12} /> +£{item.shippingCost.toFixed(2)} P&P
+                                      <Truck size={12} /> +{locale.formatPrice(item.shippingCost)} P&P
                                     </span>
                                   ) : null}
                                   {item.expedited && (
@@ -830,16 +837,27 @@ const SearchResults = () => {
                                   )}
                                   {item.handlingTime && (
                                     <span className="flex items-center gap-1">
-                                      <Clock size={11} /> {item.handlingTime}d handling
+                                      <Clock size={11} /> {item.handlingTime}{locale.t("handling_days")}
                                     </span>
                                   )}
                                 </div>
+                                {/* Shipping to user's location */}
+                                {item.itemCountry !== locale.locationCountry && (
+                                  <div className="flex items-center gap-1 text-xs">
+                                    {item.shipsToUK ? (
+                                      <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                                        <Truck size={11} /> {locale.t("ships_to")} {locale.getCountryName(locale.locationCountry)}
+                                      </span>
+                                    ) : (
+                                      <span className="flex items-center gap-1 text-red-400 font-medium">
+                                        🚫 {locale.t("no_ship")} {locale.getCountryName(locale.locationCountry)}
+                                      </span>
+                                    )}
+                                  </div>
+                                )}
                                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                   <MapPin size={11} />
                                   <span>{getFlag(item.itemCountry)} {item.itemLocation}</span>
-                                  {item.shipsToUK && item.itemCountry !== "GB" && (
-                                    <span className="text-emerald-400 font-medium">• Ships to UK</span>
-                                  )}
                                 </div>
                               </div>
                               {/* Seller rating - compact on mobile */}
@@ -884,6 +902,7 @@ const SearchResults = () => {
                                         freeShipping: item.freeShipping,
                                         shippingCost: item.shippingCost,
                                         location: item.itemLocation,
+                                        itemCountry: item.itemCountry,
                                         url: item.url,
                                         imageUrl: item.imageUrl,
                                         source: "ebay" as const,
