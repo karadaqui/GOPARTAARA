@@ -299,9 +299,25 @@ const SearchResults = () => {
       setEbayFallback(false);
       try {
         const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-        const { data, error } = await supabase.functions.invoke("search-parts", {
-          body: { query: activeQuery, category: selectedCategory || undefined, offset, marketplace: country.ebayMarketplace },
-        });
+        const priceRange = PRICE_RANGES[priceRangeIdx];
+        const body: Record<string, any> = {
+          query: activeQuery,
+          category: selectedCategory || undefined,
+          offset,
+          marketplace: country.ebayMarketplace,
+        };
+        // Pass filter params to edge function
+        if (conditionFilter !== "All") body.conditionFilter = conditionFilter;
+        if (shippingFilter !== "All") body.shippingFilter = shippingFilter;
+        if (priceRangeIdx > 0) {
+          body.priceMin = priceRange.min;
+          if (priceRange.max !== Infinity) body.priceMax = priceRange.max;
+        }
+        if (sortBy !== "best_match") body.sortBy = sortBy;
+        if (categoryFilter !== "All Parts") body.categoryFilter = categoryFilter;
+        if (brandFilter !== "All") body.brandFilter = brandFilter;
+
+        const { data, error } = await supabase.functions.invoke("search-parts", { body });
         if (error) {
           const msg = (error as any)?.message || "";
           if (msg.includes("UNAUTHORIZED") || msg.includes("401")) { if (!cancelled) setAuthGateOpen(true); return; }
@@ -324,7 +340,7 @@ const SearchResults = () => {
     };
     fetchLive();
     return () => { cancelled = true; };
-  }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace]);
+  }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter]);
 
 
   // ── Saved parts ──
