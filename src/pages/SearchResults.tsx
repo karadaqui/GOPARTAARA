@@ -245,11 +245,11 @@ const FilterDropdown = ({
   alignRight?: boolean;
   panelWidth?: string;
 }) => (
-  <div className="filter-dropdown relative shrink-0">
+  <div style={{ position: "relative" }} className="shrink-0">
     <button
       type="button"
-      onClick={() => toggleFilter(filterKey)}
-      className={`filter-dropdown flex min-h-[44px] items-center gap-2 rounded-xl border px-4 py-2 text-sm whitespace-nowrap transition-all duration-200 ${
+      onClick={(e) => { e.stopPropagation(); toggleFilter(filterKey); }}
+      className={`flex min-h-[44px] items-center gap-2 rounded-xl border px-4 py-2 text-sm whitespace-nowrap transition-all duration-200 ${
         isActive
           ? "border-red-500/40 bg-red-500/10 text-red-400"
           : "border-white/[0.08] bg-zinc-900/60 text-zinc-300 hover:border-white/20 hover:text-white"
@@ -261,7 +261,11 @@ const FilterDropdown = ({
     </button>
 
     {openFilter === filterKey && (
-      <div className={`filter-dropdown absolute top-[calc(100%+8px)] ${alignRight ? "right-0 left-auto" : "left-0"} z-[9999] rounded-2xl border border-white/10 bg-zinc-900 p-2 shadow-2xl max-h-[360px] overflow-y-auto ${panelWidth}`}>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{ position: "absolute", zIndex: 9999, top: "100%", left: alignRight ? "auto" : 0, right: alignRight ? 0 : "auto", marginTop: 8 }}
+        className={`rounded-2xl border border-white/10 bg-zinc-900 p-2 shadow-2xl max-h-[360px] overflow-y-auto ${panelWidth}`}
+      >
         {children}
       </div>
     )}
@@ -300,8 +304,6 @@ const SearchResults = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const internalSearchRef = useRef(false);
   const [authGateOpen, setAuthGateOpen] = useState(false);
-  const [catalogResults, setCatalogResults] = useState<any[]>([]);
-  const [catalogLoading, setCatalogLoading] = useState(false);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // ── Filter & Sort State ──
@@ -316,24 +318,16 @@ const SearchResults = () => {
 
   // Close dropdown on outside click
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (filterBarRef.current && !filterBarRef.current.contains(e.target as Node)) {
-        setOpenDropdown(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside as any);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside as any);
-    };
+    const close = () => setOpenDropdown(null);
+    document.addEventListener("click", close);
+    return () => document.removeEventListener("click", close);
   }, []);
 
   // Parse twemoji after results render
   useEffect(() => {
     const timer = setTimeout(parseTwemoji, 100);
     return () => clearTimeout(timer);
-  }, [liveResults, catalogResults]);
+  }, [liveResults]);
 
   // ── URL sync ──
   useEffect(() => {
@@ -386,21 +380,6 @@ const SearchResults = () => {
     return () => { cancelled = true; };
   }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace]);
 
-  // ── Catalog search ──
-  useEffect(() => {
-    if (!activeQuery.trim() || !user) { setCatalogResults([]); return; }
-    let cancelled = false;
-    const fetchCatalog = async () => {
-      setCatalogLoading(true);
-      try {
-        const { data, error } = await supabase.functions.invoke("search-auto-parts", { body: { query: activeQuery } });
-        if (!cancelled && !error) setCatalogResults(data?.results || []);
-      } catch { if (!cancelled) setCatalogResults([]); }
-      finally { if (!cancelled) setCatalogLoading(false); }
-    };
-    fetchCatalog();
-    return () => { cancelled = true; };
-  }, [activeQuery, user]);
 
   // ── Saved parts ──
   useEffect(() => {
@@ -886,7 +865,7 @@ const SearchResults = () => {
 
             {/* ── Results Grid ── */}
             {liveLoading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5 mb-10">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-10">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
             ) : liveResults.length > 0 && filteredResults.length === 0 ? (
@@ -901,16 +880,17 @@ const SearchResults = () => {
               </div>
             ) : filteredResults.length > 0 ? (
               <div className="mb-10 animate-fade-in">
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
-                  {filteredResults.map((item: any, idx: number) => {
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+                  {filteredResults.slice(0, 12).map((item: any, idx: number) => {
                     const priceBadge = getPriceBadge(item.price, item.title);
-                    const conditionKey = item.condition === "New" ? "new" : item.condition === "Used" ? "used" : item.condition === "Refurbished" ? "refurbished" : "not_specified";
-                    const conditionStyles = {
-                      new: "bg-zinc-700/90 text-zinc-200 border-b border-white/10",
-                      used: "bg-amber-900/40 text-amber-300 border-b border-amber-500/20",
-                      refurbished: "bg-blue-900/40 text-blue-300 border-b border-blue-500/20",
-                      not_specified: "bg-zinc-800/90 text-zinc-400 border-b border-white/10",
-                    };
+                    const conditionNorm = (item.condition || "").trim().toLowerCase();
+                    const conditionBarStyle = conditionNorm === "new"
+                      ? { background: "#14532d", color: "#4ade80" }
+                      : conditionNorm === "used" || conditionNorm.includes("pre-owned")
+                      ? { background: "#78350f", color: "#fbbf24" }
+                      : conditionNorm.includes("refurb")
+                      ? { background: "#1e3a5f", color: "#60a5fa" }
+                      : { background: "#27272a", color: "#a1a1aa" };
                     const priceBadgeStyles = {
                       great: { text: "text-emerald-400", icon: "✦" },
                       good: { text: "text-blue-400", icon: "✦" },
@@ -923,8 +903,8 @@ const SearchResults = () => {
                         style={{ animationDelay: `${idx * 50}ms` }}>
                         
                         {/* ── Condition Badge (Top Bar) ── */}
-                        <div className={`h-7 flex items-center justify-center text-xs font-semibold tracking-wide uppercase ${conditionStyles[conditionKey as keyof typeof conditionStyles]}`}>
-                          {locale.t(conditionKey)}
+                        <div className="h-7 flex items-center justify-center text-xs font-semibold tracking-wide uppercase border-b border-white/10" style={conditionBarStyle}>
+                          {item.condition || "Unknown"}
                         </div>
 
                         {/* ── Image Section ── */}
@@ -1083,36 +1063,6 @@ const SearchResults = () => {
                   </div>
                 )}
 
-                {/* Parts Catalog */}
-                {catalogLoading && (
-                  <div className="flex items-center gap-2 py-4 justify-center text-zinc-500"><Loader2 size={16} className="animate-spin" /><span className="text-sm">Searching parts catalog...</span></div>
-                )}
-                {catalogResults.length > 0 && (
-                  <div className="mb-8">
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-6 h-6 rounded-md bg-red-600/15 flex items-center justify-center"><Search size={14} className="text-red-500" /></div>
-                      <h3 className="text-base sm:text-lg font-bold text-white">Parts Catalog</h3>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-600/15 text-red-500 border border-red-500/20">TecDoc Data</span>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {catalogResults.map((item: any) => (
-                        <div key={item.id} className="rounded-2xl border border-white/[0.06] bg-[#111] p-4 hover:border-white/[0.15] transition-all flex flex-col gap-2">
-                          <div className="flex items-start gap-3">
-                            {item.imageUrl && <img src={item.imageUrl} alt={item.partName} className="w-14 h-14 rounded-lg object-contain bg-[#0d0d0d] p-1 shrink-0" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
-                            <div className="min-w-0 flex-1">
-                              <p className="text-sm font-semibold line-clamp-2 text-white">{item.partName}</p>
-                              {item.partNumber && <p className="text-xs text-zinc-600 mt-0.5 font-mono">#{item.partNumber}</p>}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-[#1a1a1a] text-zinc-400">{item.brand}</span>
-                            {item.category && <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-[#1a1a1a] text-zinc-400">{item.category}</span>}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 {/* Global Suppliers */}
                 <div className="mb-6">
