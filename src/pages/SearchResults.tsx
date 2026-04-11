@@ -387,6 +387,38 @@ const SearchResults = () => {
     });
   }, [user]);
 
+  // ── ScaleSERP fetch ──
+  useEffect(() => {
+    if (!useScaleSERP || !activeQuery.trim() || !user) return;
+    let cancelled = false;
+
+    const cacheKey = `scaleserp:${activeQuery.toLowerCase()}`;
+    try {
+      const raw = sessionStorage.getItem(cacheKey);
+      if (raw) {
+        const { data, ts } = JSON.parse(raw);
+        if (Date.now() - ts < 15 * 60 * 1000) {
+          setScaleSerpResults(data);
+          return;
+        }
+        sessionStorage.removeItem(cacheKey);
+      }
+    } catch {}
+
+    setScaleSerpLoading(true);
+    supabase.functions.invoke("search-scaleserp", { body: { query: activeQuery } })
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error || !data?.results) { setScaleSerpResults([]); return; }
+        setScaleSerpResults(data.results);
+        try { sessionStorage.setItem(cacheKey, JSON.stringify({ data: data.results, ts: Date.now() })); } catch {}
+      })
+      .catch(() => { if (!cancelled) setScaleSerpResults([]); })
+      .finally(() => { if (!cancelled) setScaleSerpLoading(false); });
+
+    return () => { cancelled = true; };
+  }, [activeQuery, user]);
+
   // ── Handlers ──
   const handleVehicleLookupStart = () => {
     setVehicleInfo(null); setQuery(""); setActiveQuery(""); setSelectedCategory(null);
