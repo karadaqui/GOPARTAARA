@@ -90,8 +90,6 @@ const PRICE_RANGES = [
   { label: "Over £500", min: 500, max: Infinity },
 ] as const;
 
-const BRAND_SOURCES_ACTIVE = ["eBay", "Amazon"] as const;
-const BRAND_SOURCES_COMING = ["Autodoc", "Euro Car Parts", "GSF Car Parts", "Car Parts 4 Less"] as const;
 
 const oemBrands: { brand: string; pattern: RegExp; label: string; url: (q: string) => string; gradient: string }[] = [
   { brand: "BMW", pattern: /bmw/i, label: "BMW OEM Catalog", url: (q) => `https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(q)}`, gradient: "from-[#1C69D4] to-[#0A3D91]" },
@@ -227,51 +225,6 @@ const SkeletonCard = () => (
   </div>
 );
 
-const FilterDropdown = ({
-  filterKey,
-  label,
-  isActive,
-  openFilter,
-  toggleFilter,
-  children,
-  alignRight,
-  panelWidth = "min-w-[160px]",
-}: {
-  filterKey: string;
-  label: string;
-  isActive: boolean;
-  openFilter: string | null;
-  toggleFilter: (e: React.MouseEvent, name: string) => void;
-  children: React.ReactNode;
-  alignRight?: boolean;
-  panelWidth?: string;
-}) => (
-  <div style={{ position: "relative" }} className="shrink-0">
-    <button
-      type="button"
-      onClick={(e) => toggleFilter(e, filterKey)}
-      className={`flex min-h-[44px] items-center gap-2 rounded-xl border px-4 py-2 text-sm whitespace-nowrap transition-all duration-200 ${
-        isActive
-          ? "border-red-500/40 bg-red-500/10 text-red-400"
-          : "border-white/[0.08] bg-zinc-900/60 text-zinc-300 hover:border-white/20 hover:text-white"
-      }`}
-    >
-      {isActive && <span className="h-2 w-2 rounded-full bg-red-500" />}
-      <span>{label}</span>
-      <ChevronDown size={14} className={`transition-transform duration-200 ${openFilter === filterKey ? "rotate-180 text-red-400" : "text-zinc-500"}`} />
-    </button>
-
-    {openFilter === filterKey && (
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{ position: "absolute", zIndex: 9999, top: "100%", left: alignRight ? "auto" : 0, right: alignRight ? 0 : "auto", marginTop: 8 }}
-        className={`rounded-2xl border border-white/10 bg-zinc-900 p-2 shadow-2xl max-h-[360px] overflow-y-auto ${panelWidth}`}
-      >
-        {children}
-      </div>
-    )}
-  </div>
-);
 
 // ══════════════════════════════════════════════
 // ██  MAIN COMPONENT
@@ -314,7 +267,7 @@ const SearchResults = () => {
   const [priceRangeIdx, setPriceRangeIdx] = useState(0);
   const [brandFilter, setBrandFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All Parts");
-  const filterBarRef = useRef<HTMLDivElement>(null);
+  
 
   // Parse twemoji after results render
   useEffect(() => {
