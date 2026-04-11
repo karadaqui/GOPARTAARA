@@ -25,6 +25,7 @@ import { useCountry } from "@/hooks/useCountry";
 import { useLocale } from "@/contexts/LocaleContext";
 import CountryFlag from "@/components/CountryFlag";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import FilterBar from "@/components/FilterBar";
 
 
 // ── Twemoji helper ──
@@ -89,8 +90,6 @@ const PRICE_RANGES = [
   { label: "Over £500", min: 500, max: Infinity },
 ] as const;
 
-const BRAND_SOURCES_ACTIVE = ["eBay", "Amazon"] as const;
-const BRAND_SOURCES_COMING = ["Autodoc", "Euro Car Parts", "GSF Car Parts", "Car Parts 4 Less"] as const;
 
 const oemBrands: { brand: string; pattern: RegExp; label: string; url: (q: string) => string; gradient: string }[] = [
   { brand: "BMW", pattern: /bmw/i, label: "BMW OEM Catalog", url: (q) => `https://www.realoem.com/bmw/enUS/partxref?q=${encodeURIComponent(q)}`, gradient: "from-[#1C69D4] to-[#0A3D91]" },
@@ -226,51 +225,6 @@ const SkeletonCard = () => (
   </div>
 );
 
-const FilterDropdown = ({
-  filterKey,
-  label,
-  isActive,
-  openFilter,
-  toggleFilter,
-  children,
-  alignRight,
-  panelWidth = "min-w-[160px]",
-}: {
-  filterKey: string;
-  label: string;
-  isActive: boolean;
-  openFilter: string | null;
-  toggleFilter: (e: React.MouseEvent, name: string) => void;
-  children: React.ReactNode;
-  alignRight?: boolean;
-  panelWidth?: string;
-}) => (
-  <div style={{ position: "relative" }} className="shrink-0">
-    <button
-      type="button"
-      onClick={(e) => toggleFilter(e, filterKey)}
-      className={`flex min-h-[44px] items-center gap-2 rounded-xl border px-4 py-2 text-sm whitespace-nowrap transition-all duration-200 ${
-        isActive
-          ? "border-red-500/40 bg-red-500/10 text-red-400"
-          : "border-white/[0.08] bg-zinc-900/60 text-zinc-300 hover:border-white/20 hover:text-white"
-      }`}
-    >
-      {isActive && <span className="h-2 w-2 rounded-full bg-red-500" />}
-      <span>{label}</span>
-      <ChevronDown size={14} className={`transition-transform duration-200 ${openFilter === filterKey ? "rotate-180 text-red-400" : "text-zinc-500"}`} />
-    </button>
-
-    {openFilter === filterKey && (
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{ position: "absolute", zIndex: 9999, top: "100%", left: alignRight ? "auto" : 0, right: alignRight ? 0 : "auto", marginTop: 8 }}
-        className={`rounded-2xl border border-white/10 bg-zinc-900 p-2 shadow-2xl max-h-[360px] overflow-y-auto ${panelWidth}`}
-      >
-        {children}
-      </div>
-    )}
-  </div>
-);
 
 // ══════════════════════════════════════════════
 // ██  MAIN COMPONENT
@@ -313,20 +267,7 @@ const SearchResults = () => {
   const [priceRangeIdx, setPriceRangeIdx] = useState(0);
   const [brandFilter, setBrandFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All Parts");
-  const [openFilter, setOpenFilter] = useState<string | null>(null);
-  const filterBarRef = useRef<HTMLDivElement>(null);
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    const close = () => setOpenFilter(null);
-    document.addEventListener("click", close);
-    return () => document.removeEventListener("click", close);
-  }, []);
-
-  const handleFilterClick = (e: React.MouseEvent, name: string) => {
-    e.stopPropagation();
-    setOpenFilter(prev => prev === name ? null : name);
-  };
+  
 
   // Parse twemoji after results render
   useEffect(() => {
@@ -718,141 +659,28 @@ const SearchResults = () => {
               </div>
             </div>
 
-            {/* ── Sort & Filter Bar (Dropdowns) ── */}
+            {/* ── Sort & Filter Bar ── */}
             {liveResults.length > 0 && !liveLoading && (
-              <div ref={filterBarRef} className="bg-[#111]/40 backdrop-blur-sm border border-white/[0.06] rounded-2xl px-3 py-2.5 mb-6">
-                <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-                  {/* Active filter count */}
-                  {activeFilterCount > 0 && (
-                    <div className="flex items-center gap-1.5 shrink-0 pr-2 border-r border-white/10">
-                      <span className="bg-red-600 text-white text-[10px] font-bold rounded-full px-2 py-0.5">{activeFilterCount}</span>
-                      <button onClick={clearAllFilters} className="text-[11px] text-zinc-500 hover:text-white transition-colors whitespace-nowrap">Clear all</button>
-                    </div>
-                  )}
-
-                  {/* Condition Dropdown */}
-                  <FilterDropdown
-                    label="Condition"
-                    isActive={conditionFilter !== "All"}
-                    filterKey="condition"
-                    openFilter={openFilter}
-                    toggleFilter={handleFilterClick}
-                  >
-                    {(["All", "New", "Used", "Refurbished"] as const).map((c) => (
-                      <button key={c} onClick={() => { setConditionFilter(c); setOpenFilter(null); }}
-                        className={`w-full px-3 py-2.5 rounded-xl text-sm text-left transition-all min-h-[44px] flex items-center ${conditionFilter === c ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
-                        {c === "All" ? "All Conditions" : c}
-                      </button>
-                    ))}
-                  </FilterDropdown>
-
-                  {/* Shipping Dropdown */}
-                  <FilterDropdown
-                    label="Shipping"
-                    isActive={shippingFilter !== "All"}
-                    filterKey="shipping"
-                    openFilter={openFilter}
-                    toggleFilter={handleFilterClick}
-                  >
-                    {([
-                      { key: "All", label: "All" },
-                      { key: "Free Shipping", label: "⚡ Free Shipping" },
-                      { key: "Ships to Country", label: `📦 Ships to ${locale.getCountryName(locale.locationCountry)}` },
-                      { key: "Fast", label: "🚀 Fast (< 5 days)" },
-                    ] as const).map((s) => (
-                      <button key={s.key} onClick={() => { setShippingFilter(s.key); setOpenFilter(null); }}
-                        className={`w-full px-3 py-2.5 rounded-xl text-sm text-left transition-all min-h-[44px] flex items-center ${shippingFilter === s.key ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
-                        {s.label}
-                      </button>
-                    ))}
-                  </FilterDropdown>
-
-                  {/* Price Dropdown */}
-                  <FilterDropdown
-                    label="Price"
-                    isActive={priceRangeIdx !== 0}
-                    filterKey="price"
-                    openFilter={openFilter}
-                    toggleFilter={handleFilterClick}
-                  >
-                    {PRICE_RANGES.map((range, idx) => (
-                      <button key={range.label} onClick={() => { setPriceRangeIdx(idx); setOpenFilter(null); }}
-                        className={`w-full px-3 py-2.5 rounded-xl text-sm text-left transition-all min-h-[44px] flex items-center ${priceRangeIdx === idx ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
-                        {range.label}
-                      </button>
-                    ))}
-                  </FilterDropdown>
-
-                  {/* Category Dropdown */}
-                  <FilterDropdown
-                    label="Category"
-                    isActive={categoryFilter !== "All Parts"}
-                    filterKey="category"
-                    openFilter={openFilter}
-                    toggleFilter={handleFilterClick}
-                  >
-                    {PART_CATEGORIES.map((cat) => (
-                      <button key={cat.label} onClick={() => { setCategoryFilter(cat.label); setOpenFilter(null); }}
-                        className={`w-full px-3 py-2.5 rounded-xl text-sm text-left transition-all flex items-center gap-2 min-h-[44px] ${categoryFilter === cat.label ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
-                        <span>{cat.icon}</span> {cat.label}
-                      </button>
-                    ))}
-                  </FilterDropdown>
-
-                  {/* Brand Dropdown */}
-                  <FilterDropdown
-                    label="Brand"
-                    isActive={brandFilter !== "All"}
-                    filterKey="brand"
-                    openFilter={openFilter}
-                    toggleFilter={handleFilterClick}
-                    panelWidth="min-w-[220px]"
-                  >
-                    <button onClick={() => { setBrandFilter("All"); setOpenFilter(null); }}
-                      className={`w-full px-3 py-2.5 rounded-xl text-sm text-left transition-all min-h-[44px] flex items-center ${brandFilter === "All" ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
-                      All Sources
-                    </button>
-                    <p className="px-3 pt-2 pb-1 text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Available Now</p>
-                    {BRAND_SOURCES_ACTIVE.map((b) => (
-                      <button key={b} onClick={() => { setBrandFilter(b); setOpenFilter(null); }}
-                        className={`w-full px-3 py-2.5 rounded-xl text-sm text-left transition-all min-h-[44px] flex items-center ${brandFilter === b ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
-                        {b}
-                      </button>
-                    ))}
-                    <p className="px-3 pt-3 pb-1 text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Coming Soon</p>
-                    {BRAND_SOURCES_COMING.map((b) => (
-                      <div key={b} className="relative overflow-hidden rounded-xl px-3 py-2.5 cursor-not-allowed min-h-[44px] flex items-center">
-                        <div className="absolute inset-0 bg-gradient-to-r from-red-900/20 via-red-600/10 to-red-900/20 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] blur-sm" />
-                        <span className="relative text-zinc-600 text-sm flex items-center gap-2">
-                          {b}
-                          <span className="bg-red-900/40 border border-red-500/30 text-red-400 text-[10px] px-1.5 py-0.5 rounded-full font-medium">Soon</span>
-                        </span>
-                      </div>
-                    ))}
-                  </FilterDropdown>
-
-                  {/* Spacer + Divider */}
-                  <div className="flex-1" />
-                  <div className="border-l border-white/10 h-6 shrink-0 hidden sm:block" />
-
-                  {/* Sort Dropdown */}
-                  <FilterDropdown
-                    label={`Sort: ${SORT_OPTIONS.find(s => s.value === sortBy)?.label || "Best Match"}`}
-                    isActive={false}
-                    filterKey="sort"
-                    openFilter={openFilter}
-                    toggleFilter={handleFilterClick}
-                    alignRight
-                  >
-                    {SORT_OPTIONS.map((opt) => (
-                      <button key={opt.value} onClick={() => { setSortBy(opt.value); setOpenFilter(null); }}
-                        className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm transition-all text-left min-h-[44px] ${sortBy === opt.value ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
-                        <span>{opt.icon}</span> {opt.label}
-                      </button>
-                    ))}
-                  </FilterDropdown>
-                </div>
-              </div>
+              <FilterBar
+                conditionFilter={conditionFilter}
+                setConditionFilter={setConditionFilter}
+                shippingFilter={shippingFilter}
+                setShippingFilter={setShippingFilter}
+                priceRangeIdx={priceRangeIdx}
+                setPriceRangeIdx={setPriceRangeIdx}
+                categoryFilter={categoryFilter}
+                setCategoryFilter={setCategoryFilter}
+                brandFilter={brandFilter}
+                setBrandFilter={setBrandFilter}
+                sortBy={sortBy}
+                setSortBy={(v) => setSortBy(v as typeof SORT_OPTIONS[number]["value"])}
+                activeFilterCount={activeFilterCount}
+                clearAllFilters={clearAllFilters}
+                shipsToLabel={locale.getCountryName(locale.locationCountry)}
+                priceRanges={PRICE_RANGES}
+                sortOptions={SORT_OPTIONS}
+                partCategories={PART_CATEGORIES}
+              />
             )}
 
             {/* ── Results Grid ── */}
