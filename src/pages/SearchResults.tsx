@@ -13,7 +13,6 @@ import {
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import VehicleLookup from "@/components/VehicleLookup";
-import VehicleFilterButton from "@/components/VehicleFilterButton";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
 import SearchCounter from "@/components/SearchCounter";
 import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsComparison";
