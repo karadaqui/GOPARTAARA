@@ -69,10 +69,11 @@ const TRANSLATIONS: Record<string, Record<TranslationKey, string>> = {
 // ── Exchange rates ──
 const LS_RATES_KEY = "partara_exchange_rates";
 const LS_RATES_TS = "partara_exchange_rates_ts";
-const RATES_TTL = 6 * 60 * 60 * 1000; // 6h
+const RATES_TTL = 6 * 60 * 60 * 1000;
+const LS_LOCATION = "partara_location_country";
 
 interface ExchangeRates {
-  [from_to: string]: number; // e.g. "GBP_EUR": 1.17
+  [from_to: string]: number;
 }
 
 async function fetchRates(): Promise<ExchangeRates> {
@@ -85,7 +86,6 @@ async function fetchRates(): Promise<ExchangeRates> {
   const rates: ExchangeRates = {};
   const bases = ["GBP", "EUR", "USD", "AUD", "CAD"];
   try {
-    // Use a single base call for GBP and compute cross rates
     const res = await fetch("https://api.exchangerate-api.com/v4/latest/GBP");
     if (res.ok) {
       const data = await res.json();
@@ -95,7 +95,6 @@ async function fetchRates(): Promise<ExchangeRates> {
           rates[`${target}_GBP`] = 1 / data.rates[target];
         }
       }
-      // Cross rates
       for (const a of bases) {
         for (const b of bases) {
           if (a !== b && !rates[`${a}_${b}`]) {
@@ -115,49 +114,35 @@ async function fetchRates(): Promise<ExchangeRates> {
 }
 
 // ── Context ──
-const LS_LOCATION = "partara_location_country";
-
 interface LocaleContextValue {
-  /** User's physical location country code (ISO). Falls back to marketplace. */
   locationCountry: string;
-  /** Language code derived from physical location */
   lang: string;
-  /** Currency for display, from physical location */
   currency: { code: string; symbol: string };
-  /** Marketplace currency (from the eBay marketplace being searched) */
   marketplaceCurrency: { code: string; symbol: string };
-  /** Translate a key */
   t: (key: TranslationKey, vars?: Record<string, string | number>) => string;
-  /** Convert amount from marketplace currency to user's local currency. Returns null if same currency or no rate. */
   convertPrice: (amount: number) => { converted: number; symbol: string; code: string } | null;
-  /** Format price with appropriate currency symbol */
   formatPrice: (amount: number, currencyCode?: string) => string;
-  /** Get country name from code */
   getCountryName: (code: string) => string;
 }
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
-  const { country, hasChosenCountry } = useCountry();
+  const { country } = useCountry();
 
+  // Physical location — completely separate from marketplace selection
   const [locationCountry, setLocationCountry] = useState<string>(() => {
     try {
-      return localStorage.getItem(LS_LOCATION) || country.code;
-    } catch { return country.code; }
+      return localStorage.getItem(LS_LOCATION) || "";
+    } catch { return ""; }
   });
 
   const [rates, setRates] = useState<ExchangeRates>({});
 
-  // Load exchange rates on mount
-  useEffect(() => {
-    fetchRates().then(setRates);
-  }, []);
+  useEffect(() => { fetchRates().then(setRates); }, []);
 
-  // When geolocation detects location, store it
+  // Listen for storage changes (e.g. from LocationBanner setting location)
   useEffect(() => {
-    // If the user hasn't explicitly chosen a country and geolocation was used,
-    // the CountryContext detectLocation sets the country. We listen for the LS key.
     const handleStorage = () => {
       try {
         const loc = localStorage.getItem(LS_LOCATION);
@@ -165,14 +150,27 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
       } catch {}
     };
     window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
+    // Also check on mount in case it was set in same tab
+    const interval = setInterval(() => {
+      try {
+        const loc = localStorage.getItem(LS_LOCATION) || "";
+        setLocationCountry(prev => prev !== loc ? loc : prev);
+      } catch {}
+    }, 1000);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      clearInterval(interval);
+    };
   }, []);
 
-  // If user denied location, fall back to marketplace country
-  const effectiveLocation = locationCountry || country.code;
+  // If location denied/empty → fall back to marketplace country code
+  const effectiveLocation = locationCountry || (country.code === "GLOBAL" ? "GB" : country.code);
   const lang = COUNTRY_LANG[effectiveLocation] || "en";
   const currency = COUNTRY_CURRENCY[effectiveLocation] || COUNTRY_CURRENCY.GB;
-  const marketplaceCurrency = COUNTRY_CURRENCY[country.code] || COUNTRY_CURRENCY.GB;
+  
+  // Marketplace currency: for GLOBAL, default to GBP
+  const marketplaceCountryCode = country.code === "GLOBAL" ? "GB" : country.code;
+  const marketplaceCurrency = COUNTRY_CURRENCY[marketplaceCountryCode] || COUNTRY_CURRENCY.GB;
 
   const t = useCallback((key: TranslationKey, vars?: Record<string, string | number>): string => {
     const dict = TRANSLATIONS[lang] || TRANSLATIONS.en;
@@ -224,7 +222,7 @@ export function useLocale() {
   return ctx;
 }
 
-/** Call this when geolocation detects a country */
+/** Call this when geolocation detects a country — stores physical location */
 export function setDetectedLocation(countryCode: string) {
   try { localStorage.setItem(LS_LOCATION, countryCode); } catch {}
 }

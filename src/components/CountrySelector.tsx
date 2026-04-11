@@ -1,18 +1,16 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
-import { useCountry, SUPPORTED_COUNTRIES } from "@/hooks/useCountry";
+import { ChevronDown, Globe } from "lucide-react";
+import { useCountry, ALL_MARKETPLACE_OPTIONS, GLOBAL_MARKETPLACE } from "@/hooks/useCountry";
 import CountryFlag from "@/components/CountryFlag";
 
 const CountrySelector = () => {
-  const { country, setCountry, selectorHighlighted, setSelectorHighlighted } = useCountry();
+  const { country, setCountry, selectorHighlighted, setSelectorHighlighted, isGlobal } = useCountry();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // When highlighted externally (e.g. "Choose Manually"), auto-open
   useEffect(() => {
     if (selectorHighlighted) {
       setOpen(true);
-      // Clear highlight after 3 seconds
       const t = setTimeout(() => setSelectorHighlighted(false), 3000);
       return () => clearTimeout(t);
     }
@@ -37,8 +35,12 @@ const CountrySelector = () => {
           selectorHighlighted ? "ring-2 ring-primary/60 animate-pulse" : ""
         }`}
       >
-        <CountryFlag countryCode={country.code} emoji={country.flag} size={18} />
-        <span className="hidden lg:inline">{country.code}</span>
+        {isGlobal ? (
+          <Globe size={18} className="text-primary" />
+        ) : (
+          <CountryFlag countryCode={country.code} emoji={country.flag} size={18} />
+        )}
+        <span className="hidden lg:inline">{isGlobal ? "Global" : country.code}</span>
         <ChevronDown
           size={12}
           className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
@@ -49,9 +51,9 @@ const CountrySelector = () => {
         <div className="absolute top-full right-0 pt-2 w-56 z-50">
           <div className="rounded-xl border border-border/60 bg-popover/95 backdrop-blur-xl p-1.5 shadow-xl shadow-background/40 animate-in fade-in-0 zoom-in-95">
             <p className="px-3 py-1.5 text-xs text-muted-foreground uppercase tracking-wider">
-              Select Country
+              Select Marketplace
             </p>
-            {SUPPORTED_COUNTRIES.map((c) => (
+            {ALL_MARKETPLACE_OPTIONS.map((c) => (
               <button
                 key={c.code}
                 onClick={() => {
@@ -64,9 +66,13 @@ const CountrySelector = () => {
                     : "text-popover-foreground hover:bg-accent/10"
                 }`}
               >
-                <CountryFlag countryCode={c.code} emoji={c.flag} size={20} />
+                {c.code === "GLOBAL" ? (
+                  <Globe size={20} className="text-primary shrink-0" />
+                ) : (
+                  <CountryFlag countryCode={c.code} emoji={c.flag} size={20} />
+                )}
                 <span className="flex-1">{c.name}</span>
-                <span className="text-xs text-muted-foreground">{c.code}</span>
+                <span className="text-xs text-muted-foreground">{c.code === "GLOBAL" ? "🌍" : c.code}</span>
               </button>
             ))}
           </div>
