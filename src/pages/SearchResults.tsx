@@ -112,7 +112,7 @@ const SearchResults = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const searchLimit = useSearchLimit();
-  const { country } = useCountry();
+  const { country, isGlobal } = useCountry();
   const locale = useLocale();
   const urlQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(urlQuery);
@@ -763,7 +763,7 @@ const SearchResults = () => {
                     return liveResults.map((item: any) => {
                       const priceBadge = getPriceBadge(item.price, item.title);
                       return (
-                        <div key={item.id} className="group glass rounded-xl sm:rounded-2xl overflow-hidden hover:border-primary/30 card-hover flex flex-col relative">
+                        <div key={item.id} className="group rounded-2xl overflow-hidden border border-white/[0.08] bg-zinc-900 hover:border-white/20 hover:shadow-lg hover:shadow-black/50 transition-all duration-200 flex flex-col relative">
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
                             <div className="aspect-square sm:aspect-[4/3] bg-secondary/50 overflow-hidden relative">
                               <img
@@ -790,8 +790,19 @@ const SearchResults = () => {
                                   <Shield size={8} className="sm:w-[10px] sm:h-[10px]" /> {locale.t("top_rated")}
                                 </span>
                               )}
-                              <span className="absolute bottom-1 right-1 sm:bottom-3 sm:right-3" title={country.name}>
-                                <CountryFlag countryCode={country.code} emoji={country.flag} size={16} />
+                              <span className="absolute bottom-1 right-1 sm:bottom-3 sm:right-3" title={isGlobal ? (item.itemCountry || "Global") : country.name}>
+                                {isGlobal ? (
+                                  <span className="flex items-center gap-1">
+                                    <span className="text-sm">🌍</span>
+                                    {item.itemCountry && (
+                                      <span className="text-[8px] bg-black/60 backdrop-blur-sm text-white/80 px-1 py-0.5 rounded">
+                                        <CountryFlag countryCode={item.itemCountry} emoji={countryFlags[item.itemCountry] || "🌍"} size={12} />
+                                      </span>
+                                    )}
+                                  </span>
+                                ) : (
+                                  <CountryFlag countryCode={country.code} emoji={country.flag} size={16} />
+                                )}
                               </span>
                             </div>
                           </a>
