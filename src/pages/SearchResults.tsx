@@ -855,13 +855,13 @@ const SearchResults = () => {
                                 </div>
                                 {/* Shipping to user's location */}
                                 {item.itemCountry !== locale.locationCountry && (
-                                  <div className="flex items-center gap-1 text-xs">
+                                  <div className="flex items-center gap-1">
                                     {item.shipsToUK ? (
-                                      <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                                      <span className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                                         <Truck size={11} /> {locale.t("ships_to")} {locale.getCountryName(locale.locationCountry)}
                                       </span>
                                     ) : (
-                                      <span className="flex items-center gap-1 text-red-400 font-medium">
+                                      <span className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium bg-red-500/15 text-red-400 border border-red-500/30">
                                         🚫 {locale.t("no_ship")} {locale.getCountryName(locale.locationCountry)}
                                       </span>
                                     )}
