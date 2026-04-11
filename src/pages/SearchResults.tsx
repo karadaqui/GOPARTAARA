@@ -13,7 +13,6 @@ import {
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import VehicleLookup from "@/components/VehicleLookup";
-import VehicleFilterButton from "@/components/VehicleFilterButton";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
 import SearchCounter from "@/components/SearchCounter";
 import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsComparison";
@@ -26,6 +25,7 @@ import { useCountry } from "@/hooks/useCountry";
 import { useLocale } from "@/contexts/LocaleContext";
 import CountryFlag from "@/components/CountryFlag";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 
 // ── Twemoji helper ──
@@ -183,6 +183,44 @@ const SkeletonCard = () => (
   </div>
 );
 
+// ── Filter Dropdown Component (desktop dropdown / mobile bottom sheet) ──
+const FilterDropdown = ({ label, isActive, isOpen, onToggle, onClose, isMobile: mobile, children, alignRight, wider }: {
+  label: string; isActive: boolean; isOpen: boolean; onToggle: () => void; onClose: () => void;
+  isMobile: boolean; children: React.ReactNode; alignRight?: boolean; wider?: boolean;
+}) => (
+  <div className="relative shrink-0">
+    <button
+      onClick={(e) => { e.stopPropagation(); onToggle(); }}
+      className={`flex items-center gap-1.5 px-3 py-2 sm:px-4 rounded-xl text-xs sm:text-sm transition-all duration-150 min-h-[44px] whitespace-nowrap ${
+        isActive
+          ? "border border-red-500/40 text-red-400 bg-red-500/10"
+          : "bg-[#111]/60 border border-white/[0.08] text-zinc-300 hover:border-white/20 hover:text-white"
+      }`}
+    >
+      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
+      {label} <ChevronDown size={13} className="text-zinc-500" />
+    </button>
+    {isOpen && (
+      <>
+        {/* Backdrop */}
+        <div className="fixed inset-0 z-40" onClick={(e) => { e.stopPropagation(); onClose(); }} />
+        {/* Panel: bottom sheet on mobile, dropdown on desktop */}
+        {mobile ? (
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#141414] border-t border-white/10 rounded-t-3xl p-6 animate-in slide-in-from-bottom duration-200 max-h-[70vh] overflow-y-auto">
+            <div className="w-10 h-1 rounded-full bg-zinc-700 mx-auto mb-4" />
+            <p className="text-xs uppercase tracking-wider text-zinc-500 font-semibold mb-3">{label}</p>
+            <div className="space-y-1">{children}</div>
+          </div>
+        ) : (
+          <div className={`absolute top-full mt-2 ${alignRight ? "right-0" : "left-0"} bg-[#141414] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-2 ${wider ? "min-w-[220px]" : "min-w-[180px]"} z-50 animate-in fade-in slide-in-from-top-2 duration-150 max-h-[360px] overflow-y-auto`}>
+            {children}
+          </div>
+        )}
+      </>
+    )}
+  </div>
+);
+
 // ══════════════════════════════════════════════
 // ██  MAIN COMPONENT
 // ══════════════════════════════════════════════
@@ -227,6 +265,23 @@ const SearchResults = () => {
   const [brandFilter, setBrandFilter] = useState("All");
   const [categoryFilter, setCategoryFilter] = useState("All Parts");
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const isMobile = useIsMobile();
+  const filterBarRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (filterBarRef.current && !filterBarRef.current.contains(e.target as Node)) {
+        setOpenDropdown(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside as any);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside as any);
+    };
+  }, []);
 
   // Parse twemoji after results render
   useEffect(() => {
@@ -552,8 +607,7 @@ const SearchResults = () => {
                   </button>
                 </div>
               </form>
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                <VehicleFilterButton onSelect={(vehicleQuery) => setQuery((prev) => prev.trim() ? `${vehicleQuery} ${prev.trim()}` : vehicleQuery)} />
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-end gap-2">
                 <div className="hidden sm:flex items-center gap-2">
                   {compareParts.length > 0 && (
                     <Button size="sm" variant="outline" className="rounded-full gap-1.5 text-xs h-8 border-white/10 bg-[#1a1a1a] hover:bg-[#222] text-zinc-300" onClick={() => setShowCompare(true)}>
@@ -649,7 +703,7 @@ const SearchResults = () => {
 
             {/* ── Sort & Filter Bar (Dropdowns) ── */}
             {liveResults.length > 0 && !liveLoading && (
-              <div className="bg-[#111]/40 backdrop-blur-sm border border-white/[0.06] rounded-2xl px-3 py-2.5 mb-6">
+              <div ref={filterBarRef} className="bg-[#111]/40 backdrop-blur-sm border border-white/[0.06] rounded-2xl px-3 py-2.5 mb-6">
                 <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
                   {/* Active filter count */}
                   {activeFilterCount > 0 && (
@@ -660,168 +714,139 @@ const SearchResults = () => {
                   )}
 
                   {/* Condition Dropdown */}
-                  <div className="relative shrink-0">
-                    <button onClick={() => setOpenDropdown(openDropdown === "condition" ? null : "condition")}
-                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm transition-all duration-150 ${conditionFilter !== "All" ? "border border-red-500/40 text-red-400 bg-red-500/10" : "bg-[#111]/60 border border-white/[0.08] text-zinc-300 hover:border-white/20 hover:text-white"}`}>
-                      {conditionFilter !== "All" && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
-                      Condition <ChevronDown size={13} className="text-zinc-500" />
-                    </button>
-                    {openDropdown === "condition" && (
-                      <>
-                        <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
-                        <div className="absolute top-full mt-2 left-0 bg-[#141414] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-2 min-w-[180px] z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                          {(["All", "New", "Used", "Refurbished"] as const).map((c) => (
-                            <button key={c} onClick={() => { setConditionFilter(c); setOpenDropdown(null); }}
-                              className={`w-full px-3 py-2 rounded-xl text-sm text-left transition-all ${conditionFilter === c ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
-                              {c === "All" ? "All Conditions" : c}
-                            </button>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </div>
+                  <FilterDropdown
+                    label="Condition"
+                    isActive={conditionFilter !== "All"}
+                    isOpen={openDropdown === "condition"}
+                    onToggle={() => setOpenDropdown(openDropdown === "condition" ? null : "condition")}
+                    onClose={() => setOpenDropdown(null)}
+                    isMobile={isMobile}
+                  >
+                    {(["All", "New", "Used", "Refurbished"] as const).map((c) => (
+                      <button key={c} onClick={() => { setConditionFilter(c); setOpenDropdown(null); }}
+                        className={`w-full px-3 py-2.5 rounded-xl text-sm text-left transition-all min-h-[44px] flex items-center ${conditionFilter === c ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
+                        {c === "All" ? "All Conditions" : c}
+                      </button>
+                    ))}
+                  </FilterDropdown>
 
                   {/* Shipping Dropdown */}
-                  <div className="relative shrink-0">
-                    <button onClick={() => setOpenDropdown(openDropdown === "shipping" ? null : "shipping")}
-                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm transition-all duration-150 ${shippingFilter !== "All" ? "border border-red-500/40 text-red-400 bg-red-500/10" : "bg-[#111]/60 border border-white/[0.08] text-zinc-300 hover:border-white/20 hover:text-white"}`}>
-                      {shippingFilter !== "All" && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
-                      Shipping <ChevronDown size={13} className="text-zinc-500" />
-                    </button>
-                    {openDropdown === "shipping" && (
-                      <>
-                        <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
-                        <div className="absolute top-full mt-2 left-0 bg-[#141414] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-2 min-w-[200px] z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                          {([
-                            { key: "All", label: "All", icon: "" },
-                            { key: "Free Shipping", label: "⚡ Free Shipping", icon: "" },
-                            { key: "Ships to Country", label: `📦 Ships to ${locale.getCountryName(locale.locationCountry)}`, icon: "" },
-                            { key: "Fast", label: "🚀 Fast (< 5 days)", icon: "" },
-                          ] as const).map((s) => (
-                            <button key={s.key} onClick={() => { setShippingFilter(s.key); setOpenDropdown(null); }}
-                              className={`w-full px-3 py-2 rounded-xl text-sm text-left transition-all ${shippingFilter === s.key ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
-                              {s.label}
-                            </button>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </div>
+                  <FilterDropdown
+                    label="Shipping"
+                    isActive={shippingFilter !== "All"}
+                    isOpen={openDropdown === "shipping"}
+                    onToggle={() => setOpenDropdown(openDropdown === "shipping" ? null : "shipping")}
+                    onClose={() => setOpenDropdown(null)}
+                    isMobile={isMobile}
+                  >
+                    {([
+                      { key: "All", label: "All" },
+                      { key: "Free Shipping", label: "⚡ Free Shipping" },
+                      { key: "Ships to Country", label: `📦 Ships to ${locale.getCountryName(locale.locationCountry)}` },
+                      { key: "Fast", label: "🚀 Fast (< 5 days)" },
+                    ] as const).map((s) => (
+                      <button key={s.key} onClick={() => { setShippingFilter(s.key); setOpenDropdown(null); }}
+                        className={`w-full px-3 py-2.5 rounded-xl text-sm text-left transition-all min-h-[44px] flex items-center ${shippingFilter === s.key ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
+                        {s.label}
+                      </button>
+                    ))}
+                  </FilterDropdown>
 
                   {/* Price Dropdown */}
-                  <div className="relative shrink-0">
-                    <button onClick={() => setOpenDropdown(openDropdown === "price" ? null : "price")}
-                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm transition-all duration-150 ${priceRangeIdx !== 0 ? "border border-red-500/40 text-red-400 bg-red-500/10" : "bg-[#111]/60 border border-white/[0.08] text-zinc-300 hover:border-white/20 hover:text-white"}`}>
-                      {priceRangeIdx !== 0 && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
-                      Price <ChevronDown size={13} className="text-zinc-500" />
-                    </button>
-                    {openDropdown === "price" && (
-                      <>
-                        <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
-                        <div className="absolute top-full mt-2 left-0 bg-[#141414] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-2 min-w-[180px] z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                          {PRICE_RANGES.map((range, idx) => (
-                            <button key={range.label} onClick={() => { setPriceRangeIdx(idx); setOpenDropdown(null); }}
-                              className={`w-full px-3 py-2 rounded-xl text-sm text-left transition-all ${priceRangeIdx === idx ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
-                              {range.label}
-                            </button>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </div>
+                  <FilterDropdown
+                    label="Price"
+                    isActive={priceRangeIdx !== 0}
+                    isOpen={openDropdown === "price"}
+                    onToggle={() => setOpenDropdown(openDropdown === "price" ? null : "price")}
+                    onClose={() => setOpenDropdown(null)}
+                    isMobile={isMobile}
+                  >
+                    {PRICE_RANGES.map((range, idx) => (
+                      <button key={range.label} onClick={() => { setPriceRangeIdx(idx); setOpenDropdown(null); }}
+                        className={`w-full px-3 py-2.5 rounded-xl text-sm text-left transition-all min-h-[44px] flex items-center ${priceRangeIdx === idx ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
+                        {range.label}
+                      </button>
+                    ))}
+                  </FilterDropdown>
 
                   {/* Category Dropdown */}
-                  <div className="relative shrink-0">
-                    <button onClick={() => setOpenDropdown(openDropdown === "category" ? null : "category")}
-                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm transition-all duration-150 ${categoryFilter !== "All Parts" ? "border border-red-500/40 text-red-400 bg-red-500/10" : "bg-[#111]/60 border border-white/[0.08] text-zinc-300 hover:border-white/20 hover:text-white"}`}>
-                      {categoryFilter !== "All Parts" && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
-                      Category <ChevronDown size={13} className="text-zinc-500" />
-                    </button>
-                    {openDropdown === "category" && (
-                      <>
-                        <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
-                        <div className="absolute top-full mt-2 left-0 bg-[#141414] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-2 min-w-[180px] z-50 animate-in fade-in slide-in-from-top-2 duration-150 max-h-[320px] overflow-y-auto">
-                          {PART_CATEGORIES.map((cat) => (
-                            <button key={cat.label} onClick={() => { setCategoryFilter(cat.label); setOpenDropdown(null); }}
-                              className={`w-full px-3 py-2 rounded-xl text-sm text-left transition-all flex items-center gap-2 ${categoryFilter === cat.label ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
-                              <span>{cat.icon}</span> {cat.label}
-                            </button>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </div>
+                  <FilterDropdown
+                    label="Category"
+                    isActive={categoryFilter !== "All Parts"}
+                    isOpen={openDropdown === "category"}
+                    onToggle={() => setOpenDropdown(openDropdown === "category" ? null : "category")}
+                    onClose={() => setOpenDropdown(null)}
+                    isMobile={isMobile}
+                  >
+                    {PART_CATEGORIES.map((cat) => (
+                      <button key={cat.label} onClick={() => { setCategoryFilter(cat.label); setOpenDropdown(null); }}
+                        className={`w-full px-3 py-2.5 rounded-xl text-sm text-left transition-all flex items-center gap-2 min-h-[44px] ${categoryFilter === cat.label ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
+                        <span>{cat.icon}</span> {cat.label}
+                      </button>
+                    ))}
+                  </FilterDropdown>
 
                   {/* Brand Dropdown */}
-                  <div className="relative shrink-0">
-                    <button onClick={() => setOpenDropdown(openDropdown === "brand" ? null : "brand")}
-                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm transition-all duration-150 ${brandFilter !== "All" ? "border border-red-500/40 text-red-400 bg-red-500/10" : "bg-[#111]/60 border border-white/[0.08] text-zinc-300 hover:border-white/20 hover:text-white"}`}>
-                      {brandFilter !== "All" && <span className="w-1.5 h-1.5 rounded-full bg-red-500" />}
-                      Brand <ChevronDown size={13} className="text-zinc-500" />
+                  <FilterDropdown
+                    label="Brand"
+                    isActive={brandFilter !== "All"}
+                    isOpen={openDropdown === "brand"}
+                    onToggle={() => setOpenDropdown(openDropdown === "brand" ? null : "brand")}
+                    onClose={() => setOpenDropdown(null)}
+                    isMobile={isMobile}
+                    wider
+                  >
+                    <button onClick={() => { setBrandFilter("All"); setOpenDropdown(null); }}
+                      className={`w-full px-3 py-2.5 rounded-xl text-sm text-left transition-all min-h-[44px] flex items-center ${brandFilter === "All" ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
+                      All Sources
                     </button>
-                    {openDropdown === "brand" && (
-                      <>
-                        <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
-                        <div className="absolute top-full mt-2 left-0 bg-[#141414] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-2 min-w-[220px] z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                          <button onClick={() => { setBrandFilter("All"); setOpenDropdown(null); }}
-                            className={`w-full px-3 py-2 rounded-xl text-sm text-left transition-all ${brandFilter === "All" ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
-                            All Sources
-                          </button>
-                          <p className="px-3 pt-2 pb-1 text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Available Now</p>
-                          {BRAND_SOURCES_ACTIVE.map((b) => (
-                            <button key={b} onClick={() => { setBrandFilter(b); setOpenDropdown(null); }}
-                              className={`w-full px-3 py-2 rounded-xl text-sm text-left transition-all ${brandFilter === b ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
-                              {b}
-                            </button>
-                          ))}
-                          <p className="px-3 pt-3 pb-1 text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Coming Soon</p>
-                          {BRAND_SOURCES_COMING.map((b) => (
-                            <div key={b} className="relative overflow-hidden rounded-xl px-3 py-2 cursor-not-allowed">
-                              <div className="absolute inset-0 bg-gradient-to-r from-red-900/20 via-red-600/10 to-red-900/20 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] blur-sm" />
-                              <span className="relative text-zinc-600 text-sm flex items-center gap-2">
-                                {b}
-                                <span className="bg-red-900/40 border border-red-500/30 text-red-400 text-[10px] px-1.5 py-0.5 rounded-full font-medium">Soon</span>
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </div>
+                    <p className="px-3 pt-2 pb-1 text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Available Now</p>
+                    {BRAND_SOURCES_ACTIVE.map((b) => (
+                      <button key={b} onClick={() => { setBrandFilter(b); setOpenDropdown(null); }}
+                        className={`w-full px-3 py-2.5 rounded-xl text-sm text-left transition-all min-h-[44px] flex items-center ${brandFilter === b ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
+                        {b}
+                      </button>
+                    ))}
+                    <p className="px-3 pt-3 pb-1 text-[10px] uppercase tracking-wider text-zinc-600 font-semibold">Coming Soon</p>
+                    {BRAND_SOURCES_COMING.map((b) => (
+                      <div key={b} className="relative overflow-hidden rounded-xl px-3 py-2.5 cursor-not-allowed min-h-[44px] flex items-center">
+                        <div className="absolute inset-0 bg-gradient-to-r from-red-900/20 via-red-600/10 to-red-900/20 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite] blur-sm" />
+                        <span className="relative text-zinc-600 text-sm flex items-center gap-2">
+                          {b}
+                          <span className="bg-red-900/40 border border-red-500/30 text-red-400 text-[10px] px-1.5 py-0.5 rounded-full font-medium">Soon</span>
+                        </span>
+                      </div>
+                    ))}
+                  </FilterDropdown>
 
                   {/* Spacer + Divider */}
                   <div className="flex-1" />
-                  <div className="border-l border-white/10 h-6 shrink-0" />
+                  <div className="border-l border-white/10 h-6 shrink-0 hidden sm:block" />
 
                   {/* Sort Dropdown */}
-                  <div className="relative shrink-0">
-                    <button onClick={() => setOpenDropdown(openDropdown === "sort" ? null : "sort")}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm bg-[#111]/60 border border-white/[0.08] text-zinc-300 hover:border-white/20 hover:text-white transition-all duration-150">
-                      <span className="text-zinc-500 text-xs">Sort:</span>
-                      <span className="font-medium whitespace-nowrap">{SORT_OPTIONS.find(s => s.value === sortBy)?.label}</span>
-                      <ChevronDown size={13} className="text-zinc-500" />
-                    </button>
-                    {openDropdown === "sort" && (
-                      <>
-                        <div className="fixed inset-0 z-40" onClick={() => setOpenDropdown(null)} />
-                        <div className="absolute top-full mt-2 right-0 bg-[#141414] border border-white/10 rounded-2xl shadow-2xl shadow-black/60 p-2 min-w-[220px] z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                          {SORT_OPTIONS.map((opt) => (
-                            <button key={opt.value} onClick={() => { setSortBy(opt.value); setOpenDropdown(null); }}
-                              className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all text-left ${sortBy === opt.value ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
-                              <span>{opt.icon}</span> {opt.label}
-                            </button>
-                          ))}
-                        </div>
-                      </>
-                    )}
-                  </div>
+                  <FilterDropdown
+                    label={`Sort: ${SORT_OPTIONS.find(s => s.value === sortBy)?.label || "Best Match"}`}
+                    isActive={false}
+                    isOpen={openDropdown === "sort"}
+                    onToggle={() => setOpenDropdown(openDropdown === "sort" ? null : "sort")}
+                    onClose={() => setOpenDropdown(null)}
+                    isMobile={isMobile}
+                    alignRight
+                  >
+                    {SORT_OPTIONS.map((opt) => (
+                      <button key={opt.value} onClick={() => { setSortBy(opt.value); setOpenDropdown(null); }}
+                        className={`w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm transition-all text-left min-h-[44px] ${sortBy === opt.value ? "bg-red-600/20 text-red-400 font-medium" : "text-zinc-300 hover:bg-[#1a1a1a] hover:text-white"}`}>
+                        <span>{opt.icon}</span> {opt.label}
+                      </button>
+                    ))}
+                  </FilterDropdown>
                 </div>
               </div>
             )}
 
             {/* ── Results Grid ── */}
             {liveLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 mb-10">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5 mb-10">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
             ) : liveResults.length > 0 && filteredResults.length === 0 ? (
@@ -836,7 +861,7 @@ const SearchResults = () => {
               </div>
             ) : filteredResults.length > 0 ? (
               <div className="mb-10 animate-fade-in">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
                   {filteredResults.map((item: any, idx: number) => {
                     const priceBadge = getPriceBadge(item.price, item.title);
                     const conditionKey = item.condition === "New" ? "new" : item.condition === "Used" ? "used" : item.condition === "Refurbished" ? "refurbished" : "not_specified";
@@ -864,7 +889,7 @@ const SearchResults = () => {
 
                         {/* ── Image Section ── */}
                         <a href={item.url} target="_blank" rel="noopener noreferrer" className="block relative">
-                          <div className="h-52 bg-[#0d0d0d] overflow-hidden relative">
+                          <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
                             <img src={item.imageUrl} alt={item.partName} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }} />
                             
                             {/* ── Flag (Bottom Right) ── */}
@@ -966,7 +991,7 @@ const SearchResults = () => {
                           </div>
 
                           {/* ── Action Buttons ── */}
-                          <div className="flex gap-2">
+                          <div className="flex flex-col sm:flex-row gap-2">
                             <a href={item.url} target="_blank" rel="noopener noreferrer"
                               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150">
                               <ExternalLink size={14} /> View on eBay
