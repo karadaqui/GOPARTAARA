@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { X } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { sanitizeInput, checkRateLimit, getCachedSearch, setCachedSearch } from "@/lib/sanitize";
@@ -305,52 +305,71 @@ const SearchResults = () => {
     if (!activeQuery.trim()) { setLiveResults([]); setTotalResults(0); setEbayFallback(false); return; }
     if (!user) { setAuthGateOpen(true); setLiveResults([]); setTotalResults(0); return; }
     let cancelled = false;
-    const fetchLive = async () => {
-      setLiveLoading(true);
-      setEbayFallback(false);
-      try {
-        const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-        const priceRange = PRICE_RANGES[priceRangeIdx];
-        const body: Record<string, any> = {
-          query: activeQuery,
-          category: selectedCategory || undefined,
-          offset,
-          marketplace: country.ebayMarketplace,
-        };
-        // Pass filter params to edge function
-        if (conditionFilter !== "All") body.conditionFilter = conditionFilter;
-        if (shippingFilter !== "All") body.shippingFilter = shippingFilter;
-        if (priceRangeIdx > 0) {
-          body.priceMin = priceRange.min;
-          if (priceRange.max !== Infinity) body.priceMax = priceRange.max;
-        }
-        if (sortBy !== "best_match") body.sortBy = sortBy;
-        if (categoryFilter !== "All Parts") body.categoryFilter = categoryFilter;
-        if (brandFilter !== "All") body.brandFilter = brandFilter;
 
-        const { data, error } = await supabase.functions.invoke("search-parts", { body });
-        if (error) {
-          const msg = (error as any)?.message || "";
-          if (msg.includes("UNAUTHORIZED") || msg.includes("401")) { if (!cancelled) setAuthGateOpen(true); return; }
-          if (msg.includes("SEARCH_LIMIT_REACHED") || msg.includes("403")) {
-            if (!cancelled) { toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" }); searchLimit.refresh(); }
-            return;
+    // Build a cache key from all filter state
+    const cacheKey = JSON.stringify({ activeQuery, selectedCategory, currentPage, marketplace: country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter });
+    const cached = getCachedSearch(cacheKey);
+    if (cached) {
+      setLiveResults(cached.results || []);
+      setTotalResults(cached.totalResults || 0);
+      setEbayFallback(!!cached.fallback);
+      setLiveLoading(false);
+      return;
+    }
+
+    // Debounce 300ms
+    const debounceTimer = setTimeout(() => {
+      const fetchLive = async () => {
+        setLiveLoading(true);
+        setEbayFallback(false);
+        try {
+          const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+          const priceRange = PRICE_RANGES[priceRangeIdx];
+          const body: Record<string, any> = {
+            query: sanitizeInput(activeQuery),
+            category: selectedCategory || undefined,
+            offset,
+            marketplace: country.ebayMarketplace,
+          };
+          if (conditionFilter !== "All") body.conditionFilter = conditionFilter;
+          if (shippingFilter !== "All") body.shippingFilter = shippingFilter;
+          if (priceRangeIdx > 0) {
+            body.priceMin = priceRange.min;
+            if (priceRange.max !== Infinity) body.priceMax = priceRange.max;
           }
-          throw error;
-        }
-        if (!cancelled) {
-          if (data?.error === "UNAUTHORIZED") { setAuthGateOpen(true); return; }
-          if (data?.error === "SEARCH_LIMIT_REACHED") { toast({ title: "Search limit reached", description: data?.message || "Upgrade to Pro for unlimited searches.", variant: "destructive" }); searchLimit.refresh(); return; }
-          if (data?.fallback) { setEbayFallback(true); setLiveResults([]); setTotalResults(0); }
-          else { setLiveResults(data?.results || []); setTotalResults(data?.totalResults || 0); searchLimit.refresh(); }
-        }
-      } catch (err) {
-        console.error("Live search failed:", err);
-        if (!cancelled) { setLiveResults([]); setTotalResults(0); setEbayFallback(true); }
-      } finally { if (!cancelled) setLiveLoading(false); }
-    };
-    fetchLive();
-    return () => { cancelled = true; };
+          if (sortBy !== "best_match") body.sortBy = sortBy;
+          if (categoryFilter !== "All Parts") body.categoryFilter = categoryFilter;
+          if (brandFilter !== "All") body.brandFilter = brandFilter;
+
+          const { data, error } = await supabase.functions.invoke("search-parts", { body });
+          if (error) {
+            const msg = (error as any)?.message || "";
+            if (msg.includes("UNAUTHORIZED") || msg.includes("401")) { if (!cancelled) setAuthGateOpen(true); return; }
+            if (msg.includes("SEARCH_LIMIT_REACHED") || msg.includes("403")) {
+              if (!cancelled) { toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" }); searchLimit.refresh(); }
+              return;
+            }
+            throw error;
+          }
+          if (!cancelled) {
+            if (data?.error === "UNAUTHORIZED") { setAuthGateOpen(true); return; }
+            if (data?.error === "SEARCH_LIMIT_REACHED") { toast({ title: "Search limit reached", description: data?.message || "Upgrade to Pro for unlimited searches.", variant: "destructive" }); searchLimit.refresh(); return; }
+            if (data?.fallback) { setEbayFallback(true); setLiveResults([]); setTotalResults(0); }
+            else {
+              setLiveResults(data?.results || []); setTotalResults(data?.totalResults || 0); searchLimit.refresh();
+              setCachedSearch(cacheKey, { results: data?.results, totalResults: data?.totalResults, fallback: false });
+            }
+          }
+        } catch (err) {
+          console.error("Live search failed:", err);
+          if (!cancelled) { setLiveResults([]); setTotalResults(0); setEbayFallback(true); }
+        } finally { if (!cancelled) setLiveLoading(false); }
+      };
+      fetchLive();
+    }, 300);
+
+    return () => { cancelled = true; clearTimeout(debounceTimer); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter]);
 
 
