@@ -327,7 +327,7 @@ const SearchResults = () => {
   useEffect(() => {
     const timer = setTimeout(parseTwemoji, 100);
     return () => clearTimeout(timer);
-  }, [liveResults, catalogResults]);
+  }, [liveResults]);
 
   // ── URL sync ──
   useEffect(() => {
@@ -380,21 +380,6 @@ const SearchResults = () => {
     return () => { cancelled = true; };
   }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace]);
 
-  // ── Catalog search ──
-  useEffect(() => {
-    if (!activeQuery.trim() || !user) { setCatalogResults([]); return; }
-    let cancelled = false;
-    const fetchCatalog = async () => {
-      setCatalogLoading(true);
-      try {
-        const { data, error } = await supabase.functions.invoke("search-auto-parts", { body: { query: activeQuery } });
-        if (!cancelled && !error) setCatalogResults(data?.results || []);
-      } catch { if (!cancelled) setCatalogResults([]); }
-      finally { if (!cancelled) setCatalogLoading(false); }
-    };
-    fetchCatalog();
-    return () => { cancelled = true; };
-  }, [activeQuery, user]);
 
   // ── Saved parts ──
   useEffect(() => {
@@ -1078,36 +1063,6 @@ const SearchResults = () => {
                   </div>
                 )}
 
-                {/* Parts Catalog */}
-                {catalogLoading && (
-                  <div className="flex items-center gap-2 py-4 justify-center text-zinc-500"><Loader2 size={16} className="animate-spin" /><span className="text-sm">Searching parts catalog...</span></div>
-                )}
-                {catalogResults.length > 0 && (
-                  <div className="mb-8">
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="w-6 h-6 rounded-md bg-red-600/15 flex items-center justify-center"><Search size={14} className="text-red-500" /></div>
-                      <h3 className="text-base sm:text-lg font-bold text-white">Parts Catalog</h3>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-600/15 text-red-500 border border-red-500/20">TecDoc Data</span>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                      {catalogResults.map((item: any) => (
-                        <div key={item.id} className="rounded-2xl border border-white/[0.06] bg-[#111] p-4 hover:border-white/[0.15] transition-all flex flex-col gap-2">
-                          <div className="flex items-start gap-3">
-                            {item.imageUrl && <img src={item.imageUrl} alt={item.partName} className="w-14 h-14 rounded-lg object-contain bg-[#0d0d0d] p-1 shrink-0" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />}
-                            <div className="min-w-0 flex-1">
-                              <p className="text-sm font-semibold line-clamp-2 text-white">{item.partName}</p>
-                              {item.partNumber && <p className="text-xs text-zinc-600 mt-0.5 font-mono">#{item.partNumber}</p>}
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-[#1a1a1a] text-zinc-400">{item.brand}</span>
-                            {item.category && <span className="px-2 py-0.5 rounded-md text-[10px] font-medium bg-[#1a1a1a] text-zinc-400">{item.category}</span>}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 {/* Global Suppliers */}
                 <div className="mb-6">
