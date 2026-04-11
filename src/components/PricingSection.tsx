@@ -316,7 +316,8 @@ const PricingSection = () => {
                   period={b.period}
                   was={b.was}
                   saving={b.saving}
-                  features={b.features}
+                  searchFeatures={b.searchFeatures}
+                  sellerFeatures={b.sellerFeatures}
                   cta={`Get ${b.name}`}
                   popular={b.popular}
                   loading={isLoading(b.priceId)}
@@ -340,7 +341,9 @@ interface PlanCardProps {
   tagline: string;
   price: string;
   period: string;
-  features: string[];
+  features?: string[];
+  searchFeatures?: string[];
+  sellerFeatures?: string[];
   cta: string;
   popular: boolean;
   loading: boolean;
@@ -351,76 +354,91 @@ interface PlanCardProps {
   icon?: React.ElementType;
 }
 
-const PlanCard = ({
-  name, tagline, price, period, features, cta, popular, loading, slowWarning, onSelect, was, saving, icon: Icon,
-}: PlanCardProps) => (
-  <div
-    className={`relative rounded-2xl p-8 flex flex-col transition-all duration-300 border ${
-      popular
-        ? "border-primary/60 shadow-[0_0_30px_-5px_hsl(var(--primary)/0.3)] scale-[1.02] z-10 bg-card"
-        : "border-border/30 bg-card/50 hover:border-border/60 hover:-translate-y-1"
-    }`}
-  >
-    {popular && (
-      <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-        <span className="flex items-center gap-1 text-xs font-semibold px-4 py-1 rounded-full bg-primary text-primary-foreground shadow-md">
-          <Star size={10} fill="currentColor" /> Most Popular
-        </span>
-      </div>
-    )}
-
-    {/* Plan name */}
-    <div className="flex items-center gap-2 mb-1">
-      {Icon && <Icon size={18} className="text-primary" />}
-      <h3 className="font-display text-xl font-bold text-foreground">{name}</h3>
-    </div>
-    <p className="text-muted-foreground text-sm mb-6">{tagline}</p>
-
-    {/* Price */}
-    <div className="mb-1">
-      {was && (
-        <span className="text-muted-foreground/60 line-through text-sm mr-2">{was}</span>
-      )}
-    </div>
-    <div className="flex items-baseline gap-1 mb-2">
-      <span className="font-display text-5xl font-bold text-foreground tracking-tight">{price}</span>
-      <span className="text-muted-foreground text-base">{period}</span>
-    </div>
-    {saving && (
-      <span className="inline-flex items-center gap-1 w-fit px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6">
-        <Zap size={10} /> Save {saving}/mo
-      </span>
-    )}
-    {!saving && <div className="mb-6" />}
-
-    {/* Divider */}
-    <div className="h-px bg-border/40 mb-6" />
-
-    {/* Features */}
-    <ul className="flex-1 space-y-3 mb-8">
-      {features.map((f) => (
-        <li key={f} className="flex items-start gap-3 text-sm text-secondary-foreground">
-          <Check size={16} className="text-primary shrink-0 mt-0.5" />
-          {f}
-        </li>
-      ))}
-    </ul>
-
-    {/* CTA */}
-    <Button
-      variant={popular ? "default" : "outline"}
-      className="w-full rounded-xl h-11 text-sm font-medium"
-      disabled={loading}
-      onClick={onSelect}
-    >
-      {loading ? (
-        <span className="flex items-center gap-2">
-          <Loader2 size={16} className="animate-spin" />
-          {slowWarning ? "Taking longer than expected…" : "Redirecting…"}
-        </span>
-      ) : cta}
-    </Button>
-  </div>
+const FeatureItem = ({ text }: { text: string }) => (
+  <li className="flex items-start gap-3 text-sm text-secondary-foreground">
+    <Check size={16} className="text-primary shrink-0 mt-0.5" />
+    {text}
+  </li>
 );
+
+const PlanCard = ({
+  name, tagline, price, period, features, searchFeatures, sellerFeatures, cta, popular, loading, slowWarning, onSelect, was, saving, icon: Icon,
+}: PlanCardProps) => {
+  const isBundle = !!(searchFeatures && sellerFeatures);
+
+  return (
+    <div
+      className={`relative rounded-2xl p-8 flex flex-col transition-all duration-300 border ${
+        popular
+          ? "border-primary/60 shadow-[0_0_30px_-5px_hsl(var(--primary)/0.3)] scale-[1.02] z-10 bg-card"
+          : "border-border/30 bg-card/50 hover:border-border/60 hover:-translate-y-1"
+      }`}
+    >
+      {popular && (
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+          <span className="flex items-center gap-1 text-xs font-semibold px-4 py-1 rounded-full bg-primary text-primary-foreground shadow-md">
+            <Star size={10} fill="currentColor" /> Most Popular
+          </span>
+        </div>
+      )}
+
+      <div className="flex items-center gap-2 mb-1">
+        {Icon && <Icon size={18} className="text-primary" />}
+        <h3 className="font-display text-xl font-bold text-foreground">{name}</h3>
+      </div>
+      <p className="text-muted-foreground text-sm mb-6">{tagline}</p>
+
+      <div className="mb-1">
+        {was && <span className="text-muted-foreground/60 line-through text-sm mr-2">{was}</span>}
+      </div>
+      <div className="flex items-baseline gap-1 mb-2">
+        <span className="font-display text-5xl font-bold text-foreground tracking-tight">{price}</span>
+        <span className="text-muted-foreground text-base">{period}</span>
+      </div>
+      {saving ? (
+        <span className="inline-flex items-center gap-1 w-fit px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6">
+          <Zap size={10} /> Save {saving}/mo
+        </span>
+      ) : <div className="mb-6" />}
+
+      <div className="h-px bg-border/40 mb-6" />
+
+      {/* Features — grouped for bundles, flat for non-bundles */}
+      <div className="flex-1 mb-8">
+        {isBundle ? (
+          <>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">🔍 Search Features</p>
+            <ul className="space-y-2.5 mb-5">
+              {searchFeatures.map((f) => <FeatureItem key={f} text={f} />)}
+            </ul>
+            <div className="h-px bg-border/30 mb-5" />
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">🏪 Seller Features</p>
+            <ul className="space-y-2.5">
+              {sellerFeatures.map((f) => <FeatureItem key={f} text={f} />)}
+            </ul>
+          </>
+        ) : (
+          <ul className="space-y-3">
+            {features?.map((f) => <FeatureItem key={f} text={f} />)}
+          </ul>
+        )}
+      </div>
+
+      <Button
+        variant={popular ? "default" : "outline"}
+        className="w-full rounded-xl h-11 text-sm font-medium"
+        disabled={loading}
+        onClick={onSelect}
+      >
+        {loading ? (
+          <span className="flex items-center gap-2">
+            <Loader2 size={16} className="animate-spin" />
+            {slowWarning ? "Taking longer than expected…" : "Redirecting…"}
+          </span>
+        ) : cta}
+      </Button>
+    </div>
+  );
+};
 
 export default PricingSection;
