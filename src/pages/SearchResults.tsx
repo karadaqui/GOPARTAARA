@@ -261,12 +261,20 @@ const SearchResults = () => {
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // ── Filter & Sort State ──
-  const [sortBy, setSortBy] = useState<typeof SORT_OPTIONS[number]["value"]>("best_match");
-  const [conditionFilter, setConditionFilter] = useState("All");
-  const [shippingFilter, setShippingFilter] = useState("All");
-  const [priceRangeIdx, setPriceRangeIdx] = useState(0);
-  const [brandFilter, setBrandFilter] = useState("All");
-  const [categoryFilter, setCategoryFilter] = useState("All Parts");
+  const [sortBy, setSortByRaw] = useState<typeof SORT_OPTIONS[number]["value"]>("best_match");
+  const [conditionFilter, setConditionFilterRaw] = useState("All");
+  const [shippingFilter, setShippingFilterRaw] = useState("All");
+  const [priceRangeIdx, setPriceRangeIdxRaw] = useState(0);
+  const [brandFilter, setBrandFilterRaw] = useState("All");
+  const [categoryFilter, setCategoryFilterRaw] = useState("All Parts");
+
+  // Wrap setters to reset page on filter change
+  const setSortBy = (v: typeof SORT_OPTIONS[number]["value"]) => { setSortByRaw(v); setCurrentPage(1); };
+  const setConditionFilter = (v: string) => { setConditionFilterRaw(v); setCurrentPage(1); };
+  const setShippingFilter = (v: string) => { setShippingFilterRaw(v); setCurrentPage(1); };
+  const setPriceRangeIdx = (v: number) => { setPriceRangeIdxRaw(v); setCurrentPage(1); };
+  const setBrandFilter = (v: string) => { setBrandFilterRaw(v); setCurrentPage(1); };
+  const setCategoryFilter = (v: string) => { setCategoryFilterRaw(v); setCurrentPage(1); };
   
 
   // Parse twemoji after results render
