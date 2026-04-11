@@ -849,6 +849,13 @@ const SearchResults = () => {
                   })}
                 </div>
 
+                {/* More sources coming soon banner */}
+                <div className="my-6 p-4 rounded-2xl bg-zinc-900/50 border border-white/[0.06] text-center">
+                  <p className="text-sm text-zinc-400">
+                    We're adding <span className="text-zinc-200 font-medium">Euro Car Parts</span>, <span className="text-zinc-200 font-medium">GSF Car Parts</span>, <span className="text-zinc-200 font-medium">Autodoc</span> and more suppliers soon. Currently showing eBay results.
+                  </p>
+                </div>
+
                 {/* Amazon UK Card */}
                 {activeQuery && (
                   <div className="my-8">
