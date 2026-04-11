@@ -247,7 +247,54 @@ const PlanCard = ({ name, tagline, price, period, features, searchFeatures, sell
       </Button>
     </div>
   );
-};
+
+/* ── Component ────────────────────────────────────────── */
+
+const ListYourParts = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [checkingPlan, setCheckingPlan] = useState(true);
+  const [activeTab, setActiveTab] = useState<Tab>("bundles");
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [slowWarning, setSlowWarning] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
+
+  useEffect(() => {
+    if (!user) { setCheckingPlan(false); return; }
+    supabase
+      .from("profiles")
+      .select("subscription_plan")
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        if (data && SELLER_PLANS.includes(data.subscription_plan)) {
+          navigate("/my-market", { replace: true });
+        } else {
+          setCheckingPlan(false);
+        }
+      });
+  }, [user, navigate]);
+
+  const startCheckout = async (priceId: string) => {
+    if (!user) { navigate("/auth"); return; }
+    setLoadingId(priceId);
+    setSlowWarning(false);
+    timeoutRef.current = setTimeout(() => setSlowWarning(true), CHECKOUT_TIMEOUT_MS);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", { body: { priceId } });
+      if (error) throw error;
+      if (data?.url) window.location.href = data.url;
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to start checkout", variant: "destructive" });
+      setLoadingId(null);
+      setSlowWarning(false);
+    } finally {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    }
+  };
 
   const isLoading = (id: string) => loadingId === id;
 
