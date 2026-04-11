@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Search, ExternalLink, Loader2, Camera, Car, Scale, Star,
   Truck, Bookmark, BookmarkCheck, Clock,
-  Heart, AlertCircle, Zap, Filter as FilterIcon,
+  Heart, AlertCircle, Zap,
   ChevronLeft, ChevronRight, ChevronDown, Pencil, Calendar, Palette, Fuel, Gauge,
   ShieldCheck, Receipt, Check,
 } from "lucide-react";
@@ -26,7 +26,7 @@ import { useCountry } from "@/hooks/useCountry";
 import { useLocale } from "@/contexts/LocaleContext";
 import CountryFlag from "@/components/CountryFlag";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+
 
 // ── Twemoji helper ──
 const parseTwemoji = () => {
