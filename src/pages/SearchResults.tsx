@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { X } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -258,6 +259,7 @@ const SearchResults = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const internalSearchRef = useRef(false);
   const [authGateOpen, setAuthGateOpen] = useState(false);
+  const [supplierBannerDismissed, setSupplierBannerDismissed] = useState(() => localStorage.getItem("supplier_banner_dismissed") === "1");
   const resultsRef = useRef<HTMLDivElement>(null);
 
   // ── Filter & Sort State ──
@@ -579,6 +581,31 @@ const SearchResults = () => {
       {/* ── Main Content ── */}
       <div className="max-w-7xl mx-auto w-full flex-1 px-4 sm:px-6 lg:px-8 py-6 sm:py-10 relative z-10 animate-fade-in" ref={resultsRef}>
         <LocationNudge />
+
+        {/* ── Supplier Sources Banner ── */}
+        {!supplierBannerDismissed && (
+          <div className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3">
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-xs font-medium text-zinc-300">eBay</span>
+              <span className="text-[10px] text-zinc-600">•</span>
+              <span className="text-xs font-medium text-zinc-300">Amazon</span>
+              <span className="text-[10px] text-zinc-600">•</span>
+              <span className="text-xs text-zinc-600 opacity-40 grayscale">Euro Car Parts</span>
+              <span className="text-xs text-zinc-600 opacity-40 grayscale">GSF</span>
+              <span className="text-xs text-zinc-600 opacity-40 grayscale">CP4L</span>
+              <span className="text-xs text-zinc-600 opacity-40 grayscale">Autodoc</span>
+              <span className="text-sm">🔜</span>
+            </div>
+            <p className="text-xs text-zinc-500 flex-1 hidden sm:block">More suppliers coming soon — Euro Car Parts, GSF Car Parts, Autodoc & more</p>
+            <button
+              onClick={() => { setSupplierBannerDismissed(true); localStorage.setItem("supplier_banner_dismissed", "1"); }}
+              className="shrink-0 p-1 rounded-lg hover:bg-white/5 text-zinc-600 hover:text-zinc-400 transition-colors"
+              aria-label="Dismiss"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        )}
 
         {activeQuery ? (
           <>
