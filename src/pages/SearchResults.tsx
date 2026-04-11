@@ -777,7 +777,7 @@ const SearchResults = () => {
                                   : item.condition === "Used" ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
                                   : "bg-secondary/80 text-muted-foreground border border-border"
                               }`}>
-                                {item.condition}
+                                {item.condition === "New" ? locale.t("new") : item.condition === "Used" ? locale.t("used") : locale.t("not_specified")}
                               </span>
                               {priceBadge && (
                                 <span className={`absolute top-5 sm:top-10 left-1 sm:left-3 text-[8px] sm:text-[10px] font-bold px-1 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg border ${priceBadge.className}`}>
@@ -786,11 +786,11 @@ const SearchResults = () => {
                               )}
                               {item.topRatedSeller && (
                                 <span className="absolute bottom-1 left-1 sm:bottom-3 sm:left-3 text-[8px] sm:text-[10px] font-bold px-1 sm:px-2 py-0.5 sm:py-1 rounded-md sm:rounded-lg bg-primary/90 text-primary-foreground flex items-center gap-0.5 sm:gap-1">
-                                  <Shield size={8} className="sm:w-[10px] sm:h-[10px]" /> Top Rated
+                                  <Shield size={8} className="sm:w-[10px] sm:h-[10px]" /> {locale.t("top_rated")}
                                 </span>
                               )}
-                              <span className="absolute bottom-1 right-1 sm:bottom-3 sm:right-3 text-xs sm:text-sm leading-none" title={country.name}>
-                                {country.flag}
+                              <span className="absolute bottom-1 right-1 sm:bottom-3 sm:right-3" title={country.name}>
+                                <CountryFlag countryCode={country.code} emoji={country.flag} size={16} />
                               </span>
                             </div>
                           </a>
