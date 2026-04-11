@@ -117,7 +117,7 @@ const Marketplace = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
         title="Parts Marketplace | PARTARA"
         description="Browse and buy car parts from verified UK sellers on the PARTARA marketplace. Compare prices, read reviews, and find the perfect part for your vehicle."
@@ -142,7 +142,7 @@ const Marketplace = () => {
         description="Create a free account to browse parts from verified UK sellers."
       />
 
-      <div className="container max-w-6xl pt-6 pb-20 px-4">
+      <div className="container max-w-6xl pt-6 pb-20 px-4 flex-1">
         <div className="text-center mb-10">
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">
             <span className="text-primary">Parts</span> Marketplace
