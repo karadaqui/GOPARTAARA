@@ -98,7 +98,10 @@ const Dashboard = () => {
         .eq("user_id", user!.id)
         .order("created_at", { ascending: false })
         .limit(10);
-    if (data) setSearchHistory(data);
+      if (data) setSearchHistory(data);
+    } catch (e) {
+      // Silently ignore search_history errors
+    }
   };
 
   const fetchSavedPartsCount = async () => {
