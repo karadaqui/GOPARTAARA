@@ -113,13 +113,17 @@ const Dashboard = () => {
   };
 
   const deleteHistoryItem = async (id: string) => {
-    const { error } = await supabase.from("search_history").delete().eq("id", id);
-    if (!error) setSearchHistory((prev) => prev.filter((h) => h.id !== id));
+    try {
+      const { error } = await supabase.from("search_history").delete().eq("id", id);
+      if (!error) setSearchHistory((prev) => prev.filter((h) => h.id !== id));
+    } catch { /* silently ignore */ }
   };
 
   const clearAllHistory = async () => {
-    const { error } = await supabase.from("search_history").delete().eq("user_id", user!.id);
-    if (!error) setSearchHistory([]);
+    try {
+      const { error } = await supabase.from("search_history").delete().eq("user_id", user!.id);
+      if (!error) setSearchHistory([]);
+    } catch { /* silently ignore */ }
   };
 
   const fetchSubscription = async () => {
