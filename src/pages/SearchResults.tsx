@@ -373,10 +373,11 @@ const SearchResults = () => {
             const { data: gsData } = await supabase.functions.invoke("google-shopping-search", {
               body: { query: searchQuery }
             });
+            console.log("First Google Shopping Result:", gsData?.results?.[0]);
             const googleResults = (gsData?.results || []).map((r: any, index: number) => ({
               ...r,
               type: "google_shopping",
-              id: "gs_" + (r.position ?? r.id ?? index),
+              id: "gs_" + (r.id ?? index),
             }));
             if (!cancelled) setGoogleShoppingResults(googleResults);
           } else if (!cancelled) {
@@ -812,38 +813,46 @@ const SearchResults = () => {
                           style={{ animationDelay: `${idx * 50}ms` }}>
                           
                           {(() => {
-                            const sellerName = item.source;
-                            const googleUrl = item.link || item.url || item.product_link;
+                            const sellerName = item.source || "Google Shopping";
+                            const googleUrl = item.link;
                             const reviewText = item.reviews ? String(item.reviews) : null;
+                            const openGoogleDeal = () => {
+                              const url = item.link;
+                              if (url && url.startsWith("http")) {
+                                window.open(url, "_blank", "noopener,noreferrer");
+                              }
+                            };
 
                             return (
                               <>
-                                <div className="h-7 flex items-center justify-center text-xs font-semibold tracking-wide uppercase border-b border-white/10 bg-blue-900/40 text-blue-400">
-                                  Google Shopping
+                                <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
+                                  <button
+                                    type="button"
+                                    onClick={openGoogleDeal}
+                                    disabled={!googleUrl?.startsWith("http")}
+                                    className="block h-full w-full cursor-pointer text-left disabled:cursor-default"
+                                  >
+                                    {item.thumbnail ? (
+                                      <SafeImage src={item.thumbnail} alt={item.title} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" fallbackClassName="w-full h-full" />
+                                    ) : (
+                                      <div className="flex h-full w-full items-center justify-center bg-zinc-800 text-zinc-600">
+                                        <Camera className="h-8 w-8" />
+                                      </div>
+                                    )}
+                                  </button>
+
+                                  <span className="absolute top-3 right-3 inline-flex items-center rounded-full border border-red-500/30 bg-red-500/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-red-300">
+                                    Google
+                                  </span>
                                 </div>
 
-                                <button type="button" onClick={() => {
-                                  const url = item.link || item.url || item.product_link;
-                                  if (url?.startsWith("http")) window.open(url, "_blank", "noopener,noreferrer");
-                                }} className="block relative cursor-pointer text-left">
-                                  <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
-                                    <SafeImage src={item.thumbnail} alt={item.title} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" fallbackClassName="w-full h-full" />
-                                    <span className="absolute bottom-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-900/70 border border-blue-500/30 text-[9px] font-bold text-blue-300 uppercase tracking-wide max-w-[75%]">
-                                      {item.source_icon ? (
-                                        <img src={item.source_icon} alt="" className="w-3 h-3 rounded-sm object-contain shrink-0" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                                      ) : (
-                                        <span>🛒</span>
-                                      )}
-                                      <span className="truncate">{sellerName}</span>
-                                    </span>
-                                  </div>
-                                </button>
-
                                 <div className="p-4 flex-1 flex flex-col gap-3">
-                                  <button type="button" onClick={() => {
-                                    const url = item.link || item.url || item.product_link;
-                                    if (url?.startsWith("http")) window.open(url, "_blank", "noopener,noreferrer");
-                                  }} className="block cursor-pointer text-left">
+                                  <button
+                                    type="button"
+                                    onClick={openGoogleDeal}
+                                    disabled={!googleUrl?.startsWith("http")}
+                                    className="block cursor-pointer text-left disabled:cursor-default"
+                                  >
                                     <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.title}</p>
                                   </button>
 
@@ -855,22 +864,15 @@ const SearchResults = () => {
 
                                   {item.delivery && (
                                     <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 w-fit">
-                                      <Truck size={11} /> {item.delivery}
+                                      <Zap size={11} /> {item.delivery}
                                     </span>
-                                  )}
-
-                                  {/* Extensions info */}
-                                  {item.extensions && item.extensions.length > 0 && (
-                                    <p className="text-[11px] text-zinc-500 leading-snug line-clamp-2">
-                                      {item.extensions.filter((e: string) => !/review/i.test(e)).join(" · ")}
-                                    </p>
                                   )}
 
                                   <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
                                     {item.source_icon && (
-                                      <img src={item.source_icon} alt="" className="w-4 h-4 rounded-sm object-contain" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                                      <img src={item.source_icon} alt="" className="h-4 w-auto max-w-8 object-contain shrink-0" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
                                     )}
-                                    <span className="font-medium truncate max-w-[100px] text-zinc-400">{sellerName}</span>
+                                    <span className="font-medium truncate max-w-[120px] text-zinc-400">{sellerName}</span>
                                     {item.rating && (
                                       <span className="flex items-center gap-0.5 text-amber-400 ml-auto">
                                         <Star size={11} className="fill-amber-400" /> {item.rating}
@@ -880,15 +882,21 @@ const SearchResults = () => {
                                   </div>
 
                                   <div className="flex flex-col sm:flex-row gap-2">
-                                    <button type="button" onClick={() => {
-                                      const url = item.link || item.url || item.product_link;
-                                      if (url?.startsWith("http")) window.open(url, "_blank", "noopener,noreferrer");
-                                    }} disabled={!googleUrl?.startsWith("http")}
-                                      className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const url = item.link;
+                                        if (url && url.startsWith("http")) {
+                                          window.open(url, "_blank", "noopener,noreferrer");
+                                        }
+                                      }}
+                                      disabled={!googleUrl?.startsWith("http")}
+                                      className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
                                       <ExternalLink size={14} /> View Deal
                                     </button>
                                   </div>
-                                </div>
+                                  </div>
                               </>
                             );
                           })()}
