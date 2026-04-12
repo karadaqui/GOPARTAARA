@@ -543,9 +543,10 @@ const Dashboard = () => {
               <div className="relative">
                 <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input
+                  id="display-name-input"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="pl-10 bg-secondary border-border h-11 rounded-xl"
+                  className={`pl-10 bg-secondary border-border h-11 rounded-xl ${needsDisplayName ? "border-amber-500 ring-2 ring-amber-500/30" : ""}`}
                   placeholder="Your display name"
                 />
               </div>
