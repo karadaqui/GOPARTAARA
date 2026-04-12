@@ -530,14 +530,19 @@ const SearchResults = () => {
   const getFlag = (code: string) => countryFlags[code] || "🌍";
 
   const getGoogleResultUrl = (result: any) => {
-    const url = result?.link || result?.product_page_url || result?.url;
-    return typeof url === "string" && url.startsWith("http") ? url : null;
+    const candidates = [result?.link, result?.product_page_url, result?.url, result?.product_link, result?.shopping_link];
+    for (const url of candidates) {
+      if (typeof url === "string" && url.startsWith("http")) return url;
+    }
+    return null;
   };
 
   const openGoogleResult = (result: any) => {
     const url = getGoogleResultUrl(result);
     if (url) {
       window.open(url, "_blank", "noopener,noreferrer");
+    } else {
+      console.warn("[Google Shopping] No valid URL found in result:", result);
     }
   };
 
