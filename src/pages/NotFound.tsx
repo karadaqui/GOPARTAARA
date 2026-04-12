@@ -20,34 +20,41 @@ const NotFound = () => {
       />
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
         <div className="text-center max-w-md animate-fade-in">
+          {/* Logo */}
+          <Link to="/" className="inline-block mb-8">
+            <span className="font-display text-2xl font-black tracking-tight">
+              <span className="text-primary">PART</span>ARA
+            </span>
+          </Link>
+
           {/* Big 404 */}
           <div className="relative mb-8">
             <span className="text-[140px] sm:text-[180px] font-display font-black leading-none text-primary/10 select-none">
               404
             </span>
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-5xl sm:text-6xl font-display font-black text-foreground">
-                4<span className="text-primary">0</span>4
+              <span className="text-5xl sm:text-6xl font-display font-black text-primary">
+                404
               </span>
             </div>
           </div>
 
           <h1 className="font-display text-2xl font-bold mb-3 text-foreground">
-            Wrong turn, mate
+            Page not found
           </h1>
           <p className="text-muted-foreground mb-8 leading-relaxed">
-            This page doesn't exist — but thousands of car parts do. Let's get you back on track.
+            This page doesn't exist or has been moved.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Button asChild size="lg" className="rounded-xl gap-2 w-full sm:w-auto">
               <Link to="/">
-                <Home size={16} /> Go Home
+                <Home size={16} /> Go to Homepage
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="rounded-xl gap-2 w-full sm:w-auto">
               <Link to="/search">
-                <Search size={16} /> Search Parts
+                <Search size={16} /> Search for parts →
               </Link>
             </Button>
           </div>
@@ -60,7 +67,6 @@ const NotFound = () => {
           </button>
         </div>
 
-        {/* Brand footer */}
         <div className="absolute bottom-8">
           <span className="font-display text-xs font-bold tracking-[4px] text-muted-foreground/40 uppercase">
             PARTARA
