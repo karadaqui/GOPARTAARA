@@ -529,28 +529,12 @@ const SearchResults = () => {
     return results;
   })();
 
-  // ── Merge Google Shopping results into unified grid ──
+  // ── Unified results (eBay only) ──
   const unifiedResults = useMemo(() => {
-    const ebayItems = filteredResults
+    return filteredResults
       .slice(0, 12)
       .map((result: any) => ({ ...result, _source: "ebay" as const }));
-
-    const googleItems = googleShoppingResults.map((result: any, index: number) => ({
-      ...result,
-      _source: "google" as const,
-      _gsIdx: index,
-    }));
-
-    const googleLimited = googleItems.slice(0, 8);
-    const amazonResults = googleItems.filter((result: any) => /amazon/i.test(result.source || "")).slice(0, 8);
-
-    if (brandFilter === "eBay") return ebayItems;
-    if (brandFilter === "Google Shopping") return googleLimited;
-    if (brandFilter === "Amazon") return amazonResults;
-    if (!useScaleSERP || googleLimited.length === 0) return ebayItems;
-
-    return shuffleResults([...ebayItems, ...googleLimited]).slice(0, 20);
-  }, [brandFilter, filteredResults, googleShoppingResults]);
+  }, [filteredResults]);
 
   const clearAllFilters = () => {
     setConditionFilter("All");
@@ -772,7 +756,7 @@ const SearchResults = () => {
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-10">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
-            ) : (liveResults.length > 0 || googleShoppingResults.length > 0) && unifiedResults.length === 0 ? (
+            ) : liveResults.length > 0 && unifiedResults.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 mb-8">
                 <div className="text-5xl mb-4 opacity-30">🔍</div>
                 <p className="text-lg font-semibold text-white mb-1">No results match your filters</p>
