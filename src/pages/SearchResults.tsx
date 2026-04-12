@@ -353,14 +353,14 @@ const SearchResults = () => {
               const msg = (error as any)?.message || "";
               if (msg.includes("UNAUTHORIZED") || msg.includes("401")) { if (!cancelled) setAuthGateOpen(true); return; }
               if (msg.includes("SEARCH_LIMIT_REACHED") || msg.includes("403")) {
-                if (!cancelled) { toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" }); searchLimit.refresh(); }
+                if (!cancelled) { setSearchLimitModalType("free"); setSearchLimitModalOpen(true); searchLimit.refresh(); }
                 return;
               }
               throw error;
             }
             if (!cancelled) {
               if (data?.error === "UNAUTHORIZED") { setAuthGateOpen(true); return; }
-              if (data?.error === "SEARCH_LIMIT_REACHED") { toast({ title: "Search limit reached", description: data?.message || "Upgrade to Pro for unlimited searches.", variant: "destructive" }); searchLimit.refresh(); return; }
+              if (data?.error === "SEARCH_LIMIT_REACHED") { setSearchLimitModalType("free"); setSearchLimitModalOpen(true); searchLimit.refresh(); return; }
               if (data?.fallback) { setEbayFallback(true); setLiveResults([]); setTotalResults(0); }
               else {
                 setLiveResults(data?.results || []); setTotalResults(data?.totalResults || 0); searchLimit.refresh();
