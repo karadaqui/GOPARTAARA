@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { X } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { sanitizeInput, checkRateLimit, getCachedSearch, setCachedSearch } from "@/lib/sanitize";
-import { useScaleSERP } from "@/lib/featureFlags";
+
 import SafeImage from "@/components/SafeImage";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -265,8 +265,6 @@ const SearchResults = () => {
   const [supplierBannerDismissed, setSupplierBannerDismissed] = useState(() => localStorage.getItem("supplier_banner_dismissed") === "1");
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // ── Google Shopping state ──
-  const [googleShoppingResults, setGoogleShoppingResults] = useState<any[]>([]);
 
   // ── Filter & Sort State ──
   const [sortBy, setSortByRaw] = useState<typeof SORT_OPTIONS[number]["value"]>("best_match");
@@ -307,8 +305,8 @@ const SearchResults = () => {
 
   // ── eBay search ──
   useEffect(() => {
-    if (!activeQuery.trim()) { setLiveResults([]); setGoogleShoppingResults([]); setTotalResults(0); setEbayFallback(false); return; }
-    if (!user) { setAuthGateOpen(true); setLiveResults([]); setGoogleShoppingResults([]); setTotalResults(0); return; }
+    if (!activeQuery.trim()) { setLiveResults([]); setTotalResults(0); setEbayFallback(false); return; }
+    if (!user) { setAuthGateOpen(true); setLiveResults([]); setTotalResults(0); return; }
     let cancelled = false;
 
     // Build a cache key from all filter state
@@ -369,25 +367,10 @@ const SearchResults = () => {
             }
           }
 
-          if (useScaleSERP) {
-            const { data: gsData } = await supabase.functions.invoke("google-shopping-search", {
-              body: { query: searchQuery }
-            });
-            console.log("First Google Shopping Result:", gsData?.results?.[0]);
-            const googleResults = (gsData?.results || []).map((r: any, index: number) => ({
-              ...r,
-              type: "google_shopping",
-              id: "gs_" + (r.id ?? index),
-            }));
-            if (!cancelled) setGoogleShoppingResults(googleResults);
-          } else if (!cancelled) {
-            setGoogleShoppingResults([]);
-          }
         } catch (err) {
           console.error("Live search failed:", err);
           if (!cancelled) {
             setLiveResults([]);
-            setGoogleShoppingResults([]);
             setTotalResults(0);
             setEbayFallback(true);
           }
