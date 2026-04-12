@@ -91,12 +91,13 @@ const Dashboard = () => {
   };
 
   const fetchSearchHistory = async () => {
-    const { data } = await supabase
-      .from("search_history")
-      .select("*")
-      .eq("user_id", user!.id)
-      .order("created_at", { ascending: false })
-      .limit(10);
+    try {
+      const { data } = await supabase
+        .from("search_history")
+        .select("*")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false })
+        .limit(10);
     if (data) setSearchHistory(data);
   };
 
