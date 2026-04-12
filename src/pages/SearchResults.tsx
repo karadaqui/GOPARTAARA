@@ -409,7 +409,7 @@ const SearchResults = () => {
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error || !data?.results) { setScaleSerpResults([]); return; }
-        if (data.results[0]) console.log("[ScaleSERP] first result", data.results[0]);
+        if (data.results[0]) console.log("[ScaleSERP] first result full object:", JSON.stringify(data.results[0]));
         setScaleSerpResults(data.results);
         try { sessionStorage.setItem(cacheKey, JSON.stringify({ data: data.results, ts: Date.now() })); } catch {}
       })
@@ -530,14 +530,19 @@ const SearchResults = () => {
   const getFlag = (code: string) => countryFlags[code] || "🌍";
 
   const getGoogleResultUrl = (result: any) => {
-    const url = result?.link || result?.product_page_url || result?.url;
-    return typeof url === "string" && url.startsWith("http") ? url : null;
+    const candidates = [result?.link, result?.product_page_url, result?.url, result?.product_link, result?.shopping_link];
+    for (const url of candidates) {
+      if (typeof url === "string" && url.startsWith("http")) return url;
+    }
+    return null;
   };
 
   const openGoogleResult = (result: any) => {
     const url = getGoogleResultUrl(result);
     if (url) {
       window.open(url, "_blank", "noopener,noreferrer");
+    } else {
+      console.warn("[Google Shopping] No valid URL found in result:", result);
     }
   };
 
@@ -874,11 +879,16 @@ const SearchResults = () => {
                                   )}
 
                                   {item.delivery && (
-                                    <div className="flex flex-col gap-1.5">
-                                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 w-fit">
-                                        <Truck size={11} /> {item.delivery}
-                                      </span>
-                                    </div>
+                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 w-fit">
+                                      <Truck size={11} /> {item.delivery}
+                                    </span>
+                                  )}
+
+                                  {/* Extensions info */}
+                                  {item.extensions && item.extensions.length > 0 && (
+                                    <p className="text-[11px] text-zinc-500 leading-snug line-clamp-2">
+                                      {item.extensions.filter((e: string) => !/review/i.test(e)).join(" · ")}
+                                    </p>
                                   )}
 
                                   <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
@@ -889,7 +899,7 @@ const SearchResults = () => {
                                     {item.rating && (
                                       <span className="flex items-center gap-0.5 text-amber-400 ml-auto">
                                         <Star size={11} className="fill-amber-400" /> {item.rating}
-                                        {reviewText && <span className="text-zinc-600 ml-0.5">{reviewText}</span>}
+                                        {reviewText && <span className="text-zinc-600 ml-0.5">({reviewText})</span>}
                                       </span>
                                     )}
                                   </div>

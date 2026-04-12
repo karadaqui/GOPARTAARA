@@ -30,10 +30,15 @@ Deno.serve(async (req) => {
 
     // Parse & validate input
     const body = await req.json();
-    const query = typeof body?.query === "string" ? body.query.replace(/<[^>]*>/g, "").trim().slice(0, 200) : "";
-    if (!query) {
+    const rawQuery = typeof body?.query === "string" ? body.query.replace(/<[^>]*>/g, "").trim().slice(0, 200) : "";
+    if (!rawQuery) {
       return jsonResponse({ results: [] }, 200, corsHeaders);
     }
+
+    // Append car parts context if not already present
+    const lq = rawQuery.toLowerCase();
+    const hasCarContext = ["part", "car", "auto", "vehicle", "motor", "brake", "engine", "filter", "exhaust", "clutch", "suspension", "radiator", "alternator", "turbo", "bumper", "headlight", "wiper"].some(k => lq.includes(k));
+    const query = hasCarContext ? rawQuery : `${rawQuery} car part`;
 
     // Check cache
     const cacheKey = query.toLowerCase();
@@ -57,6 +62,7 @@ Deno.serve(async (req) => {
       google_domain: "google.co.uk",
       gl: "uk",
       hl: "en",
+      tbs: "mr:1",
     });
 
     const url = `https://api.scaleserp.com/search?${params.toString()}`;
@@ -76,7 +82,7 @@ Deno.serve(async (req) => {
       price: item.price || null,
       source: item.source || item.merchant?.name || "",
       source_icon: item.source_icon || item.merchant?.favicon || null,
-      link: item.link || item.product_page_url || item.url || "",
+      link: item.link || "",
       product_page_url: item.product_page_url || item.url || null,
       url: item.url || null,
       image: item.thumbnail || item.image || "",
@@ -84,9 +90,10 @@ Deno.serve(async (req) => {
       rating: item.rating || null,
       reviews: item.reviews || item.extensions?.find?.((e: string) => /review/i.test(e)) || null,
       delivery: item.delivery || item.shipping || null,
+      extensions: Array.isArray(item.extensions) ? item.extensions : [],
     }));
 
-    console.log("[search-scaleserp] First result:", JSON.stringify(simplified[0] || null));
+    console.log("[search-scaleserp] First result full:", JSON.stringify(shoppingResults[0] || null));
 
     // Update cache
     cache.set(cacheKey, { data: simplified, ts: Date.now() });
