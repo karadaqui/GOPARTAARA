@@ -1,6 +1,8 @@
-import { Check, Loader2, Sparkles, Crown, Star, Store, Zap, Gem } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Check, X, Loader2, Sparkles, Crown, Star, Store, Zap, Gem, Shield, Building2 } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,7 +31,9 @@ const individualPlans = [
   {
     name: "Free",
     tagline: "Get started with basic searches",
-    price: "£0",
+    monthlyPrice: "£0",
+    annualPrice: "£0",
+    annualBilled: "",
     period: "/mo",
     features: ["5 searches per month", "5 active marketplace listings", "Save up to 5 parts & alerts", "1 garage vehicle", "Referral bonuses"],
     cta: "Start Free",
@@ -39,7 +43,9 @@ const individualPlans = [
   {
     name: "Pro",
     tagline: "For enthusiasts and DIY mechanics",
-    price: "£9.99",
+    monthlyPrice: "£9.99",
+    annualPrice: "£7.99",
+    annualBilled: "Billed £95.88/yr",
     period: "/mo",
     features: ["Unlimited searches", "Photo search", "Unlimited marketplace listings", "Unlimited parts & alerts", "Unlimited garage vehicles", "Search history", "Price alerts", "Ad-free experience", "10 photos per listing"],
     cta: "Go Pro",
@@ -49,7 +55,9 @@ const individualPlans = [
   {
     name: "Elite",
     tagline: "The complete experience",
-    price: "£19.99",
+    monthlyPrice: "£19.99",
+    annualPrice: "£15.99",
+    annualBilled: "Billed £191.88/yr",
     period: "/mo",
     features: ["Everything in Pro", "Export search history CSV", "30-day price tracking", "Vehicle notes & history", "Early access to features", "Priority email support", "Analytics dashboard"],
     cta: "Go Elite",
@@ -175,6 +183,53 @@ const bundles = [
   },
 ];
 
+/* ── Comparison table data ──────────────────────────────── */
+
+const comparisonRows: { feature: string; free: string; pro: string; elite: string }[] = [
+  { feature: "Monthly searches", free: "5", pro: "Unlimited", elite: "Unlimited" },
+  { feature: "Marketplace listings", free: "5", pro: "Unlimited", elite: "Unlimited" },
+  { feature: "Photo search", free: "✗", pro: "✓", elite: "✓" },
+  { feature: "Reg plate search", free: "✓", pro: "✓", elite: "✓" },
+  { feature: "Price alerts", free: "✓", pro: "✓", elite: "✓" },
+  { feature: "Garage vehicles", free: "1", pro: "Unlimited", elite: "Unlimited" },
+  { feature: "Search history", free: "✗", pro: "✓", elite: "✓" },
+  { feature: "Ad-free experience", free: "✗", pro: "✓", elite: "✓" },
+  { feature: "Export CSV", free: "✗", pro: "✗", elite: "✓" },
+  { feature: "30-day price tracking", free: "✗", pro: "✗", elite: "✓" },
+  { feature: "Vehicle notes", free: "✗", pro: "✗", elite: "✓" },
+  { feature: "Analytics dashboard", free: "✗", pro: "✗", elite: "✓" },
+  { feature: "Priority email support", free: "✗", pro: "✗", elite: "✓" },
+];
+
+/* ── FAQ data ───────────────────────────────────────────── */
+
+const faqItems = [
+  {
+    q: "Can I cancel anytime?",
+    a: "Yes, absolutely. Cancel anytime from your dashboard. No contracts, no cancellation fees. Your plan stays active until the end of the billing period.",
+  },
+  {
+    q: "What happens when I hit my 5 search limit on Free?",
+    a: "You'll see a prompt to upgrade. You can still browse the site, but new searches will be paused until the next month or you upgrade to Pro.",
+  },
+  {
+    q: "Can I upgrade or downgrade my plan?",
+    a: "Yes, you can change your plan anytime. Upgrades take effect immediately. Downgrades take effect at the next billing cycle.",
+  },
+  {
+    q: "How does the 30-day money back guarantee work?",
+    a: "If you're not satisfied within 30 days of your first subscription, email us at info@gopartara.com and we'll issue a full refund — no questions asked.",
+  },
+  {
+    q: "Do you store my payment details?",
+    a: "We use Stripe, the world's most trusted payment processor. We never store your card details on our servers.",
+  },
+  {
+    q: "Is there a plan for businesses or garages?",
+    a: "Yes! We offer custom plans for garages, dealerships and trade buyers. Contact us at info@gopartara.com for a custom quote.",
+  },
+];
+
 type Tab = "individual" | "seller" | "bundles";
 
 const CHECKOUT_TIMEOUT_MS = 10_000;
@@ -186,6 +241,7 @@ const PricingSection = () => {
   const [activeTab, setActiveTab] = useState<Tab>("individual");
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [slowWarning, setSlowWarning] = useState(false);
+  const [annual, setAnnual] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
@@ -224,13 +280,25 @@ const PricingSection = () => {
     <section id="pricing" className="py-24">
       <div className="container max-w-5xl px-4 mx-auto">
         {/* Header */}
-        <div className="text-center mb-12 space-y-4">
+        <div className="text-center mb-8 space-y-4">
           <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
             Simple, transparent <span className="text-primary">pricing</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto">
             Choose the plan that works for you. Upgrade, downgrade, or cancel anytime.
           </p>
+        </div>
+
+        {/* Annual / Monthly Toggle */}
+        <div className="flex items-center justify-center gap-3 mb-12">
+          <span className={`text-sm font-medium ${!annual ? "text-foreground" : "text-muted-foreground"}`}>Monthly</span>
+          <Switch checked={annual} onCheckedChange={setAnnual} />
+          <span className={`text-sm font-medium ${annual ? "text-foreground" : "text-muted-foreground"}`}>
+            Annual
+          </span>
+          <span className="ml-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-400">
+            Save 20%
+          </span>
         </div>
 
         {/* Tab Switcher */}
@@ -263,7 +331,9 @@ const PricingSection = () => {
                 key={plan.name}
                 name={plan.name}
                 tagline={plan.tagline}
-                price={plan.price}
+                price={annual ? plan.annualPrice : plan.monthlyPrice}
+                originalPrice={annual && plan.annualPrice !== plan.monthlyPrice ? plan.monthlyPrice : undefined}
+                billedNote={annual ? plan.annualBilled : undefined}
                 period={plan.period}
                 features={plan.features}
                 cta={plan.cta}
@@ -329,10 +399,90 @@ const PricingSection = () => {
             </div>
           </div>
         )}
+
+        {/* Business CTA */}
+        <div className="mt-12 rounded-2xl border border-border/30 bg-card/30 backdrop-blur-sm p-8 sm:p-10 text-center">
+          <div className="flex items-center justify-center gap-2 mb-3">
+            <Building2 size={22} className="text-primary" />
+            <h3 className="font-display text-xl font-bold text-foreground">For Garages & Trade Buyers</h3>
+          </div>
+          <p className="text-muted-foreground text-sm max-w-lg mx-auto mb-6">
+            Custom plans for garages, dealerships and trade accounts. Bulk search, team access, and dedicated support.
+          </p>
+          <Button variant="outline" className="rounded-xl" asChild>
+            <Link to="/contact">Contact Us for a Quote</Link>
+          </Button>
+        </div>
+
+        {/* Feature Comparison Table */}
+        <div className="mt-20">
+          <h3 className="font-display text-2xl font-bold text-center mb-8 tracking-tight">Compare all features</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="border-b border-border/40">
+                  <th className="text-left py-3 px-4 text-muted-foreground font-medium">Feature</th>
+                  <th className="text-center py-3 px-4 text-muted-foreground font-medium">Free</th>
+                  <th className="text-center py-3 px-4 text-primary font-semibold">Pro</th>
+                  <th className="text-center py-3 px-4 text-muted-foreground font-medium">Elite</th>
+                </tr>
+              </thead>
+              <tbody>
+                {comparisonRows.map((row) => (
+                  <tr key={row.feature} className="border-b border-border/20 hover:bg-card/40 transition-colors">
+                    <td className="py-3 px-4 text-foreground">{row.feature}</td>
+                    <ComparisonCell value={row.free} />
+                    <ComparisonCell value={row.pro} />
+                    <ComparisonCell value={row.elite} />
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Money Back Guarantee */}
+        <div className="mt-16 flex items-center justify-center gap-2.5 py-4 px-6 rounded-xl border border-border/30 bg-card/20 mx-auto max-w-2xl">
+          <Shield size={18} className="text-primary shrink-0" />
+          <p className="text-sm text-muted-foreground text-center">
+            <span className="font-semibold text-foreground">30-Day Money Back Guarantee</span> — Not happy? Get a full refund within 30 days, no questions asked.
+          </p>
+        </div>
+
+        {/* FAQ Section */}
+        <div className="mt-20 max-w-2xl mx-auto">
+          <h3 className="font-display text-2xl font-bold text-center mb-8 tracking-tight">Frequently asked questions</h3>
+          <Accordion type="single" collapsible className="space-y-2">
+            {faqItems.map((item, i) => (
+              <AccordionItem key={i} value={`faq-${i}`} className="border border-border/30 rounded-xl px-5 bg-card/30 backdrop-blur-sm">
+                <AccordionTrigger className="text-sm font-medium text-foreground hover:no-underline py-4">
+                  {item.q}
+                </AccordionTrigger>
+                <AccordionContent className="text-sm text-muted-foreground pb-4 leading-relaxed">
+                  {item.a}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
       </div>
     </section>
   );
 };
+
+/* ── Comparison Cell ────────────────────────────────────── */
+
+const ComparisonCell = ({ value }: { value: string }) => (
+  <td className="text-center py-3 px-4">
+    {value === "✓" ? (
+      <Check size={16} className="inline text-emerald-400" />
+    ) : value === "✗" ? (
+      <X size={16} className="inline text-muted-foreground/40" />
+    ) : (
+      <span className="text-foreground font-medium">{value}</span>
+    )}
+  </td>
+);
 
 /* ── Reusable Plan Card ─────────────────────────────────── */
 
@@ -341,6 +491,8 @@ interface PlanCardProps {
   tagline: string;
   price: string;
   period: string;
+  originalPrice?: string;
+  billedNote?: string;
   features?: string[];
   searchFeatures?: string[];
   sellerFeatures?: string[];
@@ -362,7 +514,7 @@ const FeatureItem = ({ text }: { text: string }) => (
 );
 
 const PlanCard = ({
-  name, tagline, price, period, features, searchFeatures, sellerFeatures, cta, popular, loading, slowWarning, onSelect, was, saving, icon: Icon,
+  name, tagline, price, period, originalPrice, billedNote, features, searchFeatures, sellerFeatures, cta, popular, loading, slowWarning, onSelect, was, saving, icon: Icon,
 }: PlanCardProps) => {
   const isBundle = !!(searchFeatures && sellerFeatures);
 
@@ -390,11 +542,15 @@ const PlanCard = ({
 
       <div className="mb-1">
         {was && <span className="text-muted-foreground/60 line-through text-sm mr-2">{was}</span>}
+        {originalPrice && <span className="text-muted-foreground/60 line-through text-sm mr-2">{originalPrice}</span>}
       </div>
-      <div className="flex items-baseline gap-1 mb-2">
+      <div className="flex items-baseline gap-1 mb-1">
         <span className="font-display text-5xl font-bold text-foreground tracking-tight">{price}</span>
         <span className="text-muted-foreground text-base">{period}</span>
       </div>
+      {billedNote ? (
+        <p className="text-xs text-muted-foreground mb-2">{billedNote}</p>
+      ) : null}
       {saving ? (
         <span className="inline-flex items-center gap-1 w-fit px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6">
           <Zap size={10} /> Save {saving}/mo
@@ -403,7 +559,7 @@ const PlanCard = ({
 
       <div className="h-px bg-border/40 mb-6" />
 
-      {/* Features — grouped for bundles, flat for non-bundles */}
+      {/* Features */}
       <div className="flex-1 mb-8">
         {isBundle ? (
           <>
