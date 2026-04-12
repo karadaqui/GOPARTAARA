@@ -9,7 +9,6 @@ const stats = [
 
 const activeSuppliers = [
   { name: "eBay UK", href: "https://www.ebay.co.uk" },
-  { name: "Amazon UK", href: "https://www.amazon.co.uk" },
 ];
 
 const comingSoonSuppliers = [
@@ -17,6 +16,7 @@ const comingSoonSuppliers = [
   "GSF Car Parts",
   "Car Parts 4 Less",
   "Autodoc",
+  "Amazon UK",
 ];
 
 const SuppliersSection = () => (
