@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown } from "lucide-react";
 
-type FilterOption = { label: string; value: string };
+type FilterOption = { label: string; value: string; disabled?: boolean };
 
 const FilterDropdown = ({
   label,
@@ -92,10 +92,15 @@ const FilterDropdown = ({
             <button
               key={opt.value}
               onClick={() => {
+                if (opt.disabled) return;
                 onChange(opt.value);
                 setOpen(false);
               }}
+              disabled={opt.disabled}
               className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all min-h-[44px] flex items-center ${
+                opt.disabled
+                  ? "text-zinc-600 opacity-50 cursor-not-allowed"
+                  :
                 value === opt.value
                   ? "bg-red-600/20 text-red-400 font-medium"
                   : "text-zinc-300 hover:bg-zinc-800 hover:text-white"
@@ -140,9 +145,14 @@ const CONDITION_OPTIONS: FilterOption[] = [
 ];
 
 const BRAND_OPTIONS: FilterOption[] = [
-  { label: "All Sources", value: "All" },
+  { label: "All Suppliers", value: "All" },
   { label: "eBay", value: "eBay" },
+  { label: "Google Shopping", value: "Google Shopping" },
   { label: "Amazon", value: "Amazon" },
+  { label: "Euro Car Parts · Coming soon", value: "Euro Car Parts", disabled: true },
+  { label: "GSF Car Parts · Coming soon", value: "GSF Car Parts", disabled: true },
+  { label: "Autodoc · Coming soon", value: "Autodoc", disabled: true },
+  { label: "Car Parts 4 Less · Coming soon", value: "Car Parts 4 Less", disabled: true },
 ];
 
 const FilterBar = ({
@@ -235,7 +245,7 @@ const FilterBar = ({
         />
 
         <FilterDropdown
-          label="Brand"
+          label="Supplier"
           options={BRAND_OPTIONS}
           value={brandFilter}
           onChange={setBrandFilter}
