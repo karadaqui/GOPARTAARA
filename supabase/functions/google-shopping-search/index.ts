@@ -45,20 +45,25 @@ Deno.serve(async (req) => {
     }
 
     const data = await resp.json();
+    const rawResults = data?.shopping_results || [];
+    const results = rawResults.map((item: any) => {
+      console.log("ScaleSERP item:", JSON.stringify(item));
 
-    const results = (data?.shopping_results || []).map((item: any) => ({
-      id: String(item.position || Math.random()),
-      title: item.title || "",
-      price: item.price || "",
-      source: item.source || "Google Shopping",
-      source_icon: item.source_icon || "",
-      thumbnail: item.thumbnail || "",
-      link: item.link || item.url || item.product_link || "",
-      rating: item.rating || null,
-      reviews: item.reviews || null,
-      delivery: item.delivery || "",
-      type: "google_shopping",
-    }));
+      return {
+        id: String(item.position || Math.random()),
+        title: item.title || "",
+        price: item.price || "",
+        source: item.source || item.seller || item.merchant || "Google Shopping",
+        source_icon: item.source_icon || item.favicon || "",
+        thumbnail: item.thumbnail || item.image || item.img || "",
+        link: item.link || item.url || item.product_link || item.shopping_link || "",
+        rating: item.rating || item.stars || null,
+        reviews: item.reviews || item.review_count || null,
+        delivery: item.delivery || item.shipping || "",
+        type: "google_shopping",
+        _raw: item,
+      };
+    });
 
     console.log("[google-shopping-search] Returned", results.length, "results");
 
