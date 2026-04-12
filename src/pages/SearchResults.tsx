@@ -265,9 +265,8 @@ const SearchResults = () => {
   const [supplierBannerDismissed, setSupplierBannerDismissed] = useState(() => localStorage.getItem("supplier_banner_dismissed") === "1");
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // ── ScaleSERP state ──
-  const [scaleSerpResults, setScaleSerpResults] = useState<any[]>([]);
-  const [scaleSerpLoading, setScaleSerpLoading] = useState(false);
+  // ── Google Shopping state ──
+  const [googleShoppingResults, setGoogleShoppingResults] = useState<any[]>([]);
 
   // ── Filter & Sort State ──
   const [sortBy, setSortByRaw] = useState<typeof SORT_OPTIONS[number]["value"]>("best_match");
@@ -308,70 +307,93 @@ const SearchResults = () => {
 
   // ── eBay search ──
   useEffect(() => {
-    if (!activeQuery.trim()) { setLiveResults([]); setTotalResults(0); setEbayFallback(false); return; }
-    if (!user) { setAuthGateOpen(true); setLiveResults([]); setTotalResults(0); return; }
+    if (!activeQuery.trim()) { setLiveResults([]); setGoogleShoppingResults([]); setTotalResults(0); setEbayFallback(false); return; }
+    if (!user) { setAuthGateOpen(true); setLiveResults([]); setGoogleShoppingResults([]); setTotalResults(0); return; }
     let cancelled = false;
 
     // Build a cache key from all filter state
     const cacheKey = JSON.stringify({ activeQuery, selectedCategory, currentPage, marketplace: country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter });
     const cached = getCachedSearch(cacheKey);
-    if (cached) {
-      setLiveResults(cached.results || []);
-      setTotalResults(cached.totalResults || 0);
-      setEbayFallback(!!cached.fallback);
-      setLiveLoading(false);
-      return;
-    }
 
     // Debounce 300ms
     const debounceTimer = setTimeout(() => {
       const fetchLive = async () => {
-        setLiveLoading(true);
-        setEbayFallback(false);
-        try {
-          const offset = (currentPage - 1) * ITEMS_PER_PAGE;
-          const priceRange = PRICE_RANGES[priceRangeIdx];
-          const body: Record<string, any> = {
-            query: sanitizeInput(activeQuery),
-            category: selectedCategory || undefined,
-            offset,
-            marketplace: country.ebayMarketplace,
-          };
-          if (conditionFilter !== "All") body.conditionFilter = conditionFilter;
-          if (shippingFilter !== "All") body.shippingFilter = shippingFilter;
-          if (priceRangeIdx > 0) {
-            body.priceMin = priceRange.min;
-            if (priceRange.max !== Infinity) body.priceMax = priceRange.max;
-          }
-          if (sortBy !== "best_match") body.sortBy = sortBy;
-          if (categoryFilter !== "All Parts") body.categoryFilter = categoryFilter;
+        const searchQuery = sanitizeInput(activeQuery);
 
-          const { data, error } = await supabase.functions.invoke("search-parts", { body });
-          if (error) {
-            const msg = (error as any)?.message || "";
-            if (msg.includes("UNAUTHORIZED") || msg.includes("401")) { if (!cancelled) setAuthGateOpen(true); return; }
-            if (msg.includes("SEARCH_LIMIT_REACHED") || msg.includes("403")) {
-              if (!cancelled) { toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" }); searchLimit.refresh(); }
-              return;
+        if (!cached) {
+          setLiveLoading(true);
+          setEbayFallback(false);
+        } else {
+          setLiveResults(cached.results || []);
+          setTotalResults(cached.totalResults || 0);
+          setEbayFallback(!!cached.fallback);
+        }
+
+        try {
+          if (!cached) {
+            const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+            const priceRange = PRICE_RANGES[priceRangeIdx];
+            const body: Record<string, any> = {
+              query: searchQuery,
+              category: selectedCategory || undefined,
+              offset,
+              marketplace: country.ebayMarketplace,
+            };
+            if (conditionFilter !== "All") body.conditionFilter = conditionFilter;
+            if (shippingFilter !== "All") body.shippingFilter = shippingFilter;
+            if (priceRangeIdx > 0) {
+              body.priceMin = priceRange.min;
+              if (priceRange.max !== Infinity) body.priceMax = priceRange.max;
             }
-            throw error;
+            if (sortBy !== "best_match") body.sortBy = sortBy;
+            if (categoryFilter !== "All Parts") body.categoryFilter = categoryFilter;
+
+            const { data, error } = await supabase.functions.invoke("search-parts", { body });
+            if (error) {
+              const msg = (error as any)?.message || "";
+              if (msg.includes("UNAUTHORIZED") || msg.includes("401")) { if (!cancelled) setAuthGateOpen(true); return; }
+              if (msg.includes("SEARCH_LIMIT_REACHED") || msg.includes("403")) {
+                if (!cancelled) { toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" }); searchLimit.refresh(); }
+                return;
+              }
+              throw error;
+            }
+            if (!cancelled) {
+              if (data?.error === "UNAUTHORIZED") { setAuthGateOpen(true); return; }
+              if (data?.error === "SEARCH_LIMIT_REACHED") { toast({ title: "Search limit reached", description: data?.message || "Upgrade to Pro for unlimited searches.", variant: "destructive" }); searchLimit.refresh(); return; }
+              if (data?.fallback) { setEbayFallback(true); setLiveResults([]); setTotalResults(0); }
+              else {
+                setLiveResults(data?.results || []); setTotalResults(data?.totalResults || 0); searchLimit.refresh();
+                setCachedSearch(cacheKey, { results: data?.results, totalResults: data?.totalResults, fallback: false });
+              }
+            }
           }
-          if (!cancelled) {
-            if (data?.error === "UNAUTHORIZED") { setAuthGateOpen(true); return; }
-            if (data?.error === "SEARCH_LIMIT_REACHED") { toast({ title: "Search limit reached", description: data?.message || "Upgrade to Pro for unlimited searches.", variant: "destructive" }); searchLimit.refresh(); return; }
-            if (data?.fallback) { setEbayFallback(true); setLiveResults([]); setTotalResults(0); }
-            else {
-              setLiveResults(data?.results || []); setTotalResults(data?.totalResults || 0); searchLimit.refresh();
-              setCachedSearch(cacheKey, { results: data?.results, totalResults: data?.totalResults, fallback: false });
-            }
+
+          if (useScaleSERP) {
+            const { data: gsData } = await supabase.functions.invoke("google-shopping-search", {
+              body: { query: searchQuery }
+            });
+            const googleResults = (gsData?.results || []).map((r: any, index: number) => ({
+              ...r,
+              type: "google_shopping",
+              id: "gs_" + (r.position ?? r.id ?? index),
+            }));
+            if (!cancelled) setGoogleShoppingResults(googleResults);
+          } else if (!cancelled) {
+            setGoogleShoppingResults([]);
           }
         } catch (err) {
           console.error("Live search failed:", err);
-          if (!cancelled) { setLiveResults([]); setTotalResults(0); setEbayFallback(true); }
+          if (!cancelled) {
+            setLiveResults([]);
+            setGoogleShoppingResults([]);
+            setTotalResults(0);
+            setEbayFallback(true);
+          }
         } finally { if (!cancelled) setLiveLoading(false); }
       };
       fetchLive();
-    }, 300);
+    }, cached ? 0 : 300);
 
     return () => { cancelled = true; clearTimeout(debounceTimer); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -385,39 +407,6 @@ const SearchResults = () => {
       if (data) setSavedIds(new Set(data.map((d) => d.part_number).filter(Boolean) as string[]));
     });
   }, [user]);
-
-  // ── ScaleSERP fetch ──
-  useEffect(() => {
-    if (!useScaleSERP || !activeQuery.trim() || !user) return;
-    let cancelled = false;
-
-    const cacheKey = `scaleserp:${activeQuery.toLowerCase()}`;
-    try {
-      const raw = sessionStorage.getItem(cacheKey);
-      if (raw) {
-        const { data, ts } = JSON.parse(raw);
-        if (Date.now() - ts < 15 * 60 * 1000) {
-          setScaleSerpResults(data);
-          return;
-        }
-        sessionStorage.removeItem(cacheKey);
-      }
-    } catch {}
-
-    setScaleSerpLoading(true);
-    supabase.functions.invoke("search-scaleserp", { body: { query: activeQuery } })
-      .then(({ data, error }) => {
-        if (cancelled) return;
-        if (error || !data?.results) { setScaleSerpResults([]); return; }
-        if (data.results[0]) console.log("[ScaleSERP] first result full object:", JSON.stringify(data.results[0]));
-        setScaleSerpResults(data.results);
-        try { sessionStorage.setItem(cacheKey, JSON.stringify({ data: data.results, ts: Date.now() })); } catch {}
-      })
-      .catch(() => { if (!cancelled) setScaleSerpResults([]); })
-      .finally(() => { if (!cancelled) setScaleSerpLoading(false); });
-
-    return () => { cancelled = true; };
-  }, [activeQuery, user]);
 
   // ── Handlers ──
   const handleVehicleLookupStart = () => {
@@ -529,23 +518,6 @@ const SearchResults = () => {
 
   const getFlag = (code: string) => countryFlags[code] || "🌍";
 
-  const getGoogleResultUrl = (result: any) => {
-    const candidates = [result?.link, result?.product_page_url, result?.url, result?.product_link, result?.shopping_link];
-    for (const url of candidates) {
-      if (typeof url === "string" && url.startsWith("http")) return url;
-    }
-    return null;
-  };
-
-  const openGoogleResult = (result: any) => {
-    const url = getGoogleResultUrl(result);
-    if (url) {
-      window.open(url, "_blank", "noopener,noreferrer");
-    } else {
-      console.warn("[Google Shopping] No valid URL found in result:", result);
-    }
-  };
-
   const shuffleResults = <T,>(items: T[]) => {
     const shuffled = [...items];
 
@@ -579,13 +551,10 @@ const SearchResults = () => {
       .slice(0, 12)
       .map((result: any) => ({ ...result, _source: "ebay" as const }));
 
-    const googleItems = scaleSerpResults.map((result: any, index: number) => ({
+    const googleItems = googleShoppingResults.map((result: any, index: number) => ({
       ...result,
       _source: "google" as const,
       _gsIdx: index,
-      _resolvedUrl: getGoogleResultUrl(result),
-      image: result.thumbnail || result.image || "",
-      source: result.source || "Google Shopping",
     }));
 
     const googleLimited = googleItems.slice(0, 8);
@@ -597,7 +566,7 @@ const SearchResults = () => {
     if (!useScaleSERP || googleLimited.length === 0) return ebayItems;
 
     return shuffleResults([...ebayItems, ...googleLimited]).slice(0, 20);
-  }, [brandFilter, filteredResults, scaleSerpResults]);
+  }, [brandFilter, filteredResults, googleShoppingResults]);
 
   const clearAllFilters = () => {
     setConditionFilter("All");
@@ -819,7 +788,7 @@ const SearchResults = () => {
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-10">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
-            ) : (liveResults.length > 0 || scaleSerpResults.length > 0) && unifiedResults.length === 0 ? (
+            ) : (liveResults.length > 0 || googleShoppingResults.length > 0) && unifiedResults.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 mb-8">
                 <div className="text-5xl mb-4 opacity-30">🔍</div>
                 <p className="text-lg font-semibold text-white mb-1">No results match your filters</p>
@@ -843,8 +812,8 @@ const SearchResults = () => {
                           style={{ animationDelay: `${idx * 50}ms` }}>
                           
                           {(() => {
-                            const sellerName = item.source || "Google Shopping";
-                            const googleUrl = item._resolvedUrl;
+                            const sellerName = item.source;
+                            const googleUrl = item.link || item.url || item.product_link;
                             const reviewText = item.reviews ? String(item.reviews) : null;
 
                             return (
@@ -853,9 +822,12 @@ const SearchResults = () => {
                                   Google Shopping
                                 </div>
 
-                                <button type="button" onClick={() => openGoogleResult(item)} className="block relative cursor-pointer text-left">
+                                <button type="button" onClick={() => {
+                                  const url = item.link || item.url || item.product_link;
+                                  if (url?.startsWith("http")) window.open(url, "_blank", "noopener,noreferrer");
+                                }} className="block relative cursor-pointer text-left">
                                   <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
-                                    <SafeImage src={item.image} alt={item.title} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" fallbackClassName="w-full h-full" />
+                                    <SafeImage src={item.thumbnail} alt={item.title} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" fallbackClassName="w-full h-full" />
                                     <span className="absolute bottom-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-900/70 border border-blue-500/30 text-[9px] font-bold text-blue-300 uppercase tracking-wide max-w-[75%]">
                                       {item.source_icon ? (
                                         <img src={item.source_icon} alt="" className="w-3 h-3 rounded-sm object-contain shrink-0" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
@@ -868,7 +840,10 @@ const SearchResults = () => {
                                 </button>
 
                                 <div className="p-4 flex-1 flex flex-col gap-3">
-                                  <button type="button" onClick={() => openGoogleResult(item)} className="block cursor-pointer text-left">
+                                  <button type="button" onClick={() => {
+                                    const url = item.link || item.url || item.product_link;
+                                    if (url?.startsWith("http")) window.open(url, "_blank", "noopener,noreferrer");
+                                  }} className="block cursor-pointer text-left">
                                     <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.title}</p>
                                   </button>
 
@@ -905,7 +880,10 @@ const SearchResults = () => {
                                   </div>
 
                                   <div className="flex flex-col sm:flex-row gap-2">
-                                    <button type="button" onClick={() => openGoogleResult(item)} disabled={!googleUrl}
+                                    <button type="button" onClick={() => {
+                                      const url = item.link || item.url || item.product_link;
+                                      if (url?.startsWith("http")) window.open(url, "_blank", "noopener,noreferrer");
+                                    }} disabled={!googleUrl?.startsWith("http")}
                                       className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
                                       <ExternalLink size={14} /> View Deal
                                     </button>
