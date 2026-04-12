@@ -51,17 +51,20 @@ Deno.serve(async (req) => {
 
     const params = new URLSearchParams({
       api_key: apiKey,
-      search_type: "google_shopping",
+      search_type: "shopping",
       q: query,
-      num: "8",
+      num: "10",
       google_domain: "google.co.uk",
       gl: "uk",
       hl: "en",
     });
 
-    const resp = await fetch(`https://api.scaleserp.com/search?${params.toString()}`);
+    const url = `https://api.scaleserp.com/search?${params.toString()}`;
+    console.log("[search-scaleserp] Fetching:", url.replace(apiKey, "***"));
+    const resp = await fetch(url);
     if (!resp.ok) {
-      console.error("[search-scaleserp] API error:", resp.status);
+      const errBody = await resp.text();
+      console.error("[search-scaleserp] API error:", resp.status, errBody);
       return jsonResponse({ results: [] }, 200, corsHeaders);
     }
 
