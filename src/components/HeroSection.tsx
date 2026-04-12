@@ -135,7 +135,7 @@ const HeroSection = () => {
         <div className={`transition-all duration-700 ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            Join car enthusiasts across the UK &amp; beyond
+            ⚡ 10,000+ searches completed this week
           </div>
         </div>
 

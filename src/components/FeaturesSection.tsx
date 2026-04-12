@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Camera, Car, Bookmark, Bell, Store, Star, BarChart3, Gift } from "lucide-react";
+import { Camera, Car, Bookmark, Bell, Store, ShoppingBag, BarChart3, Gift } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const features = [
@@ -34,10 +34,10 @@ const features = [
     link: "/marketplace",
   },
   {
-    icon: Star,
-    title: "Community Reviews",
-    desc: "Read honest reviews from real buyers to choose the right part and supplier.",
-    link: "/marketplace",
+    icon: ShoppingBag,
+    title: "Autodoc Integration",
+    desc: "Compare prices with Autodoc — Europe's largest auto parts store. Find the best deal across all suppliers.",
+    link: "/search",
   },
   {
     icon: BarChart3,
@@ -48,7 +48,7 @@ const features = [
   {
     icon: Gift,
     title: "Referral Program",
-    desc: "Invite friends and earn bonus searches. They get extra searches too.",
+    desc: "Invite a friend and give them 1 month Pro free. You get 1 month Pro free too. Share the love.",
     link: "/dashboard",
   },
 ];
