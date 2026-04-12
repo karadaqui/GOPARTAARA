@@ -939,23 +939,31 @@ const SearchResults = () => {
                   </div>
             )}
 
-            {/* ── Autodoc Affiliate Banner ── */}
-            {activeQuery && !liveLoading && (
-              <a
-                href={`https://lowest-prices.eu/a/rkrn4sDyrWIyElw?url=https://www.autodoc.co.uk/search?query=${encodeURIComponent(activeQuery)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-3 flex items-center gap-3 hover:border-white/[0.12] transition-all group"
-              >
-                <img src="https://www.autodoc.co.uk/favicon.ico" alt="Autodoc" className="w-5 h-5 shrink-0" />
-                <p className="text-sm text-zinc-400 flex-1">
-                  Also check prices on <span className="text-zinc-200 font-medium">Autodoc</span> — Europe's largest auto parts store
-                </p>
-                <span className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors">
-                  <ExternalLink size={13} /> View on Autodoc
-                </span>
-              </a>
-            )}
+            {/* ── Autodoc Affiliate Banner (geo-targeted) ── */}
+            {(() => {
+              const autodocCountries: Record<string, string> = {
+                GB: 'autodoc.co.uk', AT: 'autodoc.at', FI: 'autodoc.co.uk', FR: 'autodoc.fr',
+                IT: 'autodoc.it', NL: 'autodoc.nl', NO: 'autodoc.co.uk', PL: 'autodoc.pl',
+                PT: 'autodoc.pt', ES: 'autodoc.es', SE: 'autodoc.co.uk',
+              };
+              const userCountry = localStorage.getItem('partara_location_country') || '';
+              const domain = autodocCountries[userCountry];
+              if (!activeQuery || liveLoading || !domain) return null;
+              const autodocUrl = `https://www.${domain}/search?query=${encodeURIComponent(activeQuery)}`;
+              const href = `https://lowest-prices.eu/a/rkrn4sDyrWIyElw?url=${encodeURIComponent(autodocUrl)}`;
+              return (
+                <a href={href} target="_blank" rel="noopener noreferrer"
+                  className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3 hover:border-white/[0.12] transition-all group">
+                  <img src="https://www.autodoc.co.uk/favicon.ico" alt="Autodoc" className="w-5 h-5 shrink-0" />
+                  <p className="text-sm text-zinc-400 flex-1">
+                    Check prices on <span className="text-zinc-200 font-medium">Autodoc</span>
+                  </p>
+                  <span className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors">
+                    <ExternalLink size={13} /> View on Autodoc →
+                  </span>
+                </a>
+              );
+            })()}
 
 
                 {/* Global Suppliers */}
