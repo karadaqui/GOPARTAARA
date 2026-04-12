@@ -42,6 +42,7 @@ const Garage = lazy(() => import("./pages/Garage.tsx"));
 const Refund = lazy(() => import("./pages/Refund.tsx"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail.tsx"));
 const SubscriptionPolicy = lazy(() => import("./pages/SubscriptionPolicy.tsx"));
+const CompleteProfile = lazy(() => import("./pages/CompleteProfile.tsx"));
 
 const queryClient = new QueryClient();
 

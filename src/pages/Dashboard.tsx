@@ -266,9 +266,14 @@ const Dashboard = () => {
   };
 
   const currentPlan = profile?.subscription_plan || "free";
+  const isAdmin = currentPlan === "admin";
   const isEliteUser = ["elite", "admin"].includes(currentPlan);
   const isPro = ["pro", "elite", "admin"].includes(currentPlan);
   const isFree = currentPlan === "free";
+
+  // For admin users, show full email; for regular users, require display_name
+  const hasDisplayName = !!profile?.display_name?.trim();
+  const needsDisplayName = !isAdmin && !hasDisplayName;
 
   const referralCode = (profile as any)?.referral_code || "";
   const referralLink = `https://gopartara.com/auth?ref=${referralCode}`;
@@ -286,15 +291,10 @@ const Dashboard = () => {
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I use @PARTARA to compare car part prices. Sign up with my link and get 1 month Pro free! ${referralLink}`)}`, "_blank");
   };
 
-  if (authLoading || loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="animate-spin text-primary" size={32} />
-      </div>
-    );
-  }
-
-  const welcomeName = profile?.display_name || (profile?.email ? profile.email.split("@")[0] : (user?.email ? user.email.split("@")[0] : "there"));
+  // Admin: show full email. Regular: show display_name only (required).
+  const welcomeName = isAdmin
+    ? (user?.email || "Admin")
+    : (profile?.display_name || "there");
 
   const planBadge = () => {
     if (currentPlan === "admin") return <span className="px-2.5 py-0.5 rounded-full bg-destructive/15 border border-destructive/30 text-destructive text-xs font-semibold">ADMIN</span>;
