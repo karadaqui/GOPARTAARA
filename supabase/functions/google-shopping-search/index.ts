@@ -45,29 +45,27 @@ Deno.serve(async (req) => {
     }
 
     const data = await resp.json();
-    const shoppingResults = data?.shopping_results || [];
 
-    const results = shoppingResults.slice(0, 10).map((item: any, idx: number) => ({
-      id: idx,
+    const results = (data?.shopping_results || []).map((item: any) => ({
+      id: String(item.position || Math.random()),
       title: item.title || "",
-      price: item.price || null,
-      source: item.source || item.merchant?.name || "",
-      source_icon: item.source_icon || item.merchant?.favicon || null,
-      link: item.link || "",
-      product_page_url: item.product_page_url || item.url || null,
-      url: item.url || null,
-      thumbnail: item.thumbnail || item.image || "",
-      image: item.thumbnail || item.image || "",
+      price: item.price || "",
+      source: item.source || "Google Shopping",
+      source_icon: item.source_icon || "",
+      thumbnail: item.thumbnail || "",
+      link: item.link || item.url || item.product_link || "",
       rating: item.rating || null,
       reviews: item.reviews || null,
-      delivery: item.delivery || item.shipping || null,
-      extensions: Array.isArray(item.extensions) ? item.extensions : [],
+      delivery: item.delivery || "",
       type: "google_shopping",
     }));
 
     console.log("[google-shopping-search] Returned", results.length, "results");
 
-    return jsonResponse({ results }, 200, corsHeaders);
+    return new Response(JSON.stringify({ results }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (err) {
     console.error("[google-shopping-search] Error:", err);
     return jsonResponse({ results: [] }, 200, corsHeaders);
