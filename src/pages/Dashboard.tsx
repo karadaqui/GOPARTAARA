@@ -75,7 +75,9 @@ const Dashboard = () => {
 
     if (!error && data) {
       setProfile(data);
-      setDisplayName(data.display_name || "");
+      // Use display_name if set, otherwise derive from email
+      const friendlyName = data.display_name || (data.email ? data.email.split("@")[0] : (user?.email ? user.email.split("@")[0] : ""));
+      setDisplayName(friendlyName);
       if (data.avatar_url) {
         const { data: signedData } = await supabase.storage
           .from("avatars")

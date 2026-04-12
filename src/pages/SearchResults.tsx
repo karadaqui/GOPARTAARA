@@ -1124,11 +1124,14 @@ const SearchResults = () => {
                   <button onClick={() => { setSearchLimitModalOpen(false); navigate("/pricing"); }} className="w-full h-12 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm transition-colors">
                     Upgrade to Pro
                   </button>
+                  <button onClick={() => setSearchLimitModalOpen(false)} className="mt-3 w-full h-10 rounded-xl text-zinc-400 hover:text-zinc-200 text-sm transition-colors">
+                    Maybe later
+                  </button>
                 </>
               ) : (
                 <>
                   <h3 className="text-xl font-bold text-white mb-2">Search limit reached</h3>
-                  <p className="text-zinc-400 text-sm mb-6">Sign up free to get 5 searches per month, or go Pro for unlimited.</p>
+                  <p className="text-zinc-400 text-sm mb-6">Create a free account for 5 searches/month, or go Pro for unlimited.</p>
                   <div className="flex flex-col gap-2">
                     <button onClick={() => { setSearchLimitModalOpen(false); navigate("/auth"); }} className="w-full h-12 rounded-xl bg-white text-black font-semibold text-sm transition-colors hover:bg-zinc-200">
                       Sign Up Free
@@ -1137,11 +1140,11 @@ const SearchResults = () => {
                       Go Pro — Unlimited
                     </button>
                   </div>
+                  <button onClick={() => setSearchLimitModalOpen(false)} className="mt-3 text-zinc-400 hover:text-zinc-200 text-sm transition-colors">
+                    Maybe later
+                  </button>
                 </>
               )}
-              <button onClick={() => setSearchLimitModalOpen(false)} className="mt-4 text-zinc-500 hover:text-zinc-300 text-sm transition-colors">
-                Close
-              </button>
             </div>
           </div>
         </div>

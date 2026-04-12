@@ -261,6 +261,28 @@ Deno.serve(async (req) => {
   }
 });
 
+// Normalize non-English condition labels to English
+function normalizeCondition(condition: string): string {
+  const c = condition.trim();
+  const lower = c.toLowerCase();
+  // German
+  if (lower === "neu") return "New";
+  if (lower === "gebraucht") return "Used";
+  // French
+  if (lower === "neuf") return "New";
+  if (lower === "occasion") return "Used";
+  if (lower === "nouveau") return "New";
+  // Spanish
+  if (lower === "nuevo") return "New";
+  // Italian
+  if (lower === "nuovo") return "New";
+  if (lower === "usato") return "Used";
+  // Polish
+  if (lower === "nowy") return "New";
+  if (lower === "używany") return "Used";
+  return c;
+}
+
 function processAndReturn(data: any, cacheKey: string, corsHeaders: Record<string, string>): Response {
   const items = data?.itemSummaries || [];
   const totalResults = data?.total || 0;
@@ -270,7 +292,7 @@ function processAndReturn(data: any, cacheKey: string, corsHeaders: Record<strin
     partName: item.title || "Unknown Part",
     partNumber: item.itemId || `EBAY-${i}`,
     price: parseFloat(item.price?.value || "0"),
-    condition: item.condition || "Not specified",
+    condition: normalizeCondition(item.condition || "Not specified"),
     imageUrl: item.image?.imageUrl || item.thumbnailImages?.[0]?.imageUrl || "/placeholder.svg",
     url: item.itemAffiliateWebUrl || item.itemWebUrl || "",
     freeShipping: parseFloat(item.shippingOptions?.[0]?.shippingCost?.value || "0") === 0,
