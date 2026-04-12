@@ -89,6 +89,7 @@ const MyMarket = () => {
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showSellerGate, setShowSellerGate] = useState(false);
   const [disputedReviews, setDisputedReviews] = useState<DisputedReview[]>([]);
+  const [boostModalOpen, setBoostModalOpen] = useState(false);
 
   const [profileForm, setProfileForm] = useState({
     business_name: "", description: "", contact_email: "", contact_phone: "", website_url: ""
@@ -733,6 +734,14 @@ const MyMarket = () => {
                       <Trash2 size={12} />
                     </Button>
                   </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setBoostModalOpen(true)}
+                    className="w-full mt-2 rounded-lg gap-1.5 text-xs border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10 hover:text-yellow-300"
+                  >
+                    <Zap size={12} /> Boost — £4.99/week
+                  </Button>
                 </div>
               </div>
             ))}
