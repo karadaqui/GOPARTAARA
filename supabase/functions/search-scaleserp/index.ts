@@ -51,9 +51,10 @@ Deno.serve(async (req) => {
 
     const params = new URLSearchParams({
       api_key: apiKey,
-      search_type: "shopping",
+      search_type: "google_shopping",
       q: query,
       num: "8",
+      google_domain: "google.co.uk",
       gl: "uk",
       hl: "en",
     });

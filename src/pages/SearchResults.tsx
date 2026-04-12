@@ -935,60 +935,81 @@ const SearchResults = () => {
                   })}
                 </div>
 
-                {/* ── 🔥 More Deals (ScaleSERP) ── */}
+                {/* ── 🛒 More Results from Google Shopping (ScaleSERP) ── */}
                 {useScaleSERP && scaleSerpLoading && (
-                  <div className="my-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-lg">🔥</span>
-                      <h3 className="text-base sm:text-lg font-bold text-white">More Deals</h3>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-500 font-medium">Google Shopping</span>
+                  <div className="my-8">
+                    <div className="flex items-center gap-2.5 mb-4">
+                      <span className="text-xl">🛒</span>
+                      <h3 className="text-base sm:text-lg font-bold text-white">More Results from Google Shopping</h3>
                     </div>
-                    <div className="flex gap-3 overflow-x-auto pb-2">
-                      {Array.from({ length: 4 }).map((_, i) => (
-                        <div key={i} className="shrink-0 w-[200px] rounded-2xl border border-white/[0.06] bg-[#111] overflow-hidden">
-                          <div className="h-32 bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
-                          <div className="p-3 space-y-2">
-                            <div className="h-3 w-3/4 rounded-full bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
-                            <div className="h-4 w-1/2 rounded-full bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
-                          </div>
-                        </div>
-                      ))}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+                      {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={`gs-skel-${i}`} />)}
                     </div>
                   </div>
                 )}
 
                 {useScaleSERP && scaleSerpResults.length > 0 && !scaleSerpLoading && (
-                  <div className="my-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-lg">🔥</span>
-                      <h3 className="text-base sm:text-lg font-bold text-white">More Deals</h3>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-500 font-medium">Google Shopping</span>
+                  <div className="my-8">
+                    <div className="flex items-center gap-2.5 mb-4">
+                      <span className="text-xl">🛒</span>
+                      <h3 className="text-base sm:text-lg font-bold text-white">More Results from Google Shopping</h3>
+                      <span className="text-xs text-zinc-500 ml-auto">{scaleSerpResults.length} results</span>
                     </div>
-                    <ScrollArea className="w-full">
-                      <div className="flex gap-3 pb-2">
-                        {scaleSerpResults.map((item: any, idx: number) => (
-                          <a key={idx} href={item.link} target="_blank" rel="noopener noreferrer"
-                            className="shrink-0 w-[200px] group rounded-2xl overflow-hidden border border-white/[0.06] bg-[#111] hover:border-white/[0.15] transition-all hover:scale-[1.02] flex flex-col">
-                            <div className="h-32 bg-[#0d0d0d] overflow-hidden flex items-center justify-center">
-                              <SafeImage src={item.image} alt={item.title} className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500" fallbackClassName="w-full h-full" />
-                            </div>
-                            <div className="p-3 flex-1 flex flex-col gap-1.5">
-                              <p className="text-xs font-medium text-white leading-snug line-clamp-2 min-h-[2rem] group-hover:text-red-400 transition-colors">{item.title}</p>
-                              {item.price && <p className="text-sm font-bold text-red-500">{item.price}</p>}
-                              <div className="flex items-center justify-between mt-auto pt-1 border-t border-white/[0.06]">
-                                <span className="text-[10px] text-zinc-500 truncate max-w-[120px]">{item.source}</span>
-                                {item.rating && (
-                                  <span className="flex items-center gap-0.5 text-[10px] text-amber-400">
-                                    <Star size={9} className="fill-amber-400" /> {item.rating}
-                                  </span>
-                                )}
-                              </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+                      {scaleSerpResults.map((item: any, idx: number) => (
+                        <div key={`gs-${idx}`}
+                          className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-all duration-300 flex flex-col relative animate-fade-in"
+                          style={{ animationDelay: `${idx * 50}ms` }}>
+
+                          {/* ── Google Shopping Badge (Top Bar) ── */}
+                          <div className="h-7 flex items-center justify-center gap-1.5 text-xs font-semibold tracking-wide uppercase border-b border-white/10 bg-blue-900/40 text-blue-400">
+                            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M19.5 7h-3V5.5A3.5 3.5 0 0013 2h-2a3.5 3.5 0 00-3.5 3.5V7h-3A1.5 1.5 0 003 8.5v11A1.5 1.5 0 004.5 21h15a1.5 1.5 0 001.5-1.5v-11A1.5 1.5 0 0019.5 7zM9.5 5.5A1.5 1.5 0 0111 4h2a1.5 1.5 0 011.5 1.5V7h-5V5.5z"/>
+                            </svg>
+                            Google Shopping
+                          </div>
+
+                          {/* ── Image ── */}
+                          <a href={item.link} target="_blank" rel="noopener noreferrer" className="block relative">
+                            <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
+                              <SafeImage src={item.image} alt={item.title} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" fallbackClassName="w-full h-full" />
                             </div>
                           </a>
-                        ))}
-                      </div>
-                      <ScrollBar orientation="horizontal" />
-                    </ScrollArea>
+
+                          {/* ── Card Body ── */}
+                          <div className="p-4 flex-1 flex flex-col gap-3">
+                            <a href={item.link} target="_blank" rel="noopener noreferrer" className="block">
+                              <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.title}</p>
+                            </a>
+
+                            {/* ── Price ── */}
+                            {item.price && (
+                              <div>
+                                <span className="text-2xl font-bold text-red-500">{item.price}</span>
+                              </div>
+                            )}
+
+                            {/* ── Seller & Rating ── */}
+                            <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
+                              {item.source && (
+                                <span className="font-medium truncate max-w-[120px] text-zinc-400">{item.source}</span>
+                              )}
+                              {item.rating && (
+                                <span className="flex items-center gap-0.5 text-amber-400 ml-auto">
+                                  <Star size={11} className="fill-amber-400" /> {item.rating}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* ── View Deal Button ── */}
+                            <a href={item.link} target="_blank" rel="noopener noreferrer"
+                              className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150">
+                              <ExternalLink size={14} /> View Deal
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
