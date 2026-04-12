@@ -28,14 +28,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       // Process referral on first sign-in (after email confirmation)
       if (event === "SIGNED_IN" && session?.user) {
+        // Check if user needs to complete profile (no display_name set)
+        const { data: profileData } = await supabase
+          .from("profiles")
+          .select("display_name, subscription_plan")
+          .eq("user_id", session.user.id)
+          .single();
+
+        const isAdmin = profileData?.subscription_plan === "admin";
+        const hasDisplayName = !!profileData?.display_name?.trim();
+        const currentPath = window.location.pathname;
+
         // Handle post-OAuth redirect
         const pendingRedirect = localStorage.getItem("partara_auth_redirect");
         if (pendingRedirect) {
           localStorage.removeItem("partara_auth_redirect");
-          setTimeout(() => navigate(pendingRedirect), 0);
+          if (!isAdmin && !hasDisplayName) {
+            setTimeout(() => navigate("/complete-profile"), 0);
+          } else {
+            setTimeout(() => navigate(pendingRedirect), 0);
+          }
+        } else if (!isAdmin && !hasDisplayName && currentPath !== "/complete-profile") {
+          // Redirect to complete profile if display name not set
+          setTimeout(() => navigate("/complete-profile"), 0);
         } else {
           // After email confirmation, redirect to homepage if on verify-email or auth page
-          const currentPath = window.location.pathname;
           if (currentPath === "/verify-email" || currentPath === "/auth") {
             setTimeout(() => navigate("/"), 0);
           }

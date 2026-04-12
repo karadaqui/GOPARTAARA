@@ -192,10 +192,15 @@ const Dashboard = () => {
 
   const handleSave = async () => {
     if (!user) return;
+    const trimmed = displayName.trim();
+    if (!trimmed && profile?.subscription_plan !== "admin") {
+      toast({ title: "Required", description: "Please enter a display name.", variant: "destructive" });
+      return;
+    }
     setSaving(true);
     const { error } = await supabase
       .from("profiles")
-      .update({ display_name: displayName })
+      .update({ display_name: trimmed })
       .eq("user_id", user.id);
 
     setSaving(false);
@@ -266,9 +271,14 @@ const Dashboard = () => {
   };
 
   const currentPlan = profile?.subscription_plan || "free";
+  const isAdmin = currentPlan === "admin";
   const isEliteUser = ["elite", "admin"].includes(currentPlan);
   const isPro = ["pro", "elite", "admin"].includes(currentPlan);
   const isFree = currentPlan === "free";
+
+  // For admin users, show full email; for regular users, require display_name
+  const hasDisplayName = !!profile?.display_name?.trim();
+  const needsDisplayName = !isAdmin && !hasDisplayName;
 
   const referralCode = (profile as any)?.referral_code || "";
   const referralLink = `https://gopartara.com/auth?ref=${referralCode}`;
@@ -286,15 +296,10 @@ const Dashboard = () => {
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I use @PARTARA to compare car part prices. Sign up with my link and get 1 month Pro free! ${referralLink}`)}`, "_blank");
   };
 
-  if (authLoading || loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="animate-spin text-primary" size={32} />
-      </div>
-    );
-  }
-
-  const welcomeName = profile?.display_name || (profile?.email ? profile.email.split("@")[0] : (user?.email ? user.email.split("@")[0] : "there"));
+  // Admin: show full email. Regular: show display_name only (required).
+  const welcomeName = isAdmin
+    ? (user?.email || "Admin")
+    : (profile?.display_name || "there");
 
   const planBadge = () => {
     if (currentPlan === "admin") return <span className="px-2.5 py-0.5 rounded-full bg-destructive/15 border border-destructive/30 text-destructive text-xs font-semibold">ADMIN</span>;
@@ -309,6 +314,21 @@ const Dashboard = () => {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
 
       <div className="container relative z-10 max-w-4xl pt-24 pb-12 px-4 flex-1">
+        {/* Display Name Required Banner */}
+        {needsDisplayName && (
+          <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-5 mb-6 flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-amber-400">⚠️ Please set your display name to complete your profile.</p>
+              <p className="text-xs text-muted-foreground mt-1">Your display name is required before you can use all features.</p>
+            </div>
+            <Button size="sm" className="rounded-xl shrink-0" onClick={() => {
+              const el = document.getElementById("display-name-input");
+              if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.focus(); }
+            }}>
+              Set Display Name
+            </Button>
+          </div>
+        )}
 
         {/* Section 1 — Welcome Header */}
         <div className="glass rounded-2xl p-6 sm:p-8 mb-6">
@@ -523,9 +543,10 @@ const Dashboard = () => {
               <div className="relative">
                 <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <Input
+                  id="display-name-input"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  className="pl-10 bg-secondary border-border h-11 rounded-xl"
+                  className={`pl-10 bg-secondary border-border h-11 rounded-xl ${needsDisplayName ? "border-amber-500 ring-2 ring-amber-500/30" : ""}`}
                   placeholder="Your display name"
                 />
               </div>
