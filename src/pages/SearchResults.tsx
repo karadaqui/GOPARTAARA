@@ -411,10 +411,29 @@ const SearchResults = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) { setAuthGateOpen(true); return; }
     const sanitized = sanitizeInput(query.trim());
     if (!sanitized) return;
-    if (searchLimit.limitReached) { toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" }); return; }
+
+    // Guest search limit (3 searches via localStorage)
+    if (!user) {
+      const guestCount = parseInt(localStorage.getItem("partara_guest_searches") || "0", 10);
+      if (guestCount >= 3) {
+        setSearchLimitModalType("guest");
+        setSearchLimitModalOpen(true);
+        return;
+      }
+      localStorage.setItem("partara_guest_searches", String(guestCount + 1));
+      setAuthGateOpen(true);
+      return;
+    }
+
+    // Free user search limit
+    if (searchLimit.limitReached) {
+      setSearchLimitModalType("free");
+      setSearchLimitModalOpen(true);
+      return;
+    }
+
     if (!checkRateLimit(`search_${user.id}`, 10, 60_000)) { toast({ title: "Slow down", description: "You're searching too fast. Please wait a moment.", variant: "destructive" }); return; }
     internalSearchRef.current = true;
     setActiveQuery(sanitized); setSelectedCategory(null); setCurrentPage(1); setSearchParams({ q: sanitized });
