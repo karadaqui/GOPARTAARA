@@ -940,7 +940,7 @@ const SearchResults = () => {
                   <div className="my-8">
                     <div className="flex items-center gap-2.5 mb-4">
                       <span className="text-xl">🛒</span>
-                      <h3 className="text-base sm:text-lg font-bold text-white">More Results from Google Shopping</h3>
+                      <h3 className="text-base sm:text-lg font-bold text-white">More Results</h3>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
                       {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={`gs-skel-${i}`} />)}
@@ -952,7 +952,7 @@ const SearchResults = () => {
                   <div className="my-8">
                     <div className="flex items-center gap-2.5 mb-4">
                       <span className="text-xl">🛒</span>
-                      <h3 className="text-base sm:text-lg font-bold text-white">More Results from Google Shopping</h3>
+                      <h3 className="text-base sm:text-lg font-bold text-white">More Results</h3>
                       <span className="text-xs text-zinc-500 ml-auto">{scaleSerpResults.length} results</span>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
