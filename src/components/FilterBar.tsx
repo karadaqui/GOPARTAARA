@@ -147,7 +147,6 @@ const CONDITION_OPTIONS: FilterOption[] = [
 const BRAND_OPTIONS: FilterOption[] = [
   { label: "All Suppliers", value: "All" },
   { label: "eBay", value: "eBay" },
-  { label: "Google Shopping", value: "Google Shopping" },
   { label: "Amazon", value: "Amazon" },
   { label: "Euro Car Parts · Coming soon", value: "Euro Car Parts", disabled: true },
   { label: "GSF Car Parts · Coming soon", value: "GSF Car Parts", disabled: true },

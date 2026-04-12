@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { X } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { sanitizeInput, checkRateLimit, getCachedSearch, setCachedSearch } from "@/lib/sanitize";
-import { useScaleSERP } from "@/lib/featureFlags";
+
 import SafeImage from "@/components/SafeImage";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -265,8 +265,6 @@ const SearchResults = () => {
   const [supplierBannerDismissed, setSupplierBannerDismissed] = useState(() => localStorage.getItem("supplier_banner_dismissed") === "1");
   const resultsRef = useRef<HTMLDivElement>(null);
 
-  // ── Google Shopping state ──
-  const [googleShoppingResults, setGoogleShoppingResults] = useState<any[]>([]);
 
   // ── Filter & Sort State ──
   const [sortBy, setSortByRaw] = useState<typeof SORT_OPTIONS[number]["value"]>("best_match");
@@ -307,8 +305,8 @@ const SearchResults = () => {
 
   // ── eBay search ──
   useEffect(() => {
-    if (!activeQuery.trim()) { setLiveResults([]); setGoogleShoppingResults([]); setTotalResults(0); setEbayFallback(false); return; }
-    if (!user) { setAuthGateOpen(true); setLiveResults([]); setGoogleShoppingResults([]); setTotalResults(0); return; }
+    if (!activeQuery.trim()) { setLiveResults([]); setTotalResults(0); setEbayFallback(false); return; }
+    if (!user) { setAuthGateOpen(true); setLiveResults([]); setTotalResults(0); return; }
     let cancelled = false;
 
     // Build a cache key from all filter state
@@ -369,25 +367,10 @@ const SearchResults = () => {
             }
           }
 
-          if (useScaleSERP) {
-            const { data: gsData } = await supabase.functions.invoke("google-shopping-search", {
-              body: { query: searchQuery }
-            });
-            console.log("First Google Shopping Result:", gsData?.results?.[0]);
-            const googleResults = (gsData?.results || []).map((r: any, index: number) => ({
-              ...r,
-              type: "google_shopping",
-              id: "gs_" + (r.id ?? index),
-            }));
-            if (!cancelled) setGoogleShoppingResults(googleResults);
-          } else if (!cancelled) {
-            setGoogleShoppingResults([]);
-          }
         } catch (err) {
           console.error("Live search failed:", err);
           if (!cancelled) {
             setLiveResults([]);
-            setGoogleShoppingResults([]);
             setTotalResults(0);
             setEbayFallback(true);
           }
@@ -546,28 +529,12 @@ const SearchResults = () => {
     return results;
   })();
 
-  // ── Merge Google Shopping results into unified grid ──
+  // ── Unified results (eBay only) ──
   const unifiedResults = useMemo(() => {
-    const ebayItems = filteredResults
+    return filteredResults
       .slice(0, 12)
       .map((result: any) => ({ ...result, _source: "ebay" as const }));
-
-    const googleItems = googleShoppingResults.map((result: any, index: number) => ({
-      ...result,
-      _source: "google" as const,
-      _gsIdx: index,
-    }));
-
-    const googleLimited = googleItems.slice(0, 8);
-    const amazonResults = googleItems.filter((result: any) => /amazon/i.test(result.source || "")).slice(0, 8);
-
-    if (brandFilter === "eBay") return ebayItems;
-    if (brandFilter === "Google Shopping") return googleLimited;
-    if (brandFilter === "Amazon") return amazonResults;
-    if (!useScaleSERP || googleLimited.length === 0) return ebayItems;
-
-    return shuffleResults([...ebayItems, ...googleLimited]).slice(0, 20);
-  }, [brandFilter, filteredResults, googleShoppingResults]);
+  }, [filteredResults]);
 
   const clearAllFilters = () => {
     setConditionFilter("All");
@@ -789,7 +756,7 @@ const SearchResults = () => {
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-10">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
-            ) : (liveResults.length > 0 || googleShoppingResults.length > 0) && unifiedResults.length === 0 ? (
+            ) : liveResults.length > 0 && unifiedResults.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 mb-8">
                 <div className="text-5xl mb-4 opacity-30">🔍</div>
                 <p className="text-lg font-semibold text-white mb-1">No results match your filters</p>
@@ -803,130 +770,6 @@ const SearchResults = () => {
               <div className="mb-10 animate-fade-in">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
                   {unifiedResults.map((item: any, idx: number) => {
-                    const isGoogle = item._source === "google";
-
-                    if (isGoogle) {
-                      // ── Google Shopping Card ──
-                      return (
-                        <div key={`gs-${item._gsIdx}`}
-                          className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-all duration-300 flex flex-col relative cursor-pointer animate-fade-in"
-                          style={{ animationDelay: `${idx * 50}ms` }}>
-                          
-                          {(() => {
-                            const sellerName = item.source || "Google Shopping";
-                            const googleUrl = item.link || item._raw?.link || item._raw?.url;
-                            const reviewText = item.reviews ? String(item.reviews) : null;
-                            const openGoogleDeal = () => {
-                              const url = item.link || item._raw?.link || item._raw?.url;
-                              if (url && url.startsWith("http")) {
-                                window.open(url, "_blank", "noopener,noreferrer");
-                              } else {
-                                console.warn("No valid URL for result:", item);
-                              }
-                            };
-
-                            return (
-                              <>
-                                <div
-                                  className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative"
-                                  onClick={openGoogleDeal}
-                                  role={googleUrl?.startsWith("http") ? "link" : undefined}
-                                  tabIndex={googleUrl?.startsWith("http") ? 0 : -1}
-                                  onKeyDown={(event) => {
-                                    if (!googleUrl?.startsWith("http")) return;
-                                    if (event.key === "Enter" || event.key === " ") {
-                                      event.preventDefault();
-                                      openGoogleDeal();
-                                    }
-                                  }}
-                                >
-                                  <button
-                                    type="button"
-                                    onClick={(event) => {
-                                      event.stopPropagation();
-                                      openGoogleDeal();
-                                    }}
-                                    disabled={!googleUrl?.startsWith("http")}
-                                    className="block h-full w-full cursor-pointer text-left disabled:cursor-default"
-                                  >
-                                    {item.thumbnail ? (
-                                      <SafeImage src={item.thumbnail} alt={item.title} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" fallbackClassName="w-full h-full" />
-                                    ) : (
-                                      <div className="flex h-full w-full items-center justify-center bg-zinc-800 text-zinc-600">
-                                        <Camera className="h-8 w-8" />
-                                      </div>
-                                    )}
-                                  </button>
-
-                                  <span className="absolute top-3 right-3 inline-flex items-center rounded-full border border-red-500/30 bg-red-500/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-red-300">
-                                    Google
-                                  </span>
-                                </div>
-
-                                <div className="p-4 flex-1 flex flex-col gap-3">
-                                  <button
-                                    type="button"
-                                    onClick={(event) => {
-                                      event.stopPropagation();
-                                      openGoogleDeal();
-                                    }}
-                                    disabled={!googleUrl?.startsWith("http")}
-                                    className="block cursor-pointer text-left disabled:cursor-default"
-                                  >
-                                    <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.title}</p>
-                                  </button>
-
-                                  {item.price && (
-                                    <div>
-                                      <span className="text-2xl font-bold text-red-500">{item.price}</span>
-                                    </div>
-                                  )}
-
-                                  {item.delivery && (
-                                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 w-fit">
-                                      <Zap size={11} /> {item.delivery}
-                                    </span>
-                                  )}
-
-                                  <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
-                                    {item.source_icon && (
-                                      <img src={item.source_icon} alt="" className="h-4 w-auto max-w-8 object-contain shrink-0" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
-                                    )}
-                                    <span className="font-medium truncate max-w-[120px] text-zinc-400">{sellerName}</span>
-                                    {item.rating && (
-                                      <span className="flex items-center gap-0.5 text-amber-400 ml-auto">
-                                        <Star size={11} className="fill-amber-400" /> {item.rating}
-                                        {reviewText && <span className="text-zinc-600 ml-0.5">({reviewText})</span>}
-                                      </span>
-                                    )}
-                                  </div>
-
-                                  <div className="flex flex-col sm:flex-row gap-2">
-                                    <button
-                                      type="button"
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                        const url = item.link || item._raw?.link || item._raw?.url;
-                                        if (url && url.startsWith("http")) {
-                                          window.open(url, "_blank", "noopener,noreferrer");
-                                        } else {
-                                          console.warn("No valid URL for result:", item);
-                                        }
-                                      }}
-                                      disabled={!googleUrl?.startsWith("http")}
-                                      className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                      <ExternalLink size={14} /> View Deal
-                                    </button>
-                                  </div>
-                                  </div>
-                              </>
-                            );
-                          })()}
-                        </div>
-                      );
-                    }
-
                     // ── eBay Card ──
                     const priceBadge = getPriceBadge(item.price);
                     const conditionNorm = (item.condition || "").trim().toLowerCase();
