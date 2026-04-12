@@ -87,25 +87,32 @@ const Terms = () => (
               <PlanCard
                 name="Free"
                 price="£0"
-                features={["5 searches per month", "Basic part comparison", "Save up to 10 parts"]}
+                features={["5 searches per month", "5 active marketplace listings", "Save up to 5 parts & alerts", "1 garage vehicle"]}
               />
               <PlanCard
                 name="Pro"
                 price="£9.99/mo"
                 features={[
                   "Unlimited searches",
-                  "Photo-based part identification",
-                  "Unlimited saved parts",
+                  "Photo search",
+                  "Unlimited marketplace listings",
+                  "Unlimited parts & alerts",
+                  "Unlimited garage vehicles",
                   "Search history",
                   "Price alerts",
+                  "Ad-free experience",
                 ]}
               />
               <PlanCard
-                name="Business"
-                price="£24.99/mo"
+                name="Elite"
+                price="£19.99/mo"
                 features={[
                   "Everything in Pro",
-                  "Priority support",
+                  "Export search history CSV",
+                  "30-day price tracking",
+                  "Vehicle notes & history",
+                  "Priority email support",
+                  "Analytics dashboard",
                 ]}
               />
             </div>
@@ -172,7 +179,19 @@ const Terms = () => (
             </div>
           </Section>
 
-          <Section title="5. Marketplace Rules">
+          <Section title="5. Marketplace &amp; Commission Policy">
+            <div className="rounded-xl border border-border bg-card p-6 space-y-3">
+              <p>All users may list up to 5 items for free. Pro and Elite members may list unlimited items.</p>
+              <p>
+                PARTARA Marketplace is currently commission-free. PARTARA reserves the right to introduce a
+                commission fee on future sales. All active sellers will receive at least 30 days written notice
+                before any commission is implemented.
+              </p>
+              <p>Featured listing promotions are available to all users as optional paid upgrades.</p>
+            </div>
+          </Section>
+
+          <Section title="6. Marketplace Rules">
             <div className="rounded-xl border border-border bg-card p-6">
               <p className="font-semibold text-foreground mb-3">Seller Obligations</p>
               <p>By listing items on the PARTARA Marketplace, sellers agree to:</p>
@@ -205,7 +224,7 @@ const Terms = () => (
             </div>
           </Section>
 
-          <Section title="6. User Content &amp; Reviews">
+          <Section title="7. User Content &amp; Reviews">
             <p>Users may submit content including reviews, ratings, and comments. By submitting content, you:</p>
             <ul className="list-disc pl-5 space-y-2 mt-2">
               <li>Retain ownership of your original content.</li>
@@ -220,7 +239,7 @@ const Terms = () => (
             </p>
           </Section>
 
-          <Section title="7. Affiliate Disclosure">
+          <Section title="8. Affiliate Disclosure">
             <div className="rounded-xl border border-border bg-card p-6">
               <p>
                 <strong>PARTARA earns affiliate commissions</strong> when you click through to a
@@ -261,7 +280,7 @@ const Terms = () => (
             </div>
           </Section>
 
-          <Section title="8. Acceptable Use">
+          <Section title="9. Acceptable Use">
             <p>You agree not to:</p>
             <ul className="list-disc pl-5 space-y-2 mt-2">
               <li>Use the service for any unlawful purpose or in violation of any applicable law.</li>
@@ -292,7 +311,7 @@ const Terms = () => (
             </p>
           </Section>
 
-          <Section title="9. Intellectual Property">
+          <Section title="10. Intellectual Property">
             <p>
               All content, design, branding, code, and technology comprising the PARTARA platform is
               owned by or licensed to PARTARA and is protected by UK and international
@@ -309,7 +328,7 @@ const Terms = () => (
             </p>
           </Section>
 
-          <Section title="10. Disclaimer of Warranties">
+          <Section title="11. Disclaimer of Warranties">
             <p>
               PARTARA is provided on an <strong>"as is"</strong> and <strong>"as available"</strong>{" "}
               basis. To the fullest extent permitted by law, we disclaim all warranties, express or
@@ -339,7 +358,7 @@ const Terms = () => (
             </p>
           </Section>
 
-          <Section title="11. Limitation of Liability">
+          <Section title="12. Limitation of Liability">
             <div className="rounded-xl border border-border bg-card p-6">
               <p>
                 To the maximum extent permitted by applicable law, PARTARA, its directors,
@@ -387,7 +406,7 @@ const Terms = () => (
             </div>
           </Section>
 
-          <Section title="12. Indemnification">
+          <Section title="13. Indemnification">
             <p>
               You agree to indemnify and hold harmless PARTARA and its officers, directors,
               employees, and agents from any claims, losses, damages, liabilities, and expenses
@@ -401,7 +420,7 @@ const Terms = () => (
             </ul>
           </Section>
 
-          <Section title="13. Termination">
+          <Section title="14. Termination">
             <p>
               <strong>By you:</strong> You may delete your account at any time by contacting us at{" "}
               <a href="mailto:info@gopartara.com" className="text-primary hover:underline">
@@ -421,7 +440,7 @@ const Terms = () => (
             </p>
           </Section>
 
-          <Section title="14. Third-Party Links &amp; Services">
+          <Section title="15. Third-Party Links &amp; Services">
             <p>
               PARTARA contains links to third-party supplier websites, including eBay and Amazon. We are not responsible for the
               content, accuracy, privacy practices, or policies of these external sites. Your use of
@@ -433,7 +452,7 @@ const Terms = () => (
             </p>
           </Section>
 
-          <Section title="15. Governing Law &amp; Jurisdiction">
+          <Section title="16. Governing Law &amp; Jurisdiction">
             <div className="rounded-xl border border-border bg-card p-6">
               <p>
                 These Terms shall be governed by and construed in accordance with the{" "}
@@ -451,7 +470,7 @@ const Terms = () => (
             </div>
           </Section>
 
-          <Section title="16. Severability">
+          <Section title="17. Severability">
             <p>
               If any provision of these Terms is found to be invalid, illegal, or unenforceable by a
               court of competent jurisdiction, that provision shall be modified to the minimum extent
@@ -460,7 +479,7 @@ const Terms = () => (
             </p>
           </Section>
 
-          <Section title="17. Changes to These Terms">
+          <Section title="18. Changes to These Terms">
             <p>
               We reserve the right to modify these Terms at any time. Material changes will be
               communicated via email or a prominent notice on our website at least 30 days before
@@ -469,7 +488,7 @@ const Terms = () => (
             </p>
           </Section>
 
-          <Section title="18. Contact Us">
+          <Section title="19. Contact Us">
             <p>If you have questions about these Terms, please contact us:</p>
             <div className="mt-4 rounded-xl border border-border bg-card p-6">
               <p className="font-semibold mb-1">PARTARA</p>

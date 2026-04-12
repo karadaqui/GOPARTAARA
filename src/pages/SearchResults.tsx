@@ -262,6 +262,8 @@ const SearchResults = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const internalSearchRef = useRef(false);
   const [authGateOpen, setAuthGateOpen] = useState(false);
+  const [searchLimitModalOpen, setSearchLimitModalOpen] = useState(false);
+  const [searchLimitModalType, setSearchLimitModalType] = useState<"free" | "guest">("free");
   const [supplierBannerDismissed, setSupplierBannerDismissed] = useState(() => localStorage.getItem("supplier_banner_dismissed") === "1");
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -351,14 +353,14 @@ const SearchResults = () => {
               const msg = (error as any)?.message || "";
               if (msg.includes("UNAUTHORIZED") || msg.includes("401")) { if (!cancelled) setAuthGateOpen(true); return; }
               if (msg.includes("SEARCH_LIMIT_REACHED") || msg.includes("403")) {
-                if (!cancelled) { toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" }); searchLimit.refresh(); }
+                if (!cancelled) { setSearchLimitModalType("free"); setSearchLimitModalOpen(true); searchLimit.refresh(); }
                 return;
               }
               throw error;
             }
             if (!cancelled) {
               if (data?.error === "UNAUTHORIZED") { setAuthGateOpen(true); return; }
-              if (data?.error === "SEARCH_LIMIT_REACHED") { toast({ title: "Search limit reached", description: data?.message || "Upgrade to Pro for unlimited searches.", variant: "destructive" }); searchLimit.refresh(); return; }
+              if (data?.error === "SEARCH_LIMIT_REACHED") { setSearchLimitModalType("free"); setSearchLimitModalOpen(true); searchLimit.refresh(); return; }
               if (data?.fallback) { setEbayFallback(true); setLiveResults([]); setTotalResults(0); }
               else {
                 setLiveResults(data?.results || []); setTotalResults(data?.totalResults || 0); searchLimit.refresh();
@@ -409,10 +411,29 @@ const SearchResults = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) { setAuthGateOpen(true); return; }
     const sanitized = sanitizeInput(query.trim());
     if (!sanitized) return;
-    if (searchLimit.limitReached) { toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" }); return; }
+
+    // Guest search limit (3 searches via localStorage)
+    if (!user) {
+      const guestCount = parseInt(localStorage.getItem("partara_guest_searches") || "0", 10);
+      if (guestCount >= 3) {
+        setSearchLimitModalType("guest");
+        setSearchLimitModalOpen(true);
+        return;
+      }
+      localStorage.setItem("partara_guest_searches", String(guestCount + 1));
+      setAuthGateOpen(true);
+      return;
+    }
+
+    // Free user search limit
+    if (searchLimit.limitReached) {
+      setSearchLimitModalType("free");
+      setSearchLimitModalOpen(true);
+      return;
+    }
+
     if (!checkRateLimit(`search_${user.id}`, 10, 60_000)) { toast({ title: "Slow down", description: "You're searching too fast. Please wait a moment.", variant: "destructive" }); return; }
     internalSearchRef.current = true;
     setActiveQuery(sanitized); setSelectedCategory(null); setCurrentPage(1); setSearchParams({ q: sanitized });
@@ -1087,6 +1108,44 @@ const SearchResults = () => {
       <CompareBar items={compareParts} onOpen={() => setShowCompare(true)} onClear={() => setCompareParts([])} />
       {showCompare && <CompareModal items={compareParts} onRemove={(id) => setCompareParts((prev) => prev.filter((p) => p.id !== id))} onClose={() => setShowCompare(false)} />}
       <AuthGateModal open={authGateOpen} onOpenChange={setAuthGateOpen} title="Please sign in to search for car parts" description="Create a free account to search across 1,000,000+ parts from trusted UK & global suppliers." />
+
+      {/* Search Limit Modal */}
+      {searchLimitModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSearchLimitModalOpen(false)}>
+          <div className="bg-[#141414] border border-white/10 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center">
+              <div className="w-14 h-14 rounded-2xl bg-red-600/15 flex items-center justify-center mx-auto mb-4">
+                <AlertCircle size={28} className="text-red-500" />
+              </div>
+              {searchLimitModalType === "free" ? (
+                <>
+                  <h3 className="text-xl font-bold text-white mb-2">Search limit reached</h3>
+                  <p className="text-zinc-400 text-sm mb-6">You've used your 5 free searches this month. Upgrade to Pro for unlimited searches.</p>
+                  <button onClick={() => { setSearchLimitModalOpen(false); navigate("/pricing"); }} className="w-full h-12 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm transition-colors">
+                    Upgrade to Pro
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-xl font-bold text-white mb-2">Search limit reached</h3>
+                  <p className="text-zinc-400 text-sm mb-6">Sign up free to get 5 searches per month, or go Pro for unlimited.</p>
+                  <div className="flex flex-col gap-2">
+                    <button onClick={() => { setSearchLimitModalOpen(false); navigate("/auth"); }} className="w-full h-12 rounded-xl bg-white text-black font-semibold text-sm transition-colors hover:bg-zinc-200">
+                      Sign Up Free
+                    </button>
+                    <button onClick={() => { setSearchLimitModalOpen(false); navigate("/pricing"); }} className="w-full h-12 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm transition-colors">
+                      Go Pro — Unlimited
+                    </button>
+                  </div>
+                </>
+              )}
+              <button onClick={() => setSearchLimitModalOpen(false)} className="mt-4 text-zinc-500 hover:text-zinc-300 text-sm transition-colors">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );
