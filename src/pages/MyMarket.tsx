@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Plus, Pencil, Trash2, ImagePlus, Eye, Bookmark,
-  Loader2, Package, Store, X, Save, Upload, Pause, Play, Flag, Star, MessageSquare, ExternalLink
+  Loader2, Package, Store, X, Save, Upload, Pause, Play, Flag, Star, MessageSquare, ExternalLink, Zap
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -89,6 +89,7 @@ const MyMarket = () => {
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showSellerGate, setShowSellerGate] = useState(false);
   const [disputedReviews, setDisputedReviews] = useState<DisputedReview[]>([]);
+  const [boostModalOpen, setBoostModalOpen] = useState(false);
 
   const [profileForm, setProfileForm] = useState({
     business_name: "", description: "", contact_email: "", contact_phone: "", website_url: ""
@@ -733,6 +734,14 @@ const MyMarket = () => {
                       <Trash2 size={12} />
                     </Button>
                   </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setBoostModalOpen(true)}
+                    className="w-full mt-2 rounded-lg gap-1.5 text-xs border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10 hover:text-yellow-300"
+                  >
+                    <Zap size={12} /> Boost — £4.99/week
+                  </Button>
                 </div>
               </div>
             ))}
@@ -866,6 +875,28 @@ const MyMarket = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Boost Listing Modal */}
+      <Dialog open={boostModalOpen} onOpenChange={setBoostModalOpen}>
+        <DialogContent className="bg-card border-border sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2">
+              <Zap size={18} className="text-yellow-400" /> Boost Your Listing
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Get top placement in search results for 7 days. Your listing will appear in the Featured section above all regular listings.
+          </p>
+          <div className="flex gap-2 mt-2">
+            <Button className="flex-1 rounded-xl" onClick={() => { setBoostModalOpen(false); navigate("/pricing"); }}>
+              Boost for £4.99
+            </Button>
+            <Button variant="ghost" className="rounded-xl" onClick={() => setBoostModalOpen(false)}>
+              Maybe Later
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Undo delete banner */}
       {undoListing && (

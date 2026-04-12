@@ -7,7 +7,7 @@ import BackToTop from "@/components/BackToTop";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Store, Eye, Package, Scale } from "lucide-react";
+import { Search, Store, Eye, Package, Scale, Star, Wrench } from "lucide-react";
 import VerifiedSellerBadge from "@/components/badges/VerifiedSellerBadge";
 import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsComparison";
 import { supabase } from "@/integrations/supabase/client";
@@ -92,10 +92,9 @@ const Marketplace = () => {
     return true;
   });
 
-  const tierOrder: Record<string, number> = { pro: 0, featured: 1, basic: 2 };
-  const sorted = [...filtered].sort((a, b) =>
-    (tierOrder[a.seller_profiles.seller_tier] ?? 3) - (tierOrder[b.seller_profiles.seller_tier] ?? 3)
-  );
+  // Separate featured vs regular
+  const featured = filtered.filter(l => l.seller_profiles.seller_tier === "featured" || l.seller_profiles.seller_tier === "pro");
+  const regular = filtered.filter(l => l.seller_profiles.seller_tier !== "featured" && l.seller_profiles.seller_tier !== "pro");
 
   const toggleCompare = (listing: ListingWithSeller) => {
     const isSelected = compareParts.some((p) => p.id === listing.id);
@@ -116,11 +115,81 @@ const Marketplace = () => {
     }
   };
 
+  const renderListingCard = (listing: ListingWithSeller, isFeaturedCard: boolean) => {
+    const isComparing = compareParts.some((p) => p.id === listing.id);
+    return (
+      <div
+        key={listing.id}
+        className={`text-left glass rounded-xl overflow-hidden card-hover relative ${
+          isFeaturedCard ? "border-yellow-500/30 ring-1 ring-yellow-500/20" : ""
+        } ${isComparing ? "ring-2 ring-primary/50" : ""}`}
+      >
+        {isFeaturedCard && (
+          <div className="absolute top-2 left-2 z-10">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 text-[10px] font-semibold">
+              <Star size={10} fill="currentColor" /> Featured
+            </span>
+          </div>
+        )}
+        <button
+          onClick={() => navigate(`/listing/${listing.id}`)}
+          className="w-full text-left"
+        >
+          {listing.photos[0] ? (
+            <img src={listing.photos[0]} alt={listing.title} className="w-full h-44 object-cover" />
+          ) : (
+            <div className="w-full h-44 bg-secondary flex items-center justify-center">
+              <Package size={32} className="text-muted-foreground" />
+            </div>
+          )}
+          <div className="p-4">
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="font-display font-bold text-sm line-clamp-2 flex-1">{listing.title}</h3>
+              {listing.price && <span className="text-primary font-bold ml-2">£{listing.price.toFixed(2)}</span>}
+            </div>
+            <div className="flex items-center gap-2 mb-3">
+              {listing.seller_profiles.logo_url ? (
+                <img src={listing.seller_profiles.logo_url} alt="" className="w-5 h-5 rounded-full object-cover" />
+              ) : (
+                <Store size={14} className="text-muted-foreground" />
+              )}
+              <span className="text-xs text-muted-foreground">{listing.seller_profiles.business_name}</span>
+              {listing.seller_profiles.seller_tier === "pro" && (
+                <VerifiedSellerBadge variant="pro_seller" size="sm" />
+              )}
+            </div>
+            <div className="flex flex-wrap gap-1 mb-2">
+              {listing.category && <Badge variant="outline" className="text-[10px]">{listing.category}</Badge>}
+              {listing.tags.slice(0, 2).map(t => (
+                <Badge key={t} variant="secondary" className="text-[10px]">{t}</Badge>
+              ))}
+            </div>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-1"><Eye size={12} /> {listing.view_count}</span>
+            </div>
+          </div>
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleCompare(listing); }}
+          disabled={!isComparing && compareParts.length >= 3}
+          className={`absolute top-2 right-2 h-8 w-8 rounded-lg flex items-center justify-center transition-all ${
+            isComparing
+              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30"
+              : "bg-background/80 backdrop-blur-sm text-muted-foreground hover:text-foreground border border-border/50"
+          } ${!isComparing && compareParts.length >= 3 ? "opacity-40 cursor-not-allowed" : ""}`}
+          title={isComparing ? "Remove from compare" : "Add to compare"}
+        >
+          <Scale size={14} />
+        </button>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
         title="Parts Marketplace | PARTARA"
-        description="Browse and buy car parts from verified UK sellers on the PARTARA marketplace. Compare prices, read reviews, and find the perfect part for your vehicle."
+        description="Browse and buy car parts from verified UK sellers on the PARTARA marketplace."
         path="/marketplace"
         jsonLd={{
           "@context": "https://schema.org",
@@ -148,6 +217,17 @@ const Marketplace = () => {
             <span className="text-primary">Parts</span> Marketplace
           </h1>
           <p className="text-muted-foreground text-lg">Browse parts from verified sellers across the UK</p>
+        </div>
+
+        {/* Sell CTA Banner */}
+        <div className="bg-zinc-900/80 border border-white/10 rounded-xl px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
+          <p className="text-sm text-foreground">
+            <Wrench size={14} className="inline mr-1.5 -mt-0.5 text-primary" />
+            Have parts to sell? List for free — reach thousands of UK car owners
+          </p>
+          <Button size="sm" className="rounded-xl gap-1.5 shrink-0" onClick={() => navigate("/list-your-parts")}>
+            List Your Parts →
+          </Button>
         </div>
 
         {/* Free listing & commission banners */}
@@ -208,79 +288,37 @@ const Marketplace = () => {
               <div className="flex justify-center py-12">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
               </div>
-            ) : sorted.length === 0 ? (
+            ) : filtered.length === 0 ? (
               <div className="glass rounded-2xl p-12 text-center">
                 <Package size={48} className="text-muted-foreground mx-auto mb-4" />
                 <h3 className="font-display text-lg font-bold mb-2">No listings found</h3>
                 <p className="text-muted-foreground">Try adjusting your search or filters.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
-                {sorted.map(listing => {
-                  const isFeatured = listing.seller_profiles.seller_tier === "featured" || listing.seller_profiles.seller_tier === "pro";
-                  const isComparing = compareParts.some((p) => p.id === listing.id);
-                  return (
-                    <div
-                      key={listing.id}
-                      className={`text-left glass rounded-xl overflow-hidden card-hover relative ${
-                        isFeatured ? "ring-1 ring-primary/30" : ""
-                      } ${isComparing ? "ring-2 ring-primary/50" : ""}`}
-                    >
-                      <button
-                        onClick={() => navigate(`/listing/${listing.id}`)}
-                        className="w-full text-left"
-                      >
-                        {listing.photos[0] ? (
-                          <img src={listing.photos[0]} alt={listing.title} className="w-full h-44 object-cover" />
-                        ) : (
-                          <div className="w-full h-44 bg-secondary flex items-center justify-center">
-                            <Package size={32} className="text-muted-foreground" />
-                          </div>
-                        )}
-                        <div className="p-4">
-                          <div className="flex justify-between items-start mb-2">
-                            <h3 className="font-display font-bold text-sm line-clamp-2 flex-1">{listing.title}</h3>
-                            {listing.price && <span className="text-primary font-bold ml-2">£{listing.price.toFixed(2)}</span>}
-                          </div>
-                          <div className="flex items-center gap-2 mb-3">
-                            {listing.seller_profiles.logo_url ? (
-                              <img src={listing.seller_profiles.logo_url} alt="" className="w-5 h-5 rounded-full object-cover" />
-                            ) : (
-                              <Store size={14} className="text-muted-foreground" />
-                            )}
-                            <span className="text-xs text-muted-foreground">{listing.seller_profiles.business_name}</span>
-                            {listing.seller_profiles.seller_tier === "pro" && (
-                              <VerifiedSellerBadge variant="pro_seller" size="sm" />
-                            )}
-                          </div>
-                          <div className="flex flex-wrap gap-1 mb-2">
-                            {listing.category && <Badge variant="outline" className="text-[10px]">{listing.category}</Badge>}
-                            {listing.tags.slice(0, 2).map(t => (
-                              <Badge key={t} variant="secondary" className="text-[10px]">{t}</Badge>
-                            ))}
-                          </div>
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                            <span className="flex items-center gap-1"><Eye size={12} /> {listing.view_count}</span>
-                          </div>
-                        </div>
-                      </button>
-                      {/* Compare button */}
-                      <button
-                        onClick={(e) => { e.stopPropagation(); toggleCompare(listing); }}
-                        disabled={!isComparing && compareParts.length >= 3}
-                        className={`absolute top-2 right-2 h-8 w-8 rounded-lg flex items-center justify-center transition-all ${
-                          isComparing
-                            ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30"
-                            : "bg-background/80 backdrop-blur-sm text-muted-foreground hover:text-foreground border border-border/50"
-                        } ${!isComparing && compareParts.length >= 3 ? "opacity-40 cursor-not-allowed" : ""}`}
-                        title={isComparing ? "Remove from compare" : "Add to compare"}
-                      >
-                        <Scale size={14} />
-                      </button>
+              <>
+                {/* Featured Listings */}
+                {featured.length > 0 && (
+                  <div className="mb-8">
+                    <h2 className="font-display text-lg font-bold mb-4 flex items-center gap-2">
+                      <Star size={16} className="text-yellow-400 fill-yellow-400" />
+                      Featured Listings
+                    </h2>
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
+                      {featured.map(l => renderListingCard(l, true))}
                     </div>
-                  );
-                })}
-              </div>
+                  </div>
+                )}
+
+                {/* Regular Listings */}
+                {regular.length > 0 && (
+                  <div>
+                    {featured.length > 0 && <h2 className="font-display text-lg font-bold mb-4">All Listings</h2>}
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
+                      {regular.map(l => renderListingCard(l, false))}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
 
             {/* CTA */}
