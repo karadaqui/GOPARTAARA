@@ -1,10 +1,10 @@
 import ScrollReveal from "@/components/ScrollReveal";
 
 const stats = [
-  { value: "1M+", label: "Parts Available" },
-  { value: "Free", label: "Always Free to Search" },
-  { value: "Real-time", label: "Live Prices" },
-  { value: "UK & Global", label: "Suppliers Connected" },
+  { value: "1M+", label: "Parts Indexed" },
+  { value: "£0", label: "Always Free to Search" },
+  { value: "Real-time", label: "Live Price Updates" },
+  { value: "10+", label: "Trusted Suppliers" },
 ];
 
 const activeSuppliers = [
@@ -51,32 +51,43 @@ const SuppliersSection = () => (
 
       {/* Supplier row */}
       <ScrollReveal>
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 max-w-4xl mx-auto">
+        <div className="flex flex-col items-center gap-6 max-w-4xl mx-auto">
           {/* Active suppliers */}
-          {activeSuppliers.map((s) => (
-            <a
-              key={s.name}
-              href={s.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm text-xs sm:text-sm font-medium text-muted-foreground transition-all duration-300 hover:text-foreground hover:border-primary/30 hover:bg-card/60 hover:shadow-lg hover:shadow-primary/5"
-            >
-              {s.name}
-            </a>
-          ))}
+          <div className="flex items-center justify-center gap-3 sm:gap-4">
+            {activeSuppliers.map((s) => (
+              <a
+                key={s.name}
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm text-sm sm:text-base font-semibold text-foreground transition-all duration-300 hover:border-primary/30 hover:bg-card/60 hover:shadow-lg hover:shadow-primary/5"
+              >
+                {s.name}
+              </a>
+            ))}
+          </div>
 
-          {/* Coming soon suppliers */}
-          {comingSoonSuppliers.map((s) => (
-            <span
-              key={s}
-              className="relative px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl border border-border/20 bg-card/15 backdrop-blur-sm text-xs sm:text-sm font-medium text-muted-foreground/50 cursor-default opacity-50 grayscale select-none"
-            >
-              {s}
-              <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-primary text-primary-foreground text-[9px] font-bold uppercase tracking-wider whitespace-nowrap leading-none">
-                Coming Soon
-              </span>
-            </span>
-          ))}
+          {/* Divider */}
+          <div className="flex items-center gap-3 w-full max-w-xs">
+            <div className="flex-1 h-px bg-border/30" />
+            <span className="text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">plus</span>
+            <div className="flex-1 h-px bg-border/30" />
+          </div>
+
+          {/* Coming soon - muted */}
+          <div className="text-center">
+            <p className="text-xs text-muted-foreground/60 mb-3">More suppliers joining soon</p>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {comingSoonSuppliers.map((s) => (
+                <span
+                  key={s}
+                  className="px-3.5 py-1.5 rounded-lg border border-border/15 bg-card/10 text-[11px] font-medium text-muted-foreground/30 cursor-default select-none"
+                >
+                  {s}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </ScrollReveal>
     </div>
