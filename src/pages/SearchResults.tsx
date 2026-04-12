@@ -946,8 +946,9 @@ const SearchResults = () => {
                 IT: 'autodoc.it', NL: 'autodoc.nl', NO: 'autodoc.co.uk', PL: 'autodoc.pl',
                 PT: 'autodoc.pt', ES: 'autodoc.es', SE: 'autodoc.co.uk',
               };
-              const userCountry = localStorage.getItem('partara_location_country') || '';
-              const domain = autodocCountries[userCountry];
+              const userCountry = localStorage.getItem('partara_location_country') 
+                || localStorage.getItem('partara_selected_marketplace') 
+                || 'GB';
               if (!activeQuery || liveLoading || !domain) return null;
               const autodocUrl = `https://www.${domain}/search?query=${encodeURIComponent(activeQuery)}`;
               const href = `https://lowest-prices.eu/a/rkrn4sDyrWIyElw?url=${encodeURIComponent(autodocUrl)}`;
