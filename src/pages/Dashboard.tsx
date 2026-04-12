@@ -1,20 +1,20 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import {
-  ArrowLeft, Camera, Save, User, Mail, Crown, Clock, Bookmark, Loader2,
-  Search, X, ExternalLink, CreditCard, Download, Lock, Copy, Share2,
-  Package, Bell as BellIcon, TrendingUp, Car, ShoppingBag, Sparkles,
+  Camera, Save, User, Mail, Crown, Bookmark, Loader2,
+  Search, X, ExternalLink, CreditCard, Download, Lock, Copy,
+  Bell as BellIcon, ShoppingBag, Sparkles,
 } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
 import PriceAlertsSection from "@/components/dashboard/PriceAlertsSection";
 import MyGarageSection from "@/components/dashboard/MyGarageSection";
-import PlanBadge from "@/components/badges/PlanBadge";
+
 import EliteFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import PrioritySupportButton from "@/components/dashboard/PrioritySupportButton";
 import ComingSoonFeatures from "@/components/dashboard/ComingSoonFeatures";
