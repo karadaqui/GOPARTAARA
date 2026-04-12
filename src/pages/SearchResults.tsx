@@ -799,10 +799,84 @@ const SearchResults = () => {
                   Clear all filters
                 </button>
               </div>
-            ) : filteredResults.length > 0 ? (
+            ) : unifiedResults.length > 0 ? (
               <div className="mb-10 animate-fade-in">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-                  {filteredResults.slice(0, 12).map((item: any, idx: number) => {
+                  {unifiedResults.map((item: any, idx: number) => {
+                    const isGoogle = item._source === "google";
+
+                    if (isGoogle) {
+                      // ── Google Shopping Card ──
+                      return (
+                        <div key={`gs-${item._gsIdx}`}
+                          className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-all duration-300 flex flex-col relative cursor-pointer animate-fade-in"
+                          style={{ animationDelay: `${idx * 50}ms` }}>
+                          
+                          {/* ── Google Shopping Badge (Top Bar) ── */}
+                          <div className="h-7 flex items-center justify-center gap-1.5 text-xs font-semibold tracking-wide uppercase border-b border-white/10 bg-blue-900/40 text-blue-400">
+                            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M19.5 7h-3V5.5A3.5 3.5 0 0013 2h-2a3.5 3.5 0 00-3.5 3.5V7h-3A1.5 1.5 0 003 8.5v11A1.5 1.5 0 004.5 21h15a1.5 1.5 0 001.5-1.5v-11A1.5 1.5 0 0019.5 7zM9.5 5.5A1.5 1.5 0 0111 4h2a1.5 1.5 0 011.5 1.5V7h-5V5.5z"/>
+                            </svg>
+                            Google Shopping
+                          </div>
+
+                          {/* ── Image ── */}
+                          <div onClick={() => window.open(item.link, '_blank')} className="block relative cursor-pointer">
+                            <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
+                              <SafeImage src={item.image} alt={item.title} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" fallbackClassName="w-full h-full" />
+                              <span className="absolute bottom-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-900/70 border border-blue-500/30 text-[9px] font-bold text-blue-300 uppercase tracking-wide">
+                                🛒 Google
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* ── Card Body ── */}
+                          <div className="p-4 flex-1 flex flex-col gap-3">
+                            <div onClick={() => window.open(item.link, '_blank')} className="block cursor-pointer">
+                              <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.title}</p>
+                            </div>
+
+                            {item.price && (
+                              <div>
+                                <span className="text-2xl font-bold text-red-500">{item.price}</span>
+                              </div>
+                            )}
+
+                            {item.delivery && (
+                              <div className="flex flex-col gap-1.5">
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 w-fit">
+                                  <Truck size={11} /> {item.delivery}
+                                </span>
+                              </div>
+                            )}
+
+                            <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
+                              {item.source_icon && (
+                                <img src={item.source_icon} alt="" className="w-4 h-4 rounded-sm object-contain" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                              )}
+                              {item.source && (
+                                <span className="font-medium truncate max-w-[100px] text-zinc-400">{item.source}</span>
+                              )}
+                              {item.rating && (
+                                <span className="flex items-center gap-0.5 text-amber-400 ml-auto">
+                                  <Star size={11} className="fill-amber-400" /> {item.rating}
+                                  {item.reviews && <span className="text-zinc-600 ml-0.5">({item.reviews})</span>}
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row gap-2">
+                              <button onClick={() => window.open(item.link, '_blank')}
+                                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150">
+                                <ExternalLink size={14} /> View Deal
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    }
+
+                    // ── eBay Card ──
                     const priceBadge = getPriceBadge(item.price);
                     const conditionNorm = (item.condition || "").trim().toLowerCase();
                     const conditionBarStyle = conditionNorm === "new"
@@ -822,18 +896,12 @@ const SearchResults = () => {
                       <div key={item.id}
                         className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-all duration-300 flex flex-col relative cursor-pointer animate-fade-in"
                         style={{ animationDelay: `${idx * 50}ms` }}>
-                        
-                        {/* ── Condition Badge (Top Bar) ── */}
                         <div className="h-7 flex items-center justify-center text-xs font-semibold tracking-wide uppercase border-b border-white/10" style={conditionBarStyle}>
                           {item.condition || "Unknown"}
                         </div>
-
-                        {/* ── Image Section ── */}
                         <a href={item.url} target="_blank" rel="noopener noreferrer" className="block relative">
                           <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
                             <img src={item.imageUrl} alt={item.partName} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }} />
-                            
-                            {/* ── Flag (Bottom Right) ── */}
                             <span className="absolute bottom-2 right-2 text-xl" title={isGlobal ? (item.itemCountry || "Global") : country.name}>
                               {isGlobal ? (
                                 <span className="flex items-center gap-1">
@@ -846,14 +914,10 @@ const SearchResults = () => {
                             </span>
                           </div>
                         </a>
-
-                        {/* ── Card Body ── */}
                         <div className="p-4 flex-1 flex flex-col gap-3">
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
                             <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.partName}</p>
                           </a>
-
-                          {/* ── Price ── */}
                           <div>
                             <span className="text-2xl font-bold text-red-500">{locale.formatPrice(item.price)}</span>
                             {(() => {
@@ -861,8 +925,6 @@ const SearchResults = () => {
                               return conv ? <p className="text-xs text-zinc-500 mt-0.5">≈ {conv.symbol}{conv.converted.toFixed(2)}</p> : null;
                             })()}
                           </div>
-
-                          {/* ── Price Quality Badge (Card Body) ── */}
                           {priceBadge && (
                             <div className={`w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold mt-1 ${
                               priceBadge.variant === "great" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25" :
@@ -879,8 +941,6 @@ const SearchResults = () => {
                               <span>★</span> {locale.t("top_rated")}
                             </div>
                           )}
-
-                          {/* ── Shipping Section ── */}
                           <div className="flex flex-col gap-1.5">
                             {item.freeShipping ? (
                               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 w-fit">
@@ -908,8 +968,6 @@ const SearchResults = () => {
                               </span>
                             )}
                           </div>
-
-                          {/* ── Stock ── */}
                           {item.quantityAvailable != null && item.quantityAvailable > 0 && item.quantityAvailable <= 5 && (
                             <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-400">
                               <AlertCircle size={11} /> {locale.t("left_only", { n: item.quantityAvailable })}
@@ -918,8 +976,6 @@ const SearchResults = () => {
                           {item.quantityAvailable != null && item.quantityAvailable > 5 && (
                             <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400">✓ {locale.t("in_stock")}</span>
                           )}
-
-                          {/* ── Seller Info ── */}
                           <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
                             <span className="flex items-center gap-0.5 text-amber-400">
                               <Star size={11} className="fill-amber-400" /> {item.sellerPositivePercent?.toFixed(0)}%
@@ -930,8 +986,6 @@ const SearchResults = () => {
                               <span className="flex items-center gap-0.5 text-zinc-600 ml-auto"><Heart size={10} /> {item.watchCount}</span>
                             )}
                           </div>
-
-                          {/* ── Action Buttons ── */}
                           <div className="flex flex-col sm:flex-row gap-2">
                             <a href={item.url} target="_blank" rel="noopener noreferrer"
                               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150">
@@ -958,84 +1012,6 @@ const SearchResults = () => {
                     );
                   })}
                 </div>
-
-                {/* ── 🛒 More Results from Google Shopping (ScaleSERP) ── */}
-                {useScaleSERP && scaleSerpLoading && (
-                  <div className="my-8">
-                    <div className="flex items-center gap-2.5 mb-4">
-                      <span className="text-xl">🛒</span>
-                      <h3 className="text-base sm:text-lg font-bold text-white">More Results</h3>
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-                      {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={`gs-skel-${i}`} />)}
-                    </div>
-                  </div>
-                )}
-
-                {useScaleSERP && scaleSerpResults.length > 0 && !scaleSerpLoading && (
-                  <div className="my-8">
-                    <div className="flex items-center gap-2.5 mb-4">
-                      <span className="text-xl">🛒</span>
-                      <h3 className="text-base sm:text-lg font-bold text-white">More Results</h3>
-                      <span className="text-xs text-zinc-500 ml-auto">{scaleSerpResults.length} results</span>
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-                      {scaleSerpResults.map((item: any, idx: number) => (
-                        <div key={`gs-${idx}`}
-                          className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-all duration-300 flex flex-col relative animate-fade-in"
-                          style={{ animationDelay: `${idx * 50}ms` }}>
-
-                          {/* ── Google Shopping Badge (Top Bar) ── */}
-                          <div className="h-7 flex items-center justify-center gap-1.5 text-xs font-semibold tracking-wide uppercase border-b border-white/10 bg-blue-900/40 text-blue-400">
-                            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M19.5 7h-3V5.5A3.5 3.5 0 0013 2h-2a3.5 3.5 0 00-3.5 3.5V7h-3A1.5 1.5 0 003 8.5v11A1.5 1.5 0 004.5 21h15a1.5 1.5 0 001.5-1.5v-11A1.5 1.5 0 0019.5 7zM9.5 5.5A1.5 1.5 0 0111 4h2a1.5 1.5 0 011.5 1.5V7h-5V5.5z"/>
-                            </svg>
-                            Google Shopping
-                          </div>
-
-                          {/* ── Image ── */}
-                          <a href={item.link} target="_blank" rel="noopener noreferrer" className="block relative">
-                            <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
-                              <SafeImage src={item.image} alt={item.title} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" fallbackClassName="w-full h-full" />
-                            </div>
-                          </a>
-
-                          {/* ── Card Body ── */}
-                          <div className="p-4 flex-1 flex flex-col gap-3">
-                            <a href={item.link} target="_blank" rel="noopener noreferrer" className="block">
-                              <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.title}</p>
-                            </a>
-
-                            {/* ── Price ── */}
-                            {item.price && (
-                              <div>
-                                <span className="text-2xl font-bold text-red-500">{item.price}</span>
-                              </div>
-                            )}
-
-                            {/* ── Seller & Rating ── */}
-                            <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
-                              {item.source && (
-                                <span className="font-medium truncate max-w-[120px] text-zinc-400">{item.source}</span>
-                              )}
-                              {item.rating && (
-                                <span className="flex items-center gap-0.5 text-amber-400 ml-auto">
-                                  <Star size={11} className="fill-amber-400" /> {item.rating}
-                                </span>
-                              )}
-                            </div>
-
-                            {/* ── View Deal Button ── */}
-                            <a href={item.link} target="_blank" rel="noopener noreferrer"
-                              className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150">
-                              <ExternalLink size={14} /> View Deal
-                            </a>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 {/* More sources coming soon banner */}
                 <div className="my-6 p-4 rounded-2xl bg-zinc-900/50 border border-white/[0.06] text-center">
