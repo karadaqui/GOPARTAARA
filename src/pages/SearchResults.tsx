@@ -545,6 +545,30 @@ const SearchResults = () => {
     return results;
   })();
 
+  // ── Merge Google Shopping results into unified grid ──
+  const unifiedResults = (() => {
+    const ebaySlice = filteredResults.slice(0, 12);
+    if (!useScaleSERP || scaleSerpResults.length === 0) return ebaySlice.map((r: any) => ({ ...r, _source: "ebay" as const }));
+
+    // Normalize Google Shopping items to have a consistent _source tag
+    const gsItems = scaleSerpResults.slice(0, 8).map((r: any, i: number) => ({ ...r, _source: "google" as const, _gsIdx: i }));
+
+    // Interleave: insert a Google Shopping result every 3 eBay results
+    const merged: any[] = [];
+    let gsPointer = 0;
+    for (let i = 0; i < ebaySlice.length; i++) {
+      merged.push({ ...ebaySlice[i], _source: "ebay" as const });
+      if ((i + 1) % 3 === 0 && gsPointer < gsItems.length) {
+        merged.push(gsItems[gsPointer++]);
+      }
+    }
+    // Append remaining Google Shopping results
+    while (gsPointer < gsItems.length) {
+      merged.push(gsItems[gsPointer++]);
+    }
+    return merged;
+  })();
+
   const clearAllFilters = () => {
     setConditionFilter("All");
     setShippingFilter("All");
