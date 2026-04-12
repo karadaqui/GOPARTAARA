@@ -1,29 +1,10 @@
 import { getCorsHeaders, corsPreflightResponse, jsonResponse } from "../_shared/security.ts";
-import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
   if (req.method === "OPTIONS") return corsPreflightResponse(corsHeaders);
 
   try {
-    // Validate JWT
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return jsonResponse({ error: "UNAUTHORIZED" }, 401, corsHeaders);
-    }
-
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-      { auth: { persistSession: false } }
-    );
-
-    const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
-    if (userError || !user) {
-      return jsonResponse({ error: "UNAUTHORIZED" }, 401, corsHeaders);
-    }
-
     const body = await req.json();
     const rawQuery = typeof body?.query === "string" ? body.query.replace(/<[^>]*>/g, "").trim().slice(0, 200) : "";
     const country = typeof body?.country === "string" ? body.country.slice(0, 10) : "uk";
@@ -39,7 +20,7 @@ Deno.serve(async (req) => {
     const apiKey = Deno.env.get("SCALESERP_API_KEY");
     if (!apiKey) {
       console.error("[google-shopping-search] SCALESERP_API_KEY not set");
-      return jsonResponse({ results: [] }, 200, corsHeaders);
+      return jsonResponse({ error: "API key not configured", results: [] }, 200, corsHeaders);
     }
 
     const params = new URLSearchParams({
