@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { X } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { sanitizeInput, checkRateLimit, getCachedSearch, setCachedSearch } from "@/lib/sanitize";
@@ -345,7 +345,6 @@ const SearchResults = () => {
           }
           if (sortBy !== "best_match") body.sortBy = sortBy;
           if (categoryFilter !== "All Parts") body.categoryFilter = categoryFilter;
-          if (brandFilter !== "All") body.brandFilter = brandFilter;
 
           const { data, error } = await supabase.functions.invoke("search-parts", { body });
           if (error) {
@@ -410,6 +409,7 @@ const SearchResults = () => {
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error || !data?.results) { setScaleSerpResults([]); return; }
+        if (data.results[0]) console.log("[ScaleSERP] first result", data.results[0]);
         setScaleSerpResults(data.results);
         try { sessionStorage.setItem(cacheKey, JSON.stringify({ data: data.results, ts: Date.now() })); } catch {}
       })
@@ -529,6 +529,29 @@ const SearchResults = () => {
 
   const getFlag = (code: string) => countryFlags[code] || "🌍";
 
+  const getGoogleResultUrl = (result: any) => {
+    const url = result?.link || result?.product_page_url || result?.url;
+    return typeof url === "string" && url.startsWith("http") ? url : null;
+  };
+
+  const openGoogleResult = (result: any) => {
+    const url = getGoogleResultUrl(result);
+    if (url) {
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const shuffleResults = <T,>(items: T[]) => {
+    const shuffled = [...items];
+
+    for (let i = shuffled.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    return shuffled;
+  };
+
   // ── Filtered & Sorted Results ──
   const activeFilterCount = [conditionFilter !== "All", shippingFilter !== "All", priceRangeIdx !== 0, brandFilter !== "All", categoryFilter !== "All Parts"].filter(Boolean).length;
 
@@ -546,28 +569,30 @@ const SearchResults = () => {
   })();
 
   // ── Merge Google Shopping results into unified grid ──
-  const unifiedResults = (() => {
-    const ebaySlice = filteredResults.slice(0, 12);
-    if (!useScaleSERP || scaleSerpResults.length === 0) return ebaySlice.map((r: any) => ({ ...r, _source: "ebay" as const }));
+  const unifiedResults = useMemo(() => {
+    const ebayItems = filteredResults
+      .slice(0, 12)
+      .map((result: any) => ({ ...result, _source: "ebay" as const }));
 
-    // Normalize Google Shopping items to have a consistent _source tag
-    const gsItems = scaleSerpResults.slice(0, 8).map((r: any, i: number) => ({ ...r, _source: "google" as const, _gsIdx: i }));
+    const googleItems = scaleSerpResults.map((result: any, index: number) => ({
+      ...result,
+      _source: "google" as const,
+      _gsIdx: index,
+      _resolvedUrl: getGoogleResultUrl(result),
+      image: result.thumbnail || result.image || "",
+      source: result.source || "Google Shopping",
+    }));
 
-    // Interleave: insert a Google Shopping result every 3 eBay results
-    const merged: any[] = [];
-    let gsPointer = 0;
-    for (let i = 0; i < ebaySlice.length; i++) {
-      merged.push({ ...ebaySlice[i], _source: "ebay" as const });
-      if ((i + 1) % 3 === 0 && gsPointer < gsItems.length) {
-        merged.push(gsItems[gsPointer++]);
-      }
-    }
-    // Append remaining Google Shopping results
-    while (gsPointer < gsItems.length) {
-      merged.push(gsItems[gsPointer++]);
-    }
-    return merged;
-  })();
+    const googleLimited = googleItems.slice(0, 8);
+    const amazonResults = googleItems.filter((result: any) => /amazon/i.test(result.source || "")).slice(0, 8);
+
+    if (brandFilter === "eBay") return ebayItems;
+    if (brandFilter === "Google Shopping") return googleLimited;
+    if (brandFilter === "Amazon") return amazonResults;
+    if (!useScaleSERP || googleLimited.length === 0) return ebayItems;
+
+    return shuffleResults([...ebayItems, ...googleLimited]).slice(0, 20);
+  }, [brandFilter, filteredResults, scaleSerpResults]);
 
   const clearAllFilters = () => {
     setConditionFilter("All");
@@ -789,7 +814,7 @@ const SearchResults = () => {
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-10">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
-            ) : liveResults.length > 0 && filteredResults.length === 0 ? (
+            ) : (liveResults.length > 0 || scaleSerpResults.length > 0) && unifiedResults.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 mb-8">
                 <div className="text-5xl mb-4 opacity-30">🔍</div>
                 <p className="text-lg font-semibold text-white mb-1">No results match your filters</p>
@@ -812,66 +837,73 @@ const SearchResults = () => {
                           className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-all duration-300 flex flex-col relative cursor-pointer animate-fade-in"
                           style={{ animationDelay: `${idx * 50}ms` }}>
                           
-                          {/* ── Google Shopping Badge (Top Bar) ── */}
-                          <div className="h-7 flex items-center justify-center gap-1.5 text-xs font-semibold tracking-wide uppercase border-b border-white/10 bg-blue-900/40 text-blue-400">
-                            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current" xmlns="http://www.w3.org/2000/svg">
-                              <path d="M19.5 7h-3V5.5A3.5 3.5 0 0013 2h-2a3.5 3.5 0 00-3.5 3.5V7h-3A1.5 1.5 0 003 8.5v11A1.5 1.5 0 004.5 21h15a1.5 1.5 0 001.5-1.5v-11A1.5 1.5 0 0019.5 7zM9.5 5.5A1.5 1.5 0 0111 4h2a1.5 1.5 0 011.5 1.5V7h-5V5.5z"/>
-                            </svg>
-                            Google Shopping
-                          </div>
+                          {(() => {
+                            const sellerName = item.source || "Google Shopping";
+                            const googleUrl = item._resolvedUrl;
+                            const reviewText = item.reviews ? String(item.reviews) : null;
 
-                          {/* ── Image ── */}
-                          <div onClick={() => window.open(item.link, '_blank')} className="block relative cursor-pointer">
-                            <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
-                              <SafeImage src={item.image} alt={item.title} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" fallbackClassName="w-full h-full" />
-                              <span className="absolute bottom-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-900/70 border border-blue-500/30 text-[9px] font-bold text-blue-300 uppercase tracking-wide">
-                                🛒 Google
-                              </span>
-                            </div>
-                          </div>
+                            return (
+                              <>
+                                <div className="h-7 flex items-center justify-center text-xs font-semibold tracking-wide uppercase border-b border-white/10 bg-blue-900/40 text-blue-400">
+                                  Google Shopping
+                                </div>
 
-                          {/* ── Card Body ── */}
-                          <div className="p-4 flex-1 flex flex-col gap-3">
-                            <div onClick={() => window.open(item.link, '_blank')} className="block cursor-pointer">
-                              <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.title}</p>
-                            </div>
+                                <button type="button" onClick={() => openGoogleResult(item)} className="block relative cursor-pointer text-left">
+                                  <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
+                                    <SafeImage src={item.image} alt={item.title} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" fallbackClassName="w-full h-full" />
+                                    <span className="absolute bottom-2 right-2 flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-900/70 border border-blue-500/30 text-[9px] font-bold text-blue-300 uppercase tracking-wide max-w-[75%]">
+                                      {item.source_icon ? (
+                                        <img src={item.source_icon} alt="" className="w-3 h-3 rounded-sm object-contain shrink-0" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                                      ) : (
+                                        <span>🛒</span>
+                                      )}
+                                      <span className="truncate">{sellerName}</span>
+                                    </span>
+                                  </div>
+                                </button>
 
-                            {item.price && (
-                              <div>
-                                <span className="text-2xl font-bold text-red-500">{item.price}</span>
-                              </div>
-                            )}
+                                <div className="p-4 flex-1 flex flex-col gap-3">
+                                  <button type="button" onClick={() => openGoogleResult(item)} className="block cursor-pointer text-left">
+                                    <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.title}</p>
+                                  </button>
 
-                            {item.delivery && (
-                              <div className="flex flex-col gap-1.5">
-                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 w-fit">
-                                  <Truck size={11} /> {item.delivery}
-                                </span>
-                              </div>
-                            )}
+                                  {item.price && (
+                                    <div>
+                                      <span className="text-2xl font-bold text-red-500">{item.price}</span>
+                                    </div>
+                                  )}
 
-                            <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
-                              {item.source_icon && (
-                                <img src={item.source_icon} alt="" className="w-4 h-4 rounded-sm object-contain" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                              )}
-                              {item.source && (
-                                <span className="font-medium truncate max-w-[100px] text-zinc-400">{item.source}</span>
-                              )}
-                              {item.rating && (
-                                <span className="flex items-center gap-0.5 text-amber-400 ml-auto">
-                                  <Star size={11} className="fill-amber-400" /> {item.rating}
-                                  {item.reviews && <span className="text-zinc-600 ml-0.5">({item.reviews})</span>}
-                                </span>
-                              )}
-                            </div>
+                                  {item.delivery && (
+                                    <div className="flex flex-col gap-1.5">
+                                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 w-fit">
+                                        <Truck size={11} /> {item.delivery}
+                                      </span>
+                                    </div>
+                                  )}
 
-                            <div className="flex flex-col sm:flex-row gap-2">
-                              <button onClick={() => window.open(item.link, '_blank')}
-                                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150">
-                                <ExternalLink size={14} /> View Deal
-                              </button>
-                            </div>
-                          </div>
+                                  <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
+                                    {item.source_icon && (
+                                      <img src={item.source_icon} alt="" className="w-4 h-4 rounded-sm object-contain" loading="lazy" onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                                    )}
+                                    <span className="font-medium truncate max-w-[100px] text-zinc-400">{sellerName}</span>
+                                    {item.rating && (
+                                      <span className="flex items-center gap-0.5 text-amber-400 ml-auto">
+                                        <Star size={11} className="fill-amber-400" /> {item.rating}
+                                        {reviewText && <span className="text-zinc-600 ml-0.5">{reviewText}</span>}
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  <div className="flex flex-col sm:flex-row gap-2">
+                                    <button type="button" onClick={() => openGoogleResult(item)} disabled={!googleUrl}
+                                      className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed">
+                                      <ExternalLink size={14} /> View Deal
+                                    </button>
+                                  </div>
+                                </div>
+                              </>
+                            );
+                          })()}
                         </div>
                       );
                     }
@@ -1021,7 +1053,7 @@ const SearchResults = () => {
                 </div>
 
                 {/* Amazon UK Card */}
-                {activeQuery && (
+                {activeQuery && brandFilter === "All" && (
                   <div className="my-8">
                     <a href={`https://www.amazon.co.uk/s?k=${encodeURIComponent(activeQuery)}&tag=gopartara-21`} target="_blank" rel="noopener noreferrer"
                       className="group block rounded-2xl overflow-hidden border border-orange-500/20 hover:border-orange-500/40 transition-all bg-[#111]">
