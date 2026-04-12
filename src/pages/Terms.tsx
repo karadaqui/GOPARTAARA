@@ -87,25 +87,32 @@ const Terms = () => (
               <PlanCard
                 name="Free"
                 price="£0"
-                features={["5 searches per month", "Basic part comparison", "Save up to 10 parts"]}
+                features={["5 searches per month", "5 active marketplace listings", "Save up to 5 parts & alerts", "1 garage vehicle"]}
               />
               <PlanCard
                 name="Pro"
                 price="£9.99/mo"
                 features={[
                   "Unlimited searches",
-                  "Photo-based part identification",
-                  "Unlimited saved parts",
+                  "Photo search",
+                  "Unlimited marketplace listings",
+                  "Unlimited parts & alerts",
+                  "Unlimited garage vehicles",
                   "Search history",
                   "Price alerts",
+                  "Ad-free experience",
                 ]}
               />
               <PlanCard
-                name="Business"
-                price="£24.99/mo"
+                name="Elite"
+                price="£19.99/mo"
                 features={[
                   "Everything in Pro",
-                  "Priority support",
+                  "Export search history CSV",
+                  "30-day price tracking",
+                  "Vehicle notes & history",
+                  "Priority email support",
+                  "Analytics dashboard",
                 ]}
               />
             </div>
