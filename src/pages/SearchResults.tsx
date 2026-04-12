@@ -1108,6 +1108,44 @@ const SearchResults = () => {
       <CompareBar items={compareParts} onOpen={() => setShowCompare(true)} onClear={() => setCompareParts([])} />
       {showCompare && <CompareModal items={compareParts} onRemove={(id) => setCompareParts((prev) => prev.filter((p) => p.id !== id))} onClose={() => setShowCompare(false)} />}
       <AuthGateModal open={authGateOpen} onOpenChange={setAuthGateOpen} title="Please sign in to search for car parts" description="Create a free account to search across 1,000,000+ parts from trusted UK & global suppliers." />
+
+      {/* Search Limit Modal */}
+      {searchLimitModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSearchLimitModalOpen(false)}>
+          <div className="bg-[#141414] border border-white/10 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center">
+              <div className="w-14 h-14 rounded-2xl bg-red-600/15 flex items-center justify-center mx-auto mb-4">
+                <AlertCircle size={28} className="text-red-500" />
+              </div>
+              {searchLimitModalType === "free" ? (
+                <>
+                  <h3 className="text-xl font-bold text-white mb-2">Search limit reached</h3>
+                  <p className="text-zinc-400 text-sm mb-6">You've used your 5 free searches this month. Upgrade to Pro for unlimited searches.</p>
+                  <button onClick={() => { setSearchLimitModalOpen(false); navigate("/pricing"); }} className="w-full h-12 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm transition-colors">
+                    Upgrade to Pro
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-xl font-bold text-white mb-2">Search limit reached</h3>
+                  <p className="text-zinc-400 text-sm mb-6">Sign up free to get 5 searches per month, or go Pro for unlimited.</p>
+                  <div className="flex flex-col gap-2">
+                    <button onClick={() => { setSearchLimitModalOpen(false); navigate("/auth"); }} className="w-full h-12 rounded-xl bg-white text-black font-semibold text-sm transition-colors hover:bg-zinc-200">
+                      Sign Up Free
+                    </button>
+                    <button onClick={() => { setSearchLimitModalOpen(false); navigate("/pricing"); }} className="w-full h-12 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm transition-colors">
+                      Go Pro — Unlimited
+                    </button>
+                  </div>
+                </>
+              )}
+              <button onClick={() => setSearchLimitModalOpen(false)} className="mt-4 text-zinc-500 hover:text-zinc-300 text-sm transition-colors">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );
