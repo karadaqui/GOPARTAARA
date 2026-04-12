@@ -409,7 +409,7 @@ const SearchResults = () => {
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error || !data?.results) { setScaleSerpResults([]); return; }
-        if (data.results[0]) console.log("[ScaleSERP] first result", data.results[0]);
+        if (data.results[0]) console.log("[ScaleSERP] first result full object:", JSON.stringify(data.results[0]));
         setScaleSerpResults(data.results);
         try { sessionStorage.setItem(cacheKey, JSON.stringify({ data: data.results, ts: Date.now() })); } catch {}
       })
