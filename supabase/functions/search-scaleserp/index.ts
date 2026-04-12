@@ -71,13 +71,16 @@ Deno.serve(async (req) => {
     const data = await resp.json();
     const shoppingResults = data?.shopping_results || [];
 
-    const simplified = shoppingResults.slice(0, 8).map((item: any) => ({
+    const simplified = shoppingResults.slice(0, 10).map((item: any) => ({
       title: item.title || "",
       price: item.price || null,
       source: item.source || item.merchant?.name || "",
       link: item.link || "",
       image: item.thumbnail || item.image || "",
       rating: item.rating || null,
+      reviews: item.reviews || item.extensions?.find?.((e: string) => /review/i.test(e)) || null,
+      delivery: item.delivery || null,
+      source_icon: item.source_icon || null,
     }));
 
     // Update cache
