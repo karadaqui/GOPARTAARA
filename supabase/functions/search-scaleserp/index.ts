@@ -82,7 +82,7 @@ Deno.serve(async (req) => {
       price: item.price || null,
       source: item.source || item.merchant?.name || "",
       source_icon: item.source_icon || item.merchant?.favicon || null,
-      link: item.link || item.product_page_url || item.url || "",
+      link: item.link || "",
       product_page_url: item.product_page_url || item.url || null,
       url: item.url || null,
       image: item.thumbnail || item.image || "",
@@ -90,9 +90,10 @@ Deno.serve(async (req) => {
       rating: item.rating || null,
       reviews: item.reviews || item.extensions?.find?.((e: string) => /review/i.test(e)) || null,
       delivery: item.delivery || item.shipping || null,
+      extensions: Array.isArray(item.extensions) ? item.extensions : [],
     }));
 
-    console.log("[search-scaleserp] First result:", JSON.stringify(simplified[0] || null));
+    console.log("[search-scaleserp] First result full:", JSON.stringify(shoppingResults[0] || null));
 
     // Update cache
     cache.set(cacheKey, { data: simplified, ts: Date.now() });
