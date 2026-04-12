@@ -982,16 +982,9 @@ const SearchResults = () => {
                   Clear search
                 </button>
                 {ebayFallback && (
-                  <div className="mt-8 w-full max-w-lg">
-                    <p className="text-xs text-zinc-500 mb-3 text-center font-medium">Quick search on supplier sites:</p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {suppliers.slice(0, 6).map((s) => (
-                        <a key={s.name} href={s.buildUrl(activeQuery)} target="_blank" rel="noopener noreferrer"
-                          className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-gradient-to-br ${s.gradient} text-white text-xs font-semibold transition-transform hover:scale-105 shadow-md`}>
-                          <ExternalLink size={12} /> {s.name}
-                        </a>
-                      ))}
-                    </div>
+                  <div className="mt-8 w-full max-w-lg text-center">
+                    <p className="text-xs text-zinc-500 mb-3 font-medium">eBay search is temporarily unavailable. Please try again in a moment.</p>
+                    <a href="/contact" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">Need help? Contact us →</a>
                   </div>
                 )}
               </div>
