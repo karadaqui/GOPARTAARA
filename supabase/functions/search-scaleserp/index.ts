@@ -30,10 +30,15 @@ Deno.serve(async (req) => {
 
     // Parse & validate input
     const body = await req.json();
-    const query = typeof body?.query === "string" ? body.query.replace(/<[^>]*>/g, "").trim().slice(0, 200) : "";
-    if (!query) {
+    const rawQuery = typeof body?.query === "string" ? body.query.replace(/<[^>]*>/g, "").trim().slice(0, 200) : "";
+    if (!rawQuery) {
       return jsonResponse({ results: [] }, 200, corsHeaders);
     }
+
+    // Append car parts context if not already present
+    const lq = rawQuery.toLowerCase();
+    const hasCarContext = ["part", "car", "auto", "vehicle", "motor", "brake", "engine", "filter", "exhaust", "clutch", "suspension", "radiator", "alternator", "turbo", "bumper", "headlight", "wiper"].some(k => lq.includes(k));
+    const query = hasCarContext ? rawQuery : `${rawQuery} car part`;
 
     // Check cache
     const cacheKey = query.toLowerCase();
@@ -57,6 +62,7 @@ Deno.serve(async (req) => {
       google_domain: "google.co.uk",
       gl: "uk",
       hl: "en",
+      tbs: "mr:1",
     });
 
     const url = `https://api.scaleserp.com/search?${params.toString()}`;
