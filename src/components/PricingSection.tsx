@@ -31,7 +31,7 @@ const individualPlans = [
     tagline: "Get started with basic searches",
     price: "£0",
     period: "/mo",
-    features: ["5 searches per month", "Save up to 5 parts & alerts", "1 garage vehicle", "Referral bonuses"],
+    features: ["5 searches per month", "5 active marketplace listings", "Save up to 5 parts & alerts", "1 garage vehicle", "Referral bonuses"],
     cta: "Start Free",
     popular: false,
     priceId: null as string | null,
@@ -41,7 +41,7 @@ const individualPlans = [
     tagline: "For enthusiasts and DIY mechanics",
     price: "£9.99",
     period: "/mo",
-    features: ["Unlimited searches", "Photo search", "Unlimited parts & alerts", "Unlimited garage", "Search history", "Price alerts"],
+    features: ["Unlimited searches", "Photo search", "Unlimited marketplace listings", "Unlimited parts & alerts", "Unlimited garage vehicles", "Search history", "Price alerts", "Ad-free experience", "10 photos per listing"],
     cta: "Go Pro",
     popular: true,
     priceId: STRIPE.pro,
@@ -51,7 +51,7 @@ const individualPlans = [
     tagline: "The complete experience",
     price: "£19.99",
     period: "/mo",
-    features: ["Everything in Pro", "Export search history CSV", "30-day price tracking", "Vehicle notes & history", "Early access to features", "Priority email support"],
+    features: ["Everything in Pro", "Export search history CSV", "30-day price tracking", "Vehicle notes & history", "Early access to features", "Priority email support", "Analytics dashboard"],
     cta: "Go Elite",
     popular: false,
     priceId: STRIPE.elite,
@@ -214,10 +214,10 @@ const PricingSection = () => {
 
   const isLoading = (id: string | null) => id !== null && loadingId === id;
 
-  const tabs: { key: Tab; label: string }[] = [
+  const tabs: { key: Tab; label: string; hidden?: boolean }[] = [
     { key: "individual", label: "Individual Plans" },
-    { key: "seller", label: "Seller Plans" },
-    { key: "bundles", label: "Bundle & Save" },
+    { key: "seller", label: "Seller Plans", hidden: true },
+    { key: "bundles", label: "Bundle & Save", hidden: true },
   ];
 
   return (
@@ -236,7 +236,7 @@ const PricingSection = () => {
         {/* Tab Switcher */}
         <div className="flex justify-center mb-12">
           <div className="inline-flex items-center rounded-xl border border-border/50 bg-card/50 p-1 backdrop-blur-sm">
-            {tabs.map((t) => (
+            {tabs.filter(t => !t.hidden).map((t) => (
               <button
                 key={t.key}
                 onClick={() => setActiveTab(t.key)}

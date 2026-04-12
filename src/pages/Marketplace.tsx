@@ -150,6 +150,16 @@ const Marketplace = () => {
           <p className="text-muted-foreground text-lg">Browse parts from verified sellers across the UK</p>
         </div>
 
+        {/* Free listing & commission banners */}
+        <div className="space-y-2 mb-8">
+          <div className="bg-green-900/30 border border-green-500/30 rounded-xl px-4 py-2.5 text-sm text-green-400">
+            🎉 Free to list — All PARTARA members can list up to 5 parts for free. Upgrade to Pro for unlimited listings.
+          </div>
+          <div className="bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 text-xs text-zinc-500">
+            ℹ️ Commission policy: Listing is currently free. A small commission may be introduced in the future with 30 days notice to all sellers.
+          </div>
+        </div>
+
         {!user ? (
           <div className="glass rounded-2xl p-12 text-center">
             <Store size={48} className="text-muted-foreground mx-auto mb-4" />

@@ -172,7 +172,19 @@ const Terms = () => (
             </div>
           </Section>
 
-          <Section title="5. Marketplace Rules">
+          <Section title="5. Marketplace &amp; Commission Policy">
+            <div className="rounded-xl border border-border bg-card p-6 space-y-3">
+              <p>All users may list up to 5 items for free. Pro and Elite members may list unlimited items.</p>
+              <p>
+                PARTARA Marketplace is currently commission-free. PARTARA reserves the right to introduce a
+                commission fee on future sales. All active sellers will receive at least 30 days written notice
+                before any commission is implemented.
+              </p>
+              <p>Featured listing promotions are available to all users as optional paid upgrades.</p>
+            </div>
+          </Section>
+
+          <Section title="6. Marketplace Rules">
             <div className="rounded-xl border border-border bg-card p-6">
               <p className="font-semibold text-foreground mb-3">Seller Obligations</p>
               <p>By listing items on the PARTARA Marketplace, sellers agree to:</p>
