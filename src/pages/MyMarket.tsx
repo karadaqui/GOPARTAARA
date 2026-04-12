@@ -876,6 +876,28 @@ const MyMarket = () => {
         </AlertDialogContent>
       </AlertDialog>
 
+      {/* Boost Listing Modal */}
+      <Dialog open={boostModalOpen} onOpenChange={setBoostModalOpen}>
+        <DialogContent className="bg-card border-border sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2">
+              <Zap size={18} className="text-yellow-400" /> Boost Your Listing
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Get top placement in search results for 7 days. Your listing will appear in the Featured section above all regular listings.
+          </p>
+          <div className="flex gap-2 mt-2">
+            <Button className="flex-1 rounded-xl" onClick={() => { setBoostModalOpen(false); navigate("/pricing"); }}>
+              Boost for £4.99
+            </Button>
+            <Button variant="ghost" className="rounded-xl" onClick={() => setBoostModalOpen(false)}>
+              Maybe Later
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Undo delete banner */}
       {undoListing && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 glass rounded-xl px-6 py-3 flex items-center gap-4 shadow-lg border border-border">
