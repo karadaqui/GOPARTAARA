@@ -814,12 +814,14 @@ const SearchResults = () => {
                           
                           {(() => {
                             const sellerName = item.source || "Google Shopping";
-                            const googleUrl = item.link;
+                            const googleUrl = item.link || item._raw?.link || item._raw?.url;
                             const reviewText = item.reviews ? String(item.reviews) : null;
                             const openGoogleDeal = () => {
-                              const url = item.link;
+                              const url = item.link || item._raw?.link || item._raw?.url;
                               if (url && url.startsWith("http")) {
                                 window.open(url, "_blank", "noopener,noreferrer");
+                              } else {
+                                console.warn("No valid URL for result:", item);
                               }
                             };
 
@@ -904,9 +906,11 @@ const SearchResults = () => {
                                       type="button"
                                       onClick={(event) => {
                                         event.stopPropagation();
-                                        const url = item.link;
+                                        const url = item.link || item._raw?.link || item._raw?.url;
                                         if (url && url.startsWith("http")) {
                                           window.open(url, "_blank", "noopener,noreferrer");
+                                        } else {
+                                          console.warn("No valid URL for result:", item);
                                         }
                                       }}
                                       disabled={!googleUrl?.startsWith("http")}
