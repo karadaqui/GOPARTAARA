@@ -43,22 +43,7 @@ const parseTwemoji = () => {
 const googleSite = (domain: string) => (q: string) =>
   `https://www.google.com/search?q=site:${domain}+${q.replace(/\s+/g, "+")}`;
 
-const suppliers: { name: string; flag: string; gradient: string; buildUrl: (q: string) => string }[] = [
-  { name: "Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-600 to-indigo-700", buildUrl: googleSite("eurocarparts.com") },
-  { name: "GSF Car Parts", flag: "🇬🇧", gradient: "from-emerald-600 to-teal-700", buildUrl: googleSite("gsfcarparts.com") },
-  { name: "Car Parts 4 Less", flag: "🇬🇧", gradient: "from-purple-600 to-purple-800", buildUrl: googleSite("carparts4less.co.uk") },
-  { name: "AutoDoc", flag: "🇬🇧", gradient: "from-cyan-500 to-blue-600", buildUrl: googleSite("autodoc.co.uk") },
-  { name: "Amazon UK", flag: "🇬🇧", gradient: "from-orange-500 to-amber-600", buildUrl: (q) => `https://www.amazon.co.uk/s?k=${q.replace(/\s+/g, "+")}&tag=gopartara-21` },
-  { name: "Partmaster", flag: "🇬🇧", gradient: "from-slate-600 to-slate-800", buildUrl: googleSite("partmaster.co.uk") },
-  { name: "LKQ Euro Car Parts", flag: "🇬🇧", gradient: "from-blue-500 to-blue-700", buildUrl: googleSite("lkqeurocarparts.com") },
-];
-
-const globalSuppliers: { name: string; flag: string; region: string; gradient: string; buildUrl: (q: string) => string }[] = [
-  { name: "RockAuto", flag: "🇺🇸", region: "USA", gradient: "from-yellow-600 to-orange-700", buildUrl: (q) => `https://www.rockauto.com/en/catalog/?a=${encodeURIComponent(q)}` },
-  { name: "PartsGeek", flag: "🇺🇸", region: "USA", gradient: "from-red-600 to-red-800", buildUrl: (q) => `https://www.partsgeek.com/catalog/search/?search=${encodeURIComponent(q)}` },
-  { name: "AutoZone", flag: "🇺🇸", region: "USA", gradient: "from-amber-600 to-red-700", buildUrl: (q) => `https://www.autozone.com/searchresult?searchText=${encodeURIComponent(q)}` },
-  { name: "Mister Auto", flag: "🇪🇺", region: "Europe", gradient: "from-blue-500 to-indigo-600", buildUrl: (q) => `https://www.mister-auto.com/recherche?q=${encodeURIComponent(q)}` },
-];
+// Removed fake supplier links — only eBay feed + Autodoc affiliate are real
 
 const PART_CATEGORIES = [
   { label: "All Parts", icon: "🔧" },
@@ -928,38 +913,6 @@ const SearchResults = () => {
                   })}
                 </div>
 
-                {/* More sources coming soon banner */}
-                <div className="my-6 p-4 rounded-2xl bg-zinc-900/50 border border-white/[0.06] text-center">
-                  <p className="text-sm text-zinc-400">
-                    We're adding <span className="text-zinc-200 font-medium">Euro Car Parts</span>, <span className="text-zinc-200 font-medium">GSF Car Parts</span>, <span className="text-zinc-200 font-medium">Autodoc</span> and more suppliers soon. Currently showing eBay results.
-                  </p>
-                </div>
-
-                {/* Amazon UK Card */}
-                {activeQuery && brandFilter === "All" && (
-                  <div className="my-8">
-                    <a href={`https://www.amazon.co.uk/s?k=${encodeURIComponent(activeQuery)}&tag=gopartara-21`} target="_blank" rel="noopener noreferrer"
-                      className="group block rounded-2xl overflow-hidden border border-orange-500/20 hover:border-orange-500/40 transition-all bg-[#111]">
-                      <div className="flex items-center gap-4 sm:gap-6 p-4 sm:p-6">
-                        <div className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20">
-                          <span className="text-white font-bold text-lg sm:text-xl tracking-tight leading-none text-center"><span className="italic">amazon</span><span className="block text-[10px] sm:text-xs font-semibold not-italic opacity-80">.co.uk</span></span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs sm:text-sm font-medium text-orange-400 mb-0.5">Also available on</p>
-                          <h3 className="text-base sm:text-lg font-bold text-white mb-1 truncate">Search "{activeQuery}" on Amazon UK</h3>
-                          <p className="text-xs sm:text-sm text-zinc-500 line-clamp-1">Compare prices with Amazon's car parts selection • Free Prime delivery available</p>
-                        </div>
-                        <div className="shrink-0 hidden sm:block">
-                          <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-orange-500 to-amber-600 text-white font-semibold text-sm shadow-lg shadow-orange-500/25 group-hover:shadow-orange-500/40 transition-shadow"><ExternalLink size={14} /> Search Amazon</span>
-                        </div>
-                        <div className="shrink-0 sm:hidden">
-                          <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-gradient-to-r from-orange-500 to-amber-600 text-white font-semibold text-xs"><ExternalLink size={12} /> Search</span>
-                        </div>
-                      </div>
-                    </a>
-                  </div>
-            )}
-
             {/* ── Autodoc Affiliate Banner (geo-targeted) ── */}
             {(() => {
               const autodocCountries: Record<string, string> = {
@@ -976,7 +929,7 @@ const SearchResults = () => {
               const href = `https://lowest-prices.eu/a/rkrn4sDyrWIyElw?url=${encodeURIComponent(autodocUrl)}`;
               return (
                 <a href={href} target="_blank" rel="noopener noreferrer"
-                  className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3 hover:border-white/[0.12] transition-all group">
+                  className="mt-6 mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3 hover:border-white/[0.12] transition-all group">
                   <img src="https://www.autodoc.co.uk/favicon.ico" alt="Autodoc" className="w-5 h-5 shrink-0" />
                   <p className="text-sm text-zinc-400 flex-1">
                     Check prices on <span className="text-zinc-200 font-medium">Autodoc</span>
@@ -988,42 +941,29 @@ const SearchResults = () => {
               );
             })()}
 
-
-                {/* Global Suppliers */}
-                <div className="mb-6">
-                  <div className="flex items-center gap-2 mb-3"><span className="text-lg">🌍</span><h3 className="text-base sm:text-lg font-bold text-white">Global Suppliers</h3><span className="text-xs text-zinc-600">International shipping available</span></div>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-                    {globalSuppliers.map((gs) => (
-                      <a key={gs.name} href={gs.buildUrl(activeQuery)} target="_blank" rel="noopener noreferrer"
-                        className="group rounded-2xl overflow-hidden border border-white/[0.06] bg-[#111] hover:border-white/[0.15] transition-all hover:scale-[1.02] flex flex-col">
-                        <div className={`h-14 sm:h-16 bg-gradient-to-br ${gs.gradient} flex items-center justify-center px-2 relative`}>
-                          <span className="text-white font-bold text-xs sm:text-sm tracking-wide text-center leading-tight">{gs.flag} {gs.name}</span>
-                          <span className="absolute top-1 right-1 px-1.5 py-0.5 rounded text-[8px] font-bold bg-white/20 text-white backdrop-blur-sm">{gs.region}</span>
-                        </div>
-                        <div className="p-2">
-                          <span className="flex items-center justify-center gap-1 w-full rounded-xl text-xs h-8 bg-red-600 text-white font-medium group-hover:bg-red-500 transition-colors"><ExternalLink size={11} /> Search</span>
-                        </div>
-                      </a>
-                    ))}
-                  </div>
+                {/* More suppliers coming soon — honest banner */}
+                <div className="bg-zinc-900/50 border border-white/[0.07] rounded-2xl p-6 mt-8 text-center">
+                  <div className="text-4xl mb-3">🔧</div>
+                  <h3 className="text-lg font-bold text-white mb-1.5">More suppliers coming soon</h3>
+                  <p className="text-sm text-zinc-400 max-w-md mx-auto mb-3">
+                    We're working on adding Euro Car Parts, GSF Car Parts, Autodoc and more. Currently showing results from eBay.
+                  </p>
+                  <a href="/contact" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
+                    Want to see a specific supplier? Let us know →
+                  </a>
                 </div>
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="flex flex-col items-center gap-3 mt-8">
-                    <p className="text-xs text-zinc-600">Pages {chunkStart}-{chunkEnd} of {totalPages.toLocaleString()}</p>
-                    <div className="flex items-center gap-1 flex-wrap justify-center">
-                      {currentChunk > 0 && <button onClick={() => handlePageChange((currentChunk - 1) * PAGES_PER_CHUNK + 1)} className="flex items-center gap-0.5 px-3 py-2 rounded-xl text-xs font-medium bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 transition-colors border border-white/[0.06]"><ChevronLeft size={12} /> Prev 50</button>}
-                      <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="flex items-center gap-0.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border border-white/[0.06]"><ChevronLeft size={14} /> Prev</button>
-                      {getPageNumbers().map((page, i) => page === "..." ? (
-                        <span key={`e-${i}`} className="px-2 py-2 text-sm text-zinc-600">...</span>
-                      ) : (
-                        <button key={page} onClick={() => handlePageChange(page as number)}
-                          className={`min-w-[36px] h-9 rounded-xl text-sm font-medium transition-colors border ${currentPage === page ? "bg-red-600 text-white border-red-600 shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border-white/[0.06]"}`}>{page}</button>
-                      ))}
-                      <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="flex items-center gap-0.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border border-white/[0.06]">Next <ChevronRight size={14} /></button>
-                      {chunkEnd < totalPages && <button onClick={() => handlePageChange((currentChunk + 1) * PAGES_PER_CHUNK + 1)} className="flex items-center gap-0.5 px-3 py-2 rounded-xl text-xs font-medium bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 transition-colors border border-white/[0.06]">Next 50 <ChevronRight size={12} /></button>}
-                    </div>
+                  <div className="flex items-center justify-center gap-1 mt-8 flex-wrap">
+                    <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="flex items-center gap-0.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border border-white/[0.06]"><ChevronLeft size={14} /> Prev</button>
+                    {getPageNumbers().map((page, i) => page === "..." ? (
+                      <span key={`e-${i}`} className="px-2 py-2 text-sm text-zinc-600">...</span>
+                    ) : (
+                      <button key={page} onClick={() => handlePageChange(page as number)}
+                        className={`min-w-[36px] h-9 rounded-xl text-sm font-medium transition-colors border ${currentPage === page ? "bg-red-600 text-white border-red-600 shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border-white/[0.06]"}`}>{page}</button>
+                    ))}
+                    <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="flex items-center gap-0.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border border-white/[0.06]">Next <ChevronRight size={14} /></button>
                   </div>
                 )}
               </div>
@@ -1057,43 +997,6 @@ const SearchResults = () => {
               </div>
             ) : null}
 
-            {/* Supplier Row */}
-            <div className="mb-4 mt-2">
-              <div className="flex items-center gap-2 mb-4">
-                <ExternalLink size={18} className="text-zinc-500" />
-                <h2 className="text-lg font-bold text-white">Search More Suppliers</h2>
-              </div>
-            </div>
-            <ScrollArea className="w-full pb-4">
-              <div className="flex gap-3 pb-2">
-                {suppliers.map((supplier) => (
-                  <a key={supplier.name} href={supplier.buildUrl(activeQuery)} target="_blank" rel="noopener noreferrer"
-                    className="shrink-0 w-[120px] sm:w-[140px] group rounded-2xl overflow-hidden border border-white/[0.06] bg-[#111] hover:border-white/[0.15] transition-all hover:scale-[1.02] flex flex-col">
-                    <div className={`h-14 sm:h-16 bg-gradient-to-br ${supplier.gradient} flex items-center justify-center px-2`}>
-                      <span className="text-white font-bold text-[10px] sm:text-xs tracking-wide text-center leading-tight">{supplier.flag} {supplier.name}</span>
-                    </div>
-                    <div className="p-2">
-                      <span className="flex items-center justify-center gap-1 w-full rounded-xl text-xs h-8 bg-red-600 text-white font-medium group-hover:bg-red-500 transition-colors"><ExternalLink size={11} /> Search</span>
-                    </div>
-                  </a>
-                ))}
-                {matchedOemBrands.map((b) => {
-                  const oemQuery = getOemSearchQuery(activeQuery, b.pattern);
-                  return (
-                    <a key={b.brand} href={b.url(oemQuery)} target="_blank" rel="noopener noreferrer"
-                      className="shrink-0 w-[140px] group rounded-2xl overflow-hidden border border-white/[0.06] bg-[#111] hover:border-white/[0.15] transition-all hover:scale-[1.02] flex flex-col">
-                      <div className={`h-16 bg-gradient-to-br ${b.gradient} flex items-center justify-center px-2`}>
-                        <span className="text-white font-bold text-xs tracking-wide text-center leading-tight">{b.brand} OEM</span>
-                      </div>
-                      <div className="p-2">
-                        <span className="flex items-center justify-center gap-1 w-full rounded-xl text-xs h-8 bg-red-600 text-white font-medium group-hover:bg-red-500 transition-colors"><ExternalLink size={11} /> Search</span>
-                      </div>
-                    </a>
-                  );
-                })}
-              </div>
-              <ScrollBar orientation="horizontal" />
-            </ScrollArea>
           </>
         ) : (
           /* ── No query state ── */
