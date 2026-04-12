@@ -219,22 +219,24 @@ const Dashboard = () => {
   const isEliteUser = ["elite", "admin"].includes(currentPlan);
 
   const exportSearchHistoryCSV = async () => {
-    const { data } = await supabase
-      .from("search_history")
-      .select("*")
-      .eq("user_id", user!.id)
-      .order("created_at", { ascending: false });
-    if (!data || data.length === 0) return;
-    const csv = "Date,Search Query,Results Count\n" + data.map((r) =>
-      `"${new Date(r.created_at).toLocaleDateString("en-GB")}","${r.query.replace(/"/g, '""')}","N/A"`
-    ).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `partara-search-history-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+      const { data } = await supabase
+        .from("search_history")
+        .select("*")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
+      if (!data || data.length === 0) return;
+      const csv = "Date,Search Query,Results Count\n" + data.map((r) =>
+        `"${new Date(r.created_at).toLocaleDateString("en-GB")}","${r.query.replace(/"/g, '""')}","N/A"`
+      ).join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `partara-search-history-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch { /* silently ignore */ }
   };
 
   if (authLoading || loading) {
