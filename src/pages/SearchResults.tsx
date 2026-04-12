@@ -937,7 +937,25 @@ const SearchResults = () => {
                       </div>
                     </a>
                   </div>
-                )}
+            )}
+
+            {/* ── Autodoc Affiliate Banner ── */}
+            {activeQuery && !liveLoading && (
+              <a
+                href={`https://lowest-prices.eu/a/rkrn4sDyrWIyElw?url=https://www.autodoc.co.uk/search?query=${encodeURIComponent(activeQuery)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-3 flex items-center gap-3 hover:border-white/[0.12] transition-all group"
+              >
+                <img src="https://www.autodoc.co.uk/favicon.ico" alt="Autodoc" className="w-5 h-5 shrink-0" />
+                <p className="text-sm text-zinc-400 flex-1">
+                  Also check prices on <span className="text-zinc-200 font-medium">Autodoc</span> — Europe's largest auto parts store
+                </p>
+                <span className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors">
+                  <ExternalLink size={13} /> View on Autodoc
+                </span>
+              </a>
+            )}
 
 
                 {/* Global Suppliers */}
