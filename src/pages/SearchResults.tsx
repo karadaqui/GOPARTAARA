@@ -825,10 +825,25 @@ const SearchResults = () => {
 
                             return (
                               <>
-                                <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
+                                <div
+                                  className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative"
+                                  onClick={openGoogleDeal}
+                                  role={googleUrl?.startsWith("http") ? "link" : undefined}
+                                  tabIndex={googleUrl?.startsWith("http") ? 0 : -1}
+                                  onKeyDown={(event) => {
+                                    if (!googleUrl?.startsWith("http")) return;
+                                    if (event.key === "Enter" || event.key === " ") {
+                                      event.preventDefault();
+                                      openGoogleDeal();
+                                    }
+                                  }}
+                                >
                                   <button
                                     type="button"
-                                    onClick={openGoogleDeal}
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      openGoogleDeal();
+                                    }}
                                     disabled={!googleUrl?.startsWith("http")}
                                     className="block h-full w-full cursor-pointer text-left disabled:cursor-default"
                                   >
@@ -849,7 +864,10 @@ const SearchResults = () => {
                                 <div className="p-4 flex-1 flex flex-col gap-3">
                                   <button
                                     type="button"
-                                    onClick={openGoogleDeal}
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      openGoogleDeal();
+                                    }}
                                     disabled={!googleUrl?.startsWith("http")}
                                     className="block cursor-pointer text-left disabled:cursor-default"
                                   >
@@ -884,7 +902,8 @@ const SearchResults = () => {
                                   <div className="flex flex-col sm:flex-row gap-2">
                                     <button
                                       type="button"
-                                      onClick={() => {
+                                      onClick={(event) => {
+                                        event.stopPropagation();
                                         const url = item.link;
                                         if (url && url.startsWith("http")) {
                                           window.open(url, "_blank", "noopener,noreferrer");
