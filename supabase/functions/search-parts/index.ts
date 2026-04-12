@@ -186,10 +186,14 @@ Deno.serve(async (req) => {
 
     // Record search atomically (only first page, only when no filters applied to avoid double-counting)
     if (offset === 0 && !conditionFilter && !shippingFilter && !priceMin && !sortBy && !categoryFilter && !brandFilter) {
-      await supabaseAdmin.from("search_history").insert({
-        user_id: auth.userId,
-        query: query,
-      });
+      try {
+        await supabaseAdmin.from("search_history").insert({
+          user_id: auth.userId,
+          query: query,
+        });
+      } catch (e) {
+        console.warn("[search-parts] search_history insert failed, continuing:", e);
+      }
     }
 
     const EBAY_APP_ID = Deno.env.get("EBAY_APP_ID");
