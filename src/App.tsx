@@ -83,6 +83,7 @@ const App = () => (
               <Route path="/refund" element={<Refund />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/subscription-policy" element={<SubscriptionPolicy />} />
+              <Route path="/complete-profile" element={<ProtectedRoute><CompleteProfile /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
