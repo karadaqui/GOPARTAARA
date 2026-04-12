@@ -949,6 +949,7 @@ const SearchResults = () => {
               const userCountry = localStorage.getItem('partara_location_country') 
                 || localStorage.getItem('partara_selected_marketplace') 
                 || 'GB';
+              const domain = autodocCountries[userCountry];
               if (!activeQuery || liveLoading || !domain) return null;
               const autodocUrl = `https://www.${domain}/search?query=${encodeURIComponent(activeQuery)}`;
               const href = `https://lowest-prices.eu/a/rkrn4sDyrWIyElw?url=${encodeURIComponent(autodocUrl)}`;
