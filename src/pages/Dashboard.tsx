@@ -75,7 +75,9 @@ const Dashboard = () => {
 
     if (!error && data) {
       setProfile(data);
-      setDisplayName(data.display_name || "");
+      // Use display_name if set, otherwise derive from email
+      const friendlyName = data.display_name || (data.email ? data.email.split("@")[0] : (user?.email ? user.email.split("@")[0] : ""));
+      setDisplayName(friendlyName);
       if (data.avatar_url) {
         const { data: signedData } = await supabase.storage
           .from("avatars")
@@ -89,13 +91,17 @@ const Dashboard = () => {
   };
 
   const fetchSearchHistory = async () => {
-    const { data } = await supabase
-      .from("search_history")
-      .select("*")
-      .eq("user_id", user!.id)
-      .order("created_at", { ascending: false })
-      .limit(10);
-    if (data) setSearchHistory(data);
+    try {
+      const { data } = await supabase
+        .from("search_history")
+        .select("*")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false })
+        .limit(10);
+      if (data) setSearchHistory(data);
+    } catch (e) {
+      // Silently ignore search_history errors
+    }
   };
 
   const fetchSavedPartsCount = async () => {
@@ -107,13 +113,17 @@ const Dashboard = () => {
   };
 
   const deleteHistoryItem = async (id: string) => {
-    const { error } = await supabase.from("search_history").delete().eq("id", id);
-    if (!error) setSearchHistory((prev) => prev.filter((h) => h.id !== id));
+    try {
+      const { error } = await supabase.from("search_history").delete().eq("id", id);
+      if (!error) setSearchHistory((prev) => prev.filter((h) => h.id !== id));
+    } catch { /* silently ignore */ }
   };
 
   const clearAllHistory = async () => {
-    const { error } = await supabase.from("search_history").delete().eq("user_id", user!.id);
-    if (!error) setSearchHistory([]);
+    try {
+      const { error } = await supabase.from("search_history").delete().eq("user_id", user!.id);
+      if (!error) setSearchHistory([]);
+    } catch { /* silently ignore */ }
   };
 
   const fetchSubscription = async () => {
@@ -209,22 +219,24 @@ const Dashboard = () => {
   const isEliteUser = ["elite", "admin"].includes(currentPlan);
 
   const exportSearchHistoryCSV = async () => {
-    const { data } = await supabase
-      .from("search_history")
-      .select("*")
-      .eq("user_id", user!.id)
-      .order("created_at", { ascending: false });
-    if (!data || data.length === 0) return;
-    const csv = "Date,Search Query,Results Count\n" + data.map((r) =>
-      `"${new Date(r.created_at).toLocaleDateString("en-GB")}","${r.query.replace(/"/g, '""')}","N/A"`
-    ).join("\n");
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `partara-search-history-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+      const { data } = await supabase
+        .from("search_history")
+        .select("*")
+        .eq("user_id", user!.id)
+        .order("created_at", { ascending: false });
+      if (!data || data.length === 0) return;
+      const csv = "Date,Search Query,Results Count\n" + data.map((r) =>
+        `"${new Date(r.created_at).toLocaleDateString("en-GB")}","${r.query.replace(/"/g, '""')}","N/A"`
+      ).join("\n");
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `partara-search-history-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch { /* silently ignore */ }
   };
 
   if (authLoading || loading) {

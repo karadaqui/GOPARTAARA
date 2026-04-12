@@ -16,28 +16,33 @@ export const useSearchLimit = () => {
   const refresh = useCallback(async () => {
     if (!user) return;
 
-    const startOfMonth = new Date();
-    startOfMonth.setDate(1);
-    startOfMonth.setHours(0, 0, 0, 0);
+    try {
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
 
-    const [{ count }, { data: profile }] = await Promise.all([
-      supabase
-        .from("search_history")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .gte("created_at", startOfMonth.toISOString()),
-      supabase
-        .from("profiles")
-        .select("bonus_searches, subscription_plan")
-        .eq("user_id", user.id)
-        .single(),
-    ]);
+      const [{ count }, { data: profile }] = await Promise.all([
+        supabase
+          .from("search_history")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .gte("created_at", startOfMonth.toISOString()),
+        supabase
+          .from("profiles")
+          .select("bonus_searches, subscription_plan")
+          .eq("user_id", user.id)
+          .single(),
+      ]);
 
-    setSearchCount(count || 0);
-    setBonusSearches(profile?.bonus_searches || 0);
-    const dbPlan = profile?.subscription_plan || "free";
-    const hasPaidPlan = UNLIMITED_SEARCH_PLANS.includes(dbPlan);
-    setIsPro(hasPaidPlan);
+      setSearchCount(count || 0);
+      setBonusSearches(profile?.bonus_searches || 0);
+      const dbPlan = profile?.subscription_plan || "free";
+      const hasPaidPlan = UNLIMITED_SEARCH_PLANS.includes(dbPlan);
+      setIsPro(hasPaidPlan);
+    } catch (e) {
+      // Silently ignore - don't block search on DB errors
+      console.warn("useSearchLimit refresh failed:", e);
+    }
     setLoaded(true);
   }, [user]);
 
@@ -59,5 +64,5 @@ export const useSearchLimit = () => {
   const canSearch = !user || !loaded || isPro || remaining > 0;
   const limitReached = loaded && !!user && !isPro && remaining <= 0;
 
-  return { canSearch, limitReached, remaining, isPro, loaded, refresh, recordSearch };
+  return { canSearch, limitReached, remaining, isPro, loaded, refresh, recordSearch, searchCount, totalAllowed };
 };
