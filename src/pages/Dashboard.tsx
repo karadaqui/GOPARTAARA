@@ -192,10 +192,15 @@ const Dashboard = () => {
 
   const handleSave = async () => {
     if (!user) return;
+    const trimmed = displayName.trim();
+    if (!trimmed && profile?.subscription_plan !== "admin") {
+      toast({ title: "Required", description: "Please enter a display name.", variant: "destructive" });
+      return;
+    }
     setSaving(true);
     const { error } = await supabase
       .from("profiles")
-      .update({ display_name: displayName })
+      .update({ display_name: trimmed })
       .eq("user_id", user.id);
 
     setSaving(false);
