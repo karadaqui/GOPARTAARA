@@ -120,11 +120,11 @@ const SavedParts = () => {
             <Bookmark size={48} className="text-muted-foreground/20 mb-4" />
             <h2 className="font-display text-xl font-semibold mb-2">No saved parts yet</h2>
             <p className="text-sm text-muted-foreground max-w-md mb-6">
-              Search for car parts and tap the bookmark icon to save them here for easy comparison.
+              When you find a part you like, click the bookmark icon to save it here. We'll track the price for you.
             </p>
             <Button className="rounded-xl gap-2" onClick={() => navigate("/search")}>
               <Search size={16} />
-              Search Parts
+              Start Searching
             </Button>
           </div>
         ) : (
