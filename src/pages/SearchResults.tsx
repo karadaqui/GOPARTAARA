@@ -915,8 +915,8 @@ const SearchResults = () => {
                   })}
                 </div>
 
-            {/* ── Autodoc Affiliate Banner (geo-targeted) ── */}
-            {(() => {
+            {/* ── Autodoc Affiliate Banner (geo-targeted, hidden for ad-free users) ── */}
+            {!searchLimit.isPro && (() => {
               const autodocCountries: Record<string, string> = {
                 GB: 'autodoc.co.uk', AT: 'autodoc.at', FI: 'autodoc.co.uk', FR: 'autodoc.fr',
                 IT: 'autodoc.it', NL: 'autodoc.nl', NO: 'autodoc.co.uk', PL: 'autodoc.pl',
