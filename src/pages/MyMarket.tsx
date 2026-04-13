@@ -54,11 +54,11 @@ interface Listing {
 }
 
 const BOOST_PACKAGES = [
-  { name: "Quick Boost", duration: 3, price: "£1.99", priceId: "price_1TLlEPAc5QcTT3aLBYi756Nc", description: "Get seen by more buyers for 3 days" },
-  { name: "Weekly Feature ⭐", duration: 7, price: "£4.99", priceId: "price_1TLlEQAc5QcTT3aLOd2ZsBFf", description: "Top placement for a full week", popular: true },
-  { name: "Power Boost", duration: 7, price: "£11.99", priceId: "price_1TLlERAc5QcTT3aL8KbbVNwA", description: "Feature 3 listings simultaneously for 7 days" },
-  { name: "Monthly Spotlight", duration: 30, price: "£14.99", priceId: "price_1TLlESAc5QcTT3aLrDNMavJy", description: "Maximum visibility for a full month" },
-  { name: "Homepage Spotlight 🏠", duration: 7, price: "£9.99", priceId: "price_1TLlEUAc5QcTT3aLDbH7FKy0", description: "Your listing featured on the PARTARA homepage" },
+  { name: "Quick Boost", duration: 3, price: "£1.99", amountPence: 199, description: "Get seen by more buyers for 3 days" },
+  { name: "Weekly Feature ⭐", duration: 7, price: "£4.99", amountPence: 499, description: "Top placement for a full week", popular: true },
+  { name: "Power Boost", duration: 7, price: "£11.99", amountPence: 1199, description: "Feature 3 listings simultaneously for 7 days" },
+  { name: "Monthly Spotlight", duration: 30, price: "£14.99", amountPence: 1499, description: "Maximum visibility for a full month" },
+  { name: "Homepage Spotlight 🏠", duration: 7, price: "£9.99", amountPence: 999, description: "Your listing featured on the PARTARA homepage" },
 ];
 
 interface DisputedReview {
@@ -131,10 +131,10 @@ const MyMarket = () => {
 
   const handleBoost = async (pkg: typeof BOOST_PACKAGES[0]) => {
     if (!boostListingId) return;
-    setBoostingPriceId(pkg.priceId);
+    setBoostingPriceId(pkg.name);
     try {
       const { data, error } = await supabase.functions.invoke("boost-listing", {
-        body: { listingId: boostListingId, priceId: pkg.priceId, packageName: pkg.name, durationDays: pkg.duration },
+        body: { listingId: boostListingId, packageName: pkg.name, durationDays: pkg.duration, amountPence: pkg.amountPence },
       });
       if (error) throw error;
       if (data?.url) window.location.href = data.url;
@@ -1090,7 +1090,7 @@ const MyMarket = () => {
               <button
                 key={pkg.name}
                 onClick={() => handleBoost(pkg)}
-                disabled={boostingPriceId === pkg.priceId}
+                disabled={boostingPriceId === pkg.name}
                 className={`w-full text-left p-4 rounded-xl border transition-all hover:border-yellow-500/40 hover:bg-yellow-500/5 ${
                   (pkg as any).popular ? "border-yellow-500/30 bg-yellow-500/5" : "border-border"
                 }`}
@@ -1108,7 +1108,7 @@ const MyMarket = () => {
                   </div>
                   <div className="text-right shrink-0 ml-3">
                     <span className="font-display font-bold text-primary">{pkg.price}</span>
-                    {boostingPriceId === pkg.priceId && (
+                    {boostingPriceId === pkg.name && (
                       <Loader2 size={14} className="animate-spin text-primary mt-1 ml-auto" />
                     )}
                   </div>
