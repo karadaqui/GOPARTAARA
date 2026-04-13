@@ -406,9 +406,27 @@ const MyMarket = () => {
   };
 
   const handleSaveListing = async () => {
-    if (!profile || !listingForm.title.trim()) {
-      toast({ title: "Title required", variant: "destructive" });
+    if (!profile) return;
+    if (!listingForm.title.trim()) {
+      toast({ title: "Title is required", variant: "destructive" });
       return;
+    }
+    if (!listingForm.price || isNaN(parseFloat(listingForm.price))) {
+      toast({ title: "Price is required", variant: "destructive" });
+      return;
+    }
+    if (!listingForm.category) {
+      toast({ title: "Category is required", variant: "destructive" });
+      return;
+    }
+    if (!listingForm.description.trim()) {
+      toast({ title: "Description is required", variant: "destructive" });
+      return;
+    }
+    if (listingForm.photos.length === 0) {
+      toast({ title: "At least 1 photo is required", variant: "destructive" });
+      return;
+    }
     }
     setSaving(true);
     const extraVehicles = listingForm.compatible_vehicles_text
