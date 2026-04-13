@@ -304,107 +304,29 @@ const PricingSection = () => {
           </span>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex justify-center mb-12">
-          <div className="inline-flex items-center rounded-xl border border-border/50 bg-card/50 p-1 backdrop-blur-sm">
-            {tabs.filter(t => !t.hidden).map((t) => (
-              <button
-                key={t.key}
-                onClick={() => setActiveTab(t.key)}
-                className={`relative px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-                  activeTab === t.key
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {t.key === "bundles" && (
-                  <Sparkles size={12} className="inline mr-1.5 -mt-0.5" />
-                )}
-                {t.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Individual Plans */}
-        {activeTab === "individual" && (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {individualPlans.map((plan) => {
-              const effectivePriceId = annual && plan.annualPriceId ? plan.annualPriceId : plan.priceId;
-              return (
-                <PlanCard
-                  key={plan.name}
-                  name={plan.name}
-                  tagline={plan.tagline}
-                  price={annual ? plan.annualPrice : plan.monthlyPrice}
-                  originalPrice={annual && plan.annualPrice !== plan.monthlyPrice ? plan.monthlyPrice : undefined}
-                  billedNote={annual ? plan.annualBilled : undefined}
-                  period={plan.period}
-                  features={plan.features}
-                  cta={plan.cta}
-                  popular={plan.popular}
-                  loading={isLoading(effectivePriceId)}
-                  slowWarning={slowWarning}
-                  onSelect={() => startCheckout(effectivePriceId)}
-                />
-              );
-            })}
-          </div>
-        )}
-
-        {/* Seller Plans */}
-        {activeTab === "seller" && (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {sellerPlans.map((plan) => (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {individualPlans.map((plan) => {
+            const effectivePriceId = annual && plan.annualPriceId ? plan.annualPriceId : plan.priceId;
+            return (
               <PlanCard
                 key={plan.name}
                 name={plan.name}
                 tagline={plan.tagline}
-                price={plan.price}
+                price={annual ? plan.annualPrice : plan.monthlyPrice}
+                originalPrice={annual && plan.annualPrice !== plan.monthlyPrice ? plan.monthlyPrice : undefined}
+                billedNote={annual ? plan.annualBilled : undefined}
                 period={plan.period}
                 features={plan.features}
                 cta={plan.cta}
                 popular={plan.popular}
-                loading={isLoading(plan.priceId)}
+                loading={isLoading(effectivePriceId)}
                 slowWarning={slowWarning}
-                onSelect={() => startCheckout(plan.priceId)}
-                icon={plan.icon}
+                onSelect={() => startCheckout(effectivePriceId)}
               />
-            ))}
-          </div>
-        )}
-
-        {/* Bundle Plans */}
-        {activeTab === "bundles" && (
-          <div>
-            <div className="text-center mb-10">
-              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium">
-                <Zap size={14} /> Save up to £12/mo with bundles
-              </span>
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {bundles.map((b) => (
-                <PlanCard
-                  key={b.name}
-                  name={b.name}
-                  tagline={b.tagline}
-                  price={b.price}
-                  period={b.period}
-                  was={b.was}
-                  saving={b.saving}
-                  searchFeatures={b.searchFeatures}
-                  sellerFeatures={b.sellerFeatures}
-                  cta={`Get ${b.name}`}
-                  popular={b.popular}
-                  loading={isLoading(b.priceId)}
-                  slowWarning={slowWarning}
-                  onSelect={() => startCheckout(b.priceId)}
-                  icon={b.icon}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+            );
+          })}
+        </div>
 
         {/* Business CTA */}
         <div className="mt-12 rounded-2xl border border-border/30 bg-card/30 backdrop-blur-sm p-8 sm:p-10 text-center">
