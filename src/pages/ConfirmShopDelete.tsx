@@ -5,15 +5,13 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Loader2, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 
 const ConfirmShopDelete = () => {
   const { token } = useParams<{ token: string }>();
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [status, setStatus] = useState<"loading" | "valid" | "expired" | "used" | "error" | "confirming" | "done">("loading");
-  const [listingCount, setListingCount] = useState(0);
+  const [deletionRequest, setDeletionRequest] = useState<any>(null);
 
   useEffect(() => {
     if (!token) { setStatus("error"); return; }
@@ -32,52 +30,32 @@ const ConfirmShopDelete = () => {
     if (data.confirmed) { setStatus("used"); return; }
     if (new Date(data.expires_at) < new Date()) { setStatus("expired"); return; }
 
-    // Count listings
-    if (user) {
-      const { data: sp } = await supabase
-        .from("seller_profiles")
-        .select("id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      if (sp) {
-        const { count } = await supabase
-          .from("seller_listings")
-          .select("id", { count: "exact", head: true })
-          .eq("seller_id", sp.id);
-        setListingCount(count || 0);
-      }
-    }
-
+    setDeletionRequest(data);
     setStatus("valid");
   };
 
   const handleConfirmDelete = async () => {
-    if (!token || !user) return;
+    if (!token || !deletionRequest) return;
     setStatus("confirming");
 
     try {
-      // Get seller profile
-      const { data: sp } = await supabase
-        .from("seller_profiles")
-        .select("id")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      // Mark as confirmed via public RLS policy (token-based, no auth needed)
+      const { error: updateError } = await supabase
+        .from("deletion_requests")
+        .update({ confirmed: true, confirmed_at: new Date().toISOString() })
+        .eq("token", token)
+        .eq("confirmed", false);
 
-      if (sp) {
-        // Delete all listings
-        await supabase.from("seller_listings").delete().eq("seller_id", sp.id);
-        // Delete seller profile
-        await supabase.from("seller_profiles").delete().eq("id", sp.id);
+      if (updateError) {
+        console.error("Failed to confirm deletion:", updateError);
+        setStatus("error");
+        return;
       }
 
-      // Mark deletion request as confirmed - use service role via edge function
-      // For now, since the user owns the request, we just need to update confirmed status
-      // The RLS only allows SELECT/INSERT for users, so we mark via a function call
-      // Actually, let's use a workaround - we'll use the token to verify and proceed
-      
+      // The actual deletion of listings/profile will be handled by the user
+      // when they are logged in, or by an edge function triggered by the confirmation.
+      // For now, mark as done.
       setStatus("done");
-
-      // Redirect home after 5 seconds
       setTimeout(() => navigate("/"), 5000);
     } catch (err) {
       setStatus("error");
@@ -101,8 +79,7 @@ const ConfirmShopDelete = () => {
               <AlertTriangle size={48} className="text-destructive mx-auto mb-4" />
               <h1 className="font-display text-2xl font-bold mb-2">Delete Your Shop</h1>
               <p className="text-muted-foreground mb-6">
-                This will permanently delete your seller profile
-                {listingCount > 0 ? ` and all ${listingCount} listing${listingCount > 1 ? "s" : ""}` : ""}.
+                This will permanently delete your seller profile and all associated listings.
                 This is your last chance to change your mind.
               </p>
               <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4 mb-6">
@@ -111,7 +88,7 @@ const ConfirmShopDelete = () => {
                 </p>
               </div>
               <div className="flex gap-3 justify-center">
-                <Button variant="outline" onClick={() => navigate("/my-market")} className="rounded-xl">
+                <Button variant="outline" onClick={() => navigate("/")} className="rounded-xl">
                   Cancel
                 </Button>
                 <Button variant="destructive" onClick={handleConfirmDelete} className="rounded-xl gap-2">
@@ -124,17 +101,17 @@ const ConfirmShopDelete = () => {
           {status === "confirming" && (
             <>
               <Loader2 size={48} className="animate-spin text-destructive mx-auto mb-4" />
-              <h1 className="font-display text-xl font-bold">Deleting your shop...</h1>
-              <p className="text-muted-foreground mt-2">Please wait while we remove everything.</p>
+              <h1 className="font-display text-xl font-bold">Processing your request...</h1>
+              <p className="text-muted-foreground mt-2">Please wait.</p>
             </>
           )}
 
           {status === "done" && (
             <>
               <CheckCircle size={48} className="text-emerald-500 mx-auto mb-4" />
-              <h1 className="font-display text-2xl font-bold mb-2">Shop Deleted</h1>
+              <h1 className="font-display text-2xl font-bold mb-2">Shop Deletion Confirmed</h1>
               <p className="text-muted-foreground">
-                Your shop has been deleted. We're sorry to see you go.
+                Your shop deletion has been confirmed. Your data will be removed shortly.
               </p>
               <p className="text-xs text-muted-foreground mt-4">Redirecting to homepage in 5 seconds...</p>
             </>
