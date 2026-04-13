@@ -1107,6 +1107,36 @@ const SearchResults = () => {
           </div>
         </div>
       )}
+
+      {/* Same Query Confirmation Dialog */}
+      {sameQueryConfirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSameQueryConfirmOpen(false)}>
+          <div className="bg-[#141414] border border-white/10 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center">
+              <div className="text-4xl mb-3">⚠️</div>
+              <h3 className="text-lg font-bold text-white mb-2">Duplicate search</h3>
+              <p className="text-zinc-400 text-sm mb-6">
+                You searched for "<span className="text-white font-medium">{pendingSearchQuery}</span>" recently.
+                This will use 1 of your {searchLimit.remaining} remaining searches. Continue?
+              </p>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => { setSameQueryConfirmOpen(false); executeSearch(pendingSearchQuery); }}
+                  className="w-full h-12 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm transition-colors"
+                >
+                  Yes, Search
+                </button>
+                <button
+                  onClick={() => setSameQueryConfirmOpen(false)}
+                  className="w-full h-10 rounded-xl text-zinc-400 hover:text-zinc-200 text-sm transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <UpgradeModal
         open={upgradeOpen}
         onOpenChange={setUpgradeOpen}
