@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Plus, Pencil, Trash2, ImagePlus, Eye, Bookmark,
-  Loader2, Package, Store, X, Save, Upload, Pause, Play, Flag, Star, MessageSquare, ExternalLink, Zap
+  Loader2, Package, Store, X, Save, Upload, Pause, Play, Flag, Star, MessageSquare, ExternalLink, Zap, Check, XCircle
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
