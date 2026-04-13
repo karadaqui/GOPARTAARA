@@ -73,13 +73,30 @@ const Navbar = () => {
         : "bg-transparent backdrop-blur-md border-b border-transparent"
     }`}>
       <div className="container flex h-16 items-center justify-between">
-        <button
-          onClick={() => handleNavClick("/")}
-          className="font-display text-2xl font-bold tracking-tight group"
+        <a
+          href="/"
+          onClick={(e) => {
+            if (window.location.pathname === '/') {
+              e.preventDefault();
+              window.location.reload();
+            }
+          }}
+          onAuxClick={(e) => {
+            if (e.button === 1) {
+              e.preventDefault();
+              window.open('https://gopartara.com', '_blank');
+            }
+          }}
+          onMouseDown={(e) => {
+            if (e.button === 1) {
+              e.preventDefault();
+            }
+          }}
+          className="font-display text-2xl font-bold tracking-tight group no-underline"
         >
           <span className="text-primary transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(0_85%_50%/0.6)]">PART</span>
           <span className="text-foreground">ARA</span>
-        </button>
+        </a>
 
         <div className="flex items-center gap-3">
           <div className="hidden md:flex items-center gap-8">
