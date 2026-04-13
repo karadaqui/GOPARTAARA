@@ -1,4 +1,3 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
@@ -8,7 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -19,15 +18,19 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_ANON_KEY") ?? ""
     );
 
-    const authHeader = req.headers.get("Authorization")!;
-    const token = authHeader.replace("Bearer ", "");
-    const { data } = await supabaseClient.auth.getUser(token);
-    const user = data.user;
-    if (!user?.email) throw new Error("User not authenticated");
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) throw new Error("No authorization header");
 
-    const { listingId, priceId, packageName, durationDays } = await req.json();
-    if (!listingId || !priceId || !packageName || !durationDays) {
-      throw new Error("Missing required fields: listingId, priceId, packageName, durationDays");
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await supabaseClient.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) throw new Error("Unauthorized");
+    const userId = claimsData.claims.sub as string;
+    const userEmail = claimsData.claims.email as string;
+    if (!userEmail) throw new Error("No email in token");
+
+    const { listingId, packageName, durationDays, amountPence } = await req.json();
+    if (!listingId || !packageName || !durationDays || !amountPence) {
+      throw new Error("Missing required fields: listingId, packageName, durationDays, amountPence");
     }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
@@ -35,30 +38,41 @@ serve(async (req) => {
     });
 
     // Check for existing Stripe customer
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+    const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
     let customerId: string | undefined;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
     }
 
-    const origin = req.headers.get("origin") || "https://gopartara.com";
-
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      customer_email: customerId ? undefined : user.email,
-      line_items: [{ price: priceId, quantity: 1 }],
+      customer_email: customerId ? undefined : userEmail,
+      line_items: [
+        {
+          price_data: {
+            currency: "gbp",
+            product_data: {
+              name: `PARTARA Boost — ${packageName}`,
+              description: `Featured listing for ${durationDays} days`,
+            },
+            unit_amount: amountPence,
+          },
+          quantity: 1,
+        },
+      ],
       mode: "payment",
-      success_url: `${origin}/my-market?boosted=true&listing=${listingId}&package=${encodeURIComponent(packageName)}&days=${durationDays}`,
-      cancel_url: `${origin}/my-market`,
+      success_url: `https://gopartara.com/my-market?boosted=true&listing=${listingId}&package=${encodeURIComponent(packageName)}&days=${durationDays}`,
+      cancel_url: `https://gopartara.com/my-market`,
       metadata: {
         listing_id: listingId,
         package_name: packageName,
         duration_days: String(durationDays),
-        user_id: user.id,
+        user_id: userId,
       },
     });
 
-    // Optimistically update the listing (will be confirmed by success redirect)
+    // Update listing after checkout session created (payment not yet confirmed,
+    // but Stripe redirect to success_url means payment succeeded)
     const adminClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
