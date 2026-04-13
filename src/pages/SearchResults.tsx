@@ -3,6 +3,8 @@ import { X } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { sanitizeInput, checkRateLimit, getCachedSearch, setCachedSearch } from "@/lib/sanitize";
 import { buildEbayAffiliateUrl } from "@/lib/ebayAffiliate";
+import { useUserPlan } from "@/hooks/useUserPlan";
+import UpgradeModal from "@/components/UpgradeModal";
 
 import SafeImage from "@/components/SafeImage";
 import Navbar from "@/components/Navbar";
@@ -252,6 +254,11 @@ const SearchResults = () => {
   const [searchLimitModalType, setSearchLimitModalType] = useState<"free" | "guest">("free");
   const [supplierBannerDismissed, setSupplierBannerDismissed] = useState(() => localStorage.getItem("supplier_banner_dismissed") === "1");
   const resultsRef = useRef<HTMLDivElement>(null);
+  const userPlan = useUserPlan();
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [upgradeFeature, setUpgradeFeature] = useState("");
+  const [upgradeLabel, setUpgradeLabel] = useState("");
+  const [upgradeRequiredPlan, setUpgradeRequiredPlan] = useState("Pro");
 
 
   // ── Filter & Sort State ──
