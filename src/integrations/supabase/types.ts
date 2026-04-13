@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_actions: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          id: string
+          internal_notes: string | null
+          listing_id: string | null
+          listings_deleted_count: number | null
+          metadata: Json | null
+          reason: string | null
+          target_user_id: string | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          id?: string
+          internal_notes?: string | null
+          listing_id?: string | null
+          listings_deleted_count?: number | null
+          metadata?: Json | null
+          reason?: string | null
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          id?: string
+          internal_notes?: string | null
+          listing_id?: string | null
+          listings_deleted_count?: number | null
+          metadata?: Json | null
+          reason?: string | null
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       blog_generations: {
         Row: {
           created_at: string
@@ -218,6 +257,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      deletion_requests: {
+        Row: {
+          confirmed: boolean
+          confirmed_at: string | null
+          created_at: string
+          expires_at: string
+          feedback: string | null
+          id: string
+          reason: string | null
+          token: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          confirmed?: boolean
+          confirmed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          feedback?: string | null
+          id?: string
+          reason?: string | null
+          token?: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          confirmed?: boolean
+          confirmed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          feedback?: string | null
+          id?: string
+          reason?: string | null
+          token?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       email_send_log: {
         Row: {
