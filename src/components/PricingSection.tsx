@@ -1,4 +1,4 @@
-import { Check, X, Loader2, Sparkles, Crown, Star, Store, Zap, Gem, Shield, Building2 } from "lucide-react";
+import { Check, X, Loader2, Crown, Star, Shield, Building2 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
