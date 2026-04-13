@@ -96,10 +96,6 @@ const ListingDetail = () => {
   const isSeller = listing?.seller_profiles?.user_id === user?.id;
 
   useEffect(() => {
-    if (!user) {
-      navigate("/auth", { replace: true });
-      return;
-    }
     if (id) loadListing();
   }, [id, user]);
 
