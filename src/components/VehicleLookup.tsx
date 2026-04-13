@@ -280,6 +280,13 @@ const VehicleLookup = ({ onLookupStart, onVehicleFound }: VehicleLookupProps) =>
                 </Button>
               </div>
             )}
+
+            {/* TecDoc Compatible Parts */}
+            {modelConfirmed && (
+              <div className="px-5 pb-5">
+                <CompatibleParts make={vehicle.make} model={vehicle.model} year={vehicle.yearOfManufacture} />
+              </div>
+            )}
           </div>
         </div>
       )}
