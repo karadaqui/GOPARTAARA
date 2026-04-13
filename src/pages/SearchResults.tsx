@@ -25,7 +25,7 @@ import SearchCounter from "@/components/SearchCounter";
 import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsComparison";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useSearchLimit } from "@/hooks/useSearchLimit";
+import { useSearchLimit, isSameQuery, setLastSearch, getGuestSearchCount, incrementGuestSearch } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
 import LocationNudge from "@/components/LocationNudge";
 import { useCountry } from "@/hooks/useCountry";
@@ -248,7 +248,7 @@ const SearchResults = () => {
   const [totalResults, setTotalResults] = useState(0);
   const [ebayFallback, setEbayFallback] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const internalSearchRef = useRef(false);
+   const internalSearchRef = useRef(false);
   const [authGateOpen, setAuthGateOpen] = useState(false);
   const [searchLimitModalOpen, setSearchLimitModalOpen] = useState(false);
   const [searchLimitModalType, setSearchLimitModalType] = useState<"free" | "guest">("free");
@@ -259,6 +259,10 @@ const SearchResults = () => {
   const [upgradeFeature, setUpgradeFeature] = useState("");
   const [upgradeLabel, setUpgradeLabel] = useState("");
   const [upgradeRequiredPlan, setUpgradeRequiredPlan] = useState("Pro");
+  const [sameQueryConfirmOpen, setSameQueryConfirmOpen] = useState(false);
+  const [pendingSearchQuery, setPendingSearchQuery] = useState("");
+  const isFromGarage = searchParams.get("fromGarage") === "true";
+  const [garageVehicleLabel, setGarageVehicleLabel] = useState<string | null>(null);
 
 
   // ── Filter & Sort State ──
@@ -290,6 +294,10 @@ const SearchResults = () => {
     if (urlQuery && urlQuery !== activeQuery) { setActiveQuery(urlQuery); setCurrentPage(1); }
     if (urlQuery) setSearchMode("text");
     if (urlQuery && !user) setAuthGateOpen(true);
+    // Track garage vehicle label from URL
+    if (isFromGarage && urlQuery) {
+      setGarageVehicleLabel(urlQuery);
+    }
   }, [urlQuery]);
 
   useEffect(() => {
@@ -340,6 +348,8 @@ const SearchResults = () => {
             }
             if (sortBy !== "best_match") body.sortBy = sortBy;
             if (categoryFilter !== "All Parts") body.categoryFilter = categoryFilter;
+            // If coming from garage, skip search credit deduction
+            if (isFromGarage) body.skipCredit = true;
 
             const { data, error } = await supabase.functions.invoke("search-parts", { body });
             if (error) {
@@ -399,7 +409,23 @@ const SearchResults = () => {
     setVehicleInfo(vehicle); setVehicleModelInput(""); setVehicleModelConfirmed(!!vehicle.model);
     setQuery(nextQuery); setActiveQuery(nextQuery); setSelectedCategory(null); setCurrentPage(1);
     setSearchMode("text"); setSearchParams({ q: nextQuery, vehicle: JSON.stringify(vehicle) });
-    if (user) searchLimit.recordSearch();
+    // Reg plate lookup counts as a search credit
+    if (user && !searchLimit.isPro) {
+      searchLimit.recordSearch();
+      setLastSearch(nextQuery);
+    }
+  };
+
+  /** Actually execute a search (after any confirmations) */
+  const executeSearch = (sanitized: string) => {
+    if (!checkRateLimit(`search_${user!.id}`, 10, 60_000)) { toast({ title: "Slow down", description: "You're searching too fast. Please wait a moment.", variant: "destructive" }); return; }
+    internalSearchRef.current = true;
+    setActiveQuery(sanitized); setSelectedCategory(null); setCurrentPage(1); setSearchParams({ q: sanitized });
+    setGarageVehicleLabel(null);
+    if (!searchLimit.isPro) {
+      searchLimit.recordSearch();
+      setLastSearch(sanitized);
+    }
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -409,13 +435,13 @@ const SearchResults = () => {
 
     // Guest search limit (3 searches via localStorage)
     if (!user) {
-      const guestCount = parseInt(localStorage.getItem("partara_guest_searches") || "0", 10);
+      const guestCount = getGuestSearchCount();
       if (guestCount >= 3) {
         setSearchLimitModalType("guest");
         setSearchLimitModalOpen(true);
         return;
       }
-      localStorage.setItem("partara_guest_searches", String(guestCount + 1));
+      incrementGuestSearch();
       setAuthGateOpen(true);
       return;
     }
@@ -427,10 +453,14 @@ const SearchResults = () => {
       return;
     }
 
-    if (!checkRateLimit(`search_${user.id}`, 10, 60_000)) { toast({ title: "Slow down", description: "You're searching too fast. Please wait a moment.", variant: "destructive" }); return; }
-    internalSearchRef.current = true;
-    setActiveQuery(sanitized); setSelectedCategory(null); setCurrentPage(1); setSearchParams({ q: sanitized });
-    if (user) searchLimit.recordSearch();
+    // Same query warning (only for free users who have limited searches)
+    if (!searchLimit.isPro && isSameQuery(sanitized)) {
+      setPendingSearchQuery(sanitized);
+      setSameQueryConfirmOpen(true);
+      return;
+    }
+
+    executeSearch(sanitized);
   };
 
   
@@ -634,6 +664,15 @@ const SearchResults = () => {
                   </button>
                 </div>
               </form>
+              {/* Garage vehicle filter badge */}
+              {garageVehicleLabel && (
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-zinc-800 border border-white/10 text-zinc-300">
+                    🚗 Searching for: {garageVehicleLabel}
+                    <button onClick={() => { setGarageVehicleLabel(null); searchParams.delete("fromGarage"); setSearchParams(searchParams); }} className="ml-1 hover:text-white transition-colors"><X size={12} /></button>
+                  </span>
+                </div>
+              )}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-end gap-2">
                 <div className="hidden sm:flex items-center gap-2">
                   {compareParts.length > 0 && (
@@ -1038,10 +1077,10 @@ const SearchResults = () => {
               </div>
               {searchLimitModalType === "free" ? (
                 <>
-                  <h3 className="text-xl font-bold text-white mb-2">Search limit reached</h3>
-                  <p className="text-zinc-400 text-sm mb-6">You've used your 5 free searches this month. Upgrade to Pro for unlimited searches.</p>
+                  <h3 className="text-xl font-bold text-white mb-2">You've used all 5 free searches 🔍</h3>
+                  <p className="text-zinc-400 text-sm mb-6">Upgrade to Pro for unlimited searches, photo search, price alerts and more.</p>
                   <button onClick={() => { setSearchLimitModalOpen(false); navigate("/pricing"); }} className="w-full h-12 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm transition-colors">
-                    Upgrade to Pro
+                    Upgrade to Pro — £9.99/mo
                   </button>
                   <button onClick={() => setSearchLimitModalOpen(false)} className="mt-3 w-full h-10 rounded-xl text-zinc-400 hover:text-zinc-200 text-sm transition-colors">
                     Maybe later
@@ -1064,6 +1103,36 @@ const SearchResults = () => {
                   </button>
                 </>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Same Query Confirmation Dialog */}
+      {sameQueryConfirmOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setSameQueryConfirmOpen(false)}>
+          <div className="bg-[#141414] border border-white/10 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="text-center">
+              <div className="text-4xl mb-3">⚠️</div>
+              <h3 className="text-lg font-bold text-white mb-2">Duplicate search</h3>
+              <p className="text-zinc-400 text-sm mb-6">
+                You searched for "<span className="text-white font-medium">{pendingSearchQuery}</span>" recently.
+                This will use 1 of your {searchLimit.remaining} remaining searches. Continue?
+              </p>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => { setSameQueryConfirmOpen(false); executeSearch(pendingSearchQuery); }}
+                  className="w-full h-12 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm transition-colors"
+                >
+                  Yes, Search
+                </button>
+                <button
+                  onClick={() => setSameQueryConfirmOpen(false)}
+                  className="w-full h-10 rounded-xl text-zinc-400 hover:text-zinc-200 text-sm transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           </div>
         </div>
