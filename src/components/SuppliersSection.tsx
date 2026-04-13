@@ -23,7 +23,6 @@ const stats = [
   {
     icon: Globe,
     number: "Global",
-    numberPrefix: true,
     label: "eBay Markets",
     subtext: "UK, EU, US, AU & more",
   },
@@ -60,14 +59,7 @@ const SuppliersSection = () => (
                 size={20}
                 className="mx-auto mb-3 text-primary transition-transform duration-300 group-hover:scale-110"
               />
-              <div className="font-display text-2xl sm:text-3xl font-bold text-primary mb-1 tracking-tight flex items-center justify-center gap-1.5">
-                {"numberPrefix" in s && s.numberPrefix && (
-                  <img
-                    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f1ec-1f1e7.svg"
-                    alt="UK flag"
-                    className="w-7 h-7 inline-block"
-                  />
-                )}
+              <div className="font-display text-2xl sm:text-3xl font-bold text-primary mb-1 tracking-tight">
                 {s.number}
               </div>
               <div className="text-sm font-medium text-foreground mb-1">
