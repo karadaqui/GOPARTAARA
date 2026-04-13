@@ -664,6 +664,15 @@ const SearchResults = () => {
                   </button>
                 </div>
               </form>
+              {/* Garage vehicle filter badge */}
+              {garageVehicleLabel && (
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-zinc-800 border border-white/10 text-zinc-300">
+                    🚗 Searching for: {garageVehicleLabel}
+                    <button onClick={() => { setGarageVehicleLabel(null); searchParams.delete("fromGarage"); setSearchParams(searchParams); }} className="ml-1 hover:text-white transition-colors"><X size={12} /></button>
+                  </span>
+                </div>
+              )}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-end gap-2">
                 <div className="hidden sm:flex items-center gap-2">
                   {compareParts.length > 0 && (
