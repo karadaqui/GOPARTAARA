@@ -294,6 +294,10 @@ const SearchResults = () => {
     if (urlQuery && urlQuery !== activeQuery) { setActiveQuery(urlQuery); setCurrentPage(1); }
     if (urlQuery) setSearchMode("text");
     if (urlQuery && !user) setAuthGateOpen(true);
+    // Track garage vehicle label from URL
+    if (isFromGarage && urlQuery) {
+      setGarageVehicleLabel(urlQuery);
+    }
   }, [urlQuery]);
 
   useEffect(() => {
