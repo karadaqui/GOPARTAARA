@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
   Star, Store, ExternalLink, Bookmark, BookmarkCheck, Eye,
-  ChevronLeft, Loader2, Send, Bell, User, Trash2, Flag, MessageCircle
+  ChevronLeft, Loader2, Send, Bell, User, Trash2, Flag
 } from "lucide-react";
 import MakeOfferModal from "@/components/MakeOfferModal";
 import PlanBadge from "@/components/badges/PlanBadge";
@@ -782,6 +782,17 @@ const ListingDetail = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {listing && (
+        <MakeOfferModal
+          open={offerOpen}
+          onClose={() => setOfferOpen(false)}
+          listingId={listing.id}
+          listingTitle={listing.title}
+          sellerId={listing.seller_profiles.user_id}
+          currentPrice={listing.price}
+        />
+      )}
 
       <Footer />
     </div>
