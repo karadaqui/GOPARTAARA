@@ -739,7 +739,7 @@ const MyMarket = () => {
               </div>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button size="sm" variant="outline" onClick={() => setEditingProfile(true)} className="rounded-xl gap-1.5">
               <Pencil size={14} /> Edit Profile
             </Button>
@@ -749,6 +749,9 @@ const MyMarket = () => {
               </Button>
               <input type="file" accept="image/*" className="hidden" onChange={handleUploadLogo} />
             </label>
+            <Button size="sm" variant="ghost" onClick={() => setShopDeleteOpen(true)} className="rounded-xl gap-1.5 text-destructive hover:text-destructive">
+              <Trash2 size={14} /> Delete Shop
+            </Button>
           </div>
         </div>
 
