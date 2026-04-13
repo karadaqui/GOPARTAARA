@@ -403,7 +403,7 @@ const Garage = () => {
                   variant="outline"
                   size="sm"
                   className="w-full mt-4 rounded-xl gap-2"
-                  onClick={() => navigate(`/search?q=${encodeURIComponent(`${v.make} ${v.model} ${v.year}`)}`)}
+                  onClick={() => navigate(`/search?q=${encodeURIComponent(`${v.make} ${v.model} ${v.year}`)}&fromGarage=true`)}
                 >
                   <Search size={14} />
                   Search Parts
