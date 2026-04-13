@@ -603,7 +603,7 @@ const MyMarket = () => {
                   <Input value={profileForm.contact_email} onChange={e => setProfileForm(f => ({ ...f, contact_email: e.target.value }))} className="bg-secondary border-border rounded-xl" />
                 </div>
                 <div>
-                  <label className="text-sm text-muted-foreground block mb-1">Phone</label>
+                  <label className="text-sm text-muted-foreground block mb-1">Phone <span className="text-muted-foreground/50">(optional)</span></label>
                   <Input value={profileForm.contact_phone} onChange={e => setProfileForm(f => ({ ...f, contact_phone: e.target.value }))} className="bg-secondary border-border rounded-xl" />
                 </div>
               </div>
