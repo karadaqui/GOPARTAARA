@@ -1,4 +1,4 @@
-import { Check, X, Loader2, Sparkles, Crown, Star, Store, Zap, Gem, Shield, Building2 } from "lucide-react";
+import { Check, X, Loader2, Star, Zap, Shield, Building2 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -71,122 +71,6 @@ const individualPlans = [
   },
 ];
 
-const sellerPlans = [
-  {
-    name: "Basic Seller",
-    tagline: "Get listed in the PARTARA marketplace",
-    price: "£9.99",
-    period: "/mo",
-    icon: Store,
-    features: ["20 listings", "Basic analytics"],
-    cta: "Get Started",
-    popular: false,
-    priceId: STRIPE.basic_seller,
-  },
-  {
-    name: "Featured Seller",
-    tagline: "Stand out with premium placement",
-    price: "£24.99",
-    period: "/mo",
-    icon: Star,
-    features: ["100 listings", "Featured placement", "Advanced analytics"],
-    cta: "Go Featured",
-    popular: true,
-    priceId: STRIPE.featured_seller,
-  },
-  {
-    name: "Pro Seller",
-    tagline: "Maximum visibility for your business",
-    price: "£49.99",
-    period: "/mo",
-    icon: Crown,
-    features: ["Unlimited listings", "Top placement", "Verified badge"],
-    cta: "Go Pro Seller",
-    popular: false,
-    priceId: STRIPE.pro_seller,
-  },
-];
-
-const bundles = [
-  {
-    name: "Pro + Basic Seller",
-    tagline: "Search & sell essentials",
-    price: "£16.99",
-    was: "£19.98",
-    saving: "£3",
-    period: "/mo",
-    priceId: STRIPE.pro_basic_seller,
-    popular: false,
-    icon: Store,
-    searchFeatures: ["Unlimited searches", "Photo search", "Unlimited parts & alerts", "Unlimited garage", "Search history", "Price alerts"],
-    sellerFeatures: ["20 listings", "Basic analytics"],
-  },
-  {
-    name: "Pro + Featured Seller",
-    tagline: "The most popular combo",
-    price: "£29.99",
-    was: "£34.98",
-    saving: "£5",
-    period: "/mo",
-    priceId: STRIPE.pro_featured_seller,
-    popular: true,
-    icon: Star,
-    searchFeatures: ["Unlimited searches", "Photo search", "Unlimited parts & alerts", "Unlimited garage", "Search history", "Price alerts"],
-    sellerFeatures: ["100 listings", "Featured placement", "Advanced analytics"],
-  },
-  {
-    name: "Pro + Pro Seller",
-    tagline: "Full power search & selling",
-    price: "£49.99",
-    was: "£59.98",
-    saving: "£10",
-    period: "/mo",
-    priceId: STRIPE.pro_pro_seller,
-    popular: false,
-    icon: Crown,
-    searchFeatures: ["Unlimited searches", "Photo search", "Unlimited parts & alerts", "Unlimited garage", "Search history", "Price alerts"],
-    sellerFeatures: ["Unlimited listings", "Top placement", "Verified badge"],
-  },
-  {
-    name: "Elite + Basic Seller",
-    tagline: "Premium search with seller access",
-    price: "£25.99",
-    was: "£29.98",
-    saving: "£4",
-    period: "/mo",
-    priceId: STRIPE.elite_basic_seller,
-    popular: false,
-    icon: Gem,
-    searchFeatures: ["Unlimited searches", "Photo search", "Unlimited parts & alerts", "Unlimited garage", "Search history", "Price alerts", "Export search history CSV", "30-day price tracking", "Vehicle notes & history", "Early access to features", "Priority email support"],
-    sellerFeatures: ["20 listings", "Basic analytics"],
-  },
-  {
-    name: "Elite + Featured Seller",
-    tagline: "Premium everything",
-    price: "£37.99",
-    was: "£44.98",
-    saving: "£7",
-    period: "/mo",
-    priceId: STRIPE.elite_featured_seller,
-    popular: false,
-    icon: Gem,
-    searchFeatures: ["Unlimited searches", "Photo search", "Unlimited parts & alerts", "Unlimited garage", "Search history", "Price alerts", "Export search history CSV", "30-day price tracking", "Vehicle notes & history", "Early access to features", "Priority email support"],
-    sellerFeatures: ["100 listings", "Featured placement", "Advanced analytics"],
-  },
-  {
-    name: "Elite + Pro Seller",
-    tagline: "The ultimate PARTARA plan",
-    price: "£57.99",
-    was: "£69.98",
-    saving: "£12",
-    period: "/mo",
-    priceId: STRIPE.elite_pro_seller,
-    popular: false,
-    icon: Gem,
-    searchFeatures: ["Unlimited searches", "Photo search", "Unlimited parts & alerts", "Unlimited garage", "Search history", "Price alerts", "Export search history CSV", "30-day price tracking", "Vehicle notes & history", "Early access to features", "Priority email support"],
-    sellerFeatures: ["Unlimited listings", "Top placement", "Verified badge"],
-  },
-];
 
 /* ── Comparison table data ──────────────────────────────── */
 
@@ -235,7 +119,6 @@ const faqItems = [
   },
 ];
 
-type Tab = "individual" | "seller" | "bundles";
 
 const CHECKOUT_TIMEOUT_MS = 10_000;
 
@@ -243,7 +126,6 @@ const PricingSection = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<Tab>("individual");
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [slowWarning, setSlowWarning] = useState(false);
   const [annual, setAnnual] = useState(false);
@@ -275,11 +157,6 @@ const PricingSection = () => {
 
   const isLoading = (id: string | null) => id !== null && loadingId === id;
 
-  const tabs: { key: Tab; label: string; hidden?: boolean }[] = [
-    { key: "individual", label: "Individual Plans" },
-    { key: "seller", label: "Seller Plans", hidden: true },
-    { key: "bundles", label: "Bundle & Save", hidden: true },
-  ];
 
   return (
     <section id="pricing" className="py-24">
@@ -306,107 +183,29 @@ const PricingSection = () => {
           </span>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex justify-center mb-12">
-          <div className="inline-flex items-center rounded-xl border border-border/50 bg-card/50 p-1 backdrop-blur-sm">
-            {tabs.filter(t => !t.hidden).map((t) => (
-              <button
-                key={t.key}
-                onClick={() => setActiveTab(t.key)}
-                className={`relative px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
-                  activeTab === t.key
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {t.key === "bundles" && (
-                  <Sparkles size={12} className="inline mr-1.5 -mt-0.5" />
-                )}
-                {t.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Individual Plans */}
-        {activeTab === "individual" && (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {individualPlans.map((plan) => {
-              const effectivePriceId = annual && plan.annualPriceId ? plan.annualPriceId : plan.priceId;
-              return (
-                <PlanCard
-                  key={plan.name}
-                  name={plan.name}
-                  tagline={plan.tagline}
-                  price={annual ? plan.annualPrice : plan.monthlyPrice}
-                  originalPrice={annual && plan.annualPrice !== plan.monthlyPrice ? plan.monthlyPrice : undefined}
-                  billedNote={annual ? plan.annualBilled : undefined}
-                  period={plan.period}
-                  features={plan.features}
-                  cta={plan.cta}
-                  popular={plan.popular}
-                  loading={isLoading(effectivePriceId)}
-                  slowWarning={slowWarning}
-                  onSelect={() => startCheckout(effectivePriceId)}
-                />
-              );
-            })}
-          </div>
-        )}
-
-        {/* Seller Plans */}
-        {activeTab === "seller" && (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {sellerPlans.map((plan) => (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {individualPlans.map((plan) => {
+            const effectivePriceId = annual && plan.annualPriceId ? plan.annualPriceId : plan.priceId;
+            return (
               <PlanCard
                 key={plan.name}
                 name={plan.name}
                 tagline={plan.tagline}
-                price={plan.price}
+                price={annual ? plan.annualPrice : plan.monthlyPrice}
+                originalPrice={annual && plan.annualPrice !== plan.monthlyPrice ? plan.monthlyPrice : undefined}
+                billedNote={annual ? plan.annualBilled : undefined}
                 period={plan.period}
                 features={plan.features}
                 cta={plan.cta}
                 popular={plan.popular}
-                loading={isLoading(plan.priceId)}
+                loading={isLoading(effectivePriceId)}
                 slowWarning={slowWarning}
-                onSelect={() => startCheckout(plan.priceId)}
-                icon={plan.icon}
+                onSelect={() => startCheckout(effectivePriceId)}
               />
-            ))}
-          </div>
-        )}
-
-        {/* Bundle Plans */}
-        {activeTab === "bundles" && (
-          <div>
-            <div className="text-center mb-10">
-              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium">
-                <Zap size={14} /> Save up to £12/mo with bundles
-              </span>
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {bundles.map((b) => (
-                <PlanCard
-                  key={b.name}
-                  name={b.name}
-                  tagline={b.tagline}
-                  price={b.price}
-                  period={b.period}
-                  was={b.was}
-                  saving={b.saving}
-                  searchFeatures={b.searchFeatures}
-                  sellerFeatures={b.sellerFeatures}
-                  cta={`Get ${b.name}`}
-                  popular={b.popular}
-                  loading={isLoading(b.priceId)}
-                  slowWarning={slowWarning}
-                  onSelect={() => startCheckout(b.priceId)}
-                  icon={b.icon}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+            );
+          })}
+        </div>
 
         {/* Business CTA */}
         <div className="mt-12 rounded-2xl border border-border/30 bg-card/30 backdrop-blur-sm p-8 sm:p-10 text-center">

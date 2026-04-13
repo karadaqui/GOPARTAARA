@@ -92,7 +92,7 @@ const CATEGORIES = [
   "Body Panels", "Lighting", "Wheels & Tyres", "Other"
 ];
 
-const SELLER_PLANS = ["basic_seller", "featured_seller", "pro_seller", "admin"];
+// All logged-in users can list parts - no seller plan required
 
 const MyMarket = () => {
   const { user } = useAuth();
@@ -111,7 +111,7 @@ const MyMarket = () => {
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [undoListing, setUndoListing] = useState<Listing | null>(null);
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [showSellerGate, setShowSellerGate] = useState(false);
+  const [userPlan, setUserPlan] = useState<string>("free");
   const [disputedReviews, setDisputedReviews] = useState<DisputedReview[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [boostModalOpen, setBoostModalOpen] = useState(false);
@@ -157,19 +157,15 @@ const MyMarket = () => {
 
   useEffect(() => {
     if (!user) { navigate("/auth"); return; }
-    // Check if user has a seller plan
+    // Load user plan for listing limits, then load data
     supabase
       .from("profiles")
       .select("subscription_plan")
       .eq("user_id", user.id)
       .single()
       .then(({ data }) => {
-        if (!data || !SELLER_PLANS.includes(data.subscription_plan)) {
-          setShowSellerGate(true);
-          setLoading(false);
-        } else {
-          loadData();
-        }
+        if (data) setUserPlan(data.subscription_plan);
+        loadData();
       });
   }, [user]);
 
@@ -344,14 +340,12 @@ const MyMarket = () => {
         photos: listing.photos,
       });
     } else {
-      // Check listing limit for non-admin/non-unlimited plans
+      // Check listing limit based on user subscription plan
       const activeCount = listings.filter(l => l.active).length;
-      // Basic seller: 20, Featured: 100, Pro seller/admin: unlimited
-      const tierLimits: Record<string, number> = { basic: 20, featured: 100, pro: Infinity, admin: Infinity };
-      const currentTier = profile?.seller_tier || "basic";
-      const limit = tierLimits[currentTier] ?? 20;
+      const isPaidPlan = ["pro", "elite", "admin", "basic_seller", "featured_seller", "pro_seller"].includes(userPlan);
+      const limit = isPaidPlan ? Infinity : 5;
       if (activeCount >= limit) {
-        toast({ title: "Listing limit reached", description: `Your ${currentTier} seller plan allows ${limit} active listings. Upgrade your seller tier for more.`, variant: "destructive" });
+        toast({ title: "Listing limit reached", description: `Free members can list up to 5 parts. Upgrade to Pro or Elite for unlimited listings.`, variant: "destructive" });
         return;
       }
       setEditingListing(null);
@@ -523,38 +517,7 @@ const MyMarket = () => {
 
   if (!user) return null;
 
-  if (showSellerGate) {
-    return (
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container max-w-lg py-24 px-6">
-          <div className="glass rounded-2xl p-8 text-center">
-            <Store size={48} className="text-primary mx-auto mb-4" />
-            <h1 className="font-display text-2xl font-bold mb-2">Seller Account Required</h1>
-            <p className="text-muted-foreground mb-6">You need a seller subscription to list parts on PARTARA.</p>
-            <div className="space-y-3 mb-6">
-              <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/50 border border-border">
-                <span className="text-sm font-medium">Basic Seller</span>
-                <span className="text-sm font-bold text-primary">£9.99/mo</span>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/50 border border-primary/30">
-                <span className="text-sm font-medium">Featured Seller</span>
-                <span className="text-sm font-bold text-primary">£24.99/mo</span>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-xl bg-secondary/50 border border-border">
-                <span className="text-sm font-medium">Pro Seller</span>
-                <span className="text-sm font-bold text-primary">£49.99/mo</span>
-              </div>
-            </div>
-            <Button onClick={() => navigate("/pricing")} className="w-full rounded-xl">
-              See Pricing
-            </Button>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  // Seller gate removed - all logged-in users can list parts
 
   if (loading) {
     return (
@@ -605,9 +568,6 @@ const MyMarket = () => {
                 Create Seller Profile
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground mt-4">
-              Want a premium listing? <button onClick={() => navigate("/list-your-parts")} className="text-primary hover:underline">View seller plans</button>
-            </p>
           </div>
         </div>
         <Footer />

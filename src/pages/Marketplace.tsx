@@ -225,7 +225,7 @@ const Marketplace = () => {
             <Wrench size={14} className="inline mr-1.5 -mt-0.5 text-primary" />
             Have parts to sell? List for free — reach thousands of UK car owners
           </p>
-          <Button size="sm" className="rounded-xl gap-1.5 shrink-0" onClick={() => navigate("/list-your-parts")}>
+          <Button size="sm" className="rounded-xl gap-1.5 shrink-0" onClick={() => navigate("/my-market")}>
             List Your Parts →
           </Button>
         </div>
@@ -325,7 +325,7 @@ const Marketplace = () => {
             <div className="glass rounded-2xl p-8 mt-12 text-center">
               <h2 className="font-display text-xl font-bold mb-2">Sell Your Parts on PARTARA</h2>
               <p className="text-muted-foreground mb-4">Reach thousands of car owners and mechanics.</p>
-              <Button onClick={() => navigate("/list-your-parts")} className="rounded-xl gap-2">
+              <Button onClick={() => navigate("/my-market")} className="rounded-xl gap-2">
                 <Store size={16} /> List Your Parts
               </Button>
             </div>
