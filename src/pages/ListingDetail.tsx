@@ -91,7 +91,7 @@ const ListingDetail = () => {
   const [disputeReviewId, setDisputeReviewId] = useState<string | null>(null);
   const [disputeReason, setDisputeReason] = useState("");
   const [moderating, setModerating] = useState(false);
-
+  const [offerOpen, setOfferOpen] = useState(false);
   const isAdmin = userPlan === "admin";
   const isSeller = listing?.seller_profiles?.user_id === user?.id;
 
