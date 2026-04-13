@@ -642,17 +642,24 @@ const SearchResults = () => {
         {!supplierBannerDismissed && (
           <div className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3">
             <div className="flex items-center gap-2 shrink-0">
-              <span className="text-xs font-medium text-zinc-300">eBay</span>
+              <span className="text-xs font-medium text-white">eBay</span>
               <span className="text-[10px] text-zinc-600">•</span>
-              <span className="text-xs font-medium text-zinc-300">Amazon</span>
+              <span className="text-xs text-zinc-500">Amazon <span className="text-[10px] text-zinc-600">(affiliate only)</span></span>
               <span className="text-[10px] text-zinc-600">•</span>
-              <span className="text-xs text-zinc-600 opacity-40 grayscale">Euro Car Parts</span>
-              <span className="text-xs text-zinc-600 opacity-40 grayscale">GSF</span>
-              <span className="text-xs text-zinc-600 opacity-40 grayscale">CP4L</span>
-              <span className="text-xs text-zinc-600 opacity-40 grayscale">Autodoc</span>
-              <span className="text-sm">🔜</span>
+              <span className="text-xs text-zinc-600 opacity-50 grayscale flex items-center gap-1">
+                <span className="text-[10px]">🔜</span> Euro Car Parts
+              </span>
+              <span className="text-xs text-zinc-600 opacity-50 grayscale flex items-center gap-1">
+                <span className="text-[10px]">🔜</span> GSF
+              </span>
+              <span className="text-xs text-zinc-600 opacity-50 grayscale flex items-center gap-1">
+                <span className="text-[10px]">🔜</span> CP4L
+              </span>
+              <span className="text-xs text-zinc-600 opacity-50 grayscale flex items-center gap-1">
+                <span className="text-[10px]">🔜</span> Autodoc
+              </span>
             </div>
-            <p className="text-xs text-zinc-500 flex-1 hidden sm:block">More suppliers coming soon — Euro Car Parts, GSF Car Parts, Autodoc & more</p>
+            <p className="text-xs text-zinc-500 flex-1 hidden sm:block">More suppliers coming soon</p>
             <button
               onClick={() => { setSupplierBannerDismissed(true); localStorage.setItem("supplier_banner_dismissed", "1"); }}
               className="shrink-0 p-1 rounded-lg hover:bg-white/5 text-zinc-600 hover:text-zinc-400 transition-colors"
@@ -929,27 +936,29 @@ const SearchResults = () => {
               const href = `https://lowest-prices.eu/a/rkrn4sDyrWIyElw?url=${encodeURIComponent(autodocUrl)}`;
               return (
                 <a href={href} target="_blank" rel="noopener noreferrer"
-                  className="mt-6 mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3 hover:border-white/[0.12] transition-all group">
-                  <img src="https://www.autodoc.co.uk/favicon.ico" alt="Autodoc" className="w-5 h-5 shrink-0" />
-                  <p className="text-sm text-zinc-400 flex-1">
-                    Check prices on <span className="text-zinc-200 font-medium">Autodoc</span>
+                  className="mt-6 mb-4 bg-zinc-900/60 border border-white/[0.08] rounded-xl px-5 py-4 flex items-center gap-4 hover:border-red-500/30 hover:bg-zinc-900/80 transition-all group">
+                  <div className="w-10 h-10 rounded-xl bg-[#E72B2B]/10 flex items-center justify-center shrink-0 border border-[#E72B2B]/20">
+                    <img src="https://www.autodoc.co.uk/favicon.ico" alt="Autodoc" className="w-5 h-5" />
+                  </div>
+                  <p className="text-sm text-zinc-300 flex-1">
+                    Check prices on <span className="text-white font-medium">Autodoc</span> — <span className="text-zinc-400">Europe's largest auto parts store</span>
                   </p>
-                  <span className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors">
-                    <ExternalLink size={13} /> View on Autodoc →
+                  <span className="shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors">
+                    View on Autodoc <ExternalLink size={14} />
                   </span>
                 </a>
               );
             })()}
 
                 {/* More suppliers coming soon — honest banner */}
-                <div className="bg-zinc-900/50 border border-white/[0.07] rounded-2xl p-6 mt-8 text-center">
+                <div className="bg-zinc-900/40 border border-white/[0.06] rounded-2xl p-6 mt-6 text-center">
                   <div className="text-4xl mb-3">🔧</div>
                   <h3 className="text-lg font-bold text-white mb-1.5">More suppliers coming soon</h3>
                   <p className="text-sm text-zinc-400 max-w-md mx-auto mb-3">
-                    We're working on adding Euro Car Parts, GSF Car Parts, Autodoc and more. Currently showing results from eBay.
+                    We're working with Euro Car Parts, GSF Car Parts, Autodoc and more. Currently showing eBay results.
                   </p>
                   <a href="/contact" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
-                    Want to see a specific supplier? Let us know →
+                    Want to suggest a supplier? Contact us →
                   </a>
                 </div>
 
