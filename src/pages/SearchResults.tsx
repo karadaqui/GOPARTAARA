@@ -3,6 +3,8 @@ import { X } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { sanitizeInput, checkRateLimit, getCachedSearch, setCachedSearch } from "@/lib/sanitize";
 import { buildEbayAffiliateUrl } from "@/lib/ebayAffiliate";
+import { useUserPlan } from "@/hooks/useUserPlan";
+import UpgradeModal from "@/components/UpgradeModal";
 
 import SafeImage from "@/components/SafeImage";
 import Navbar from "@/components/Navbar";
@@ -252,6 +254,11 @@ const SearchResults = () => {
   const [searchLimitModalType, setSearchLimitModalType] = useState<"free" | "guest">("free");
   const [supplierBannerDismissed, setSupplierBannerDismissed] = useState(() => localStorage.getItem("supplier_banner_dismissed") === "1");
   const resultsRef = useRef<HTMLDivElement>(null);
+  const userPlan = useUserPlan();
+  const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const [upgradeFeature, setUpgradeFeature] = useState("");
+  const [upgradeLabel, setUpgradeLabel] = useState("");
+  const [upgradeRequiredPlan, setUpgradeRequiredPlan] = useState("Pro");
 
 
   // ── Filter & Sort State ──
@@ -458,6 +465,18 @@ const SearchResults = () => {
         setSavedIds((prev) => { const n = new Set(prev); n.delete(item.partNumber); return n; });
         toast({ title: "Removed from saved" });
       } else {
+        // Check saved parts limit for free users
+        if (userPlan.isFree) {
+          const { count } = await supabase.from("saved_parts").select("*", { count: "exact", head: true }).eq("user_id", user.id);
+          if ((count || 0) >= userPlan.features.savedParts) {
+            setUpgradeFeature("savedParts");
+            setUpgradeLabel("Saving more parts");
+            setUpgradeRequiredPlan("Pro");
+            setUpgradeOpen(true);
+            setSavingId(null);
+            return;
+          }
+        }
         await supabase.from("saved_parts").insert({ user_id: user.id, part_name: item.partName, part_number: item.partNumber, price: item.price, supplier: "eBay Motors", url: item.url, image_url: item.imageUrl });
         setSavedIds((prev) => new Set(prev).add(item.partNumber));
         toast({ title: "Part saved!" });
@@ -915,8 +934,8 @@ const SearchResults = () => {
                   })}
                 </div>
 
-            {/* ── Autodoc Affiliate Banner (geo-targeted) ── */}
-            {(() => {
+            {/* ── Autodoc Affiliate Banner (geo-targeted, hidden for ad-free users) ── */}
+            {!searchLimit.isPro && (() => {
               const autodocCountries: Record<string, string> = {
                 GB: 'autodoc.co.uk', AT: 'autodoc.at', FI: 'autodoc.co.uk', FR: 'autodoc.fr',
                 IT: 'autodoc.it', NL: 'autodoc.nl', NO: 'autodoc.co.uk', PL: 'autodoc.pl',
@@ -1049,6 +1068,13 @@ const SearchResults = () => {
           </div>
         </div>
       )}
+      <UpgradeModal
+        open={upgradeOpen}
+        onOpenChange={setUpgradeOpen}
+        feature={upgradeFeature}
+        featureLabel={upgradeLabel}
+        requiredPlan={upgradeRequiredPlan}
+      />
       <Footer />
     </div>
   );
