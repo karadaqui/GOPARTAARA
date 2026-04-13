@@ -171,7 +171,8 @@ Deno.serve(async (req) => {
     logStep("Active subscription found", { productId, plan, subscriptionEnd });
 
     // Store first_payment_date if not already set
-    const updateData: Record<string, any> = { subscription_plan: plan };
+    const subscriptionPeriod = ANNUAL_PRODUCTS.has(productId) ? "annual" : "monthly";
+    const updateData: Record<string, any> = { subscription_plan: plan, subscription_period: subscriptionPeriod };
     if (!profileData?.first_payment_date) {
       try {
         const startVal = sub.start_date || sub.created;
