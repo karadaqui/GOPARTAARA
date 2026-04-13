@@ -8,6 +8,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import CompatibleParts from "@/components/CompatibleParts";
 
 const MODEL_EXAMPLES: Record<string, string> = {
   VAUXHALL: "e.g. Astra, Corsa, Insignia, Mokka, Grandland",
@@ -277,6 +278,13 @@ const VehicleLookup = ({ onLookupStart, onVehicleFound }: VehicleLookupProps) =>
                   Find Parts for {vehicleTitle}
                   <ChevronRight size={16} />
                 </Button>
+              </div>
+            )}
+
+            {/* TecDoc Compatible Parts */}
+            {modelConfirmed && (
+              <div className="px-5 pb-5">
+                <CompatibleParts make={vehicle.make} model={vehicle.model} year={vehicle.yearOfManufacture} />
               </div>
             )}
           </div>
