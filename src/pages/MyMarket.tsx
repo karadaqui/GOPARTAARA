@@ -747,7 +747,93 @@ const MyMarket = () => {
           </div>
         )}
 
-        {/* Add listing */}
+        {/* Offers Section */}
+        {offers.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <MessageSquare size={18} className="text-primary" />
+              <h2 className="font-display text-xl font-bold">Offers Received</h2>
+              <Badge variant="secondary" className="text-xs">{offers.filter(o => o.status === "pending").length} pending</Badge>
+            </div>
+            <div className="space-y-3">
+              {offers.map(offer => (
+                <div key={offer.id} className="glass rounded-xl p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-display font-bold text-lg text-primary">£{Number(offer.amount).toFixed(2)}</span>
+                        <Badge
+                          variant={offer.status === "pending" ? "secondary" : offer.status === "accepted" ? "default" : "destructive"}
+                          className="capitalize text-xs"
+                        >
+                          {offer.status}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        from <span className="font-medium text-foreground">{offer.buyer_name}</span> on <span className="font-medium text-foreground">{offer.listing_title}</span>
+                      </p>
+                      {offer.message && (
+                        <p className="text-sm text-muted-foreground mt-1 italic">"{offer.message}"</p>
+                      )}
+                      <p className="text-[11px] text-muted-foreground mt-1">
+                        {new Date(offer.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                      </p>
+                    </div>
+                    {offer.status === "pending" && (
+                      <div className="flex gap-2 shrink-0">
+                        <Button size="sm" onClick={async () => {
+                          await supabase.from("offers").update({ status: "accepted" }).eq("id", offer.id);
+                          // Notify buyer
+                          await supabase.from("notifications").insert({
+                            user_id: offer.buyer_id,
+                            type: "offer_accepted",
+                            title: "Offer accepted! 🎉",
+                            message: `Your offer of £${Number(offer.amount).toFixed(2)} on "${offer.listing_title}" was accepted!`,
+                            link: `/listing/${offer.listing_id}`,
+                          });
+                          // Create conversation
+                          const { data: existingConv } = await supabase
+                            .from("conversations")
+                            .select("id")
+                            .eq("listing_id", offer.listing_id)
+                            .eq("buyer_id", offer.buyer_id)
+                            .eq("seller_id", user!.id)
+                            .maybeSingle();
+                          if (!existingConv) {
+                            await supabase.from("conversations").insert({
+                              listing_id: offer.listing_id,
+                              buyer_id: offer.buyer_id,
+                              seller_id: user!.id,
+                            });
+                          }
+                          toast({ title: "Offer accepted!" });
+                          await loadData();
+                        }} className="rounded-xl gap-1 text-xs h-8">
+                          <Check size={14} /> Accept
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={async () => {
+                          await supabase.from("offers").update({ status: "declined" }).eq("id", offer.id);
+                          await supabase.from("notifications").insert({
+                            user_id: offer.buyer_id,
+                            type: "offer_declined",
+                            title: "Offer declined",
+                            message: `Your offer of £${Number(offer.amount).toFixed(2)} on "${offer.listing_title}" was declined.`,
+                            link: `/listing/${offer.listing_id}`,
+                          });
+                          toast({ title: "Offer declined" });
+                          await loadData();
+                        }} className="rounded-xl gap-1 text-xs h-8">
+                          <XCircle size={14} /> Decline
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="flex justify-between items-center mb-6">
           <h2 className="font-display text-xl font-bold">My Listings</h2>
           <Button onClick={() => openListingForm()} className="rounded-xl gap-1.5">
