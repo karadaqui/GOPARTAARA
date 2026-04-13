@@ -566,6 +566,55 @@ const MyMarket = () => {
     await loadData();
   };
 
+  const handleShopDelete = async () => {
+    if (!user || !profile || !shopDeleteReason || !shopDeleteConfirm) return;
+    setShopDeleting(true);
+    try {
+      // Create deletion request
+      const { data: req, error } = await supabase
+        .from("deletion_requests")
+        .insert({
+          type: "shop",
+          user_id: user.id,
+          reason: shopDeleteReason,
+          feedback: shopDeleteFeedback || null,
+        } as any)
+        .select("token")
+        .single();
+
+      if (error) throw error;
+
+      const confirmUrl = `https://gopartara.com/confirm-shop-delete/${req.token}`;
+
+      // Get user profile for name
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("user_id", user.id)
+        .single();
+
+      // Send confirmation email
+      await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "shop-deletion-confirm",
+          recipientEmail: user.email,
+          idempotencyKey: `shop-delete-${req.token}`,
+          templateData: {
+            name: profileData?.display_name || user.email?.split("@")[0],
+            listingCount: String(listings.length),
+            confirmUrl,
+          },
+        },
+      });
+
+      setShopDeleteSent(true);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to initiate shop deletion", variant: "destructive" });
+    } finally {
+      setShopDeleting(false);
+    }
+  };
+
   if (!user) return null;
 
   // Seller gate removed - all logged-in users can list parts
