@@ -439,7 +439,7 @@ const SearchResults = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (!user) { setAuthGateOpen(true); if (photoInputRef.current) photoInputRef.current.value = ""; return; }
-    if (!searchLimit.isPro) { toast({ title: "Photo search is available on Pro and Elite plans", description: "Upgrade to unlock photo search.", variant: "destructive" }); navigate("/pricing"); if (photoInputRef.current) photoInputRef.current.value = ""; return; }
+    if (!searchLimit.isPro) { setUpgradeFeature("photoSearch"); setUpgradeLabel("Photo Search"); setUpgradeRequiredPlan("Pro"); setUpgradeOpen(true); if (photoInputRef.current) photoInputRef.current.value = ""; return; }
     if (file.size > 5 * 1024 * 1024) { toast({ title: "Too large", description: "Image must be under 5MB.", variant: "destructive" }); return; }
     setIdentifying(true);
     try {
