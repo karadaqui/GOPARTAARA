@@ -1011,14 +1011,46 @@ const MyMarket = () => {
                 <Input value={profileForm.contact_email} onChange={e => setProfileForm(f => ({ ...f, contact_email: e.target.value }))} className="bg-secondary border-border rounded-xl" />
               </div>
               <div>
-                <label className="text-sm text-muted-foreground block mb-1">Phone</label>
+                <label className="text-sm text-muted-foreground block mb-1">Phone <span className="text-muted-foreground/50">(optional)</span></label>
                 <Input value={profileForm.contact_phone} onChange={e => setProfileForm(f => ({ ...f, contact_phone: e.target.value }))} className="bg-secondary border-border rounded-xl" />
               </div>
             </div>
             <div>
-              <label className="text-sm text-muted-foreground block mb-1">Website</label>
+              <label className="text-sm text-muted-foreground block mb-1">Website <span className="text-muted-foreground/50">(optional)</span></label>
               <Input value={profileForm.website_url} onChange={e => setProfileForm(f => ({ ...f, website_url: e.target.value }))} className="bg-secondary border-border rounded-xl" />
             </div>
+
+            {/* Payment Details Section */}
+            <div className="border border-border rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <Lock size={14} className="text-muted-foreground" />
+                <h3 className="text-sm font-medium">Payment Details <span className="text-muted-foreground/50">(optional)</span></h3>
+              </div>
+              <p className="text-xs text-muted-foreground mb-4">Add your bank details so buyers can pay you directly.</p>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-muted-foreground block mb-1">Account Holder Name</label>
+                  <Input value={profileForm.bank_account_name} onChange={e => setProfileForm(f => ({ ...f, bank_account_name: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="John Smith" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-muted-foreground block mb-1">Sort Code</label>
+                    <Input value={profileForm.bank_sort_code} onChange={e => setProfileForm(f => ({ ...f, bank_sort_code: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="XX-XX-XX" maxLength={8} />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground block mb-1">Account Number</label>
+                    <Input value={profileForm.bank_account_number} onChange={e => setProfileForm(f => ({ ...f, bank_account_number: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="12345678" maxLength={8} />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground block mb-1">PayPal Email <span className="text-muted-foreground/50">(alternative)</span></label>
+                  <Input type="email" value={profileForm.bank_paypal_email} onChange={e => setProfileForm(f => ({ ...f, bank_paypal_email: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="you@email.com" />
+                </div>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-3 flex items-center gap-1">🔒 Your bank details are stored securely.</p>
+              <p className="text-[10px] text-muted-foreground/60 mt-1">Full payment processing coming soon via Stripe Connect.</p>
+            </div>
+
             <Button onClick={handleUpdateProfile} disabled={saving} className="w-full rounded-xl gap-2">
               {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
               Save Changes
