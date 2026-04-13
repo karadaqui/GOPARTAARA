@@ -344,7 +344,7 @@ const HeroSection = () => {
             </div>
 
             {/* Community Support Banner */}
-            <div className="bg-gradient-to-r from-zinc-900 to-zinc-800 border border-white/10 rounded-2xl p-6 mt-6 text-center max-w-2xl mx-auto">
+            <div className="bg-gradient-to-r from-card via-secondary to-muted/50 border border-white/10 rounded-2xl p-6 mt-6 text-center max-w-2xl mx-auto">
               <div className="text-2xl mb-2">🤝</div>
               <h3 className="text-sm font-semibold text-foreground mb-1">Help us add more suppliers</h3>
               <p className="text-xs text-muted-foreground max-w-md mx-auto mb-4">
