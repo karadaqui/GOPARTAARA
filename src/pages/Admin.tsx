@@ -301,8 +301,72 @@ const Admin = () => {
     let error: any;
 
     if (type === "listing") {
+      if (!adminDeleteReason.trim()) {
+        toast({ title: "Reason required", description: "Please provide a reason for deleting this listing.", variant: "destructive" });
+        setDeleting(false);
+        return;
+      }
+      // Get listing details for notification
+      const listing = listings.find(l => l.id === id);
+      const sellerProfile = listing?.seller_profiles;
+
       ({ error } = await supabase.from("seller_listings").delete().eq("id", id));
-      if (!error) { setListings(prev => prev.filter(l => l.id !== id)); }
+      if (!error) {
+        setListings(prev => prev.filter(l => l.id !== id));
+
+        // Log admin action
+        await supabase.from("admin_actions").insert({
+          admin_id: user!.id,
+          action: "delete_listing",
+          listing_id: id,
+          target_user_id: null,
+          reason: adminDeleteReason,
+        } as any);
+
+        // Get seller's user_id from seller_profiles
+        if (sellerProfile) {
+          const { data: sp } = await supabase
+            .from("seller_profiles")
+            .select("user_id")
+            .eq("id", sellerProfile.id)
+            .maybeSingle();
+
+          if (sp) {
+            // In-app notification
+            await supabase.from("notifications").insert({
+              user_id: sp.user_id,
+              title: "Your listing was removed",
+              message: `Your listing '${listing?.title}' was removed by PARTARA admin. Reason: ${adminDeleteReason}. If you believe this was a mistake, please contact us.`,
+              type: "listing_removed",
+              link: "/contact",
+            });
+
+            // Get seller profile info for email
+            const { data: sellerProfileData } = await supabase
+              .from("profiles")
+              .select("display_name, email")
+              .eq("user_id", sp.user_id)
+              .single();
+
+            if (sellerProfileData?.email) {
+              await supabase.functions.invoke("send-transactional-email", {
+                body: {
+                  templateName: "listing-removed",
+                  recipientEmail: sellerProfileData.email,
+                  idempotencyKey: `listing-removed-${id}`,
+                  templateData: {
+                    name: sellerProfileData.display_name || sellerProfileData.email.split("@")[0],
+                    listingTitle: listing?.title,
+                    listingPrice: listing?.price?.toFixed(2),
+                    reason: adminDeleteReason,
+                  },
+                },
+              });
+            }
+          }
+        }
+        toast({ title: "✅ Listing deleted and seller notified" });
+      }
     } else if (type === "blog") {
       ({ error } = await supabase.from("blog_posts").delete().eq("id", id));
       if (!error) { setBlogs(prev => prev.filter(b => b.id !== id)); }
@@ -315,12 +379,83 @@ const Admin = () => {
     }
 
     if (error) toast({ title: "Error deleting", description: error.message, variant: "destructive" });
-    else toast({ title: "Deleted successfully" });
+    else if (type !== "listing") toast({ title: "Deleted successfully" });
     setDeleteTarget(null);
+    setAdminDeleteReason("");
     setDeleting(false);
   };
 
-  const handleToggleBlogPublish = async (id: string, currentPublished: boolean) => {
+  const handleAdminShopDelete = async () => {
+    if (!shopDeleteTarget || !shopDeleteReason.trim() || !shopDeleteConfirm) return;
+    setShopDeleting(true);
+    try {
+      // Get seller profile
+      const { data: sp } = await supabase
+        .from("seller_profiles")
+        .select("id")
+        .eq("user_id", shopDeleteTarget.userId)
+        .maybeSingle();
+
+      let listingsDeletedCount = 0;
+      if (sp) {
+        const { data: sellerListings } = await supabase
+          .from("seller_listings")
+          .select("id")
+          .eq("seller_id", sp.id);
+        listingsDeletedCount = sellerListings?.length || 0;
+
+        // Delete all listings
+        await supabase.from("seller_listings").delete().eq("seller_id", sp.id);
+        // Delete seller profile
+        await supabase.from("seller_profiles").delete().eq("id", sp.id);
+      }
+
+      // Log admin action
+      await supabase.from("admin_actions").insert({
+        admin_id: user!.id,
+        action: "delete_shop",
+        target_user_id: shopDeleteTarget.userId,
+        reason: shopDeleteReason,
+        internal_notes: shopDeleteNotes,
+        listings_deleted_count: listingsDeletedCount,
+      } as any);
+
+      // In-app notification
+      await supabase.from("notifications").insert({
+        user_id: shopDeleteTarget.userId,
+        title: "Your shop has been closed",
+        message: `Your PARTARA seller account has been closed by our moderation team. Reason: ${shopDeleteReason}. If you believe this is an error, contact us at info@gopartara.com`,
+        type: "shop_closed",
+        link: "/contact",
+      });
+
+      // Email notification
+      if (shopDeleteTarget.email) {
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "shop-closed",
+            recipientEmail: shopDeleteTarget.email,
+            idempotencyKey: `shop-closed-${shopDeleteTarget.userId}`,
+            templateData: {
+              name: shopDeleteTarget.displayName || shopDeleteTarget.email.split("@")[0],
+              reason: shopDeleteReason,
+            },
+          },
+        });
+      }
+
+      toast({ title: "✅ Shop deleted. Seller has been notified by email and in-app notification." });
+      setShopDeleteTarget(null);
+      setShopDeleteReason("");
+      setShopDeleteNotes("");
+      setShopDeleteConfirm(false);
+      await loadAll();
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setShopDeleting(false);
+    }
+  };
     setProcessing(id);
     const { error } = await supabase.from("blog_posts").update({ published: !currentPublished } as any).eq("id", id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
