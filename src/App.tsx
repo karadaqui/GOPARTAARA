@@ -43,6 +43,7 @@ const Refund = lazy(() => import("./pages/Refund.tsx"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail.tsx"));
 const SubscriptionPolicy = lazy(() => import("./pages/SubscriptionPolicy.tsx"));
 const CompleteProfile = lazy(() => import("./pages/CompleteProfile.tsx"));
+const Messages = lazy(() => import("./pages/Messages.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -84,6 +85,7 @@ const App = () => (
               <Route path="/verify-email" element={<VerifyEmail />} />
               <Route path="/subscription-policy" element={<SubscriptionPolicy />} />
               <Route path="/complete-profile" element={<ProtectedRoute><CompleteProfile /></ProtectedRoute>} />
+              <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
