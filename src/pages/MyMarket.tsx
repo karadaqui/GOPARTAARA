@@ -48,7 +48,18 @@ interface Listing {
   view_count: number;
   save_count: number;
   created_at: string;
+  featured?: boolean;
+  featured_until?: string | null;
+  boost_package?: string | null;
 }
+
+const BOOST_PACKAGES = [
+  { name: "Quick Boost", duration: 3, price: "£1.99", priceId: "price_1TLlEPAc5QcTT3aLBYi756Nc", description: "Get seen by more buyers for 3 days" },
+  { name: "Weekly Feature ⭐", duration: 7, price: "£4.99", priceId: "price_1TLlEQAc5QcTT3aLOd2ZsBFf", description: "Top placement for a full week", popular: true },
+  { name: "Power Boost", duration: 7, price: "£11.99", priceId: "price_1TLlERAc5QcTT3aL8KbbVNwA", description: "Feature 3 listings simultaneously for 7 days" },
+  { name: "Monthly Spotlight", duration: 30, price: "£14.99", priceId: "price_1TLlESAc5QcTT3aLrDNMavJy", description: "Maximum visibility for a full month" },
+  { name: "Homepage Spotlight 🏠", duration: 7, price: "£9.99", priceId: "price_1TLlEUAc5QcTT3aLDbH7FKy0", description: "Your listing featured on the PARTARA homepage" },
+];
 
 interface DisputedReview {
   id: string;
@@ -90,6 +101,35 @@ const MyMarket = () => {
   const [showSellerGate, setShowSellerGate] = useState(false);
   const [disputedReviews, setDisputedReviews] = useState<DisputedReview[]>([]);
   const [boostModalOpen, setBoostModalOpen] = useState(false);
+  const [boostListingId, setBoostListingId] = useState<string | null>(null);
+  const [boostingPriceId, setBoostingPriceId] = useState<string | null>(null);
+  const [showBoostSuccess, setShowBoostSuccess] = useState(false);
+
+  // Check for ?boosted=true in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("boosted") === "true") {
+      setShowBoostSuccess(true);
+      window.history.replaceState({}, "", "/my-market");
+      setTimeout(() => setShowBoostSuccess(false), 8000);
+    }
+  }, []);
+
+  const handleBoost = async (pkg: typeof BOOST_PACKAGES[0]) => {
+    if (!boostListingId) return;
+    setBoostingPriceId(pkg.priceId);
+    try {
+      const { data, error } = await supabase.functions.invoke("boost-listing", {
+        body: { listingId: boostListingId, priceId: pkg.priceId, packageName: pkg.name, durationDays: pkg.duration },
+      });
+      if (error) throw error;
+      if (data?.url) window.location.href = data.url;
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to start checkout", variant: "destructive" });
+    } finally {
+      setBoostingPriceId(null);
+    }
+  };
 
   const [profileForm, setProfileForm] = useState({
     business_name: "", description: "", contact_email: "", contact_phone: "", website_url: ""
