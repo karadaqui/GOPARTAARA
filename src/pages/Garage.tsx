@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import AuthGateModal from "@/components/AuthGateModal";
+import UpgradeModal from "@/components/UpgradeModal";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -420,17 +421,13 @@ const Garage = () => {
       </div>
 
       {/* Upgrade dialog */}
-      <Dialog open={upgradeOpen} onOpenChange={setUpgradeOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Garage Limit Reached</DialogTitle>
-            <DialogDescription>Free users can save 1 vehicle. Upgrade to Pro for unlimited garage slots.</DialogDescription>
-          </DialogHeader>
-          <Button onClick={() => { setUpgradeOpen(false); navigate("/pricing"); }} className="w-full rounded-xl">
-            See Pricing
-          </Button>
-        </DialogContent>
-      </Dialog>
+      <UpgradeModal
+        open={upgradeOpen}
+        onOpenChange={setUpgradeOpen}
+        feature="garageVehicles"
+        featureLabel="Adding more vehicles"
+        requiredPlan="Pro"
+      />
 
       <AuthGateModal
         open={authGateOpen}
