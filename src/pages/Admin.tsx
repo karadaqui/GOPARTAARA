@@ -862,27 +862,102 @@ const Admin = () => {
       </div>
 
       {/* ═══ DELETE CONFIRMATION DIALOG ═══ */}
-      <Dialog open={!!deleteTarget} onOpenChange={(o) => { if (!o) setDeleteTarget(null); }}>
+      <Dialog open={!!deleteTarget} onOpenChange={(o) => { if (!o) { setDeleteTarget(null); setAdminDeleteReason(""); } }}>
         <DialogContent className="sm:max-w-md bg-card border-border">
           <DialogHeader>
             <DialogTitle className="font-display flex items-center gap-2 text-destructive">
-              <Trash2 size={18} /> Confirm Delete
+              <Trash2 size={18} /> {deleteTarget?.type === "listing" ? "Delete this listing as Admin" : "Confirm Delete"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-2">
             <p className="text-sm text-muted-foreground">
-              Are you sure you want to permanently delete <strong>"{deleteTarget?.label}"</strong>? This action cannot be undone.
+              Are you sure you want to permanently delete <strong>"{deleteTarget?.label}"</strong>?
+              {deleteTarget?.type !== "listing" && " This action cannot be undone."}
             </p>
+            {deleteTarget?.type === "listing" && (
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1.5">Reason for deletion (shown to seller) *</label>
+                <Textarea
+                  value={adminDeleteReason}
+                  onChange={e => setAdminDeleteReason(e.target.value)}
+                  placeholder="e.g. Prohibited item, spam listing, etc."
+                  className="bg-secondary border-border rounded-xl min-h-[60px]"
+                />
+              </div>
+            )}
             <div className="flex gap-2">
-              <Button variant="destructive" className="flex-1 rounded-xl gap-2" onClick={handleDeleteConfirm} disabled={deleting}>
+              <Button
+                variant="destructive"
+                className="flex-1 rounded-xl gap-2"
+                onClick={handleDeleteConfirm}
+                disabled={deleting || (deleteTarget?.type === "listing" && !adminDeleteReason.trim())}
+              >
                 {deleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
-                Delete Permanently
+                {deleteTarget?.type === "listing" ? "Delete & Notify Seller" : "Delete Permanently"}
               </Button>
-              <Button variant="outline" className="rounded-xl" onClick={() => setDeleteTarget(null)} disabled={deleting}>
+              <Button variant="outline" className="rounded-xl" onClick={() => { setDeleteTarget(null); setAdminDeleteReason(""); }} disabled={deleting}>
                 Cancel
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ═══ ADMIN SHOP DELETE DIALOG ═══ */}
+      <Dialog open={!!shopDeleteTarget} onOpenChange={(o) => {
+        if (!o) { setShopDeleteTarget(null); setShopDeleteReason(""); setShopDeleteNotes(""); setShopDeleteConfirm(false); }
+      }}>
+        <DialogContent className="sm:max-w-md bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2 text-destructive">
+              <Trash2 size={18} /> Delete seller shop as Admin
+            </DialogTitle>
+          </DialogHeader>
+          {shopDeleteTarget && (
+            <div className="space-y-4 mt-2">
+              <div className="glass rounded-xl p-3 text-sm">
+                <p><strong>Seller:</strong> {shopDeleteTarget.displayName}</p>
+                <p><strong>Email:</strong> {shopDeleteTarget.email}</p>
+                <p><strong>Listings:</strong> {shopDeleteTarget.listingCount}</p>
+              </div>
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1.5">Reason (shown to seller) *</label>
+                <Textarea
+                  value={shopDeleteReason}
+                  onChange={e => setShopDeleteReason(e.target.value)}
+                  placeholder="e.g. Repeated policy violations..."
+                  className="bg-secondary border-border rounded-xl min-h-[60px]"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1.5">Internal notes (not shown to seller)</label>
+                <Textarea
+                  value={shopDeleteNotes}
+                  onChange={e => setShopDeleteNotes(e.target.value)}
+                  placeholder="Notes for internal records..."
+                  className="bg-secondary border-border rounded-xl min-h-[60px]"
+                />
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={shopDeleteConfirm} onChange={e => setShopDeleteConfirm(e.target.checked)} className="rounded" />
+                <span className="text-xs text-muted-foreground">I confirm this action is justified</span>
+              </label>
+              <div className="flex gap-2">
+                <Button
+                  variant="destructive"
+                  className="flex-1 rounded-xl gap-2"
+                  onClick={handleAdminShopDelete}
+                  disabled={shopDeleting || !shopDeleteReason.trim() || !shopDeleteConfirm}
+                >
+                  {shopDeleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                  Delete Shop & Notify Seller
+                </Button>
+                <Button variant="outline" className="rounded-xl" onClick={() => setShopDeleteTarget(null)} disabled={shopDeleting}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
