@@ -943,23 +943,46 @@ const MyMarket = () => {
 
       {/* Boost Listing Modal */}
       <Dialog open={boostModalOpen} onOpenChange={setBoostModalOpen}>
-        <DialogContent className="bg-card border-border sm:max-w-md">
+        <DialogContent className="bg-card border-border sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="font-display flex items-center gap-2">
               <Zap size={18} className="text-yellow-400" /> Boost Your Listing
             </DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            Get top placement in search results for 7 days. Your listing will appear in the Featured section above all regular listings.
-          </p>
-          <div className="flex gap-2 mt-2">
-            <Button className="flex-1 rounded-xl" onClick={() => { setBoostModalOpen(false); navigate("/pricing"); }}>
-              Boost for £4.99
-            </Button>
-            <Button variant="ghost" className="rounded-xl" onClick={() => setBoostModalOpen(false)}>
-              Maybe Later
-            </Button>
+          <div className="space-y-3 mt-2">
+            {BOOST_PACKAGES.map((pkg) => (
+              <button
+                key={pkg.name}
+                onClick={() => handleBoost(pkg)}
+                disabled={boostingPriceId === pkg.priceId}
+                className={`w-full text-left p-4 rounded-xl border transition-all hover:border-yellow-500/40 hover:bg-yellow-500/5 ${
+                  (pkg as any).popular ? "border-yellow-500/30 bg-yellow-500/5" : "border-border"
+                }`}
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-display font-bold text-sm">{pkg.name}</span>
+                      {(pkg as any).popular && (
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400">Most Popular</span>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">{pkg.description}</p>
+                    <p className="text-[10px] text-muted-foreground/70 mt-0.5">{pkg.duration} days</p>
+                  </div>
+                  <div className="text-right shrink-0 ml-3">
+                    <span className="font-display font-bold text-primary">{pkg.price}</span>
+                    {boostingPriceId === pkg.priceId && (
+                      <Loader2 size={14} className="animate-spin text-primary mt-1 ml-auto" />
+                    )}
+                  </div>
+                </div>
+              </button>
+            ))}
           </div>
+          <p className="text-[10px] text-muted-foreground text-center mt-2">
+            One-time payment. Your listing will be featured immediately after checkout.
+          </p>
         </DialogContent>
       </Dialog>
 
