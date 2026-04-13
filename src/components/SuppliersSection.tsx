@@ -8,7 +8,7 @@ const stats = [
 ];
 
 const activeSuppliers = [
-  { name: "eBay UK", href: "https://www.ebay.co.uk" },
+  { name: "eBay", href: "https://www.ebay.co.uk" },
 ];
 
 const comingSoonSuppliers = [
@@ -60,8 +60,9 @@ const SuppliersSection = () => (
                 href={s.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm text-sm sm:text-base font-semibold text-foreground transition-all duration-300 hover:border-primary/30 hover:bg-card/60 hover:shadow-lg hover:shadow-primary/5"
+                className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm text-sm sm:text-base font-semibold text-foreground transition-all duration-300 hover:border-primary/30 hover:bg-card/60 hover:shadow-lg hover:shadow-primary/5 flex items-center gap-2"
               >
+                <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
                 {s.name}
               </a>
             ))}

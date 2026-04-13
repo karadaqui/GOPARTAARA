@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { X } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { sanitizeInput, checkRateLimit, getCachedSearch, setCachedSearch } from "@/lib/sanitize";
+import { buildEbayAffiliateUrl } from "@/lib/ebayAffiliate";
 
 import SafeImage from "@/components/SafeImage";
 import Navbar from "@/components/Navbar";
@@ -641,23 +642,16 @@ const SearchResults = () => {
         {/* ── Supplier Sources Banner ── */}
         {!supplierBannerDismissed && (
           <div className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3">
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="text-xs font-medium text-white">eBay</span>
+            <div className="flex items-center gap-2 shrink-0 flex-wrap">
+              <span className="flex items-center gap-1.5 text-xs font-medium text-white">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" /> eBay
+              </span>
               <span className="text-[10px] text-zinc-600">•</span>
-              <span className="text-xs text-zinc-500">Amazon <span className="text-[10px] text-zinc-600">(affiliate only)</span></span>
-              <span className="text-[10px] text-zinc-600">•</span>
-              <span className="text-xs text-zinc-600 opacity-50 grayscale flex items-center gap-1">
-                <span className="text-[10px]">🔜</span> Euro Car Parts
-              </span>
-              <span className="text-xs text-zinc-600 opacity-50 grayscale flex items-center gap-1">
-                <span className="text-[10px]">🔜</span> GSF
-              </span>
-              <span className="text-xs text-zinc-600 opacity-50 grayscale flex items-center gap-1">
-                <span className="text-[10px]">🔜</span> CP4L
-              </span>
-              <span className="text-xs text-zinc-600 opacity-50 grayscale flex items-center gap-1">
-                <span className="text-[10px]">🔜</span> Autodoc
-              </span>
+              <span className="text-xs text-zinc-600 opacity-50">Amazon</span>
+              <span className="text-xs text-zinc-600 opacity-50 flex items-center gap-1"><span className="text-[10px]">🔜</span> Euro Car Parts</span>
+              <span className="text-xs text-zinc-600 opacity-50 flex items-center gap-1"><span className="text-[10px]">🔜</span> GSF</span>
+              <span className="text-xs text-zinc-600 opacity-50 flex items-center gap-1"><span className="text-[10px]">🔜</span> CP4L</span>
+              <span className="text-xs text-zinc-600 opacity-50 flex items-center gap-1"><span className="text-[10px]">🔜</span> Autodoc</span>
             </div>
             <p className="text-xs text-zinc-500 flex-1 hidden sm:block">More suppliers coming soon</p>
             <button
@@ -894,8 +888,9 @@ const SearchResults = () => {
                             )}
                           </div>
                           <div className="flex flex-col sm:flex-row gap-2">
-                            <a href={item.url} target="_blank" rel="noopener noreferrer"
-                              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150">
+                            <a href={buildEbayAffiliateUrl(item.url)} target="_blank" rel="noopener noreferrer"
+                              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150"
+                              title="Buying through this link supports PARTARA at no extra cost to you 💙">
                               <ExternalLink size={14} /> View on eBay
                             </a>
                             <button onClick={() => {
