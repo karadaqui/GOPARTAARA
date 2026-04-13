@@ -16,7 +16,7 @@ export function buildEbayAffiliateUrl(originalUrl: string): string {
     url.searchParams.set('toolid', '10001');
     url.searchParams.set('mkevt', '1');
     return url.toString();
-  } catch {
+  } catch (e) {
     return originalUrl;
   }
 }
