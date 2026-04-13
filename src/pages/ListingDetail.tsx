@@ -46,6 +46,7 @@ interface ListingFull {
     contact_email: string | null;
     seller_tier: string;
     website_url: string | null;
+    created_at: string;
   };
 }
 
