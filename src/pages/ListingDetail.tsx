@@ -8,8 +8,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
   Star, Store, ExternalLink, Bookmark, BookmarkCheck, Eye,
-  ChevronLeft, Loader2, Send, Bell, User, Trash2, Flag
+  ChevronLeft, Loader2, Send, Bell, User, Trash2, Flag, MessageCircle, Handshake
 } from "lucide-react";
+import MakeOfferModal from "@/components/MakeOfferModal";
 import PlanBadge from "@/components/badges/PlanBadge";
 import VerifiedSellerBadge from "@/components/badges/VerifiedSellerBadge";
 import { supabase } from "@/integrations/supabase/client";
