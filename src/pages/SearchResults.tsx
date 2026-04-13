@@ -348,6 +348,8 @@ const SearchResults = () => {
             }
             if (sortBy !== "best_match") body.sortBy = sortBy;
             if (categoryFilter !== "All Parts") body.categoryFilter = categoryFilter;
+            // If coming from garage, skip search credit deduction
+            if (isFromGarage) body.skipCredit = true;
 
             const { data, error } = await supabase.functions.invoke("search-parts", { body });
             if (error) {
