@@ -39,6 +39,7 @@ const BodySchema = z.object({
   sortBy: z.string().max(50).optional(),
   categoryFilter: z.string().max(100).optional(),
   brandFilter: z.string().max(100).optional(),
+  skipCredit: z.boolean().optional(),
 });
 
 let oauthToken: { token: string; expiresAt: number } | null = null;
@@ -125,7 +126,7 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: parsed.error.flatten().fieldErrors, results: [] }, 400, corsHeaders);
     }
 
-    const { query, category, offset, marketplace, conditionFilter, shippingFilter, priceMin, priceMax, sortBy, categoryFilter, brandFilter } = parsed.data;
+    const { query, category, offset, marketplace, conditionFilter, shippingFilter, priceMin, priceMax, sortBy, categoryFilter, brandFilter, skipCredit } = parsed.data;
     const ebayMarketplace = (marketplace && VALID_MARKETPLACES.includes(marketplace)) ? marketplace : "EBAY_GB";
 
     if (!isUnlimited && offset === 0) {
@@ -184,8 +185,8 @@ Deno.serve(async (req) => {
     const cached = getCached(cacheKey);
     if (cached) return jsonResponse(cached, 200, corsHeaders);
 
-    // Record search atomically (only first page, only when no filters applied to avoid double-counting)
-    if (offset === 0 && !conditionFilter && !shippingFilter && !priceMin && !sortBy && !categoryFilter && !brandFilter) {
+    // Record search atomically (only first page, only when no filters applied, and not skipped)
+    if (offset === 0 && !conditionFilter && !shippingFilter && !priceMin && !sortBy && !categoryFilter && !brandFilter && !skipCredit) {
       try {
         await supabaseAdmin.from("search_history").insert({
           user_id: auth.userId,
