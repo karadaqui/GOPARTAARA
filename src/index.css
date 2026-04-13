@@ -46,6 +46,10 @@
     --sidebar-ring: 0 85% 50%;
 
     --hero-glow: 0 85% 50%;
+    
+    /* Semantic status colors */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
   }
 }
 
