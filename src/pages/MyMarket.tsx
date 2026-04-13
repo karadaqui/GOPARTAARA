@@ -131,10 +131,10 @@ const MyMarket = () => {
 
   const handleBoost = async (pkg: typeof BOOST_PACKAGES[0]) => {
     if (!boostListingId) return;
-    setBoostingPriceId(pkg.priceId);
+    setBoostingPriceId(pkg.name);
     try {
       const { data, error } = await supabase.functions.invoke("boost-listing", {
-        body: { listingId: boostListingId, priceId: pkg.priceId, packageName: pkg.name, durationDays: pkg.duration },
+        body: { listingId: boostListingId, packageName: pkg.name, durationDays: pkg.duration, amountPence: pkg.amountPence },
       });
       if (error) throw error;
       if (data?.url) window.location.href = data.url;
@@ -1090,7 +1090,7 @@ const MyMarket = () => {
               <button
                 key={pkg.name}
                 onClick={() => handleBoost(pkg)}
-                disabled={boostingPriceId === pkg.priceId}
+                disabled={boostingPriceId === pkg.name}
                 className={`w-full text-left p-4 rounded-xl border transition-all hover:border-yellow-500/40 hover:bg-yellow-500/5 ${
                   (pkg as any).popular ? "border-yellow-500/30 bg-yellow-500/5" : "border-border"
                 }`}
@@ -1108,7 +1108,7 @@ const MyMarket = () => {
                   </div>
                   <div className="text-right shrink-0 ml-3">
                     <span className="font-display font-bold text-primary">{pkg.price}</span>
-                    {boostingPriceId === pkg.priceId && (
+                    {boostingPriceId === pkg.name && (
                       <Loader2 size={14} className="animate-spin text-primary mt-1 ml-auto" />
                     )}
                   </div>
