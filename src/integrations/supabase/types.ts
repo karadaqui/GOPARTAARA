@@ -711,12 +711,15 @@ export type Database = {
         Row: {
           active: boolean
           approval_status: string
+          boost_package: string | null
           category: string | null
           compatible_vehicles: string[]
           created_at: string
           currency: string
           description: string
           external_link: string | null
+          featured: boolean
+          featured_until: string | null
           id: string
           photos: string[]
           price: number | null
@@ -730,12 +733,15 @@ export type Database = {
         Insert: {
           active?: boolean
           approval_status?: string
+          boost_package?: string | null
           category?: string | null
           compatible_vehicles?: string[]
           created_at?: string
           currency?: string
           description?: string
           external_link?: string | null
+          featured?: boolean
+          featured_until?: string | null
           id?: string
           photos?: string[]
           price?: number | null
@@ -749,12 +755,15 @@ export type Database = {
         Update: {
           active?: boolean
           approval_status?: string
+          boost_package?: string | null
           category?: string | null
           compatible_vehicles?: string[]
           created_at?: string
           currency?: string
           description?: string
           external_link?: string | null
+          featured?: boolean
+          featured_until?: string | null
           id?: string
           photos?: string[]
           price?: number | null

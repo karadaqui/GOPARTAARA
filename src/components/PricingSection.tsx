@@ -13,7 +13,9 @@ import { useState, useRef, useEffect } from "react";
 
 const STRIPE = {
   pro:              "price_1TK5ccAc5QcTT3aL7jb3xTlb",
+  pro_annual:       "price_1TLlEVAc5QcTT3aLcHThonXZ",
   elite:            "price_1TKaEfAc5QcTT3aLUSzqrRIy",
+  elite_annual:     "price_1TLlEWAc5QcTT3aLPEidfDng",
   basic_seller:     "price_1TKUmsAc5QcTT3aLrLoieucV",
   featured_seller:  "price_1TKUnQAc5QcTT3aLAHq0CpaN",
   pro_seller:       "price_1TKUo4Ac5QcTT3aLU2WNxx5F",
@@ -39,6 +41,7 @@ const individualPlans = [
     cta: "Start Free",
     popular: false,
     priceId: null as string | null,
+    annualPriceId: null as string | null,
   },
   {
     name: "Pro",
@@ -51,6 +54,7 @@ const individualPlans = [
     cta: "Go Pro",
     popular: true,
     priceId: STRIPE.pro,
+    annualPriceId: STRIPE.pro_annual,
   },
   {
     name: "Elite",
@@ -63,6 +67,7 @@ const individualPlans = [
     cta: "Go Elite",
     popular: false,
     priceId: STRIPE.elite,
+    annualPriceId: STRIPE.elite_annual,
   },
 ];
 
@@ -326,23 +331,26 @@ const PricingSection = () => {
         {/* Individual Plans */}
         {activeTab === "individual" && (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {individualPlans.map((plan) => (
-              <PlanCard
-                key={plan.name}
-                name={plan.name}
-                tagline={plan.tagline}
-                price={annual ? plan.annualPrice : plan.monthlyPrice}
-                originalPrice={annual && plan.annualPrice !== plan.monthlyPrice ? plan.monthlyPrice : undefined}
-                billedNote={annual ? plan.annualBilled : undefined}
-                period={plan.period}
-                features={plan.features}
-                cta={plan.cta}
-                popular={plan.popular}
-                loading={isLoading(plan.priceId)}
-                slowWarning={slowWarning}
-                onSelect={() => startCheckout(plan.priceId)}
-              />
-            ))}
+            {individualPlans.map((plan) => {
+              const effectivePriceId = annual && plan.annualPriceId ? plan.annualPriceId : plan.priceId;
+              return (
+                <PlanCard
+                  key={plan.name}
+                  name={plan.name}
+                  tagline={plan.tagline}
+                  price={annual ? plan.annualPrice : plan.monthlyPrice}
+                  originalPrice={annual && plan.annualPrice !== plan.monthlyPrice ? plan.monthlyPrice : undefined}
+                  billedNote={annual ? plan.annualBilled : undefined}
+                  period={plan.period}
+                  features={plan.features}
+                  cta={plan.cta}
+                  popular={plan.popular}
+                  loading={isLoading(effectivePriceId)}
+                  slowWarning={slowWarning}
+                  onSelect={() => startCheckout(effectivePriceId)}
+                />
+              );
+            })}
           </div>
         )}
 

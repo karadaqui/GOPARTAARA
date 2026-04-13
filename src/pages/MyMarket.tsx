@@ -48,7 +48,18 @@ interface Listing {
   view_count: number;
   save_count: number;
   created_at: string;
+  featured?: boolean;
+  featured_until?: string | null;
+  boost_package?: string | null;
 }
+
+const BOOST_PACKAGES = [
+  { name: "Quick Boost", duration: 3, price: "£1.99", priceId: "price_1TLlEPAc5QcTT3aLBYi756Nc", description: "Get seen by more buyers for 3 days" },
+  { name: "Weekly Feature ⭐", duration: 7, price: "£4.99", priceId: "price_1TLlEQAc5QcTT3aLOd2ZsBFf", description: "Top placement for a full week", popular: true },
+  { name: "Power Boost", duration: 7, price: "£11.99", priceId: "price_1TLlERAc5QcTT3aL8KbbVNwA", description: "Feature 3 listings simultaneously for 7 days" },
+  { name: "Monthly Spotlight", duration: 30, price: "£14.99", priceId: "price_1TLlESAc5QcTT3aLrDNMavJy", description: "Maximum visibility for a full month" },
+  { name: "Homepage Spotlight 🏠", duration: 7, price: "£9.99", priceId: "price_1TLlEUAc5QcTT3aLDbH7FKy0", description: "Your listing featured on the PARTARA homepage" },
+];
 
 interface DisputedReview {
   id: string;
@@ -90,6 +101,35 @@ const MyMarket = () => {
   const [showSellerGate, setShowSellerGate] = useState(false);
   const [disputedReviews, setDisputedReviews] = useState<DisputedReview[]>([]);
   const [boostModalOpen, setBoostModalOpen] = useState(false);
+  const [boostListingId, setBoostListingId] = useState<string | null>(null);
+  const [boostingPriceId, setBoostingPriceId] = useState<string | null>(null);
+  const [showBoostSuccess, setShowBoostSuccess] = useState(false);
+
+  // Check for ?boosted=true in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("boosted") === "true") {
+      setShowBoostSuccess(true);
+      window.history.replaceState({}, "", "/my-market");
+      setTimeout(() => setShowBoostSuccess(false), 8000);
+    }
+  }, []);
+
+  const handleBoost = async (pkg: typeof BOOST_PACKAGES[0]) => {
+    if (!boostListingId) return;
+    setBoostingPriceId(pkg.priceId);
+    try {
+      const { data, error } = await supabase.functions.invoke("boost-listing", {
+        body: { listingId: boostListingId, priceId: pkg.priceId, packageName: pkg.name, durationDays: pkg.duration },
+      });
+      if (error) throw error;
+      if (data?.url) window.location.href = data.url;
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to start checkout", variant: "destructive" });
+    } finally {
+      setBoostingPriceId(null);
+    }
+  };
 
   const [profileForm, setProfileForm] = useState({
     business_name: "", description: "", contact_email: "", contact_phone: "", website_url: ""
@@ -532,6 +572,13 @@ const MyMarket = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container max-w-5xl py-20 px-4">
+        {/* Boost success banner */}
+        {showBoostSuccess && (
+          <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+            <p className="text-sm font-medium text-emerald-400">🎉 Your listing has been boosted! It will appear in the Featured section immediately.</p>
+          </div>
+        )}
+
         {/* Header with analytics */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div className="flex items-center gap-4">
@@ -683,10 +730,22 @@ const MyMarket = () => {
             {listings.map(listing => (
               <div key={listing.id} className={`glass rounded-xl overflow-hidden ${!listing.active ? 'opacity-60' : ''}`}>
                 {listing.photos[0] ? (
-                  <img src={listing.photos[0]} alt={listing.title} className="w-full h-40 object-cover" />
+                  <div className="relative">
+                    <img src={listing.photos[0]} alt={listing.title} className="w-full h-40 object-cover" />
+                    {listing.featured && listing.featured_until && new Date(listing.featured_until) > new Date() && (
+                      <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/90 text-black flex items-center gap-1">
+                        ⭐ Featured until {new Date(listing.featured_until).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                      </span>
+                    )}
+                  </div>
                 ) : (
-                  <div className="w-full h-40 bg-secondary flex items-center justify-center">
+                  <div className="relative w-full h-40 bg-secondary flex items-center justify-center">
                     <ImagePlus size={32} className="text-muted-foreground" />
+                    {listing.featured && listing.featured_until && new Date(listing.featured_until) > new Date() && (
+                      <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/90 text-black flex items-center gap-1">
+                        ⭐ Featured until {new Date(listing.featured_until).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                      </span>
+                    )}
                   </div>
                 )}
                 <div className="p-4">
@@ -734,14 +793,20 @@ const MyMarket = () => {
                       <Trash2 size={12} />
                     </Button>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setBoostModalOpen(true)}
-                    className="w-full mt-2 rounded-lg gap-1.5 text-xs border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10 hover:text-yellow-300"
-                  >
-                    <Zap size={12} /> Boost — £4.99/week
-                  </Button>
+                  {listing.featured && listing.featured_until && new Date(listing.featured_until) > new Date() ? (
+                    <div className="mt-2 text-center text-[10px] text-yellow-400 font-medium">
+                      ⭐ Boosted with {listing.boost_package}
+                    </div>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => { setBoostListingId(listing.id); setBoostModalOpen(true); }}
+                      className="w-full mt-2 rounded-lg gap-1.5 text-xs border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10 hover:text-yellow-300"
+                    >
+                      <Zap size={12} /> Boost Listing
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
@@ -878,23 +943,46 @@ const MyMarket = () => {
 
       {/* Boost Listing Modal */}
       <Dialog open={boostModalOpen} onOpenChange={setBoostModalOpen}>
-        <DialogContent className="bg-card border-border sm:max-w-md">
+        <DialogContent className="bg-card border-border sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="font-display flex items-center gap-2">
               <Zap size={18} className="text-yellow-400" /> Boost Your Listing
             </DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            Get top placement in search results for 7 days. Your listing will appear in the Featured section above all regular listings.
-          </p>
-          <div className="flex gap-2 mt-2">
-            <Button className="flex-1 rounded-xl" onClick={() => { setBoostModalOpen(false); navigate("/pricing"); }}>
-              Boost for £4.99
-            </Button>
-            <Button variant="ghost" className="rounded-xl" onClick={() => setBoostModalOpen(false)}>
-              Maybe Later
-            </Button>
+          <div className="space-y-3 mt-2">
+            {BOOST_PACKAGES.map((pkg) => (
+              <button
+                key={pkg.name}
+                onClick={() => handleBoost(pkg)}
+                disabled={boostingPriceId === pkg.priceId}
+                className={`w-full text-left p-4 rounded-xl border transition-all hover:border-yellow-500/40 hover:bg-yellow-500/5 ${
+                  (pkg as any).popular ? "border-yellow-500/30 bg-yellow-500/5" : "border-border"
+                }`}
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-display font-bold text-sm">{pkg.name}</span>
+                      {(pkg as any).popular && (
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400">Most Popular</span>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">{pkg.description}</p>
+                    <p className="text-[10px] text-muted-foreground/70 mt-0.5">{pkg.duration} days</p>
+                  </div>
+                  <div className="text-right shrink-0 ml-3">
+                    <span className="font-display font-bold text-primary">{pkg.price}</span>
+                    {boostingPriceId === pkg.priceId && (
+                      <Loader2 size={14} className="animate-spin text-primary mt-1 ml-auto" />
+                    )}
+                  </div>
+                </div>
+              </button>
+            ))}
           </div>
+          <p className="text-[10px] text-muted-foreground text-center mt-2">
+            One-time payment. Your listing will be featured immediately after checkout.
+          </p>
         </DialogContent>
       </Dialog>
 
