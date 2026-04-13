@@ -642,17 +642,24 @@ const SearchResults = () => {
         {!supplierBannerDismissed && (
           <div className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3">
             <div className="flex items-center gap-2 shrink-0">
-              <span className="text-xs font-medium text-zinc-300">eBay</span>
+              <span className="text-xs font-medium text-white">eBay</span>
               <span className="text-[10px] text-zinc-600">•</span>
-              <span className="text-xs font-medium text-zinc-300">Amazon</span>
+              <span className="text-xs text-zinc-500">Amazon <span className="text-[10px] text-zinc-600">(affiliate only)</span></span>
               <span className="text-[10px] text-zinc-600">•</span>
-              <span className="text-xs text-zinc-600 opacity-40 grayscale">Euro Car Parts</span>
-              <span className="text-xs text-zinc-600 opacity-40 grayscale">GSF</span>
-              <span className="text-xs text-zinc-600 opacity-40 grayscale">CP4L</span>
-              <span className="text-xs text-zinc-600 opacity-40 grayscale">Autodoc</span>
-              <span className="text-sm">🔜</span>
+              <span className="text-xs text-zinc-600 opacity-50 grayscale flex items-center gap-1">
+                <span className="text-[10px]">🔜</span> Euro Car Parts
+              </span>
+              <span className="text-xs text-zinc-600 opacity-50 grayscale flex items-center gap-1">
+                <span className="text-[10px]">🔜</span> GSF
+              </span>
+              <span className="text-xs text-zinc-600 opacity-50 grayscale flex items-center gap-1">
+                <span className="text-[10px]">🔜</span> CP4L
+              </span>
+              <span className="text-xs text-zinc-600 opacity-50 grayscale flex items-center gap-1">
+                <span className="text-[10px]">🔜</span> Autodoc
+              </span>
             </div>
-            <p className="text-xs text-zinc-500 flex-1 hidden sm:block">More suppliers coming soon — Euro Car Parts, GSF Car Parts, Autodoc & more</p>
+            <p className="text-xs text-zinc-500 flex-1 hidden sm:block">More suppliers coming soon</p>
             <button
               onClick={() => { setSupplierBannerDismissed(true); localStorage.setItem("supplier_banner_dismissed", "1"); }}
               className="shrink-0 p-1 rounded-lg hover:bg-white/5 text-zinc-600 hover:text-zinc-400 transition-colors"
