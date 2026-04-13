@@ -456,6 +456,8 @@ const Admin = () => {
       setShopDeleting(false);
     }
   };
+
+  const handleToggleBlogPublish = async (id: string, currentPublished: boolean) => {
     setProcessing(id);
     const { error } = await supabase.from("blog_posts").update({ published: !currentPublished } as any).eq("id", id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
