@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Bell, Loader2 } from "lucide-react";
+import { useUserPlan } from "@/hooks/useUserPlan";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +26,7 @@ const PriceAlertDialog = ({ supplierName, partQuery, supplierUrl, ebayItemId, cu
   const { user } = useAuth();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const userPlan = useUserPlan();
   const [targetPrice, setTargetPrice] = useState("");
   const [email, setEmail] = useState("");
   const [saving, setSaving] = useState(false);
@@ -38,7 +40,20 @@ const PriceAlertDialog = ({ supplierName, partQuery, supplierUrl, ebayItemId, cu
       });
       return;
     }
+    if (isOpen && !userPlan.features.priceAlerts) {
+      toast({
+        title: "Upgrade Required",
+        description: "Price alerts require Pro or Elite plan.",
+        variant: "destructive",
+      });
+      return;
+    }
     setOpen(isOpen);
+    if (isOpen) {
+      setEmail(user?.email || "");
+      setTargetPrice(currentPrice ? (currentPrice * 0.9).toFixed(2) : "");
+    }
+  };
     if (isOpen) {
       setEmail(user?.email || "");
       setTargetPrice(currentPrice ? (currentPrice * 0.9).toFixed(2) : "");
