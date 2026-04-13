@@ -122,7 +122,24 @@ const HeroSection = () => {
     }
   };
 
-  const suppliers = ["eBay UK", "Amazon UK", "Euro Car Parts", "GSF Car Parts", "Car Parts 4 Less", "Autodoc"];
+  const activeSupplier = { name: "eBay", description: "Global — works in all countries" };
+  const comingSoonSuppliers = [
+    { name: "Amazon" },
+    { name: "Euro Car Parts" },
+    { name: "GSF Car Parts" },
+    { name: "Car Parts 4 Less" },
+    { name: "Autodoc" },
+  ];
+
+  const handleShare = async () => {
+    const shareText = "gopartara.com";
+    try {
+      await navigator.clipboard.writeText(shareText);
+      toast({ title: "Link copied! Thanks for sharing 💙", duration: 2000 });
+    } catch {
+      toast({ title: "Couldn't copy link", variant: "destructive" });
+    }
+  };
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden animated-gradient-bg">
@@ -296,14 +313,52 @@ const HeroSection = () => {
           </div>
         </div>
 
-        {/* Trust badges */}
+        {/* Suppliers Section */}
         <div className={`transition-all duration-700 ease-out delay-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 mt-12 sm:mt-16 text-[10px] sm:text-xs text-muted-foreground">
-            {suppliers.map((s) => (
-              <span key={s} className="px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full border border-border/40 bg-card/20 backdrop-blur-sm pill-glow cursor-default">
-                {s}
-              </span>
-            ))}
+          <div className="mt-12 sm:mt-16 space-y-6">
+            {/* Active Supplier */}
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-xs text-muted-foreground uppercase tracking-wider">Active Supplier</span>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-sm font-semibold text-emerald-400">{activeSupplier.name}</span>
+                <span className="text-xs text-emerald-400/70">— {activeSupplier.description}</span>
+                <span className="text-emerald-400">✅</span>
+              </div>
+            </div>
+
+            {/* Coming Soon */}
+            <div>
+              <p className="text-xs text-muted-foreground/60 uppercase tracking-wider mb-3">More suppliers coming soon</p>
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                {comingSoonSuppliers.map((s) => (
+                  <div
+                    key={s.name}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border/20 bg-card/10 opacity-40 grayscale cursor-default"
+                  >
+                    <span className="text-xs font-medium text-muted-foreground">{s.name}</span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-muted text-muted-foreground">Soon</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Community Support Banner */}
+            <div className="bg-gradient-to-r from-zinc-900 to-zinc-800 border border-white/10 rounded-2xl p-6 mt-6 text-center max-w-2xl mx-auto">
+              <div className="text-2xl mb-2">🤝</div>
+              <h3 className="text-sm font-semibold text-foreground mb-1">Help us add more suppliers</h3>
+              <p className="text-xs text-muted-foreground max-w-md mx-auto mb-4">
+                We're a small independent team. Every search, share and subscription helps us partner with more suppliers and build a better product for UK car owners.
+              </p>
+              <div className="flex items-center justify-center gap-2">
+                <Button variant="ghost" size="sm" onClick={handleShare} className="text-xs border border-white/10 hover:bg-white/5">
+                  Share PARTARA 🔗
+                </Button>
+                <Button size="sm" onClick={() => navigate("/pricing")} className="text-xs bg-primary hover:bg-primary/90">
+                  Support Us → Pro
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
