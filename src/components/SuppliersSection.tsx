@@ -8,7 +8,7 @@ const stats = [
 ];
 
 const activeSuppliers = [
-  { name: "eBay UK", href: "https://www.ebay.co.uk" },
+  { name: "eBay", href: "https://www.ebay.co.uk" },
 ];
 
 const comingSoonSuppliers = [

@@ -24,8 +24,10 @@ const features = [
   {
     icon: Bell,
     title: "Price Alerts",
-    desc: "Set target prices and get notified when parts drop to the price you want.",
+    desc: "Set a target price and we'll notify you when parts drop to your budget. Email alerts coming soon.",
     link: "/dashboard",
+    badge: "Beta",
+    badgeColor: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   },
   {
     icon: Store,
@@ -35,9 +37,12 @@ const features = [
   },
   {
     icon: ShoppingBag,
-    title: "Autodoc Integration",
-    desc: "Compare prices with Autodoc — Europe's largest auto parts store. Find the best deal across all suppliers.",
+    title: "Autodoc — Coming Soon",
+    desc: "We're partnering with Autodoc, Europe's largest auto parts store. Price comparison coming very soon.",
     link: "/search",
+    badge: "Coming Soon",
+    badgeColor: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+    dimmed: true,
   },
   {
     icon: BarChart3,
