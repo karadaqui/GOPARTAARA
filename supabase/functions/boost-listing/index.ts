@@ -28,9 +28,9 @@ Deno.serve(async (req) => {
     const userEmail = claimsData.claims.email as string;
     if (!userEmail) throw new Error("No email in token");
 
-    const { listingId, packageName, durationDays, amountPence } = await req.json();
-    if (!listingId || !packageName || !durationDays || !amountPence) {
-      throw new Error("Missing required fields: listingId, packageName, durationDays, amountPence");
+    const { listingId, packageName, durationDays, priceId } = await req.json();
+    if (!listingId || !packageName || !durationDays || !priceId) {
+      throw new Error("Missing required fields: listingId, packageName, durationDays, priceId");
     }
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
@@ -49,14 +49,7 @@ Deno.serve(async (req) => {
       customer_email: customerId ? undefined : userEmail,
       line_items: [
         {
-          price_data: {
-            currency: "gbp",
-            product_data: {
-              name: `PARTARA Boost — ${packageName}`,
-              description: `Featured listing for ${durationDays} days`,
-            },
-            unit_amount: amountPence,
-          },
+          price: priceId,
           quantity: 1,
         },
       ],
@@ -71,8 +64,7 @@ Deno.serve(async (req) => {
       },
     });
 
-    // Update listing after checkout session created (payment not yet confirmed,
-    // but Stripe redirect to success_url means payment succeeded)
+    // Update listing after checkout session created
     const adminClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
