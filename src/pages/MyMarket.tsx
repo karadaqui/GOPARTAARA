@@ -572,6 +572,13 @@ const MyMarket = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container max-w-5xl py-20 px-4">
+        {/* Boost success banner */}
+        {showBoostSuccess && (
+          <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+            <p className="text-sm font-medium text-emerald-400">🎉 Your listing has been boosted! It will appear in the Featured section immediately.</p>
+          </div>
+        )}
+
         {/* Header with analytics */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div className="flex items-center gap-4">
@@ -723,10 +730,22 @@ const MyMarket = () => {
             {listings.map(listing => (
               <div key={listing.id} className={`glass rounded-xl overflow-hidden ${!listing.active ? 'opacity-60' : ''}`}>
                 {listing.photos[0] ? (
-                  <img src={listing.photos[0]} alt={listing.title} className="w-full h-40 object-cover" />
+                  <div className="relative">
+                    <img src={listing.photos[0]} alt={listing.title} className="w-full h-40 object-cover" />
+                    {listing.featured && listing.featured_until && new Date(listing.featured_until) > new Date() && (
+                      <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/90 text-black flex items-center gap-1">
+                        ⭐ Featured until {new Date(listing.featured_until).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                      </span>
+                    )}
+                  </div>
                 ) : (
-                  <div className="w-full h-40 bg-secondary flex items-center justify-center">
+                  <div className="relative w-full h-40 bg-secondary flex items-center justify-center">
                     <ImagePlus size={32} className="text-muted-foreground" />
+                    {listing.featured && listing.featured_until && new Date(listing.featured_until) > new Date() && (
+                      <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/90 text-black flex items-center gap-1">
+                        ⭐ Featured until {new Date(listing.featured_until).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                      </span>
+                    )}
                   </div>
                 )}
                 <div className="p-4">
@@ -774,14 +793,20 @@ const MyMarket = () => {
                       <Trash2 size={12} />
                     </Button>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setBoostModalOpen(true)}
-                    className="w-full mt-2 rounded-lg gap-1.5 text-xs border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10 hover:text-yellow-300"
-                  >
-                    <Zap size={12} /> Boost — £4.99/week
-                  </Button>
+                  {listing.featured && listing.featured_until && new Date(listing.featured_until) > new Date() ? (
+                    <div className="mt-2 text-center text-[10px] text-yellow-400 font-medium">
+                      ⭐ Boosted with {listing.boost_package}
+                    </div>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => { setBoostListingId(listing.id); setBoostModalOpen(true); }}
+                      className="w-full mt-2 rounded-lg gap-1.5 text-xs border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/10 hover:text-yellow-300"
+                    >
+                      <Zap size={12} /> Boost Listing
+                    </Button>
+                  )}
                 </div>
               </div>
             ))}
