@@ -9,7 +9,16 @@ const PRODUCT_TO_PLAN: Record<string, string> = {
   prod_UJ70agh953wzal: "basic_seller",
   prod_UJ71rmu9dJVO1S: "featured_seller",
   prod_UJ72euxyB9sZcz: "pro_seller",
+  // Annual products
+  prod_UKQ4f9w7HnV7U3: "pro",       // Pro Annual
+  prod_UKQ4DfO2BIdWng: "elite",     // Elite Annual
 };
+
+// Products that are annual subscriptions
+const ANNUAL_PRODUCTS = new Set([
+  "prod_UKQ4f9w7HnV7U3", // Pro Annual
+  "prod_UKQ4DfO2BIdWng", // Elite Annual
+]);
 
 const logStep = (step: string, details?: any) => {
   const d = details ? ` - ${JSON.stringify(details)}` : "";
@@ -162,7 +171,8 @@ Deno.serve(async (req) => {
     logStep("Active subscription found", { productId, plan, subscriptionEnd });
 
     // Store first_payment_date if not already set
-    const updateData: Record<string, any> = { subscription_plan: plan };
+    const subscriptionPeriod = ANNUAL_PRODUCTS.has(productId) ? "annual" : "monthly";
+    const updateData: Record<string, any> = { subscription_plan: plan, subscription_period: subscriptionPeriod };
     if (!profileData?.first_payment_date) {
       try {
         const startVal = sub.start_date || sub.created;
