@@ -465,6 +465,18 @@ const SearchResults = () => {
         setSavedIds((prev) => { const n = new Set(prev); n.delete(item.partNumber); return n; });
         toast({ title: "Removed from saved" });
       } else {
+        // Check saved parts limit for free users
+        if (userPlan.isFree) {
+          const { count } = await supabase.from("saved_parts").select("*", { count: "exact", head: true }).eq("user_id", user.id);
+          if ((count || 0) >= userPlan.features.savedParts) {
+            setUpgradeFeature("savedParts");
+            setUpgradeLabel("Saving more parts");
+            setUpgradeRequiredPlan("Pro");
+            setUpgradeOpen(true);
+            setSavingId(null);
+            return;
+          }
+        }
         await supabase.from("saved_parts").insert({ user_id: user.id, part_name: item.partName, part_number: item.partNumber, price: item.price, supplier: "eBay Motors", url: item.url, image_url: item.imageUrl });
         setSavedIds((prev) => new Set(prev).add(item.partNumber));
         toast({ title: "Part saved!" });
