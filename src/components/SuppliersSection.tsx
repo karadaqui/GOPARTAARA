@@ -22,7 +22,8 @@ const stats = [
   },
   {
     icon: Globe,
-    number: "🇬🇧 Global",
+    number: "Global",
+    numberPrefix: true,
     label: "eBay Markets",
     subtext: "UK, EU, US, AU & more",
   },
