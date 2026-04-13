@@ -324,6 +324,17 @@ const ListingDetail = () => {
       dispute_date: new Date().toISOString(),
     } as any).eq("id", disputeReviewId);
 
+    // Save dispute to listing_disputes table
+    await supabase.from("listing_disputes" as any).insert({
+      listing_id: listing?.id,
+      review_id: disputeReviewId,
+      seller_id: user?.id,
+      listing_title: listing?.title || "",
+      review_text: review?.comment || "",
+      seller_message: disputeReason.trim(),
+      status: "pending",
+    } as any);
+
     // Send admin notification (in-app)
     // Find admin user
     const { data: adminProfiles } = await supabase
