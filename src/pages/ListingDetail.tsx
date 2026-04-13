@@ -499,6 +499,40 @@ const ListingDetail = () => {
                   </a>
                 </Button>
               )}
+              {!isSeller && (
+                <Button onClick={() => {
+                  if (!user) { navigate("/auth"); return; }
+                  setOfferOpen(true);
+                }} className="rounded-xl gap-2">
+                  🤝 Make Offer
+                </Button>
+              )}
+              {!isSeller && (
+                <Button variant="ghost" onClick={async () => {
+                  if (!user) { navigate("/auth"); return; }
+                  // Find or create conversation
+                  const sellerUserId = listing.seller_profiles.user_id;
+                  const { data: existing } = await supabase
+                    .from("conversations")
+                    .select("id")
+                    .eq("listing_id", listing.id)
+                    .eq("buyer_id", user.id)
+                    .eq("seller_id", sellerUserId)
+                    .maybeSingle();
+                  if (existing) {
+                    navigate(`/messages?conv=${existing.id}`);
+                  } else {
+                    const { data: newConv } = await supabase
+                      .from("conversations")
+                      .insert({ listing_id: listing.id, buyer_id: user.id, seller_id: sellerUserId })
+                      .select("id")
+                      .single();
+                    if (newConv) navigate(`/messages?conv=${newConv.id}`);
+                  }
+                }} className="rounded-xl gap-2">
+                  💬 Message Seller
+                </Button>
+              )}
               <Button variant="outline" onClick={handleSave} className="rounded-xl gap-2">
                 {saved ? <BookmarkCheck size={16} className="text-primary" /> : <Bookmark size={16} />}
                 {saved ? "Saved" : "Save Part"}
