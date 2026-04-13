@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useUserPlan } from "@/hooks/useUserPlan";
 import {
   Camera, Save, User, Mail, Crown, Bookmark, Loader2,
   Search, X, ExternalLink, CreditCard, Download, Lock, Copy,
@@ -270,11 +271,12 @@ const Dashboard = () => {
     } catch { /* silently ignore */ }
   };
 
-  const currentPlan = profile?.subscription_plan || "free";
-  const isAdmin = currentPlan === "admin";
-  const isEliteUser = ["elite", "admin"].includes(currentPlan);
-  const isPro = ["pro", "elite", "admin"].includes(currentPlan);
-  const isFree = currentPlan === "free";
+  const userPlan = useUserPlan();
+  const currentPlan = userPlan.plan;
+  const isAdmin = userPlan.isAdmin;
+  const isEliteUser = userPlan.isElite;
+  const isPro = userPlan.isPro;
+  const isFree = userPlan.isFree;
 
   // For admin users, show full email; for regular users, require display_name
   const hasDisplayName = !!profile?.display_name?.trim();
