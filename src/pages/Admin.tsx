@@ -739,13 +739,26 @@ const Admin = () => {
                   <span>Name</span><span>Email</span><span>Plan</span><span>Joined</span>
                 </div>
                 {users.map(u => (
-                  <div key={u.user_id} className="glass rounded-xl px-4 py-3 grid grid-cols-[1fr_1fr_auto_auto] gap-4 items-center">
+                  <div key={u.user_id} className="glass rounded-xl px-4 py-3 grid grid-cols-[1fr_1fr_auto_auto_auto] gap-4 items-center">
                     <span className="font-medium text-sm truncate">{u.display_name || "—"}</span>
                     <span className="text-sm text-muted-foreground truncate">{u.email || "—"}</span>
                     <Badge variant={u.subscription_plan === "admin" ? "destructive" : u.subscription_plan === "free" ? "secondary" : "default"} className="capitalize text-xs">
                       {u.subscription_plan}
                     </Badge>
                     <span className="text-xs text-muted-foreground">{new Date(u.created_at).toLocaleDateString()}</span>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="rounded-xl text-xs text-destructive hover:text-destructive"
+                      onClick={async () => {
+                        const { data: sp } = await supabase.from("seller_profiles").select("id").eq("user_id", u.user_id).maybeSingle();
+                        if (!sp) { toast({ title: "No seller profile", description: "This user doesn't have a seller profile.", variant: "destructive" }); return; }
+                        const { count } = await supabase.from("seller_listings").select("id", { count: "exact", head: true }).eq("seller_id", sp.id);
+                        setShopDeleteTarget({ userId: u.user_id, displayName: u.display_name || "Unknown", email: u.email || "", listingCount: count || 0 });
+                      }}
+                    >
+                      <Trash2 size={12} /> Shop
+                    </Button>
                   </div>
                 ))}
               </div>
