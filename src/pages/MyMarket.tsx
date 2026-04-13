@@ -73,6 +73,19 @@ interface DisputedReview {
   reviewer_name: string;
 }
 
+interface Offer {
+  id: string;
+  listing_id: string;
+  buyer_id: string;
+  seller_id: string;
+  amount: number;
+  message: string | null;
+  status: string;
+  created_at: string;
+  listing_title?: string;
+  buyer_name?: string;
+}
+
 const CATEGORIES = [
   "Engine Parts", "Body Parts", "Brakes", "Suspension", "Electrical",
   "Filters", "Exhaust", "Interior", "Cooling", "Transmission",
