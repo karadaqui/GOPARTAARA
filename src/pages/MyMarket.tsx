@@ -109,8 +109,15 @@ const MyMarket = () => {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [deleteReason, setDeleteReason] = useState("");
   const [undoListing, setUndoListing] = useState<Listing | null>(null);
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [shopDeleteOpen, setShopDeleteOpen] = useState(false);
+  const [shopDeleteReason, setShopDeleteReason] = useState("");
+  const [shopDeleteFeedback, setShopDeleteFeedback] = useState("");
+  const [shopDeleteConfirm, setShopDeleteConfirm] = useState(false);
+  const [shopDeleting, setShopDeleting] = useState(false);
+  const [shopDeleteSent, setShopDeleteSent] = useState(false);
   const [userPlan, setUserPlan] = useState<string>("free");
   const [disputedReviews, setDisputedReviews] = useState<DisputedReview[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
