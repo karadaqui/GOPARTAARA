@@ -127,7 +127,6 @@ const PricingSection = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loadingId, setLoadingId] = useState<string | null>(null);
-  const [loadingId, setLoadingId] = useState<string | null>(null);
   const [slowWarning, setSlowWarning] = useState(false);
   const [annual, setAnnual] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
