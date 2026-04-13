@@ -41,6 +41,7 @@ const individualPlans = [
     cta: "Start Free",
     popular: false,
     priceId: null as string | null,
+    annualPriceId: null as string | null,
   },
   {
     name: "Pro",
@@ -54,6 +55,7 @@ const individualPlans = [
     popular: true,
     priceId: STRIPE.pro,
     annualPriceId: STRIPE.pro_annual,
+  },
   {
     name: "Elite",
     tagline: "The complete experience",
@@ -65,6 +67,7 @@ const individualPlans = [
     cta: "Go Elite",
     popular: false,
     priceId: STRIPE.elite,
+    annualPriceId: STRIPE.elite_annual,
   },
 ];
 
