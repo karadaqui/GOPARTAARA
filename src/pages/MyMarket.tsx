@@ -288,6 +288,17 @@ const MyMarket = () => {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
+      // Save bank details to profiles table
+      const bankDetails = {
+        account_name: profileForm.bank_account_name || null,
+        sort_code: profileForm.bank_sort_code || null,
+        account_number: profileForm.bank_account_number || null,
+        paypal_email: profileForm.bank_paypal_email || null,
+      };
+      const hasBankDetails = Object.values(bankDetails).some(v => v);
+      if (hasBankDetails) {
+        await supabase.from("profiles").update({ seller_bank_details: bankDetails } as any).eq("user_id", user!.id);
+      }
       toast({ title: "Profile created!" });
       setEditingProfile(false);
       await loadData();
@@ -311,6 +322,14 @@ const MyMarket = () => {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
+      // Save bank details to profiles table
+      const bankDetails = {
+        account_name: profileForm.bank_account_name || null,
+        sort_code: profileForm.bank_sort_code || null,
+        account_number: profileForm.bank_account_number || null,
+        paypal_email: profileForm.bank_paypal_email || null,
+      };
+      await supabase.from("profiles").update({ seller_bank_details: bankDetails } as any).eq("user_id", user!.id);
       toast({ title: "Profile updated!" });
       setEditingProfile(false);
       await loadData();
