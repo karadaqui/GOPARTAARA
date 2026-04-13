@@ -8,6 +8,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import CompatibleParts from "@/components/CompatibleParts";
 
 const MODEL_EXAMPLES: Record<string, string> = {
   VAUXHALL: "e.g. Astra, Corsa, Insignia, Mokka, Grandland",
