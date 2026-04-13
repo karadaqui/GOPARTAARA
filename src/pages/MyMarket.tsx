@@ -113,6 +113,7 @@ const MyMarket = () => {
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showSellerGate, setShowSellerGate] = useState(false);
   const [disputedReviews, setDisputedReviews] = useState<DisputedReview[]>([]);
+  const [offers, setOffers] = useState<Offer[]>([]);
   const [boostModalOpen, setBoostModalOpen] = useState(false);
   const [boostListingId, setBoostListingId] = useState<string | null>(null);
   const [boostingPriceId, setBoostingPriceId] = useState<string | null>(null);
