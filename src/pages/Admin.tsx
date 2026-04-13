@@ -125,8 +125,16 @@ const Admin = () => {
   const [resolving, setResolving] = useState(false);
 
   // Delete confirmation
-  const [deleteTarget, setDeleteTarget] = useState<{ type: string; id: string; label: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ type: string; id: string; label: string; sellerId?: string; sellerEmail?: string; price?: number } | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [adminDeleteReason, setAdminDeleteReason] = useState("");
+  
+  // Shop delete
+  const [shopDeleteTarget, setShopDeleteTarget] = useState<{ userId: string; displayName: string; email: string; listingCount: number } | null>(null);
+  const [shopDeleteReason, setShopDeleteReason] = useState("");
+  const [shopDeleteNotes, setShopDeleteNotes] = useState("");
+  const [shopDeleteConfirm, setShopDeleteConfirm] = useState(false);
+  const [shopDeleting, setShopDeleting] = useState(false);
 
   useEffect(() => {
     if (!user) { navigate("/auth?redirect=/admin"); return; }
