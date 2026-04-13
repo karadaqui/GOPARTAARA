@@ -1068,6 +1068,13 @@ const SearchResults = () => {
           </div>
         </div>
       )}
+      <UpgradeModal
+        open={upgradeOpen}
+        onOpenChange={setUpgradeOpen}
+        feature={upgradeFeature}
+        featureLabel={upgradeLabel}
+        requiredPlan={upgradeRequiredPlan}
+      />
       <Footer />
     </div>
   );
