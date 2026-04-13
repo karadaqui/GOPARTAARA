@@ -331,23 +331,26 @@ const PricingSection = () => {
         {/* Individual Plans */}
         {activeTab === "individual" && (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {individualPlans.map((plan) => (
-              <PlanCard
-                key={plan.name}
-                name={plan.name}
-                tagline={plan.tagline}
-                price={annual ? plan.annualPrice : plan.monthlyPrice}
-                originalPrice={annual && plan.annualPrice !== plan.monthlyPrice ? plan.monthlyPrice : undefined}
-                billedNote={annual ? plan.annualBilled : undefined}
-                period={plan.period}
-                features={plan.features}
-                cta={plan.cta}
-                popular={plan.popular}
-                loading={isLoading(plan.priceId)}
-                slowWarning={slowWarning}
-                onSelect={() => startCheckout(plan.priceId)}
-              />
-            ))}
+            {individualPlans.map((plan) => {
+              const effectivePriceId = annual && plan.annualPriceId ? plan.annualPriceId : plan.priceId;
+              return (
+                <PlanCard
+                  key={plan.name}
+                  name={plan.name}
+                  tagline={plan.tagline}
+                  price={annual ? plan.annualPrice : plan.monthlyPrice}
+                  originalPrice={annual && plan.annualPrice !== plan.monthlyPrice ? plan.monthlyPrice : undefined}
+                  billedNote={annual ? plan.annualBilled : undefined}
+                  period={plan.period}
+                  features={plan.features}
+                  cta={plan.cta}
+                  popular={plan.popular}
+                  loading={isLoading(effectivePriceId)}
+                  slowWarning={slowWarning}
+                  onSelect={() => startCheckout(effectivePriceId)}
+                />
+              );
+            })}
           </div>
         )}
 
