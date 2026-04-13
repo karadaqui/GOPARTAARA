@@ -245,8 +245,10 @@ export type Database = {
           created_at: string
           id: string
           listing_id: string | null
+          listing_title: string | null
           resolved_at: string | null
           review_id: string | null
+          review_text: string | null
           seller_id: string
           seller_message: string
           status: string
@@ -256,8 +258,10 @@ export type Database = {
           created_at?: string
           id?: string
           listing_id?: string | null
+          listing_title?: string | null
           resolved_at?: string | null
           review_id?: string | null
+          review_text?: string | null
           seller_id: string
           seller_message: string
           status?: string
@@ -267,8 +271,10 @@ export type Database = {
           created_at?: string
           id?: string
           listing_id?: string | null
+          listing_title?: string | null
           resolved_at?: string | null
           review_id?: string | null
+          review_text?: string | null
           seller_id?: string
           seller_message?: string
           status?: string

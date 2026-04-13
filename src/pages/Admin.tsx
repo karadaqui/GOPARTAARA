@@ -206,9 +206,9 @@ const Admin = () => {
       const reviewer = review ? reviewerMap.get(review.user_id) : null;
       return {
         ...r,
-        listing_title: listing?.title || "Unknown listing",
+        listing_title: r.listing_title || listing?.title || "Unknown listing",
         review_rating: review?.rating,
-        review_comment: review?.comment,
+        review_comment: r.review_text || review?.comment,
         reviewer_name: reviewer?.display_name || "Anonymous",
         seller_name: seller?.display_name || "Unknown seller",
       };
