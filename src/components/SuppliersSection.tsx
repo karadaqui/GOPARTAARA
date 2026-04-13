@@ -1,94 +1,73 @@
+import { Package, Search, Zap, Globe } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const stats = [
-  { value: "1M+", label: "Parts Indexed" },
-  { value: "£0", label: "Always Free to Search" },
-  { value: "Real-time", label: "Live Price Updates" },
-  { value: "10+", label: "Trusted Suppliers" },
-];
-
-const activeSuppliers = [
-  { name: "eBay", href: "https://www.ebay.co.uk" },
-];
-
-const comingSoonSuppliers = [
-  "Euro Car Parts",
-  "GSF Car Parts",
-  "Car Parts 4 Less",
-  "Autodoc",
-  "Amazon UK",
+  {
+    icon: Package,
+    number: "1,000,000+",
+    label: "Parts Available",
+    subtext: "Updated daily from eBay",
+  },
+  {
+    icon: Search,
+    number: "Free",
+    label: "To Search & Compare",
+    subtext: "No account needed to browse",
+  },
+  {
+    icon: Zap,
+    number: "Real-time",
+    label: "Live Prices",
+    subtext: "Direct from eBay marketplace",
+  },
+  {
+    icon: Globe,
+    number: "🇬🇧 Global",
+    label: "eBay Markets",
+    subtext: "UK, EU, US, AU & more",
+  },
 ];
 
 const SuppliersSection = () => (
-  <section className="py-20 md:py-28">
+  <section className="relative py-20 md:py-28">
+    {/* Subtle glow behind section */}
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div className="w-[600px] h-[300px] rounded-full bg-primary/5 blur-[120px]" />
+    </div>
+
     {/* Separator */}
     <div className="container px-4 mb-16">
       <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
     </div>
 
-    <div className="container px-4">
-      {/* Stats grid */}
-      <ScrollReveal>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 max-w-4xl mx-auto mb-20">
-          {stats.map((s) => (
-            <div key={s.label} className="text-center group">
-              <div className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-primary mb-1.5 tracking-tight transition-transform duration-300 group-hover:scale-105">
-                {s.value}
-              </div>
-              <div className="text-xs sm:text-sm text-muted-foreground font-medium">{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </ScrollReveal>
-
-      {/* Section title */}
+    <div className="container relative z-10 px-4">
       <ScrollReveal className="text-center mb-10">
         <h2 className="font-display text-2xl md:text-3xl font-bold tracking-tight inline-block">
-          Trusted Suppliers
+          The Numbers
         </h2>
         <div className="mt-3 mx-auto w-12 h-0.5 rounded-full bg-primary" />
       </ScrollReveal>
 
-      {/* Supplier row */}
       <ScrollReveal>
-        <div className="flex flex-col items-center gap-6 max-w-4xl mx-auto">
-          {/* Active suppliers */}
-          <div className="flex items-center justify-center gap-3 sm:gap-4">
-            {activeSuppliers.map((s) => (
-              <a
-                key={s.name}
-                href={s.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl border border-border/40 bg-card/30 backdrop-blur-sm text-sm sm:text-base font-semibold text-foreground transition-all duration-300 hover:border-primary/30 hover:bg-card/60 hover:shadow-lg hover:shadow-primary/5 flex items-center gap-2"
-              >
-                <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
-                {s.name}
-              </a>
-            ))}
-          </div>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 w-full max-w-xs">
-            <div className="flex-1 h-px bg-border/30" />
-            <span className="text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">plus</span>
-            <div className="flex-1 h-px bg-border/30" />
-          </div>
-
-          {/* Coming soon - muted */}
-          <div className="text-center">
-            <p className="text-xs text-muted-foreground/60 mb-3">More suppliers joining soon</p>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              {comingSoonSuppliers.map((s) => (
-                <span
-                  key={s}
-                  className="px-3.5 py-1.5 rounded-lg border border-border/15 bg-card/10 text-[11px] font-medium text-muted-foreground/30 cursor-default select-none"
-                >
-                  {s}
-                </span>
-              ))}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+          {stats.map((s) => (
+            <div
+              key={s.label}
+              className="group rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-6 text-center transition-all duration-300 hover:border-primary/20 hover:bg-card/60 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1"
+            >
+              <s.icon
+                size={20}
+                className="mx-auto mb-3 text-primary transition-transform duration-300 group-hover:scale-110"
+              />
+              <div className="font-display text-2xl sm:text-3xl font-bold text-primary mb-1 tracking-tight">
+                {s.number}
+              </div>
+              <div className="text-sm font-medium text-foreground mb-1">
+                {s.label}
+              </div>
+              <div className="text-xs text-muted-foreground">{s.subtext}</div>
             </div>
-          </div>
+          ))}
         </div>
       </ScrollReveal>
     </div>
