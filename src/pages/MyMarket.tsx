@@ -344,6 +344,16 @@ const MyMarket = () => {
         photos: listing.photos,
       });
     } else {
+      // Check listing limit for non-admin/non-unlimited plans
+      const activeCount = listings.filter(l => l.active).length;
+      // Basic seller: 20, Featured: 100, Pro seller/admin: unlimited
+      const tierLimits: Record<string, number> = { basic: 20, featured: 100, pro: Infinity, admin: Infinity };
+      const currentTier = profile?.seller_tier || "basic";
+      const limit = tierLimits[currentTier] ?? 20;
+      if (activeCount >= limit) {
+        toast({ title: "Listing limit reached", description: `Your ${currentTier} seller plan allows ${limit} active listings. Upgrade your seller tier for more.`, variant: "destructive" });
+        return;
+      }
       setEditingListing(null);
       setListingForm({ title: "", description: "", price: "", category: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
     }

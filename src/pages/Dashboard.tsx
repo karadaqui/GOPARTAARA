@@ -594,68 +594,83 @@ const Dashboard = () => {
           <BlogGenerateSection />
         </div>
 
-        {/* Search History */}
-        <div className="glass rounded-2xl p-6 sm:p-8 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-display text-lg font-semibold flex items-center gap-2">
-              <Search size={18} className="text-primary" />
-              Recent Searches
-            </h2>
-            <div className="flex items-center gap-2">
-              {isEliteUser ? (
-                <button
-                  onClick={exportSearchHistoryCSV}
-                  title="Export search history as CSV"
-                  className="w-7 h-7 rounded-lg border border-border bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors text-primary"
-                >
-                  <Download size={14} />
-                </button>
-              ) : (
-                <button
-                  onClick={() => navigate("/pricing")}
-                  title="Export search history (Elite plan)"
-                  className="w-7 h-7 rounded-lg border border-border bg-secondary/50 flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground relative"
-                >
-                  <Download size={14} />
-                  <Lock size={8} className="absolute -top-1 -right-1 text-muted-foreground" />
-                </button>
-              )}
-              {searchHistory.length > 0 && (
-                <button onClick={clearAllHistory} className="text-xs text-muted-foreground hover:text-destructive transition-colors">
-                  Clear all
-                </button>
-              )}
+        {/* Search History — Pro/Elite only */}
+        {isPro ? (
+          <div className="glass rounded-2xl p-6 sm:p-8 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-display text-lg font-semibold flex items-center gap-2">
+                <Search size={18} className="text-primary" />
+                Recent Searches
+              </h2>
+              <div className="flex items-center gap-2">
+                {isEliteUser ? (
+                  <button
+                    onClick={exportSearchHistoryCSV}
+                    title="Export search history as CSV"
+                    className="w-7 h-7 rounded-lg border border-border bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors text-primary"
+                  >
+                    <Download size={14} />
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => navigate("/pricing")}
+                    title="Export search history (Elite plan)"
+                    className="w-7 h-7 rounded-lg border border-border bg-secondary/50 flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground relative"
+                  >
+                    <Download size={14} />
+                    <Lock size={8} className="absolute -top-1 -right-1 text-muted-foreground" />
+                  </button>
+                )}
+                {searchHistory.length > 0 && (
+                  <button onClick={clearAllHistory} className="text-xs text-muted-foreground hover:text-destructive transition-colors">
+                    Clear all
+                  </button>
+                )}
+              </div>
             </div>
+            {searchHistory.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-6">
+                No searches yet. Try searching for a car part!
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {searchHistory.map((item) => (
+                  <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/50 transition-colors group">
+                    <Search size={14} className="text-muted-foreground shrink-0" />
+                    <button
+                      onClick={() => navigate(`/search?q=${encodeURIComponent(item.query)}`)}
+                      className="flex-1 text-left text-sm font-medium hover:text-primary transition-colors truncate"
+                    >
+                      {item.query}
+                    </button>
+                    <span className="text-[10px] text-muted-foreground shrink-0">
+                      {new Date(item.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                    </span>
+                    <button
+                      onClick={() => deleteHistoryItem(item.id)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-          {searchHistory.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-6">
-              No searches yet. Try searching for a car part!
-            </p>
-          ) : (
-            <div className="space-y-2">
-              {searchHistory.map((item) => (
-                <div key={item.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-secondary/50 transition-colors group">
-                  <Search size={14} className="text-muted-foreground shrink-0" />
-                  <button
-                    onClick={() => navigate(`/search?q=${encodeURIComponent(item.query)}`)}
-                    className="flex-1 text-left text-sm font-medium hover:text-primary transition-colors truncate"
-                  >
-                    {item.query}
-                  </button>
-                  <span className="text-[10px] text-muted-foreground shrink-0">
-                    {new Date(item.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
-                  </span>
-                  <button
-                    onClick={() => deleteHistoryItem(item.id)}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-              ))}
+        ) : (
+          <div className="glass rounded-2xl p-6 sm:p-8 mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <Search size={18} className="text-muted-foreground" />
+              <h2 className="font-display text-lg font-semibold text-muted-foreground">Recent Searches</h2>
+              <Lock size={14} className="text-muted-foreground" />
             </div>
-          )}
-        </div>
+            <p className="text-sm text-muted-foreground mb-4">Search history is a Pro feature. Upgrade to view and export your past searches.</p>
+            <Button className="rounded-xl gap-2" onClick={() => navigate("/pricing")}>
+              <Sparkles size={14} />
+              Upgrade to Pro — £9.99/mo
+            </Button>
+          </div>
+        )}
 
         {/* Priority Support — Elite only */}
         <div className="mb-6">
