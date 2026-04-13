@@ -407,7 +407,23 @@ const SearchResults = () => {
     setVehicleInfo(vehicle); setVehicleModelInput(""); setVehicleModelConfirmed(!!vehicle.model);
     setQuery(nextQuery); setActiveQuery(nextQuery); setSelectedCategory(null); setCurrentPage(1);
     setSearchMode("text"); setSearchParams({ q: nextQuery, vehicle: JSON.stringify(vehicle) });
-    if (user) searchLimit.recordSearch();
+    // Reg plate lookup counts as a search credit
+    if (user && !searchLimit.isPro) {
+      searchLimit.recordSearch();
+      setLastSearch(nextQuery);
+    }
+  };
+
+  /** Actually execute a search (after any confirmations) */
+  const executeSearch = (sanitized: string) => {
+    if (!checkRateLimit(`search_${user!.id}`, 10, 60_000)) { toast({ title: "Slow down", description: "You're searching too fast. Please wait a moment.", variant: "destructive" }); return; }
+    internalSearchRef.current = true;
+    setActiveQuery(sanitized); setSelectedCategory(null); setCurrentPage(1); setSearchParams({ q: sanitized });
+    setGarageVehicleLabel(null);
+    if (!searchLimit.isPro) {
+      searchLimit.recordSearch();
+      setLastSearch(sanitized);
+    }
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -417,13 +433,13 @@ const SearchResults = () => {
 
     // Guest search limit (3 searches via localStorage)
     if (!user) {
-      const guestCount = parseInt(localStorage.getItem("partara_guest_searches") || "0", 10);
+      const guestCount = getGuestSearchCount();
       if (guestCount >= 3) {
         setSearchLimitModalType("guest");
         setSearchLimitModalOpen(true);
         return;
       }
-      localStorage.setItem("partara_guest_searches", String(guestCount + 1));
+      incrementGuestSearch();
       setAuthGateOpen(true);
       return;
     }
@@ -435,10 +451,14 @@ const SearchResults = () => {
       return;
     }
 
-    if (!checkRateLimit(`search_${user.id}`, 10, 60_000)) { toast({ title: "Slow down", description: "You're searching too fast. Please wait a moment.", variant: "destructive" }); return; }
-    internalSearchRef.current = true;
-    setActiveQuery(sanitized); setSelectedCategory(null); setCurrentPage(1); setSearchParams({ q: sanitized });
-    if (user) searchLimit.recordSearch();
+    // Same query warning (only for free users who have limited searches)
+    if (!searchLimit.isPro && isSameQuery(sanitized)) {
+      setPendingSearchQuery(sanitized);
+      setSameQueryConfirmOpen(true);
+      return;
+    }
+
+    executeSearch(sanitized);
   };
 
   
