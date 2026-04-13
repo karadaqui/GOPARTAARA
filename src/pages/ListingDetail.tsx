@@ -566,12 +566,25 @@ const ListingDetail = () => {
                   </button>
                   <div className="flex items-center gap-1.5">
                     <PlanBadge plan={listing.seller_profiles.seller_tier + "_seller"} size="sm" />
+                    <span className="text-xs text-muted-foreground">
+                      · Joined {new Date(listing.seller_profiles.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}
+                    </span>
                   </div>
                 </div>
               </div>
               {listing.seller_profiles.description && (
                 <p className="text-xs text-muted-foreground line-clamp-2">{listing.seller_profiles.description}</p>
               )}
+            </div>
+
+            {/* Report listing */}
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => navigate("/contact", { state: { subject: "Report Listing", message: `I'd like to report listing: "${listing.title}" (ID: ${listing.id})` } })}
+                className="text-xs text-muted-foreground hover:text-destructive transition-colors inline-flex items-center gap-1"
+              >
+                <Flag size={12} /> Report this listing
+              </button>
             </div>
           </div>
         </div>
