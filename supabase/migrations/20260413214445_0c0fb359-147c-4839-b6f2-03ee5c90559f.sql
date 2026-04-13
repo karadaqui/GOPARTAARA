@@ -1,0 +1,1 @@
+ALTER TABLE public.profiles ADD COLUMN seller_bank_details jsonb DEFAULT NULL;
