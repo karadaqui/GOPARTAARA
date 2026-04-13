@@ -1,9 +1,8 @@
 User-agent: *
 Allow: /
-Disallow: /auth
-Disallow: /reset-password
 Disallow: /dashboard
-Disallow: /saved
-Disallow: /unsubscribe
+Disallow: /admin
+Disallow: /my-market
+Disallow: /complete-profile
 
-Sitemap: https://car-part-search.lovable.app/sitemap.xml
+Sitemap: https://gopartara.com/sitemap.xml
