@@ -235,7 +235,7 @@ const faqItems = [
   },
 ];
 
-type Tab = "individual" | "seller" | "bundles";
+type Tab = "individual";
 
 const CHECKOUT_TIMEOUT_MS = 10_000;
 
@@ -275,10 +275,8 @@ const PricingSection = () => {
 
   const isLoading = (id: string | null) => id !== null && loadingId === id;
 
-  const tabs: { key: Tab; label: string; hidden?: boolean }[] = [
+  const tabs: { key: Tab; label: string }[] = [
     { key: "individual", label: "Individual Plans" },
-    { key: "seller", label: "Seller Plans", hidden: true },
-    { key: "bundles", label: "Bundle & Save", hidden: true },
   ];
 
   return (

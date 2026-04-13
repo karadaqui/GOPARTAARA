@@ -18,7 +18,6 @@ const moreLinks = [
   { label: "My Garage", href: "/garage" },
   { label: "My Market", href: "/my-market" },
   { label: "Saved Parts", href: "/saved" },
-  { label: "List Your Parts", href: "/list-your-parts" },
   { label: "Blog", href: "/blog" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
