@@ -319,11 +319,11 @@ const HeroSection = () => {
             {/* Active Supplier */}
             <div className="flex items-center justify-center gap-2">
               <span className="text-xs text-muted-foreground uppercase tracking-wider">Active Supplier</span>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-sm font-semibold text-emerald-400">{activeSupplier.name}</span>
-                <span className="text-xs text-emerald-400/70">— {activeSupplier.description}</span>
-                <span className="text-emerald-400">✅</span>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-xl border bg-[hsl(142,76%,36%,0.1)] border-[hsl(142,76%,36%,0.3)]">
+                <span className="w-2 h-2 rounded-full bg-[hsl(142,76%,45%)] animate-pulse" />
+                <span className="text-sm font-semibold text-[hsl(142,76%,45%)]">{activeSupplier.name}</span>
+                <span className="text-xs text-[hsl(142,76%,45%,0.7)]">— {activeSupplier.description}</span>
+                <span className="text-[hsl(142,76%,45%)]">✅</span>
               </div>
             </div>
 
