@@ -325,7 +325,7 @@ const Marketplace = () => {
             <div className="glass rounded-2xl p-8 mt-12 text-center">
               <h2 className="font-display text-xl font-bold mb-2">Sell Your Parts on PARTARA</h2>
               <p className="text-muted-foreground mb-4">Reach thousands of car owners and mechanics.</p>
-              <Button onClick={() => navigate("/list-your-parts")} className="rounded-xl gap-2">
+              <Button onClick={() => navigate("/my-market")} className="rounded-xl gap-2">
                 <Store size={16} /> List Your Parts
               </Button>
             </div>
