@@ -1077,10 +1077,10 @@ const SearchResults = () => {
               </div>
               {searchLimitModalType === "free" ? (
                 <>
-                  <h3 className="text-xl font-bold text-white mb-2">Search limit reached</h3>
-                  <p className="text-zinc-400 text-sm mb-6">You've used your 5 free searches this month. Upgrade to Pro for unlimited searches.</p>
+                  <h3 className="text-xl font-bold text-white mb-2">You've used all 5 free searches 🔍</h3>
+                  <p className="text-zinc-400 text-sm mb-6">Upgrade to Pro for unlimited searches, photo search, price alerts and more.</p>
                   <button onClick={() => { setSearchLimitModalOpen(false); navigate("/pricing"); }} className="w-full h-12 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm transition-colors">
-                    Upgrade to Pro
+                    Upgrade to Pro — £9.99/mo
                   </button>
                   <button onClick={() => setSearchLimitModalOpen(false)} className="mt-3 w-full h-10 rounded-xl text-zinc-400 hover:text-zinc-200 text-sm transition-colors">
                     Maybe later
