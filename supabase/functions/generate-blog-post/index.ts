@@ -6,29 +6,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const TOPICS = [
-  "Most searched car parts this week and why demand is surging",
-  "Popular car models and their most commonly replaced parts",
-  "Essential car maintenance tips to save money on repairs",
-  "Price comparison guide: OEM vs aftermarket car parts",
-  "Seasonal car maintenance checklist and parts you should stock up on",
-  "How to identify counterfeit car parts and protect your vehicle",
-  "Top 10 car parts that fail most often and how to spot early signs",
-  "Electric vehicle parts: what's different and what you need to know",
-  "DIY car repairs: parts you can replace yourself to save hundreds",
-  "Understanding car part compatibility across different makes and models",
-  "Best budget car parts brands that deliver OEM quality",
-  "How to save money on brake pads and discs without compromising safety",
-  "Complete guide to car battery replacement and maintenance",
-  "Turbo vs naturally aspirated: parts costs and reliability compared",
-  "Common MOT failure parts and how to prepare your car",
-  "Winter car parts: everything you need for cold weather driving",
-  "The rise of remanufactured car parts: are they worth it?",
-  "Car part warranties explained: what you need to know before buying",
-  "How technology is changing the car parts industry in 2026",
-  "The most expensive car repairs and how to prevent them",
-];
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -48,23 +25,21 @@ Deno.serve(async (req) => {
 
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Check if this is an automated (cron) call or a user-initiated call
+    // Check if user-initiated or automated
     const authHeader = req.headers.get("Authorization");
     let authorName = "PARTARA Team";
     let isAutomated = false;
-
-    // Try to parse request body for batch count
     let batchCount = 1;
+
     try {
       const body = await req.json();
       if (body?.batch) batchCount = Math.min(body.batch, 5);
       if (body?.automated) isAutomated = true;
     } catch {
-      // No body or invalid JSON — single post mode
+      // No body — single post mode
     }
 
     if (!isAutomated && authHeader) {
-      // User-initiated: verify user and get display name
       const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
       const userClient = createClient(supabaseUrl, supabaseAnonKey, {
         global: { headers: { Authorization: authHeader } },
@@ -82,11 +57,9 @@ Deno.serve(async (req) => {
         .select("display_name")
         .eq("user_id", user.id)
         .single();
-      if (profileData?.display_name) {
-        authorName = profileData.display_name;
-      }
+      if (profileData?.display_name) authorName = profileData.display_name;
 
-      // Enforce 2 manual posts per day limit
+      // Enforce 2 manual posts per day
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
       const { count: todayCount } = await adminClient
@@ -101,15 +74,36 @@ Deno.serve(async (req) => {
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
         );
       }
-      batchCount = 1; // Users can only generate 1 at a time
+      batchCount = 1;
     }
 
     const generatedPosts = [];
     const today = new Date().toISOString().split("T")[0];
 
     for (let i = 0; i < batchCount; i++) {
-      const topic = TOPICS[Math.floor(Math.random() * TOPICS.length)];
-      console.log(`Generating blog post ${i + 1}/${batchCount} about: ${topic}`);
+      // Pick a topic not used in the last 30 days
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+      const { data: availableTopics } = await adminClient
+        .from("blog_topics")
+        .select("id, topic")
+        .or(`last_used.is.null,last_used.lt.${thirtyDaysAgo.toISOString()}`)
+        .limit(100);
+
+      if (!availableTopics || availableTopics.length === 0) {
+        console.log("No available topics — all used within 30 days");
+        continue;
+      }
+
+      const chosen = availableTopics[Math.floor(Math.random() * availableTopics.length)];
+      console.log(`Generating post ${i + 1}/${batchCount}: ${chosen.topic}`);
+
+      // Mark topic as used
+      await adminClient
+        .from("blog_topics")
+        .update({ last_used: new Date().toISOString() })
+        .eq("id", chosen.id);
 
       const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -122,11 +116,20 @@ Deno.serve(async (req) => {
           messages: [
             {
               role: "system",
-              content: `You are an expert automotive content writer for PARTARA, a car parts search engine. Write SEO-optimized blog posts that are informative, engaging, and helpful for car owners and mechanics. Always include practical advice and mention specific car parts. Today's date is ${today}.`,
+              content: `You are an expert automotive journalist writing for a UK car parts comparison website called PARTARA (gopartara.com). Write detailed, SEO-optimised blog posts. Always write in British English. Be helpful, practical, and specific. Include real part names, common car models, and practical advice. End every post with a CTA mentioning PARTARA. Today's date is ${today}.`,
             },
             {
               role: "user",
-              content: `Write a blog post about: "${topic}". Return a JSON object with these exact fields: title (SEO-optimized, 50-60 chars), slug (URL-friendly, lowercase letters numbers and hyphens only), content (full markdown blog post 800-1200 words with ## subheadings), preview (2-3 sentence excerpt under 200 chars), meta_description (SEO meta under 160 chars), keywords (array of 5-8 relevant keywords). Return ONLY valid JSON, no markdown code blocks.`,
+              content: `Write a comprehensive, SEO-optimised blog post about: "${chosen.topic}".
+Format as JSON with these exact fields:
+- title (compelling SEO title, under 60 chars)
+- slug (URL-friendly, lowercase letters numbers and hyphens only)
+- content (full HTML blog post, minimum 800 words, include h2/h3 subheadings, bullet points, practical tips. Use proper HTML tags like <h2>, <h3>, <p>, <ul>, <li>, <strong>.)
+- excerpt (meta description, 150-160 chars)
+- category (one of: Buying Guide, Maintenance, Education, Comparison, Tutorial, News)
+- tags (array of 5 relevant tags)
+- read_time (e.g. "5 min read")
+Return ONLY valid JSON, no markdown code blocks.`,
             },
           ],
           response_format: { type: "json_object" },
@@ -159,7 +162,7 @@ Deno.serve(async (req) => {
         .eq("title", post.title);
 
       if ((existingCount || 0) > 0) {
-        console.log(`Skipping duplicate title: ${post.title}`);
+        console.log(`Skipping duplicate: ${post.title}`);
         continue;
       }
 
@@ -171,9 +174,11 @@ Deno.serve(async (req) => {
           title: post.title,
           slug: uniqueSlug,
           content: post.content,
-          preview: post.preview || post.title,
-          meta_description: post.meta_description || post.preview || post.title,
-          keywords: post.keywords || [],
+          preview: post.excerpt || post.title,
+          meta_description: post.excerpt || post.title,
+          keywords: post.tags || [],
+          category: post.category || "Education",
+          read_time: post.read_time || "5 min read",
           author: "PARTARA Team",
           published: true,
           published_at: new Date().toISOString(),
