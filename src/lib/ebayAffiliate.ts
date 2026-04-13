@@ -1,16 +1,16 @@
 /**
  * Build eBay Partner Network affiliate URL from any eBay listing URL.
- * Campaign ID: 5339148333 | Custom ID: partara | Publisher ID: 5575378759
+ * Uses simple mpre redirect - works for ALL eBay country sites.
+ * Campaign ID: 5339148333 | Custom ID: partara
  */
-export function buildEbayAffiliateUrl(originalEbayUrl: string): string {
+export function buildEbayAffiliateUrl(originalUrl: string): string {
+  if (!originalUrl) return '#';
+  
   try {
-    const itemIdMatch = originalEbayUrl.match(/\/itm\/(\d+)/);
-    if (itemIdMatch) {
-      const itemId = itemIdMatch[1];
-      return `https://rover.ebay.com/rover/1/711-53200-19255-0/1?icep_id=114&ipn=icep&toolid=20004&campid=5339148333&customid=partara&item=${itemId}&ff3=4&pub=5575378759`;
-    }
-  } catch {
-    // fall through to fallback
+    // Simple mpre redirect - works for ALL eBay country sites
+    const encoded = encodeURIComponent(originalUrl);
+    return `https://rover.ebay.com/rover/1/711-53200-19255-0/1?mpre=${encoded}&campid=5339148333&customid=partara&toolid=10001`;
+  } catch (e) {
+    return originalUrl;
   }
-  return `https://rover.ebay.com/rover/1/711-53200-19255-0/1?mpre=${encodeURIComponent(originalEbayUrl)}&campid=5339148333&customid=partara&toolid=10001&pub=5575378759`;
 }
