@@ -427,7 +427,6 @@ const MyMarket = () => {
       toast({ title: "At least 1 photo is required", variant: "destructive" });
       return;
     }
-    }
     setSaving(true);
     const extraVehicles = listingForm.compatible_vehicles_text
       .split(",").map(s => s.trim()).filter(Boolean);
