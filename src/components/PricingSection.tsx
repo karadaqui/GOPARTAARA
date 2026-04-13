@@ -1,4 +1,4 @@
-import { Check, X, Loader2, Crown, Star, Shield, Building2 } from "lucide-react";
+import { Check, X, Loader2, Star, Zap, Shield, Building2 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -119,7 +119,6 @@ const faqItems = [
   },
 ];
 
-type Tab = "individual";
 
 const CHECKOUT_TIMEOUT_MS = 10_000;
 
@@ -127,7 +126,7 @@ const PricingSection = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState<Tab>("individual");
+  const [loadingId, setLoadingId] = useState<string | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [slowWarning, setSlowWarning] = useState(false);
   const [annual, setAnnual] = useState(false);
@@ -159,9 +158,6 @@ const PricingSection = () => {
 
   const isLoading = (id: string | null) => id !== null && loadingId === id;
 
-  const tabs: { key: Tab; label: string }[] = [
-    { key: "individual", label: "Individual Plans" },
-  ];
 
   return (
     <section id="pricing" className="py-24">
