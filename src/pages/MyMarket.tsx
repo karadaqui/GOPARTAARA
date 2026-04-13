@@ -180,12 +180,23 @@ const MyMarket = () => {
 
     if (sp) {
       setProfile(sp as SellerProfile);
+      // Load bank details from profiles table
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("seller_bank_details")
+        .eq("user_id", user!.id)
+        .single();
+      const bankDetails = (profileData?.seller_bank_details as any) || {};
       setProfileForm({
         business_name: sp.business_name,
         description: sp.description || "",
         contact_email: sp.contact_email || "",
         contact_phone: sp.contact_phone || "",
         website_url: sp.website_url || "",
+        bank_account_name: bankDetails.account_name || "",
+        bank_sort_code: bankDetails.sort_code || "",
+        bank_account_number: bankDetails.account_number || "",
+        bank_paypal_email: bankDetails.paypal_email || "",
       });
 
       const { data: ls } = await supabase
