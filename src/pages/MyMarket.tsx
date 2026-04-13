@@ -231,6 +231,32 @@ const MyMarket = () => {
           setDisputedReviews([]);
         }
       }
+
+      // Load offers
+      const { data: offersData } = await supabase
+        .from("offers")
+        .select("*")
+        .eq("seller_id", user!.id)
+        .order("created_at", { ascending: false });
+
+      if (offersData && offersData.length > 0) {
+        const buyerIds = [...new Set(offersData.map((o: any) => o.buyer_id))];
+        const offerListingIds = [...new Set(offersData.map((o: any) => o.listing_id))];
+        const [buyerProfiles, offerListings] = await Promise.all([
+          supabase.from("profiles").select("user_id, display_name").in("user_id", buyerIds),
+          supabase.from("seller_listings").select("id, title").in("id", offerListingIds),
+        ]);
+        const buyerMap = new Map((buyerProfiles.data || []).map(p => [p.user_id, p.display_name]));
+        const offerListingMap = new Map((offerListings.data || []).map(l => [l.id, l.title]));
+
+        setOffers(offersData.map((o: any) => ({
+          ...o,
+          buyer_name: buyerMap.get(o.buyer_id) || "Anonymous",
+          listing_title: offerListingMap.get(o.listing_id) || "Unknown",
+        })));
+      } else {
+        setOffers([]);
+      }
     }
     setLoading(false);
   };
