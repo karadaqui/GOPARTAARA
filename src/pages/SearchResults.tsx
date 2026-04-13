@@ -248,7 +248,7 @@ const SearchResults = () => {
   const [totalResults, setTotalResults] = useState(0);
   const [ebayFallback, setEbayFallback] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const internalSearchRef = useRef(false);
+   const internalSearchRef = useRef(false);
   const [authGateOpen, setAuthGateOpen] = useState(false);
   const [searchLimitModalOpen, setSearchLimitModalOpen] = useState(false);
   const [searchLimitModalType, setSearchLimitModalType] = useState<"free" | "guest">("free");
@@ -259,6 +259,10 @@ const SearchResults = () => {
   const [upgradeFeature, setUpgradeFeature] = useState("");
   const [upgradeLabel, setUpgradeLabel] = useState("");
   const [upgradeRequiredPlan, setUpgradeRequiredPlan] = useState("Pro");
+  const [sameQueryConfirmOpen, setSameQueryConfirmOpen] = useState(false);
+  const [pendingSearchQuery, setPendingSearchQuery] = useState("");
+  const isFromGarage = searchParams.get("fromGarage") === "true";
+  const [garageVehicleLabel, setGarageVehicleLabel] = useState<string | null>(null);
 
 
   // ── Filter & Sort State ──
