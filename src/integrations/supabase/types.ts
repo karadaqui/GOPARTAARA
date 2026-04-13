@@ -129,6 +129,7 @@ export type Database = {
           id: string
           message: string
           name: string
+          resolved: boolean
           subject: string
         }
         Insert: {
@@ -137,6 +138,7 @@ export type Database = {
           id?: string
           message: string
           name: string
+          resolved?: boolean
           subject?: string
         }
         Update: {
@@ -145,6 +147,7 @@ export type Database = {
           id?: string
           message?: string
           name?: string
+          resolved?: boolean
           subject?: string
         }
         Relationships: []
@@ -235,6 +238,57 @@ export type Database = {
           used_at?: string | null
         }
         Relationships: []
+      }
+      listing_disputes: {
+        Row: {
+          admin_response: string | null
+          created_at: string
+          id: string
+          listing_id: string | null
+          resolved_at: string | null
+          review_id: string | null
+          seller_id: string
+          seller_message: string
+          status: string
+        }
+        Insert: {
+          admin_response?: string | null
+          created_at?: string
+          id?: string
+          listing_id?: string | null
+          resolved_at?: string | null
+          review_id?: string | null
+          seller_id: string
+          seller_message: string
+          status?: string
+        }
+        Update: {
+          admin_response?: string | null
+          created_at?: string
+          id?: string
+          listing_id?: string | null
+          resolved_at?: string | null
+          review_id?: string | null
+          seller_id?: string
+          seller_message?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_disputes_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "seller_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "listing_disputes_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "listing_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       listing_reviews: {
         Row: {
