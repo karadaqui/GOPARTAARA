@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { ArrowLeft, Calendar, Loader2, Tag } from "lucide-react";
-import ReactMarkdown from "react-markdown";
+import SEOHead from "@/components/SEOHead";
+import { ArrowLeft, Calendar, Clock, Loader2, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-interface BlogPost {
+interface BlogPostData {
   id: string;
   title: string;
   slug: string;
@@ -14,6 +15,8 @@ interface BlogPost {
   preview: string;
   meta_description: string;
   keywords: string[];
+  category: string | null;
+  read_time: string | null;
   author: string;
   published_at: string;
 }
@@ -21,20 +24,13 @@ interface BlogPost {
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const [post, setPost] = useState<BlogPost | null>(null);
+  const [post, setPost] = useState<BlogPostData | null>(null);
+  const [related, setRelated] = useState<BlogPostData[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (slug) fetchPost();
   }, [slug]);
-
-  useEffect(() => {
-    if (post) {
-      document.title = `${post.title} - PARTARA Blog`;
-      const meta = document.querySelector('meta[name="description"]');
-      if (meta) meta.setAttribute("content", post.meta_description);
-    }
-  }, [post]);
 
   const fetchPost = async () => {
     const { data, error } = await supabase
@@ -44,8 +40,34 @@ const BlogPost = () => {
       .eq("published", true)
       .single();
 
-    if (!error && data) setPost(data as BlogPost);
+    if (!error && data) {
+      const p = data as BlogPostData;
+      setPost(p);
+      // Fetch related posts (same category, exclude current)
+      if (p.category) {
+        const { data: relatedData } = await supabase
+          .from("blog_posts")
+          .select("id, title, slug, preview, meta_description, keywords, category, read_time, author, published_at, content")
+          .eq("published", true)
+          .eq("category", p.category)
+          .neq("id", p.id)
+          .limit(3);
+        if (relatedData) setRelated(relatedData as BlogPostData[]);
+      }
+    }
     setLoading(false);
+  };
+
+  const categoryColor = (cat: string | null) => {
+    switch (cat) {
+      case "Buying Guide": return "bg-emerald-500/15 text-emerald-400";
+      case "Maintenance": return "bg-amber-500/15 text-amber-400";
+      case "Education": return "bg-blue-500/15 text-blue-400";
+      case "Comparison": return "bg-purple-500/15 text-purple-400";
+      case "Tutorial": return "bg-cyan-500/15 text-cyan-400";
+      case "News": return "bg-rose-500/15 text-rose-400";
+      default: return "bg-primary/15 text-primary";
+    }
   };
 
   if (loading) {
@@ -74,6 +96,20 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={`${post.title} | PARTARA Blog`}
+        description={post.meta_description || post.preview}
+        path={`/blog/${post.slug}`}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": post.title,
+          "description": post.meta_description,
+          "author": { "@type": "Organization", "name": post.author },
+          "datePublished": post.published_at,
+          "publisher": { "@type": "Organization", "name": "PARTARA" },
+        }}
+      />
       <Navbar />
 
       <article className="container max-w-3xl py-20 px-4">
@@ -86,15 +122,27 @@ const BlogPost = () => {
         </button>
 
         <header className="mb-10">
-          <div className="flex items-center gap-3 text-xs text-muted-foreground mb-4">
+          <div className="flex items-center gap-3 text-xs text-muted-foreground mb-4 flex-wrap">
+            {post.category && (
+              <span className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full ${categoryColor(post.category)}`}>
+                {post.category}
+              </span>
+            )}
             <span className="flex items-center gap-1.5">
               <Calendar size={12} />
               {new Date(post.published_at).toLocaleDateString("en-GB", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
+                day: "numeric", month: "long", year: "numeric",
               })}
             </span>
+            {post.read_time && (
+              <>
+                <span>·</span>
+                <span className="flex items-center gap-1">
+                  <Clock size={12} />
+                  {post.read_time}
+                </span>
+              </>
+            )}
             <span>·</span>
             <span>{post.author}</span>
           </div>
@@ -102,23 +150,49 @@ const BlogPost = () => {
           <h1 className="font-display text-3xl md:text-4xl font-bold mb-4">
             {post.title}
           </h1>
-
-          <div className="flex flex-wrap gap-2">
-            {post.keywords.map((kw) => (
-              <span
-                key={kw}
-                className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary"
-              >
-                <Tag size={10} />
-                {kw}
-              </span>
-            ))}
-          </div>
         </header>
 
-        <div className="prose prose-invert prose-sm md:prose-base max-w-none prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-primary prose-strong:text-foreground">
-          <ReactMarkdown>{post.content}</ReactMarkdown>
+        <div
+          className="prose prose-invert prose-sm md:prose-base max-w-none prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-primary prose-strong:text-foreground prose-li:text-muted-foreground"
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
+
+        {/* CTA */}
+        <div className="mt-12 rounded-2xl border border-primary/20 bg-primary/5 p-6 sm:p-8 text-center">
+          <h3 className="font-display text-xl font-bold mb-2">Find car parts on PARTARA</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Compare prices from multiple suppliers and find the best deals on car parts.
+          </p>
+          <Button onClick={() => navigate("/search")} className="rounded-xl gap-2">
+            Search Parts <ArrowRight size={14} />
+          </Button>
         </div>
+
+        {/* Related posts */}
+        {related.length > 0 && (
+          <div className="mt-16">
+            <h2 className="font-display text-2xl font-bold mb-6">Related Articles</h2>
+            <div className="grid sm:grid-cols-3 gap-4">
+              {related.map((r) => (
+                <Link
+                  key={r.id}
+                  to={`/blog/${r.slug}`}
+                  className="glass rounded-xl p-5 hover:border-primary/30 transition-all group"
+                >
+                  {r.category && (
+                    <span className={`text-[9px] font-semibold px-2 py-0.5 rounded-full ${categoryColor(r.category)}`}>
+                      {r.category}
+                    </span>
+                  )}
+                  <h3 className="font-display font-bold text-sm mt-2 mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                    {r.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground line-clamp-2">{r.preview}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </article>
 
       <Footer />
