@@ -54,11 +54,11 @@ interface Listing {
 }
 
 const BOOST_PACKAGES = [
-  { name: "Quick Boost", duration: 3, price: "£1.99", amountPence: 199, description: "Get seen by more buyers for 3 days" },
-  { name: "Weekly Feature ⭐", duration: 7, price: "£4.99", amountPence: 499, description: "Top placement for a full week", popular: true },
-  { name: "Power Boost", duration: 7, price: "£11.99", amountPence: 1199, description: "Feature 3 listings simultaneously for 7 days" },
-  { name: "Monthly Spotlight", duration: 30, price: "£14.99", amountPence: 1499, description: "Maximum visibility for a full month" },
-  { name: "Homepage Spotlight 🏠", duration: 7, price: "£9.99", amountPence: 999, description: "Your listing featured on the PARTARA homepage" },
+  { name: "Quick Boost", duration: 3, price: "£1.99", priceId: "price_1TLlEPAc5QcTT3aLBYi756Nc", description: "Get seen by more buyers for 3 days" },
+  { name: "Weekly Feature ⭐", duration: 7, price: "£4.99", priceId: "price_1TLlEQAc5QcTT3aLOd2ZsBFf", description: "Top placement for a full week", popular: true },
+  { name: "Power Boost", duration: 7, price: "£11.99", priceId: "price_1TLlERAc5QcTT3aL8KbbVNwA", description: "Feature 3 listings simultaneously for 7 days" },
+  { name: "Monthly Spotlight", duration: 30, price: "£14.99", priceId: "price_1TLlESAc5QcTT3aLrDNMavJy", description: "Maximum visibility for a full month" },
+  { name: "Homepage Spotlight 🏠", duration: 7, price: "£9.99", priceId: "price_1TLlEUAc5QcTT3aLDbH7FKy0", description: "Your listing featured on the PARTARA homepage" },
 ];
 
 interface DisputedReview {
@@ -134,7 +134,7 @@ const MyMarket = () => {
     setBoostingPriceId(pkg.name);
     try {
       const { data, error } = await supabase.functions.invoke("boost-listing", {
-        body: { listingId: boostListingId, packageName: pkg.name, durationDays: pkg.duration, amountPence: pkg.amountPence },
+        body: { listingId: boostListingId, packageName: pkg.name, durationDays: pkg.duration, priceId: pkg.priceId },
       });
       if (error) throw error;
       if (data?.url) window.location.href = data.url;
@@ -625,7 +625,7 @@ const MyMarket = () => {
         {/* Boost success banner */}
         {showBoostSuccess && (
           <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
-            <p className="text-sm font-medium text-emerald-400">🎉 Your listing has been boosted! It will appear in the Featured section immediately.</p>
+            <p className="text-sm font-medium text-emerald-400">🎉 Your listing is now featured! It will appear at the top of marketplace.</p>
           </div>
         )}
 
