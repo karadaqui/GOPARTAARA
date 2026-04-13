@@ -13,11 +13,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle
-} from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import VehicleSelector from "@/components/VehicleSelector";
 import CategoryTagSelector from "@/components/CategoryTagSelector";
 
@@ -109,8 +105,15 @@ const MyMarket = () => {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [deleteReason, setDeleteReason] = useState("");
   const [undoListing, setUndoListing] = useState<Listing | null>(null);
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [shopDeleteOpen, setShopDeleteOpen] = useState(false);
+  const [shopDeleteReason, setShopDeleteReason] = useState("");
+  const [shopDeleteFeedback, setShopDeleteFeedback] = useState("");
+  const [shopDeleteConfirm, setShopDeleteConfirm] = useState(false);
+  const [shopDeleting, setShopDeleting] = useState(false);
+  const [shopDeleteSent, setShopDeleteSent] = useState(false);
   const [userPlan, setUserPlan] = useState<string>("free");
   const [disputedReviews, setDisputedReviews] = useState<DisputedReview[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
@@ -563,6 +566,55 @@ const MyMarket = () => {
     await loadData();
   };
 
+  const handleShopDelete = async () => {
+    if (!user || !profile || !shopDeleteReason || !shopDeleteConfirm) return;
+    setShopDeleting(true);
+    try {
+      // Create deletion request
+      const { data: req, error } = await supabase
+        .from("deletion_requests")
+        .insert({
+          type: "shop",
+          user_id: user.id,
+          reason: shopDeleteReason,
+          feedback: shopDeleteFeedback || null,
+        } as any)
+        .select("token")
+        .single();
+
+      if (error) throw error;
+
+      const confirmUrl = `https://gopartara.com/confirm-shop-delete/${req.token}`;
+
+      // Get user profile for name
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("display_name")
+        .eq("user_id", user.id)
+        .single();
+
+      // Send confirmation email
+      await supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "shop-deletion-confirm",
+          recipientEmail: user.email,
+          idempotencyKey: `shop-delete-${req.token}`,
+          templateData: {
+            name: profileData?.display_name || user.email?.split("@")[0],
+            listingCount: String(listings.length),
+            confirmUrl,
+          },
+        },
+      });
+
+      setShopDeleteSent(true);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to initiate shop deletion", variant: "destructive" });
+    } finally {
+      setShopDeleting(false);
+    }
+  };
+
   if (!user) return null;
 
   // Seller gate removed - all logged-in users can list parts
@@ -687,7 +739,7 @@ const MyMarket = () => {
               </div>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Button size="sm" variant="outline" onClick={() => setEditingProfile(true)} className="rounded-xl gap-1.5">
               <Pencil size={14} /> Edit Profile
             </Button>
@@ -697,6 +749,9 @@ const MyMarket = () => {
               </Button>
               <input type="file" accept="image/*" className="hidden" onChange={handleUploadLogo} />
             </label>
+            <Button size="sm" variant="ghost" onClick={() => setShopDeleteOpen(true)} className="rounded-xl gap-1.5 text-destructive hover:text-destructive">
+              <Trash2 size={14} /> Delete Shop
+            </Button>
           </div>
         </div>
 
@@ -1129,25 +1184,132 @@ const MyMarket = () => {
       </Dialog>
 
       {/* Delete confirmation dialog */}
-      <AlertDialog open={!!deleteConfirmId} onOpenChange={(open) => !open && setDeleteConfirmId(null)}>
-        <AlertDialogContent className="bg-card border-border">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="font-display">Delete Listing</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete this listing? This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deleteConfirmId && handleDeleteListing(deleteConfirmId)}
-              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <Dialog open={!!deleteConfirmId} onOpenChange={(open) => { if (!open) { setDeleteConfirmId(null); setDeleteReason(""); } }}>
+        <DialogContent className="sm:max-w-md bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2 text-destructive">
+              <Trash2 size={18} /> Delete this listing?
+            </DialogTitle>
+          </DialogHeader>
+          {(() => {
+            const listing = listings.find(l => l.id === deleteConfirmId);
+            return listing ? (
+              <div className="space-y-4 mt-2">
+                <div className="glass rounded-xl p-3">
+                  <p className="font-display font-bold text-sm">{listing.title}</p>
+                  {listing.price && <p className="text-primary font-bold text-sm mt-1">£{listing.price.toFixed(2)}</p>}
+                </div>
+                <div>
+                  <label className="text-sm text-muted-foreground block mb-1.5">Why are you deleting? <span className="text-muted-foreground/50">(optional)</span></label>
+                  <select
+                    value={deleteReason}
+                    onChange={e => setDeleteReason(e.target.value)}
+                    className="w-full rounded-xl border border-border bg-secondary px-3 py-2 text-sm"
+                  >
+                    <option value="">Select a reason...</option>
+                    <option value="Item sold">Item sold</option>
+                    <option value="Listed by mistake">Listed by mistake</option>
+                    <option value="Price change">Price change</option>
+                    <option value="No longer available">No longer available</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-3">
+                  <p className="text-xs text-destructive font-medium">⚠️ This cannot be undone.</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="ghost" className="flex-1 rounded-xl" onClick={() => { setDeleteConfirmId(null); setDeleteReason(""); }}>
+                    Cancel
+                  </Button>
+                  <Button variant="destructive" className="flex-1 rounded-xl gap-2" onClick={() => deleteConfirmId && handleDeleteListing(deleteConfirmId)}>
+                    <Trash2 size={14} /> Yes, Delete
+                  </Button>
+                </div>
+              </div>
+            ) : null;
+          })()}
+        </DialogContent>
+      </Dialog>
+
+      {/* Shop Delete Modal */}
+      <Dialog open={shopDeleteOpen} onOpenChange={(open) => {
+        if (!open) { setShopDeleteOpen(false); setShopDeleteReason(""); setShopDeleteFeedback(""); setShopDeleteConfirm(false); }
+      }}>
+        <DialogContent className="sm:max-w-md bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2 text-destructive">
+              <Trash2 size={18} /> Delete your PARTARA shop?
+            </DialogTitle>
+          </DialogHeader>
+          {shopDeleteSent ? (
+            <div className="text-center py-4">
+              <Check size={48} className="text-primary mx-auto mb-3" />
+              <p className="text-sm font-medium">📧 Check your email to confirm.</p>
+              <p className="text-xs text-muted-foreground mt-1">Link expires in 30 minutes.</p>
+            </div>
+          ) : (
+            <div className="space-y-4 mt-2">
+              <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4">
+                <p className="text-xs text-destructive font-medium leading-relaxed">
+                  ⚠️ This will permanently delete:<br />
+                  • All your active listings ({listings.filter(l => l.active).length})<br />
+                  • Your seller profile<br />
+                  • Your sales history<br /><br />
+                  This CANNOT be undone.
+                </p>
+              </div>
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1.5">Why are you leaving? *</label>
+                <select
+                  value={shopDeleteReason}
+                  onChange={e => setShopDeleteReason(e.target.value)}
+                  className="w-full rounded-xl border border-border bg-secondary px-3 py-2 text-sm"
+                  required
+                >
+                  <option value="">Select a reason...</option>
+                  <option value="Moving to another platform">Moving to another platform</option>
+                  <option value="No longer selling parts">No longer selling parts</option>
+                  <option value="Too many fees">Too many fees</option>
+                  <option value="Technical issues">Technical issues</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1.5">Any feedback for us? <span className="text-muted-foreground/50">(optional)</span></label>
+                <Textarea
+                  value={shopDeleteFeedback}
+                  onChange={e => setShopDeleteFeedback(e.target.value)}
+                  placeholder="Help us improve..."
+                  className="bg-secondary border-border rounded-xl min-h-[60px]"
+                />
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={shopDeleteConfirm}
+                  onChange={e => setShopDeleteConfirm(e.target.checked)}
+                  className="rounded"
+                />
+                <span className="text-xs text-muted-foreground">I understand this cannot be undone</span>
+              </label>
+              <div className="flex gap-2">
+                <Button variant="ghost" className="flex-1 rounded-xl" onClick={() => setShopDeleteOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  className="flex-1 rounded-xl gap-2"
+                  disabled={!shopDeleteReason || !shopDeleteConfirm || shopDeleting}
+                  onClick={handleShopDelete}
+                >
+                  {shopDeleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                  Send Confirmation Email
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Boost Listing Modal */}
       <Dialog open={boostModalOpen} onOpenChange={setBoostModalOpen}>

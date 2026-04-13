@@ -24,6 +24,9 @@ import { template as reviewRemoved } from './review-removed.tsx'
 import { template as reviewDispute } from './review-dispute.tsx'
 import { template as disputeDecision } from './dispute-decision.tsx'
 import { template as welcomePurchase } from './welcome-purchase.tsx'
+import { template as listingRemoved } from './listing-removed.tsx'
+import { template as shopDeletionConfirm } from './shop-deletion-confirm.tsx'
+import { template as shopClosed } from './shop-closed.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'contact-notification': contactNotification,
@@ -41,4 +44,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'review-dispute': reviewDispute,
   'dispute-decision': disputeDecision,
   'welcome-purchase': welcomePurchase,
+  'listing-removed': listingRemoved,
+  'shop-deletion-confirm': shopDeletionConfirm,
+  'shop-closed': shopClosed,
 }

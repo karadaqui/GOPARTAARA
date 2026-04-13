@@ -125,8 +125,16 @@ const Admin = () => {
   const [resolving, setResolving] = useState(false);
 
   // Delete confirmation
-  const [deleteTarget, setDeleteTarget] = useState<{ type: string; id: string; label: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ type: string; id: string; label: string; sellerId?: string; sellerEmail?: string; price?: number } | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [adminDeleteReason, setAdminDeleteReason] = useState("");
+  
+  // Shop delete
+  const [shopDeleteTarget, setShopDeleteTarget] = useState<{ userId: string; displayName: string; email: string; listingCount: number } | null>(null);
+  const [shopDeleteReason, setShopDeleteReason] = useState("");
+  const [shopDeleteNotes, setShopDeleteNotes] = useState("");
+  const [shopDeleteConfirm, setShopDeleteConfirm] = useState(false);
+  const [shopDeleting, setShopDeleting] = useState(false);
 
   useEffect(() => {
     if (!user) { navigate("/auth?redirect=/admin"); return; }
@@ -293,8 +301,72 @@ const Admin = () => {
     let error: any;
 
     if (type === "listing") {
+      if (!adminDeleteReason.trim()) {
+        toast({ title: "Reason required", description: "Please provide a reason for deleting this listing.", variant: "destructive" });
+        setDeleting(false);
+        return;
+      }
+      // Get listing details for notification
+      const listing = listings.find(l => l.id === id);
+      const sellerProfile = listing?.seller_profiles;
+
       ({ error } = await supabase.from("seller_listings").delete().eq("id", id));
-      if (!error) { setListings(prev => prev.filter(l => l.id !== id)); }
+      if (!error) {
+        setListings(prev => prev.filter(l => l.id !== id));
+
+        // Log admin action
+        await supabase.from("admin_actions").insert({
+          admin_id: user!.id,
+          action: "delete_listing",
+          listing_id: id,
+          target_user_id: null,
+          reason: adminDeleteReason,
+        } as any);
+
+        // Get seller's user_id from seller_profiles
+        if (sellerProfile) {
+          const { data: sp } = await supabase
+            .from("seller_profiles")
+            .select("user_id")
+            .eq("id", sellerProfile.id)
+            .maybeSingle();
+
+          if (sp) {
+            // In-app notification
+            await supabase.from("notifications").insert({
+              user_id: sp.user_id,
+              title: "Your listing was removed",
+              message: `Your listing '${listing?.title}' was removed by PARTARA admin. Reason: ${adminDeleteReason}. If you believe this was a mistake, please contact us.`,
+              type: "listing_removed",
+              link: "/contact",
+            });
+
+            // Get seller profile info for email
+            const { data: sellerProfileData } = await supabase
+              .from("profiles")
+              .select("display_name, email")
+              .eq("user_id", sp.user_id)
+              .single();
+
+            if (sellerProfileData?.email) {
+              await supabase.functions.invoke("send-transactional-email", {
+                body: {
+                  templateName: "listing-removed",
+                  recipientEmail: sellerProfileData.email,
+                  idempotencyKey: `listing-removed-${id}`,
+                  templateData: {
+                    name: sellerProfileData.display_name || sellerProfileData.email.split("@")[0],
+                    listingTitle: listing?.title,
+                    listingPrice: listing?.price?.toFixed(2),
+                    reason: adminDeleteReason,
+                  },
+                },
+              });
+            }
+          }
+        }
+        toast({ title: "✅ Listing deleted and seller notified" });
+      }
     } else if (type === "blog") {
       ({ error } = await supabase.from("blog_posts").delete().eq("id", id));
       if (!error) { setBlogs(prev => prev.filter(b => b.id !== id)); }
@@ -307,9 +379,82 @@ const Admin = () => {
     }
 
     if (error) toast({ title: "Error deleting", description: error.message, variant: "destructive" });
-    else toast({ title: "Deleted successfully" });
+    else if (type !== "listing") toast({ title: "Deleted successfully" });
     setDeleteTarget(null);
+    setAdminDeleteReason("");
     setDeleting(false);
+  };
+
+  const handleAdminShopDelete = async () => {
+    if (!shopDeleteTarget || !shopDeleteReason.trim() || !shopDeleteConfirm) return;
+    setShopDeleting(true);
+    try {
+      // Get seller profile
+      const { data: sp } = await supabase
+        .from("seller_profiles")
+        .select("id")
+        .eq("user_id", shopDeleteTarget.userId)
+        .maybeSingle();
+
+      let listingsDeletedCount = 0;
+      if (sp) {
+        const { data: sellerListings } = await supabase
+          .from("seller_listings")
+          .select("id")
+          .eq("seller_id", sp.id);
+        listingsDeletedCount = sellerListings?.length || 0;
+
+        // Delete all listings
+        await supabase.from("seller_listings").delete().eq("seller_id", sp.id);
+        // Delete seller profile
+        await supabase.from("seller_profiles").delete().eq("id", sp.id);
+      }
+
+      // Log admin action
+      await supabase.from("admin_actions").insert({
+        admin_id: user!.id,
+        action: "delete_shop",
+        target_user_id: shopDeleteTarget.userId,
+        reason: shopDeleteReason,
+        internal_notes: shopDeleteNotes,
+        listings_deleted_count: listingsDeletedCount,
+      } as any);
+
+      // In-app notification
+      await supabase.from("notifications").insert({
+        user_id: shopDeleteTarget.userId,
+        title: "Your shop has been closed",
+        message: `Your PARTARA seller account has been closed by our moderation team. Reason: ${shopDeleteReason}. If you believe this is an error, contact us at info@gopartara.com`,
+        type: "shop_closed",
+        link: "/contact",
+      });
+
+      // Email notification
+      if (shopDeleteTarget.email) {
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "shop-closed",
+            recipientEmail: shopDeleteTarget.email,
+            idempotencyKey: `shop-closed-${shopDeleteTarget.userId}`,
+            templateData: {
+              name: shopDeleteTarget.displayName || shopDeleteTarget.email.split("@")[0],
+              reason: shopDeleteReason,
+            },
+          },
+        });
+      }
+
+      toast({ title: "✅ Shop deleted. Seller has been notified by email and in-app notification." });
+      setShopDeleteTarget(null);
+      setShopDeleteReason("");
+      setShopDeleteNotes("");
+      setShopDeleteConfirm(false);
+      await loadAll();
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setShopDeleting(false);
+    }
   };
 
   const handleToggleBlogPublish = async (id: string, currentPublished: boolean) => {
@@ -594,13 +739,26 @@ const Admin = () => {
                   <span>Name</span><span>Email</span><span>Plan</span><span>Joined</span>
                 </div>
                 {users.map(u => (
-                  <div key={u.user_id} className="glass rounded-xl px-4 py-3 grid grid-cols-[1fr_1fr_auto_auto] gap-4 items-center">
+                  <div key={u.user_id} className="glass rounded-xl px-4 py-3 grid grid-cols-[1fr_1fr_auto_auto_auto] gap-4 items-center">
                     <span className="font-medium text-sm truncate">{u.display_name || "—"}</span>
                     <span className="text-sm text-muted-foreground truncate">{u.email || "—"}</span>
                     <Badge variant={u.subscription_plan === "admin" ? "destructive" : u.subscription_plan === "free" ? "secondary" : "default"} className="capitalize text-xs">
                       {u.subscription_plan}
                     </Badge>
                     <span className="text-xs text-muted-foreground">{new Date(u.created_at).toLocaleDateString()}</span>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="rounded-xl text-xs text-destructive hover:text-destructive"
+                      onClick={async () => {
+                        const { data: sp } = await supabase.from("seller_profiles").select("id").eq("user_id", u.user_id).maybeSingle();
+                        if (!sp) { toast({ title: "No seller profile", description: "This user doesn't have a seller profile.", variant: "destructive" }); return; }
+                        const { count } = await supabase.from("seller_listings").select("id", { count: "exact", head: true }).eq("seller_id", sp.id);
+                        setShopDeleteTarget({ userId: u.user_id, displayName: u.display_name || "Unknown", email: u.email || "", listingCount: count || 0 });
+                      }}
+                    >
+                      <Trash2 size={12} /> Shop
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -717,27 +875,102 @@ const Admin = () => {
       </div>
 
       {/* ═══ DELETE CONFIRMATION DIALOG ═══ */}
-      <Dialog open={!!deleteTarget} onOpenChange={(o) => { if (!o) setDeleteTarget(null); }}>
+      <Dialog open={!!deleteTarget} onOpenChange={(o) => { if (!o) { setDeleteTarget(null); setAdminDeleteReason(""); } }}>
         <DialogContent className="sm:max-w-md bg-card border-border">
           <DialogHeader>
             <DialogTitle className="font-display flex items-center gap-2 text-destructive">
-              <Trash2 size={18} /> Confirm Delete
+              <Trash2 size={18} /> {deleteTarget?.type === "listing" ? "Delete this listing as Admin" : "Confirm Delete"}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 mt-2">
             <p className="text-sm text-muted-foreground">
-              Are you sure you want to permanently delete <strong>"{deleteTarget?.label}"</strong>? This action cannot be undone.
+              Are you sure you want to permanently delete <strong>"{deleteTarget?.label}"</strong>?
+              {deleteTarget?.type !== "listing" && " This action cannot be undone."}
             </p>
+            {deleteTarget?.type === "listing" && (
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1.5">Reason for deletion (shown to seller) *</label>
+                <Textarea
+                  value={adminDeleteReason}
+                  onChange={e => setAdminDeleteReason(e.target.value)}
+                  placeholder="e.g. Prohibited item, spam listing, etc."
+                  className="bg-secondary border-border rounded-xl min-h-[60px]"
+                />
+              </div>
+            )}
             <div className="flex gap-2">
-              <Button variant="destructive" className="flex-1 rounded-xl gap-2" onClick={handleDeleteConfirm} disabled={deleting}>
+              <Button
+                variant="destructive"
+                className="flex-1 rounded-xl gap-2"
+                onClick={handleDeleteConfirm}
+                disabled={deleting || (deleteTarget?.type === "listing" && !adminDeleteReason.trim())}
+              >
                 {deleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
-                Delete Permanently
+                {deleteTarget?.type === "listing" ? "Delete & Notify Seller" : "Delete Permanently"}
               </Button>
-              <Button variant="outline" className="rounded-xl" onClick={() => setDeleteTarget(null)} disabled={deleting}>
+              <Button variant="outline" className="rounded-xl" onClick={() => { setDeleteTarget(null); setAdminDeleteReason(""); }} disabled={deleting}>
                 Cancel
               </Button>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* ═══ ADMIN SHOP DELETE DIALOG ═══ */}
+      <Dialog open={!!shopDeleteTarget} onOpenChange={(o) => {
+        if (!o) { setShopDeleteTarget(null); setShopDeleteReason(""); setShopDeleteNotes(""); setShopDeleteConfirm(false); }
+      }}>
+        <DialogContent className="sm:max-w-md bg-card border-border">
+          <DialogHeader>
+            <DialogTitle className="font-display flex items-center gap-2 text-destructive">
+              <Trash2 size={18} /> Delete seller shop as Admin
+            </DialogTitle>
+          </DialogHeader>
+          {shopDeleteTarget && (
+            <div className="space-y-4 mt-2">
+              <div className="glass rounded-xl p-3 text-sm">
+                <p><strong>Seller:</strong> {shopDeleteTarget.displayName}</p>
+                <p><strong>Email:</strong> {shopDeleteTarget.email}</p>
+                <p><strong>Listings:</strong> {shopDeleteTarget.listingCount}</p>
+              </div>
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1.5">Reason (shown to seller) *</label>
+                <Textarea
+                  value={shopDeleteReason}
+                  onChange={e => setShopDeleteReason(e.target.value)}
+                  placeholder="e.g. Repeated policy violations..."
+                  className="bg-secondary border-border rounded-xl min-h-[60px]"
+                />
+              </div>
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1.5">Internal notes (not shown to seller)</label>
+                <Textarea
+                  value={shopDeleteNotes}
+                  onChange={e => setShopDeleteNotes(e.target.value)}
+                  placeholder="Notes for internal records..."
+                  className="bg-secondary border-border rounded-xl min-h-[60px]"
+                />
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={shopDeleteConfirm} onChange={e => setShopDeleteConfirm(e.target.checked)} className="rounded" />
+                <span className="text-xs text-muted-foreground">I confirm this action is justified</span>
+              </label>
+              <div className="flex gap-2">
+                <Button
+                  variant="destructive"
+                  className="flex-1 rounded-xl gap-2"
+                  onClick={handleAdminShopDelete}
+                  disabled={shopDeleting || !shopDeleteReason.trim() || !shopDeleteConfirm}
+                >
+                  {shopDeleting ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                  Delete Shop & Notify Seller
+                </Button>
+                <Button variant="outline" className="rounded-xl" onClick={() => setShopDeleteTarget(null)} disabled={shopDeleting}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
