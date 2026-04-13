@@ -225,7 +225,7 @@ const Marketplace = () => {
             <Wrench size={14} className="inline mr-1.5 -mt-0.5 text-primary" />
             Have parts to sell? List for free — reach thousands of UK car owners
           </p>
-          <Button size="sm" className="rounded-xl gap-1.5 shrink-0" onClick={() => navigate("/list-your-parts")}>
+          <Button size="sm" className="rounded-xl gap-1.5 shrink-0" onClick={() => navigate("/my-market")}>
             List Your Parts →
           </Button>
         </div>

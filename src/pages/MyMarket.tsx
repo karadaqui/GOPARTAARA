@@ -568,9 +568,6 @@ const MyMarket = () => {
                 Create Seller Profile
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground mt-4">
-              Want a premium listing? <button onClick={() => navigate("/list-your-parts")} className="text-primary hover:underline">View seller plans</button>
-            </p>
           </div>
         </div>
         <Footer />
