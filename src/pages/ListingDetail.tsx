@@ -46,6 +46,7 @@ interface ListingFull {
     contact_email: string | null;
     seller_tier: string;
     website_url: string | null;
+    created_at: string;
   };
 }
 
@@ -96,10 +97,6 @@ const ListingDetail = () => {
   const isSeller = listing?.seller_profiles?.user_id === user?.id;
 
   useEffect(() => {
-    if (!user) {
-      navigate("/auth", { replace: true });
-      return;
-    }
     if (id) loadListing();
   }, [id, user]);
 
@@ -115,7 +112,7 @@ const ListingDetail = () => {
 
     const { data } = await supabase
       .from("seller_listings")
-      .select("*, seller_profiles!inner(id, user_id, business_name, description, logo_url, contact_email, seller_tier, website_url)")
+      .select("*, seller_profiles!inner(id, user_id, business_name, description, logo_url, contact_email, seller_tier, website_url, created_at)")
       .eq("id", id!)
       .single();
 
@@ -569,12 +566,25 @@ const ListingDetail = () => {
                   </button>
                   <div className="flex items-center gap-1.5">
                     <PlanBadge plan={listing.seller_profiles.seller_tier + "_seller"} size="sm" />
+                    <span className="text-xs text-muted-foreground">
+                      · Joined {new Date(listing.seller_profiles.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}
+                    </span>
                   </div>
                 </div>
               </div>
               {listing.seller_profiles.description && (
                 <p className="text-xs text-muted-foreground line-clamp-2">{listing.seller_profiles.description}</p>
               )}
+            </div>
+
+            {/* Report listing */}
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => navigate("/contact", { state: { subject: "Report Listing", message: `I'd like to report listing: "${listing.title}" (ID: ${listing.id})` } })}
+                className="text-xs text-muted-foreground hover:text-destructive transition-colors inline-flex items-center gap-1"
+              >
+                <Flag size={12} /> Report this listing
+              </button>
             </div>
           </div>
         </div>
