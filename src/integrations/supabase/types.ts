@@ -35,6 +35,7 @@ export type Database = {
       blog_posts: {
         Row: {
           author: string
+          category: string | null
           content: string
           created_at: string
           id: string
@@ -43,12 +44,14 @@ export type Database = {
           preview: string
           published: boolean
           published_at: string
+          read_time: string | null
           slug: string
           title: string
           updated_at: string
         }
         Insert: {
           author?: string
+          category?: string | null
           content: string
           created_at?: string
           id?: string
@@ -57,12 +60,14 @@ export type Database = {
           preview: string
           published?: boolean
           published_at?: string
+          read_time?: string | null
           slug: string
           title: string
           updated_at?: string
         }
         Update: {
           author?: string
+          category?: string | null
           content?: string
           created_at?: string
           id?: string
@@ -71,6 +76,7 @@ export type Database = {
           preview?: string
           published?: boolean
           published_at?: string
+          read_time?: string | null
           slug?: string
           title?: string
           updated_at?: string
@@ -92,6 +98,27 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+        }
+        Relationships: []
+      }
+      blog_topics: {
+        Row: {
+          created_at: string
+          id: string
+          last_used: string | null
+          topic: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_used?: string | null
+          topic: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_used?: string | null
+          topic?: string
         }
         Relationships: []
       }
