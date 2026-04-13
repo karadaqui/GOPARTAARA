@@ -1071,16 +1071,16 @@ const MyMarket = () => {
               <Input value={listingForm.title} onChange={e => setListingForm(f => ({ ...f, title: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="e.g. Brake Pads for BMW 3 Series" />
             </div>
             <div>
-              <label className="text-sm text-muted-foreground block mb-1">Description</label>
+              <label className="text-sm text-muted-foreground block mb-1">Description *</label>
               <Textarea value={listingForm.description} onChange={e => setListingForm(f => ({ ...f, description: e.target.value }))} className="bg-secondary border-border rounded-xl min-h-[80px]" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-muted-foreground block mb-1">Price (£)</label>
+                <label className="text-sm text-muted-foreground block mb-1">Price (£) *</label>
                 <Input type="number" step="0.01" value={listingForm.price} onChange={e => setListingForm(f => ({ ...f, price: e.target.value }))} className="bg-secondary border-border rounded-xl" />
               </div>
               <div>
-                <label className="text-sm text-muted-foreground block mb-1">Category</label>
+                <label className="text-sm text-muted-foreground block mb-1">Category *</label>
                 <select
                   value={listingForm.category}
                   onChange={e => setListingForm(f => ({ ...f, category: e.target.value }))}
@@ -1096,15 +1096,15 @@ const MyMarket = () => {
               onChange={v => setListingForm(f => ({ ...f, compatible_vehicles: v }))}
             />
             <div>
-              <label className="text-sm text-muted-foreground block mb-1">Additional Compatible Vehicles (comma-separated)</label>
+              <label className="text-sm text-muted-foreground block mb-1">Additional Compatible Vehicles <span className="text-muted-foreground/50">(optional)</span></label>
               <Input value={listingForm.compatible_vehicles_text} onChange={e => setListingForm(f => ({ ...f, compatible_vehicles_text: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="BMW 3 Series 2015-2020, BMW 4 Series" />
             </div>
             <div>
-              <label className="text-sm text-muted-foreground block mb-1">External Link</label>
+              <label className="text-sm text-muted-foreground block mb-1">External Link <span className="text-muted-foreground/50">(optional)</span></label>
               <Input value={listingForm.external_link} onChange={e => setListingForm(f => ({ ...f, external_link: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="https://yourshop.com/part" />
             </div>
             <div>
-              <label className="text-sm text-muted-foreground block mb-1">Photos</label>
+              <label className="text-sm text-muted-foreground block mb-1">Photos * <span className="text-muted-foreground/50">(at least 1)</span></label>
               <div className="flex flex-wrap gap-2 mb-2">
                 {listingForm.photos.map((url, i) => (
                   <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border">
