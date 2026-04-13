@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Send, Loader2, MessageSquare, ArrowLeft } from "lucide-react";
+import { Send, Loader2, MessageSquare, ArrowLeft, Bell, BellOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import SEOHead from "@/components/SEOHead";
@@ -32,6 +32,32 @@ interface ChatMessage {
   created_at: string;
 }
 
+function playNotificationSound() {
+  try {
+    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioCtx) return;
+    const audioCtx = new AudioCtx();
+
+    const playTone = (freq: number, startTime: number, duration: number, gain: number) => {
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(freq, startTime);
+      gainNode.gain.setValueAtTime(0, startTime);
+      gainNode.gain.linearRampToValueAtTime(gain, startTime + 0.05);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+      oscillator.start(startTime);
+      oscillator.stop(startTime + duration);
+    };
+
+    const now = audioCtx.currentTime;
+    playTone(880, now, 0.3, 0.15);
+    playTone(1100, now + 0.15, 0.4, 0.1);
+  } catch {}
+}
+
 const Messages = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -44,7 +70,22 @@ const Messages = () => {
   const [newMessage, setNewMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    const stored = localStorage.getItem('partara_sound_enabled');
+    return stored === null ? true : stored === 'true';
+  });
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const selectedConvRef = useRef<string | null>(selectedConv);
+
+  useEffect(() => { selectedConvRef.current = selectedConv; }, [selectedConv]);
+
+  const toggleSound = () => {
+    setSoundEnabled(prev => {
+      const next = !prev;
+      localStorage.setItem('partara_sound_enabled', String(next));
+      return next;
+    });
+  };
 
   useEffect(() => {
     if (!user) { navigate("/auth"); return; }
@@ -58,7 +99,7 @@ const Messages = () => {
     }
   }, [selectedConv]);
 
-  // Realtime subscription
+  // Realtime subscription for current conversation
   useEffect(() => {
     if (!selectedConv) return;
     const channel = supabase
@@ -73,12 +114,39 @@ const Messages = () => {
         setMessages(prev => [...prev, msg]);
         if (msg.sender_id !== user?.id) {
           markAsRead(selectedConv);
+          if (soundEnabled) playNotificationSound();
         }
       })
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [selectedConv, user?.id]);
+  }, [selectedConv, user?.id, soundEnabled]);
+
+  // Realtime subscription for ALL conversations (for sound on non-selected convos)
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel(`all-messages-${user.id}`)
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'chat_messages',
+      }, (payload) => {
+        const msg = payload.new as ChatMessage;
+        if (msg.sender_id !== user.id && msg.conversation_id !== selectedConvRef.current) {
+          if (soundEnabled) playNotificationSound();
+          // Update unread count in conversation list
+          setConversations(prev => prev.map(c =>
+            c.id === msg.conversation_id
+              ? { ...c, unread_count: (c.unread_count || 0) + 1, last_message: msg.content, last_message_at: msg.created_at }
+              : c
+          ));
+        }
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [user?.id, soundEnabled]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -96,7 +164,6 @@ const Messages = () => {
 
     if (!convs || convs.length === 0) { setConversations([]); setLoading(false); return; }
 
-    // Enrich with listing titles and other user names
     const otherUserIds = [...new Set(convs.map(c => c.buyer_id === user.id ? c.seller_id : c.buyer_id))];
     const listingIds = [...new Set(convs.map(c => c.listing_id).filter(Boolean))] as string[];
 
@@ -110,7 +177,6 @@ const Messages = () => {
     const profileMap = new Map((profilesRes.data || []).map(p => [p.user_id, p.display_name]));
     const listingMap = new Map((listingsRes.data || []).map(l => [l.id, l.title]));
 
-    // Get last messages and unread counts
     const enriched: Conversation[] = [];
     for (const c of convs) {
       const { data: lastMsg } = await supabase
@@ -138,7 +204,6 @@ const Messages = () => {
       });
     }
 
-    // Sort by last message
     enriched.sort((a, b) => {
       const aTime = a.last_message_at || a.created_at;
       const bTime = b.last_message_at || b.created_at;
@@ -211,7 +276,18 @@ const Messages = () => {
       <SEOHead title="Messages — PARTARA" description="Your marketplace messages" />
       <Navbar />
       <div className="container max-w-5xl flex-1 py-20 px-4">
-        <h1 className="font-display text-2xl font-bold mb-6">Messages</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="font-display text-2xl font-bold">Messages</h1>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleSound}
+            className="rounded-xl text-muted-foreground hover:text-foreground"
+            title={soundEnabled ? "Mute notification sounds" : "Enable notification sounds"}
+          >
+            {soundEnabled ? <Bell size={18} /> : <BellOff size={18} />}
+          </Button>
+        </div>
 
         {loading ? (
           <div className="flex justify-center py-12"><Loader2 className="animate-spin text-primary" size={32} /></div>
