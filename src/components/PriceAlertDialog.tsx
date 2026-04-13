@@ -54,11 +54,6 @@ const PriceAlertDialog = ({ supplierName, partQuery, supplierUrl, ebayItemId, cu
       setTargetPrice(currentPrice ? (currentPrice * 0.9).toFixed(2) : "");
     }
   };
-    if (isOpen) {
-      setEmail(user?.email || "");
-      setTargetPrice(currentPrice ? (currentPrice * 0.9).toFixed(2) : "");
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
