@@ -13,7 +13,9 @@ import { useState, useRef, useEffect } from "react";
 
 const STRIPE = {
   pro:              "price_1TK5ccAc5QcTT3aL7jb3xTlb",
+  pro_annual:       "price_1TLlEVAc5QcTT3aLcHThonXZ",
   elite:            "price_1TKaEfAc5QcTT3aLUSzqrRIy",
+  elite_annual:     "price_1TLlEWAc5QcTT3aLPEidfDng",
   basic_seller:     "price_1TKUmsAc5QcTT3aLrLoieucV",
   featured_seller:  "price_1TKUnQAc5QcTT3aLAHq0CpaN",
   pro_seller:       "price_1TKUo4Ac5QcTT3aLU2WNxx5F",
@@ -51,7 +53,7 @@ const individualPlans = [
     cta: "Go Pro",
     popular: true,
     priceId: STRIPE.pro,
-  },
+    annualPriceId: STRIPE.pro_annual,
   {
     name: "Elite",
     tagline: "The complete experience",
