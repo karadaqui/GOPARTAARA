@@ -1112,8 +1112,10 @@ export type Database = {
           id: string
           make: string
           model: string
+          mot_expiry_date: string | null
           nickname: string | null
           registration_number: string | null
+          tax_expiry_date: string | null
           user_id: string
           year: number
         }
@@ -1123,8 +1125,10 @@ export type Database = {
           id?: string
           make: string
           model: string
+          mot_expiry_date?: string | null
           nickname?: string | null
           registration_number?: string | null
+          tax_expiry_date?: string | null
           user_id: string
           year: number
         }
@@ -1134,8 +1138,10 @@ export type Database = {
           id?: string
           make?: string
           model?: string
+          mot_expiry_date?: string | null
           nickname?: string | null
           registration_number?: string | null
+          tax_expiry_date?: string | null
           user_id?: string
           year?: number
         }
