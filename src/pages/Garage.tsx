@@ -403,6 +403,13 @@ const Garage = () => {
                     </span>
                   )}
                 </div>
+                <VehicleExpiryBadges motExpiryDate={(v as any).mot_expiry_date} taxExpiryDate={(v as any).tax_expiry_date} />
+                <VehicleExpiryEditor
+                  vehicleId={v.id}
+                  motExpiryDate={(v as any).mot_expiry_date}
+                  taxExpiryDate={(v as any).tax_expiry_date}
+                  onUpdate={loadData}
+                />
                 <Button
                   variant="outline"
                   size="sm"
