@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import ScrollReveal from "@/components/ScrollReveal";
 
 const CommunityBanner = () => {
   const navigate = useNavigate();
@@ -18,117 +17,62 @@ const CommunityBanner = () => {
   };
 
   return (
-    <ScrollReveal className="max-w-6xl mx-auto mt-12">
-      <div style={{
-        textAlign: 'center',
-        padding: '48px 24px',
-        maxWidth: '600px',
-        margin: '0 auto',
-      }}>
-        {/* Large elegant emoji */}
-        <div style={{ fontSize: '2.5rem', marginBottom: '16px' }}>🤝</div>
+    <div className="py-12 text-center max-w-xl mx-auto bg-transparent">
+      {/* Large elegant emoji */}
+      <div className="text-4xl mb-4">🤝</div>
 
-        {/* Premium gradient title */}
-        <h3 style={{
-          fontSize: '1.5rem',
-          fontWeight: 800,
+      {/* Premium gradient title */}
+      <h3 
+        className="text-2xl font-extrabold mb-3 tracking-tight"
+        style={{
           background: 'linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
-          marginBottom: '12px',
-          letterSpacing: '-0.5px',
-        }}>
-          Help us add more suppliers
-        </h3>
+        }}
+      >
+        Help us add more suppliers
+      </h3>
 
-        {/* Subtle description */}
-        <p style={{
-          color: '#71717a',
-          fontSize: '0.9rem',
-          lineHeight: 1.7,
-          maxWidth: '480px',
-          margin: '0 auto 28px',
-        }}>
-          We're a small independent team. Every search, share and subscription
-          helps us partner with more suppliers and build a better product for UK car owners.
-        </p>
+      {/* Subtle description */}
+      <p className="text-sm text-zinc-500 max-w-md mx-auto mb-7 leading-relaxed">
+        We're a small independent team. Every search, share and subscription 
+        helps us partner with more suppliers and build a better product for UK car owners.
+      </p>
 
-        {/* Elegant divider */}
-        <div style={{
-          width: '40px',
-          height: '2px',
+      {/* Elegant divider */}
+      <div 
+        className="h-0.5 w-10 mx-auto mb-7"
+        style={{
           background: 'linear-gradient(90deg, transparent, #dc2626, transparent)',
-          margin: '0 auto 28px',
-        }} />
+        }}
+      />
 
-        {/* Premium buttons - no filled background */}
-        <div style={{
-          display: 'flex',
-          gap: '12px',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-        }}>
-          {/* Ghost button with subtle border */}
-          <button
-            onClick={handleShare}
-            style={{
-              padding: '10px 24px',
-              border: '1px solid rgba(255,255,255,0.15)',
-              borderRadius: '8px',
-              background: 'transparent',
-              color: '#e4e4e7',
-              fontSize: '0.85rem',
-              fontWeight: 500,
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              backdropFilter: 'blur(4px)',
-            }}
-            onMouseEnter={(e) => {
-              (e.target as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.3)';
-            }}
-            onMouseLeave={(e) => {
-              (e.target as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.15)';
-            }}
-          >
-            Share PARTARA 🔗
-          </button>
+      {/* Premium buttons */}
+      <div className="flex gap-3 justify-center flex-wrap">
+        {/* Ghost button */}
+        <button
+          onClick={handleShare}
+          className="px-6 py-2.5 text-sm font-medium text-zinc-300 border border-white/15 rounded-lg bg-transparent transition-all duration-200 hover:border-white/30"
+        >
+          Share PARTARA 🔗
+        </button>
 
-          {/* Red accent button - clean no box */}
-          <button
-            onClick={() => navigate('/pricing')}
-            style={{
-              padding: '10px 24px',
-              border: '1px solid rgba(220,38,38,0.4)',
-              borderRadius: '8px',
-              background: 'rgba(220,38,38,0.08)',
-              color: '#f87171',
-              fontSize: '0.85rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-            }}
-            onMouseEnter={(e) => {
-              (e.target as HTMLButtonElement).style.background = 'rgba(220,38,38,0.15)';
-            }}
-            onMouseLeave={(e) => {
-              (e.target as HTMLButtonElement).style.background = 'rgba(220,38,38,0.08)';
-            }}
-          >
-            Support Us → Pro
-          </button>
-        </div>
-
-        {/* Small footnote */}
-        <p style={{
-          color: '#3f3f46',
-          fontSize: '0.75rem',
-          marginTop: '20px',
-        }}>
-          Currently live: eBay (global) 🇬🇧
-        </p>
+        {/* Red accent button */}
+        <button
+          onClick={() => navigate('/pricing')}
+          className="px-6 py-2.5 text-sm font-semibold text-red-400 border border-red-500/40 rounded-lg transition-all duration-200 hover:bg-red-500/10"
+          style={{ background: 'rgba(220,38,38,0.08)' }}
+        >
+          Support Us → Pro
+        </button>
       </div>
-    </ScrollReveal>
+
+      {/* Small footnote */}
+      <p className="text-xs text-zinc-600 mt-5">
+        Currently live: eBay (global) 🇬🇧
+      </p>
+    </div>
   );
 };
 
