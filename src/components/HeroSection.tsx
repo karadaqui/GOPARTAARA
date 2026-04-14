@@ -344,20 +344,30 @@ const HeroSection = () => {
             </div>
 
             {/* Community Support Banner */}
-            <div className="bg-gradient-to-r from-card via-secondary to-muted/50 border border-white/10 rounded-2xl p-6 mt-6 text-center max-w-2xl mx-auto">
-              <div className="text-2xl mb-2">🤝</div>
-              <h3 className="text-sm font-semibold text-foreground mb-1">Help us add more suppliers</h3>
-              <p className="text-xs text-muted-foreground max-w-md mx-auto mb-4">
+            <div className="py-12 text-center max-w-xl mx-auto">
+              <div className="text-4xl mb-4" aria-hidden="true">🤝</div>
+              <h3 className="community-banner-title">Help us add more suppliers</h3>
+              <p className="community-banner-copy">
                 We're a small independent team. Every search, share and subscription helps us partner with more suppliers and build a better product for UK car owners.
               </p>
-              <div className="flex items-center justify-center gap-2">
-                <Button variant="ghost" size="sm" onClick={handleShare} className="text-xs border border-white/10 hover:bg-white/5">
+              <div className="community-banner-divider" aria-hidden="true" />
+              <div className="community-banner-actions">
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  className="community-banner-button community-banner-button-ghost"
+                >
                   Share PARTARA 🔗
-                </Button>
-                <Button size="sm" onClick={() => navigate("/pricing")} className="text-xs bg-primary hover:bg-primary/90">
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigate("/pricing")}
+                  className="community-banner-button community-banner-button-accent"
+                >
                   Support Us → Pro
-                </Button>
+                </button>
               </div>
+              <p className="community-banner-footnote">Currently live: eBay (global) 🇬🇧</p>
             </div>
           </div>
         </div>
