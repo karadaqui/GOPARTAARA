@@ -38,6 +38,7 @@ const CATEGORY_MAP: Record<string, number[]> = {
   Electrics: [117, 118, 119, 120],
   Cooling: [121, 122, 123],
   Body: [124, 125, 126, 127],
+  Steering: [128, 129, 130],
 };
 
 Deno.serve(async (req) => {
