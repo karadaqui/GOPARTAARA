@@ -60,10 +60,8 @@ const TecDocPartsSection = ({ make, model, year }: TecDocPartsSectionProps) => {
     }
   };
 
-  const buildEbaySearchUrl = (articleNumber: string, partName: string) => {
-    const query = articleNumber
-      ? `${articleNumber} ${make} ${model || ""}`.trim()
-      : `${partName} ${make} ${model || ""}`.trim();
+  const buildEbaySearchUrl = (_articleNumber: string, partName: string) => {
+    const query = `${partName} ${make} ${model || ""} ${year || ""}`.trim();
     const base = `https://www.ebay.co.uk/sch/i.html?_nkw=${encodeURIComponent(query)}`;
     return buildEbayAffiliateUrl(base);
   };
