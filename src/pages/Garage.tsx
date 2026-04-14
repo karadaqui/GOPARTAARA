@@ -23,6 +23,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { getMakes, getModels, getYears, getAllYears } from "@/data/vehicleDatabase";
+import VehicleExpiryBadges from "@/components/garage/VehicleExpiryBadges";
+import VehicleExpiryEditor from "@/components/garage/VehicleExpiryEditor";
 
 interface Vehicle {
   id: string;
@@ -33,6 +35,8 @@ interface Vehicle {
   engine_size: string | null;
   registration_number: string | null;
   created_at: string;
+  mot_expiry_date?: string | null;
+  tax_expiry_date?: string | null;
 }
 
 const ENGINE_SIZES = ["1.0L","1.2L","1.4L","1.5L","1.6L","1.8L","2.0L","2.2L","2.4L","2.5L","3.0L","3.5L","4.0L","5.0L","Electric"];
@@ -399,6 +403,13 @@ const Garage = () => {
                     </span>
                   )}
                 </div>
+                <VehicleExpiryBadges motExpiryDate={(v as any).mot_expiry_date} taxExpiryDate={(v as any).tax_expiry_date} />
+                <VehicleExpiryEditor
+                  vehicleId={v.id}
+                  motExpiryDate={(v as any).mot_expiry_date}
+                  taxExpiryDate={(v as any).tax_expiry_date}
+                  onUpdate={loadData}
+                />
                 <Button
                   variant="outline"
                   size="sm"
