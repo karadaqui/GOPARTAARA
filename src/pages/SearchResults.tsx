@@ -33,6 +33,7 @@ import { useLocale } from "@/contexts/LocaleContext";
 import CountryFlag from "@/components/CountryFlag";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import FilterBar from "@/components/FilterBar";
+import TecDocPartsSection from "@/components/TecDocPartsSection";
 
 
 // ── Twemoji helper ──
@@ -772,6 +773,15 @@ const SearchResults = () => {
                   {vehicleInfo.taxStatus && (<div className="flex items-center gap-2.5 py-2"><div className="w-8 h-8 rounded-lg bg-red-600/10 flex items-center justify-center shrink-0"><Receipt size={15} className="text-red-500" /></div><div><p className="text-[11px] text-zinc-600 uppercase tracking-wider leading-none mb-0.5">Tax</p><p className={`text-sm font-semibold ${vehicleInfo.taxStatus === "Taxed" ? "text-emerald-400" : "text-red-400"}`}>{vehicleInfo.taxStatus}</p></div></div>)}
                 </div>
               </div>
+            )}
+
+            {/* ── TecDoc Compatible Parts (only for plate searches) ── */}
+            {vehicleInfo && vehicleModelConfirmed && vehicleInfo.model && (
+              <TecDocPartsSection
+                make={vehicleInfo.make}
+                model={vehicleInfo.model}
+                year={vehicleInfo.yearOfManufacture}
+              />
             )}
 
             {/* ── Results Header ── */}
