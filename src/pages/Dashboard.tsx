@@ -15,6 +15,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
 import PriceAlertsSection from "@/components/dashboard/PriceAlertsSection";
 import MyGarageSection from "@/components/dashboard/MyGarageSection";
+import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
 
 import EliteFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import PrioritySupportButton from "@/components/dashboard/PrioritySupportButton";
@@ -682,6 +683,16 @@ const Dashboard = () => {
               </div>
               <PrioritySupportButton displayName={displayName || user?.email || ""} />
             </div>
+          </EliteFeatureGate>
+        </div>
+
+        {/* Analytics Dashboard — Elite only */}
+        <div className="glass rounded-2xl p-6 sm:p-8 mb-6">
+          <h2 className="font-display text-lg font-semibold flex items-center gap-2 mb-4">
+            📊 Analytics
+          </h2>
+          <EliteFeatureGate isBusinessUser={isEliteUser} label="Elite plan feature">
+            <AnalyticsDashboard />
           </EliteFeatureGate>
         </div>
 
