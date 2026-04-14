@@ -17,7 +17,7 @@ const CommunityBanner = () => {
   };
 
   return (
-    <div className="py-12 text-center max-w-xl mx-auto">
+    <div className="py-12 text-center max-w-xl mx-auto bg-transparent">
       {/* Large elegant emoji */}
       <div className="text-4xl mb-4">🤝</div>
 
