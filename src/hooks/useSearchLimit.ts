@@ -40,18 +40,22 @@ export const useSearchLimit = () => {
       startOfMonth.setDate(1);
       startOfMonth.setHours(0, 0, 0, 0);
 
-      const [{ count }, { data: profile }] = await Promise.all([
-        supabase
+      // Separate calls so search_history 503 doesn't break profiles fetch
+      let count = 0;
+      try {
+        const historyRes = await supabase
           .from("search_history")
           .select("*", { count: "exact", head: true })
           .eq("user_id", user.id)
-          .gte("created_at", startOfMonth.toISOString()),
-        supabase
-          .from("profiles")
-          .select("bonus_searches, subscription_plan")
-          .eq("user_id", user.id)
-          .single(),
-      ]);
+          .gte("created_at", startOfMonth.toISOString());
+        count = historyRes.count || 0;
+      } catch { /* silently ignore 503 */ }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("bonus_searches, subscription_plan")
+        .eq("user_id", user.id)
+        .single();
 
       setSearchCount(count || 0);
       setBonusSearches(profile?.bonus_searches || 0);
