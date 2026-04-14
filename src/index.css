@@ -246,6 +246,95 @@
     border-color: hsl(0 85% 50% / 0.3);
     transform: scale(1.05);
   }
+
+  .community-banner-title {
+    margin-bottom: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--foreground)) 0%,
+      hsl(var(--muted-foreground) / 0.9) 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .community-banner-copy {
+    margin: 0 auto 1.75rem;
+    max-width: 30rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  .community-banner-divider {
+    margin: 0 auto 1.75rem;
+    height: 2px;
+    width: 2.5rem;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      hsl(var(--primary)),
+      transparent
+    );
+  }
+
+  .community-banner-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .community-banner-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1.5rem;
+    border-radius: calc(var(--radius) - 0.25rem);
+    background: transparent;
+    font-size: 0.85rem;
+    line-height: 1;
+    transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+
+  .community-banner-button:hover {
+    transform: translateY(-1px);
+  }
+
+  .community-banner-button:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  .community-banner-button-ghost {
+    border: 1px solid hsl(var(--border));
+    color: hsl(var(--foreground) / 0.92);
+  }
+
+  .community-banner-button-ghost:hover {
+    border-color: hsl(var(--foreground) / 0.24);
+    color: hsl(var(--foreground));
+  }
+
+  .community-banner-button-accent {
+    border: 1px solid hsl(var(--primary) / 0.4);
+    color: hsl(var(--primary) / 0.92);
+  }
+
+  .community-banner-button-accent:hover {
+    border-color: hsl(var(--primary) / 0.6);
+    color: hsl(var(--primary));
+  }
+
+  .community-banner-footnote {
+    margin-top: 1.25rem;
+    color: hsl(var(--muted-foreground) / 0.55);
+    font-size: 0.75rem;
+  }
 }
 
 /* Reduced motion */
