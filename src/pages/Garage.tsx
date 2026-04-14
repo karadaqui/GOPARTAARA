@@ -25,6 +25,9 @@ import { useToast } from "@/hooks/use-toast";
 import { getMakes, getModels, getYears, getAllYears } from "@/data/vehicleDatabase";
 import VehicleExpiryBadges from "@/components/garage/VehicleExpiryBadges";
 import VehicleExpiryEditor from "@/components/garage/VehicleExpiryEditor";
+import VehicleNotes from "@/components/dashboard/VehicleNotes";
+import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
+import { useUserPlan } from "@/hooks/useUserPlan";
 
 interface Vehicle {
   id: string;
