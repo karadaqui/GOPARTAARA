@@ -48,7 +48,7 @@ const CommunityBanner = () => {
       </div>
 
       <p className="community-banner-footnote">
-        Currently live: eBay (global) 🇬🇧
+        Currently live: eBay (global)
       </p>
     </div>
   );
