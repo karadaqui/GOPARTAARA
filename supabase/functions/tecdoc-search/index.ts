@@ -10,43 +10,17 @@ const BodySchema = z.object({
   category: z.string().min(1).max(100),
 });
 
-// Try multiple endpoint patterns to find one that works
-async function searchTecDoc(query: string, apiKey: string): Promise<any[]> {
-  const endpoints = [
-    `/searchArticlesByNumber?articleSearchNr=${encodeURIComponent(query)}&langId=4`,
-    `/articles/search-by-article-no/lang-id/4/article-no/${encodeURIComponent(query)}`,
-    `/getArticlesList?langId=4&searchQuery=${encodeURIComponent(query)}`,
-  ];
-
-  for (const endpoint of endpoints) {
-    try {
-      const url = `https://${RAPIDAPI_HOST}${endpoint}`;
-      console.log(`[tecdoc-search] Trying: ${url}`);
-      const res = await fetch(url, {
-        headers: {
-          "X-RapidAPI-Key": apiKey,
-          "X-RapidAPI-Host": RAPIDAPI_HOST,
-        },
-      });
-
-      const text = await res.text();
-      console.log(`[tecdoc-search] ${endpoint} → ${res.status}: ${text.slice(0, 500)}`);
-
-      if (!res.ok) continue;
-
-      try {
-        const data = JSON.parse(text);
-        const articles = Array.isArray(data) ? data
-          : data?.articles || data?.items || data?.data || data?.results || [];
-        if (Array.isArray(articles) && articles.length > 0) return articles;
-      } catch { continue; }
-    } catch (e) {
-      console.error(`[tecdoc-search] Endpoint ${endpoint} failed:`, e);
-    }
-  }
-
-  return [];
-}
+// Map user-friendly categories to specific part search terms
+const CATEGORY_SEARCH_TERMS: Record<string, string[]> = {
+  brakes: ["brake pad", "brake disc", "brake caliper"],
+  engine: ["oil filter", "spark plug", "timing belt"],
+  suspension: ["shock absorber", "coil spring", "control arm"],
+  filters: ["air filter", "oil filter", "fuel filter", "cabin filter"],
+  exhaust: ["exhaust pipe", "catalytic converter", "muffler"],
+  electrics: ["alternator", "starter motor", "ignition coil"],
+  cooling: ["radiator", "water pump", "thermostat"],
+  steering: ["tie rod", "power steering pump", "steering rack"],
+};
 
 Deno.serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
@@ -65,19 +39,64 @@ Deno.serve(async (req) => {
     }
 
     const { make, model, year, category } = parsed.data;
-    const query = `${category} ${make} ${model || ""} ${year || ""}`.trim();
+    const searchTerms = CATEGORY_SEARCH_TERMS[category] || [category];
+    
+    console.log(`[tecdoc-search] Category: ${category}, Make: ${make}, Terms: ${searchTerms.join(", ")}`);
 
-    console.log(`[tecdoc-search] Query: "${query}"`);
+    const allArticles: any[] = [];
 
-    const articles = await searchTecDoc(query, RAPIDAPI_KEY);
+    // Search for each term in the category using the correct endpoint
+    for (const term of searchTerms) {
+      const searchQuery = encodeURIComponent(term);
+      const url = `https://${RAPIDAPI_HOST}/articles/search/lang-id/4/article-search/${searchQuery}`;
+      
+      console.log(`[tecdoc-search] Fetching: ${url}`);
+      
+      try {
+        const res = await fetch(url, {
+          headers: {
+            "X-RapidAPI-Key": RAPIDAPI_KEY,
+            "X-RapidAPI-Host": RAPIDAPI_HOST,
+          },
+        });
 
-    const mapped = articles.slice(0, 30).map((item: any) => ({
-      articleName: item.articleName || item.name || item.description || item.genericArticleDescription || "Auto Part",
-      brandName: item.brandName || item.supplierName || item.manufacturer || item.mfrName || "",
-      articleNumber: item.articleNumber || item.oemNumber || item.articleNo || item.articleNr || "",
-    }));
+        const text = await res.text();
+        console.log(`[tecdoc-search] ${term} → ${res.status}, length: ${text.length}`);
 
-    console.log(`[tecdoc-search] Returning ${mapped.length} articles`);
+        if (res.ok) {
+          try {
+            const data = JSON.parse(text);
+            const items = Array.isArray(data) ? data 
+              : data?.articles || data?.items || data?.data || data?.results || [];
+            if (Array.isArray(items)) {
+              allArticles.push(...items);
+            }
+          } catch { /* parse error, skip */ }
+        }
+      } catch (e) {
+        console.error(`[tecdoc-search] Fetch error for "${term}":`, e);
+      }
+
+      if (allArticles.length >= 30) break;
+    }
+
+    // Deduplicate by articleNumber and map to clean format
+    const seen = new Set<string>();
+    const mapped = allArticles
+      .filter((item: any) => {
+        const num = item.articleNumber || item.articleNo || item.articleNr || "";
+        if (!num || seen.has(num)) return false;
+        seen.add(num);
+        return true;
+      })
+      .slice(0, 30)
+      .map((item: any) => ({
+        articleName: item.articleName || item.name || item.description || item.genericArticleDescription || "Auto Part",
+        brandName: item.brandName || item.supplierName || item.manufacturer || item.mfrName || "",
+        articleNumber: item.articleNumber || item.articleNo || item.articleNr || "",
+      }));
+
+    console.log(`[tecdoc-search] Returning ${mapped.length} unique articles`);
     return jsonResponse({ articles: mapped }, 200, corsHeaders);
   } catch (error) {
     console.error("[tecdoc-search] Error:", error);
