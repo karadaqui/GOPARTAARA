@@ -367,7 +367,7 @@ const HeroSection = () => {
                   Support Us → Pro
                 </button>
               </div>
-              <p className="community-banner-footnote">Currently live: eBay (global) 🇬🇧</p>
+              <p className="community-banner-footnote">Currently live: eBay (global)</p>
             </div>
           </div>
         </div>
