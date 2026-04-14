@@ -276,7 +276,7 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
               {/* Vehicle Specs from NHTSA + FuelEconomy */}
               <VehicleSpecsCard make={v.make} model={v.model} year={v.year} />
               {/* Vehicle Notes — Business feature */}
-              <BusinessFeatureGate isBusinessUser={isBusinessUser} label="Business plan feature">
+              <BusinessFeatureGate isBusinessUser={isBusinessUser} label="Elite plan feature">
                 <VehicleNotes vehicleId={v.id} userId={userId} />
               </BusinessFeatureGate>
             </div>
