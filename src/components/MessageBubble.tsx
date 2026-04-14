@@ -11,23 +11,26 @@ const MessageBubble = () => {
 
   const fetchUnread = async () => {
     if (!user) return;
-    // Get all conversations for user
-    const { data: convs } = await supabase
-      .from("conversations")
-      .select("id")
-      .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`);
+    try {
+      const { data: convs } = await supabase
+        .from("conversations")
+        .select("id")
+        .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`);
 
-    if (!convs || convs.length === 0) { setUnreadCount(0); return; }
+      if (!convs || convs.length === 0) { setUnreadCount(0); return; }
 
-    const convIds = convs.map(c => c.id);
-    const { count } = await supabase
-      .from("chat_messages")
-      .select("id", { count: "exact", head: true })
-      .in("conversation_id", convIds)
-      .eq("read", false)
-      .neq("sender_id", user.id);
+      const convIds = convs.map(c => c.id);
+      const { count } = await supabase
+        .from("chat_messages")
+        .select("id", { count: "exact", head: true })
+        .in("conversation_id", convIds)
+        .eq("read", false)
+        .neq("sender_id", user.id);
 
-    setUnreadCount(count || 0);
+      setUnreadCount(count || 0);
+    } catch (e) {
+      console.warn("fetchUnread failed:", e);
+    }
   };
 
   useEffect(() => {

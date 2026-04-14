@@ -776,10 +776,10 @@ const SearchResults = () => {
             )}
 
             {/* ── TecDoc Compatible Parts (only for plate searches) ── */}
-            {vehicleInfo && vehicleModelConfirmed && vehicleInfo.model && (
+            {vehicleInfo && (
               <TecDocPartsSection
                 make={vehicleInfo.make}
-                model={vehicleInfo.model}
+                model={vehicleInfo.model || vehicleModelInput || null}
                 year={vehicleInfo.yearOfManufacture}
               />
             )}

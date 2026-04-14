@@ -179,29 +179,39 @@ const Messages = () => {
 
     const enriched: Conversation[] = [];
     for (const c of convs) {
-      const { data: lastMsg } = await supabase
-        .from("chat_messages")
-        .select("content, created_at")
-        .eq("conversation_id", c.id)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
+      try {
+        const { data: lastMsg } = await supabase
+          .from("chat_messages")
+          .select("content, created_at")
+          .eq("conversation_id", c.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-      const { count } = await supabase
-        .from("chat_messages")
-        .select("id", { count: "exact", head: true })
-        .eq("conversation_id", c.id)
-        .eq("read", false)
-        .neq("sender_id", user.id);
+        const { count } = await supabase
+          .from("chat_messages")
+          .select("id", { count: "exact", head: true })
+          .eq("conversation_id", c.id)
+          .eq("read", false)
+          .neq("sender_id", user.id);
 
-      enriched.push({
-        ...c,
-        listing_title: c.listing_id ? listingMap.get(c.listing_id) || "Listing" : undefined,
-        other_name: profileMap.get(c.buyer_id === user.id ? c.seller_id : c.buyer_id) || "User",
-        last_message: lastMsg?.content,
-        last_message_at: lastMsg?.created_at,
-        unread_count: count || 0,
-      });
+        enriched.push({
+          ...c,
+          listing_title: c.listing_id ? listingMap.get(c.listing_id) || "Listing" : undefined,
+          other_name: profileMap.get(c.buyer_id === user.id ? c.seller_id : c.buyer_id) || "User",
+          last_message: lastMsg?.content,
+          last_message_at: lastMsg?.created_at,
+          unread_count: count || 0,
+        });
+      } catch (e) {
+        console.warn("chat_messages enrichment failed:", e);
+        enriched.push({
+          ...c,
+          listing_title: c.listing_id ? listingMap.get(c.listing_id) || "Listing" : undefined,
+          other_name: profileMap.get(c.buyer_id === user.id ? c.seller_id : c.buyer_id) || "User",
+          unread_count: 0,
+        });
+      }
     }
 
     enriched.sort((a, b) => {
@@ -220,33 +230,45 @@ const Messages = () => {
   };
 
   const loadMessages = async (convId: string) => {
-    const { data } = await supabase
-      .from("chat_messages")
-      .select("*")
-      .eq("conversation_id", convId)
-      .order("created_at", { ascending: true });
-    setMessages(data || []);
+    try {
+      const { data } = await supabase
+        .from("chat_messages")
+        .select("*")
+        .eq("conversation_id", convId)
+        .order("created_at", { ascending: true });
+      setMessages(data || []);
+    } catch (e) {
+      console.warn("loadMessages failed:", e);
+    }
   };
 
   const markAsRead = async (convId: string) => {
     if (!user) return;
-    await supabase
-      .from("chat_messages")
-      .update({ read: true })
-      .eq("conversation_id", convId)
-      .neq("sender_id", user.id)
-      .eq("read", false);
+    try {
+      await supabase
+        .from("chat_messages")
+        .update({ read: true })
+        .eq("conversation_id", convId)
+        .neq("sender_id", user.id)
+        .eq("read", false);
+    } catch (e) {
+      console.warn("markAsRead failed:", e);
+    }
   };
 
   const handleSend = async () => {
     if (!newMessage.trim() || !selectedConv || !user) return;
     setSending(true);
-    const { error } = await supabase.from("chat_messages").insert({
-      conversation_id: selectedConv,
-      sender_id: user.id,
-      content: newMessage.trim(),
-    });
-    if (!error) setNewMessage("");
+    try {
+      const { error } = await supabase.from("chat_messages").insert({
+        conversation_id: selectedConv,
+        sender_id: user.id,
+        content: newMessage.trim(),
+      });
+      if (!error) setNewMessage("");
+    } catch (e) {
+      console.warn("handleSend failed:", e);
+    }
     setSending(false);
   };
 
