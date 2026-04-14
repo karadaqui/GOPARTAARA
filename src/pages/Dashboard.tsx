@@ -686,6 +686,16 @@ const Dashboard = () => {
           </EliteFeatureGate>
         </div>
 
+        {/* Analytics Dashboard — Elite only */}
+        <div className="glass rounded-2xl p-6 sm:p-8 mb-6">
+          <h2 className="font-display text-lg font-semibold flex items-center gap-2 mb-4">
+            📊 Analytics
+          </h2>
+          <EliteFeatureGate isBusinessUser={isEliteUser} label="Elite plan feature">
+            <AnalyticsDashboard />
+          </EliteFeatureGate>
+        </div>
+
         {/* Coming Soon — Elite only */}
         {isEliteUser && (
           <div className="mb-6">
