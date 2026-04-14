@@ -24,7 +24,7 @@ const CommunityBanner = () => {
 
       <p className="community-banner-copy">
         We're a small independent team. Every search, share and subscription
-        helps us partner with more suppliers and build a better product for UK car owners.
+        helps us partner with more suppliers and build a better product for UK & global car owners.
       </p>
 
       <div className="community-banner-divider" aria-hidden="true" />
