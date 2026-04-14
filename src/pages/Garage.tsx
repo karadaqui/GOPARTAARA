@@ -60,6 +60,7 @@ const Garage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const userPlan = useUserPlan();
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
@@ -413,6 +414,12 @@ const Garage = () => {
                   taxExpiryDate={(v as any).tax_expiry_date}
                   onUpdate={loadData}
                 />
+                {/* Vehicle Notes — Elite only */}
+                {user && (
+                  <BusinessFeatureGate isBusinessUser={userPlan.isElite} label="Elite plan feature · Service Notes">
+                    <VehicleNotes vehicleId={v.id} userId={user.id} />
+                  </BusinessFeatureGate>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
