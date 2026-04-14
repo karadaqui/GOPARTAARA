@@ -348,7 +348,7 @@ const HeroSection = () => {
               <div className="text-4xl mb-4" aria-hidden="true">🤝</div>
               <h3 className="community-banner-title">Help us add more suppliers</h3>
               <p className="community-banner-copy">
-                We're a small independent team. Every search, share and subscription helps us partner with more suppliers and build a better product for UK car owners.
+                We're a small independent team. Every search, share and subscription helps us partner with more suppliers and build a better product for UK & global car owners.
               </p>
               <div className="community-banner-divider" aria-hidden="true" />
               <div className="community-banner-actions">
