@@ -411,8 +411,6 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Recently Viewed */}
-        <RecentlyViewed maxItems={5} />
 
         <div className="glass rounded-2xl p-6 sm:p-8 mb-6">
           <h2 className="font-display text-lg font-semibold mb-1">🎁 Refer a Friend — Give 1 Month Pro, Get 1 Month Pro</h2>
