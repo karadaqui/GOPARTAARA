@@ -661,6 +661,7 @@ export type Database = {
           ebay_item_id: string | null
           email: string
           id: string
+          image_url: string | null
           last_checked_at: string | null
           part_name: string
           supplier: string | null
@@ -677,6 +678,7 @@ export type Database = {
           ebay_item_id?: string | null
           email: string
           id?: string
+          image_url?: string | null
           last_checked_at?: string | null
           part_name: string
           supplier?: string | null
@@ -693,6 +695,7 @@ export type Database = {
           ebay_item_id?: string | null
           email?: string
           id?: string
+          image_url?: string | null
           last_checked_at?: string | null
           part_name?: string
           supplier?: string | null
