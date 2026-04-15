@@ -110,10 +110,10 @@ export interface UserPlan {
   isElite: boolean;
   isPro: boolean;
   isFree: boolean;
+  isTrial: boolean;
+  trialEndsAt: string | null;
   loading: boolean;
-  /** Call to check if user can perform an action with a limit. Returns true if allowed. */
   canUseFeature: (feature: keyof PlanFeatures) => boolean;
-  /** Min plan required for a boolean feature */
   requiredPlanFor: (feature: keyof PlanFeatures) => string;
   refresh: () => Promise<void>;
 }
