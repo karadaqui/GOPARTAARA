@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Loader2, Package, X } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
+import { Loader2, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -33,10 +33,11 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
   const [alerts, setAlerts] = useState<PriceAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [confirmClearAll, setConfirmClearAll] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editPrice, setEditPrice] = useState("");
 
-  const fetchAlerts = async () => {
+  const fetchAlerts = useCallback(async () => {
     const { data, error } = await supabase
       .from("price_alerts")
       .select("*")
@@ -54,21 +55,35 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
       setAlerts(unique);
     }
     setLoading(false);
-  };
+  }, [userId]);
 
   useEffect(() => {
     fetchAlerts();
-  }, [userId]);
+  }, [fetchAlerts]);
 
   const deleteAlert = async (id: string) => {
     setConfirmDeleteId(null);
+    const removed = alerts.find((a) => a.id === id);
     setAlerts((prev) => prev.filter((a) => a.id !== id));
     const { error } = await supabase.from("price_alerts").delete().eq("id", id);
     if (error) {
-      toast.error("Failed to delete alert", { description: error.message });
-      fetchAlerts();
+      toast.error("Failed to delete alert");
+      if (removed) setAlerts((prev) => [...prev, removed]);
     } else {
       toast.success("Price alert deleted");
+    }
+  };
+
+  const clearAllAlerts = async () => {
+    setConfirmClearAll(false);
+    const backup = [...alerts];
+    setAlerts([]);
+    const { error } = await supabase.from("price_alerts").delete().eq("user_id", userId);
+    if (error) {
+      toast.error("Failed to clear alerts");
+      setAlerts(backup);
+    } else {
+      toast.success("All alerts cleared");
     }
   };
 
@@ -80,24 +95,6 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
   const cancelEdit = () => {
     setEditingId(null);
     setEditPrice("");
-  };
-
-  const incrementEdit = () => {
-    const current = parseFloat(editPrice) || 0;
-    setEditPrice((Math.round((current + 1) * 100) / 100).toFixed(2));
-  };
-
-  const decrementEdit = () => {
-    const current = parseFloat(editPrice) || 0;
-    if (current <= 0) return;
-    setEditPrice((Math.round((current - 1) * 100) / 100).toFixed(2));
-  };
-
-  const handleEditInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    if (/^\d*\.?\d{0,2}$/.test(val)) {
-      setEditPrice(val);
-    }
   };
 
   const saveEdit = async (id: string) => {
@@ -128,6 +125,14 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
             </span>
           </h2>
         </div>
+        {alerts.length > 0 && (
+          <button
+            onClick={() => setConfirmClearAll(true)}
+            className="text-xs text-muted-foreground/50 hover:text-destructive transition-colors"
+          >
+            Clear all
+          </button>
+        )}
       </div>
 
       {loading ? (
@@ -149,7 +154,6 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
                 key={alert.id}
                 className="flex items-center gap-4 bg-secondary/30 border border-border/50 rounded-xl p-4 hover:border-border transition-all group"
               >
-                {/* Product Image */}
                 <div className="w-16 h-16 flex-shrink-0 bg-secondary rounded-lg overflow-hidden">
                   {alert.image_url ? (
                     <img
@@ -165,38 +169,50 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
                   )}
                 </div>
 
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate mb-1">
                     {alert.part_name}
                   </p>
 
                   {isEditing ? (
-                    /* Inline edit with +/- controls */
                     <div className="mt-1 p-2.5 bg-secondary border border-border/50 rounded-xl">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm text-muted-foreground font-medium">£</span>
+                      <div className="flex items-center gap-1.5 mb-2">
                         <button
-                          onClick={decrementEdit}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-border bg-secondary text-muted-foreground hover:border-muted-foreground/50 hover:text-foreground transition-all active:scale-95 text-base font-light"
+                          onClick={() => {
+                            const v = Math.max(0, parseFloat(editPrice || "0") - 1);
+                            setEditPrice(v.toFixed(2));
+                          }}
+                          className="w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-lg border border-border bg-secondary text-foreground text-base font-light hover:bg-muted active:scale-95 transition-all select-none"
                         >
                           −
                         </button>
-                        <input
-                          type="text"
-                          value={editPrice}
-                          onChange={handleEditInput}
-                          onBlur={() => {
-                            const val = parseFloat(editPrice);
-                            if (isNaN(val) || val < 0) setEditPrice("0.00");
-                            else setEditPrice(val.toFixed(2));
-                          }}
-                          className="w-24 text-center bg-secondary border border-border rounded-lg py-1 text-foreground font-semibold text-sm focus:outline-none focus:border-destructive/50 transition-colors"
-                          autoFocus
-                        />
+                        <div className="flex-1 relative min-w-0">
+                          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-medium pointer-events-none">£</span>
+                          <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            value={editPrice}
+                            onChange={(e) => {
+                              const v = parseFloat(e.target.value);
+                              if (isNaN(v) || v < 0) setEditPrice("0.00");
+                              else setEditPrice(v.toFixed(2));
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === "-") e.preventDefault();
+                              if (e.key === "Enter") saveEdit(alert.id);
+                              if (e.key === "Escape") cancelEdit();
+                            }}
+                            className="w-full pl-6 pr-2 py-1 bg-secondary border border-border rounded-lg text-foreground font-semibold text-sm text-center focus:outline-none focus:border-destructive/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            autoFocus
+                          />
+                        </div>
                         <button
-                          onClick={incrementEdit}
-                          className="w-7 h-7 flex items-center justify-center rounded-lg border border-border bg-secondary text-muted-foreground hover:border-muted-foreground/50 hover:text-foreground transition-all active:scale-95 text-base font-light"
+                          onClick={() => {
+                            const v = parseFloat(editPrice || "0") + 1;
+                            setEditPrice(v.toFixed(2));
+                          }}
+                          className="w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-lg border border-border bg-secondary text-foreground text-base font-light hover:bg-muted active:scale-95 transition-all select-none"
                         >
                           +
                         </button>
@@ -254,7 +270,6 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
                   )}
                 </div>
 
-                {/* Actions */}
                 {!isEditing && (
                   <div className="flex flex-col gap-2 flex-shrink-0">
                     {alert.url && (
@@ -285,6 +300,7 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
         🔔 Prices are checked every 6 hours. You'll receive an email when a price drops below your target.
       </p>
 
+      {/* Delete single alert */}
       <AlertDialog open={!!confirmDeleteId} onOpenChange={(open) => !open && setConfirmDeleteId(null)}>
         <AlertDialogContent className="rounded-2xl">
           <AlertDialogHeader>
@@ -298,6 +314,25 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
               onClick={() => confirmDeleteId && deleteAlert(confirmDeleteId)}
             >
               Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Clear all alerts */}
+      <AlertDialog open={confirmClearAll} onOpenChange={setConfirmClearAll}>
+        <AlertDialogContent className="rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete all price alerts?</AlertDialogTitle>
+            <AlertDialogDescription>This will remove all {alerts.length} alerts. This cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={clearAllAlerts}
+            >
+              Delete All
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
