@@ -827,9 +827,35 @@ export type Database = {
         }
         Relationships: []
       }
+      saved_folders: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       saved_parts: {
         Row: {
           created_at: string
+          currency: string | null
+          folder_id: string | null
           id: string
           image_url: string | null
           part_name: string
@@ -841,6 +867,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          currency?: string | null
+          folder_id?: string | null
           id?: string
           image_url?: string | null
           part_name: string
@@ -852,6 +880,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          currency?: string | null
+          folder_id?: string | null
           id?: string
           image_url?: string | null
           part_name?: string
@@ -861,7 +891,15 @@ export type Database = {
           url?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "saved_parts_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "saved_folders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       search_history: {
         Row: {
