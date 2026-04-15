@@ -96,6 +96,16 @@ export const EBAY_DEALS: EbayDeal[] = [
     url: withEbayAffiliate('https://www.ebay.co.uk/e/motors/m-deals-tools-storage'),
   },
   {
+    id: 'car-technology',
+    type: 'tools',
+    brand: null,
+    label: 'Car Technology',
+    discount: 'Top deals',
+    description: 'Dash cams, sat navs & in-car tech',
+    expiryDate: null,
+    url: withEbayAffiliate('https://www.ebay.co.uk/e/motors/in-car-technology-deals'),
+  },
+  {
     id: 'all-deals',
     type: 'all',
     brand: null,
