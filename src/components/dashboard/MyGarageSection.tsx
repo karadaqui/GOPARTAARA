@@ -261,8 +261,9 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
               </Button>
             </div>
             {!regError && (
-              <p className="text-[10px] text-muted-foreground mt-1.5">
-                🇬🇧 UK plates supported. More countries coming soon.
+              <p className="text-[10px] text-muted-foreground mt-1.5 flex items-center gap-1">
+                <span className="text-[9px] bg-blue-900/40 border border-blue-500/30 text-blue-300 px-1 py-0.5 rounded font-bold leading-none">UK</span>
+                plates supported. More countries coming soon.
               </p>
             )}
             {regError && (

@@ -97,8 +97,8 @@ const oemBrands: { brand: string; pattern: RegExp; label: string; url: (q: strin
 
 const getOemSearchQuery = (query: string, pattern: RegExp) => query.replace(pattern, "").replace(/\s+/g, " ").trim() || query;
 
-const countryFlags: Record<string, string> = {
-  GB: "🇬🇧", US: "🇺🇸", DE: "🇩🇪", CN: "🇨🇳", IT: "🇮🇹", FR: "🇫🇷", ES: "🇪🇸", PL: "🇵🇱", NL: "🇳🇱", JP: "🇯🇵", AU: "🇦🇺",
+const countryBadges: Record<string, string> = {
+  GB: "UK", US: "US", DE: "DE", CN: "CN", IT: "IT", FR: "FR", ES: "ES", PL: "PL", NL: "NL", JP: "JP", AU: "AU",
 };
 
 const ITEMS_PER_PAGE = 12;
@@ -562,7 +562,7 @@ const SearchResults = () => {
     return { label: locale.t("good_price"), variant: "good" as const };
   };
 
-  const getFlag = (code: string) => countryFlags[code] || "🌍";
+  const getFlag = (code: string) => countryBadges[code] || "🌍";
 
   const shuffleResults = <T,>(items: T[]) => {
     const shuffled = [...items];
@@ -640,7 +640,7 @@ const SearchResults = () => {
             </button>
             <button onClick={() => setSearchMode("reg")}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${searchMode === "reg" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
-              <Car size={14} /> Reg Plate 🇬🇧
+              <Car size={14} /> Reg Plate <span className="text-[10px] bg-blue-900/40 border border-blue-500/30 text-blue-300 px-1.5 py-0.5 rounded font-bold tracking-wider leading-none">UK</span>
             </button>
             <button onClick={() => setSearchMode("vin")}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${searchMode === "vin" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
