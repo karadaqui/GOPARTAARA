@@ -960,21 +960,28 @@ const SearchResults = () => {
                             <a href={buildEbayAffiliateUrl(item.url)} target="_blank" rel="noopener noreferrer"
                               onClick={() => {
                                 try {
-                                  const price = String(item.price || '0');
-                                  const currency = item.currency || 'GBP';
-                                  const image = Array.isArray(item.imageUrl) ? item.imageUrl[0] : (item.imageUrl || '');
-                                  addRecentView({
-                                    id: item.id || Math.random().toString(),
-                                    title: item.partName || 'Car Part',
-                                    price,
-                                    currency,
-                                    image,
-                                    url: buildEbayAffiliateUrl(item.url || ''),
-                                  });
-                                } catch(e) { console.error('saveRecentView error:', e); }
+                                  const stored = localStorage.getItem('partara_recent_views');
+                                  const existing = stored ? JSON.parse(stored) : [];
+                                  const itemId = String(item.itemId || item.id || '');
+                                  const filtered = existing.filter((i: any) => String(i.id) !== itemId);
+                                  const price = item.sellingStatus?.currentPrice?.[0]?.['__value__'] || '0';
+                                  const currency = item.sellingStatus?.currentPrice?.[0]?.['@currencyId'] || 'GBP';
+                                  const image = Array.isArray(item.galleryURL) ? item.galleryURL[0] : (item.galleryURL || '');
+                                  const newItem = {
+                                    id: itemId,
+                                    title: item.title || '',
+                                    price: String(price),
+                                    currency: currency,
+                                    image: image,
+                                    url: buildEbayAffiliateUrl(item.viewItemURL || item.url || ''),
+                                    viewedAt: new Date().toISOString()
+                                  };
+                                  const updated = [newItem, ...filtered].slice(0, 20);
+                                  localStorage.setItem('partara_recent_views', JSON.stringify(updated));
+                                } catch(e) {}
                               }}
                               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150"
-                              title="Buying through this link supports PARTARA at no extra cost to you 💙">
+                              title="Buying through this link supports PARTARA at no extra cost to you ">
                               <ExternalLink size={14} /> View on eBay
                             </a>
                             <button onClick={() => {
