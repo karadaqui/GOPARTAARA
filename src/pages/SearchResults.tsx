@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { sanitizeInput, checkRateLimit, getCachedSearch, setCachedSearch } from "@/lib/sanitize";
 import { buildEbayAffiliateUrl } from "@/lib/ebayAffiliate";
+import { getCountryFromVIN, type VinCountryInfo } from "@/lib/vinCountry";
 
 import { useUserPlan } from "@/hooks/useUserPlan";
 import UpgradeModal from "@/components/UpgradeModal";
@@ -269,6 +270,7 @@ const SearchResults = () => {
   const [pendingSearchQuery, setPendingSearchQuery] = useState("");
   const isFromGarage = searchParams.get("fromGarage") === "true";
   const [garageVehicleLabel, setGarageVehicleLabel] = useState<string | null>(null);
+  const [vinCountryInfo, setVinCountryInfo] = useState<VinCountryInfo | null>(null);
 
 
   // ── Filter & Sort State ──
