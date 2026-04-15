@@ -471,6 +471,38 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
+          ) : currentPlan !== "free" && isTrial ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                  <Crown size={20} className="text-blue-400" />
+                </div>
+                <div>
+                  <p className="font-display font-bold text-lg capitalize">{currentPlan} Plan <span className="text-sm font-normal text-blue-400">(Trial)</span></p>
+                  <p className="text-xs text-muted-foreground">Free trial · No credit card required</p>
+                </div>
+              </div>
+
+              {trialEndsAt && (
+                <div className="rounded-xl bg-secondary/40 border border-border p-4 space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Trial expires</span>
+                    <span className="font-medium">{new Date(trialEndsAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Days remaining</span>
+                    <span className="font-medium">
+                      {Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))} days
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <Button size="sm" className="rounded-xl gap-2" onClick={() => navigate("/pricing")}>
+                <Sparkles size={14} />
+                Upgrade to Paid Plan
+              </Button>
+            </div>
           ) : currentPlan !== "free" ? (
             <div className="space-y-4">
               <div className="flex items-center gap-3">
