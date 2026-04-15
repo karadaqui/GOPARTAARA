@@ -258,7 +258,8 @@ const HeroSection = () => {
                   }`}
                 >
                   <Car size={14} />
-                  Reg Plate 🇬🇧
+                  Reg Plate
+                  <span className="text-[10px] bg-blue-900/40 border border-blue-500/30 text-blue-300 px-1.5 py-0.5 rounded font-bold tracking-wider leading-none">UK</span>
                 </button>
                 <button
                   onClick={() => setActiveTab("vin")}

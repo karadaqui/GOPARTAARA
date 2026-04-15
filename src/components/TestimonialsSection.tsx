@@ -2,18 +2,18 @@ import { Star } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const testimonials = [
-  { name: "James T.", location: "Leeds, UK", flag: "🇬🇧", rating: 5, text: "PARTARA saved me £40 on my BMW's brake pads. Found the same part cheaper than my local garage quoted. Unbelievable.", avatar: "J" },
-  { name: "Sarah M.", location: "Manchester, UK", flag: "🇬🇧", rating: 5, text: "The photo search is incredible. I had no idea what a part was called, took a photo and found it in seconds.", avatar: "S" },
-  { name: "Mike R.", location: "Birmingham, UK", flag: "🇬🇧", rating: 4, text: "As a DIY mechanic I use PARTARA every week. It's become my go-to before buying any part.", avatar: "M" },
-  { name: "Thomas K.", location: "Berlin, Germany", flag: "🇩🇪", rating: 5, text: "Searched for Audi A4 parts across multiple suppliers in one place. Saved hours of research. Brilliant tool.", avatar: "T" },
-  { name: "Emma L.", location: "Sydney, Australia", flag: "🇦🇺", rating: 4, text: "Found rare parts for my classic car that I couldn't find anywhere else. The reg plate lookup is super accurate.", avatar: "E" },
-  { name: "Carlos M.", location: "Madrid, Spain", flag: "🇪🇸", rating: 5, text: "Price alerts saved me €60 on a water pump. Got the notification the same day the price dropped. Amazing.", avatar: "C" },
-  { name: "Luca B.", location: "Milan, Italy", flag: "🇮🇹", rating: 5, text: "Compared prices from 6 different suppliers in 30 seconds. Ended up saving €45 on brake discs.", avatar: "L" },
-  { name: "David W.", location: "Glasgow, UK", flag: "🇬🇧", rating: 4, text: "The marketplace is great for finding secondhand parts locally. Listed my old parts and sold them within 3 days.", avatar: "D" },
-  { name: "Priya S.", location: "Toronto, Canada", flag: "🇨🇦", rating: 5, text: "Finally a car parts site that actually works on mobile. Found what I needed in under a minute.", avatar: "P" },
-  { name: "François D.", location: "Lyon, France", flag: "🇫🇷", rating: 4, text: "The TecDoc integration means I always find the right part for my exact vehicle. No more ordering wrong parts.", avatar: "F" },
-  { name: "Ahmed R.", location: "Dubai, UAE", flag: "🇦🇪", rating: 5, text: "Used it to find parts for my Range Rover. The global eBay search is exactly what I needed.", avatar: "A" },
-  { name: "Sophie H.", location: "Amsterdam, Netherlands", flag: "🇳🇱", rating: 5, text: "My garage uses PARTARA daily now. We save at least 2 hours per week on parts research.", avatar: "S" },
+  { name: "James T.", location: "Leeds, UK", countryBadge: "UK", rating: 5, text: "PARTARA saved me £40 on my BMW's brake pads. Found the same part cheaper than my local garage quoted. Unbelievable.", avatar: "J" },
+  { name: "Sarah M.", location: "Manchester, UK", countryBadge: "UK", rating: 5, text: "The photo search is incredible. I had no idea what a part was called, took a photo and found it in seconds.", avatar: "S" },
+  { name: "Mike R.", location: "Birmingham, UK", countryBadge: "UK", rating: 4, text: "As a DIY mechanic I use PARTARA every week. It's become my go-to before buying any part.", avatar: "M" },
+  { name: "Thomas K.", location: "Berlin, Germany", countryBadge: "DE", rating: 5, text: "Searched for Audi A4 parts across multiple suppliers in one place. Saved hours of research. Brilliant tool.", avatar: "T" },
+  { name: "Emma L.", location: "Sydney, Australia", countryBadge: "AU", rating: 4, text: "Found rare parts for my classic car that I couldn't find anywhere else. The reg plate lookup is super accurate.", avatar: "E" },
+  { name: "Carlos M.", location: "Madrid, Spain", countryBadge: "ES", rating: 5, text: "Price alerts saved me €60 on a water pump. Got the notification the same day the price dropped. Amazing.", avatar: "C" },
+  { name: "Luca B.", location: "Milan, Italy", countryBadge: "IT", rating: 5, text: "Compared prices from 6 different suppliers in 30 seconds. Ended up saving €45 on brake discs.", avatar: "L" },
+  { name: "David W.", location: "Glasgow, UK", countryBadge: "UK", rating: 4, text: "The marketplace is great for finding secondhand parts locally. Listed my old parts and sold them within 3 days.", avatar: "D" },
+  { name: "Priya S.", location: "Toronto, Canada", countryBadge: "CA", rating: 5, text: "Finally a car parts site that actually works on mobile. Found what I needed in under a minute.", avatar: "P" },
+  { name: "François D.", location: "Lyon, France", countryBadge: "FR", rating: 4, text: "The TecDoc integration means I always find the right part for my exact vehicle. No more ordering wrong parts.", avatar: "F" },
+  { name: "Ahmed R.", location: "Dubai, UAE", countryBadge: "UAE", rating: 5, text: "Used it to find parts for my Range Rover. The global eBay search is exactly what I needed.", avatar: "A" },
+  { name: "Sophie H.", location: "Amsterdam, Netherlands", countryBadge: "NL", rating: 5, text: "My garage uses PARTARA daily now. We save at least 2 hours per week on parts research.", avatar: "S" },
 ];
 
 const TestimonialCard = ({ t }: { t: typeof testimonials[0] }) => (
