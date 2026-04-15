@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import {
   Search, ExternalLink, Loader2, Camera, Car, Scale, Star,
   Truck, Bookmark, BookmarkCheck, Clock,
-  Heart, AlertCircle, Zap,
+  Heart, AlertCircle, Zap, Globe,
   ChevronLeft, ChevronRight, ChevronDown, Pencil, Calendar, Palette, Fuel, Gauge,
   ShieldCheck, Receipt, Check,
 } from "lucide-react";
