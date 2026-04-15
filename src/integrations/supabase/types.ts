@@ -743,6 +743,7 @@ export type Database = {
           seller_bank_details: Json | null
           subscription_period: string
           subscription_plan: Database["public"]["Enums"]["subscription_plan"]
+          trial_ends_at: string | null
           updated_at: string
           user_id: string
         }
@@ -760,6 +761,7 @@ export type Database = {
           seller_bank_details?: Json | null
           subscription_period?: string
           subscription_plan?: Database["public"]["Enums"]["subscription_plan"]
+          trial_ends_at?: string | null
           updated_at?: string
           user_id: string
         }
@@ -777,6 +779,7 @@ export type Database = {
           seller_bank_details?: Json | null
           subscription_period?: string
           subscription_plan?: Database["public"]["Enums"]["subscription_plan"]
+          trial_ends_at?: string | null
           updated_at?: string
           user_id?: string
         }
