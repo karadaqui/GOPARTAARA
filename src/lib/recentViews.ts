@@ -1,13 +1,13 @@
 const STORAGE_KEY = "partara_recent_views";
-const MAX_ITEMS = 10;
+const MAX_ITEMS = 20;
 
 export interface RecentViewItem {
   id: string;
   title: string;
   price: string;
+  currency: string;
   image: string;
   url: string;
-  supplier: string;
   viewedAt: string;
 }
 

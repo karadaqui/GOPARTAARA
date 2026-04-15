@@ -1,23 +1,18 @@
 import { useState, useEffect } from "react";
-import { ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import {
   getRecentViews,
   clearRecentViews as clearStorage,
-  formatTimeAgo,
   type RecentViewItem,
 } from "@/lib/recentViews";
 
-interface RecentlyViewedProps {
-  maxItems?: number;
-}
-
-const RecentlyViewed = ({ maxItems }: RecentlyViewedProps) => {
+const RecentlyViewed = () => {
   const [items, setItems] = useState<RecentViewItem[]>([]);
 
   useEffect(() => {
-    const views = getRecentViews();
-    setItems(maxItems ? views.slice(0, maxItems) : views);
-  }, [maxItems]);
+    setItems(getRecentViews());
+  }, []);
 
   if (items.length === 0) return null;
 
@@ -26,6 +21,8 @@ const RecentlyViewed = ({ maxItems }: RecentlyViewedProps) => {
     setItems([]);
   };
 
+  const currencySymbol = (c: string) => (c === "GBP" ? "£" : c === "EUR" ? "€" : "$");
+
   return (
     <section className="py-12 px-4">
       <div className="container max-w-6xl mx-auto">
@@ -33,23 +30,33 @@ const RecentlyViewed = ({ maxItems }: RecentlyViewedProps) => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <p className="text-xs font-semibold tracking-[0.25em] uppercase text-primary/60 mb-1">
-              CONTINUE WHERE YOU LEFT OFF
+              CONTINUE BROWSING
             </p>
             <h2 className="text-xl font-bold text-foreground tracking-tight">
               Recently Viewed
             </h2>
           </div>
-          <button
-            onClick={handleClear}
-            className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-          >
-            Clear all
-          </button>
+          <div className="flex items-center gap-4">
+            {items.length > 5 && (
+              <Link
+                to="/recent"
+                className="text-xs text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
+              >
+                View all {items.length} parts <ArrowRight size={12} />
+              </Link>
+            )}
+            <button
+              onClick={handleClear}
+              className="text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            >
+              Clear
+            </button>
+          </div>
         </div>
 
         {/* Horizontal scroll */}
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-          {items.map((item) => (
+          {items.slice(0, 5).map((item) => (
             <a
               key={item.id}
               href={item.url}
@@ -65,11 +72,6 @@ const RecentlyViewed = ({ maxItems }: RecentlyViewedProps) => {
                   className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
                   loading="lazy"
                 />
-                <div className="absolute top-2 left-2 bg-background/60 backdrop-blur-sm px-2 py-0.5 rounded-full">
-                  <span className="text-[10px] text-muted-foreground font-medium">
-                    {item.supplier}
-                  </span>
-                </div>
               </div>
 
               {/* Info */}
@@ -77,9 +79,9 @@ const RecentlyViewed = ({ maxItems }: RecentlyViewedProps) => {
                 <p className="text-xs text-muted-foreground font-medium leading-snug line-clamp-2 mb-1.5 group-hover:text-foreground transition-colors">
                   {item.title}
                 </p>
-                <p className="text-sm font-bold text-foreground">{item.price}</p>
-                <p className="text-[10px] text-muted-foreground/50 mt-0.5">
-                  {formatTimeAgo(item.viewedAt)}
+                <p className="text-sm font-bold text-foreground">
+                  {currencySymbol(item.currency)}
+                  {parseFloat(item.price).toFixed(2)}
                 </p>
               </div>
             </a>

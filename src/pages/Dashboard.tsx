@@ -22,7 +22,7 @@ import PrioritySupportButton from "@/components/dashboard/PrioritySupportButton"
 import ComingSoonFeatures from "@/components/dashboard/ComingSoonFeatures";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import RecentlyViewed from "@/components/RecentlyViewed";
+
 
 type SubStatus = {
   subscribed: boolean;
