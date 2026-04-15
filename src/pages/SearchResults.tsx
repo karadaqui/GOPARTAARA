@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { sanitizeInput, checkRateLimit, getCachedSearch, setCachedSearch } from "@/lib/sanitize";
 import { buildEbayAffiliateUrl } from "@/lib/ebayAffiliate";
+import { getCountryFromVIN, type VinCountryInfo } from "@/lib/vinCountry";
 
 import { useUserPlan } from "@/hooks/useUserPlan";
 import UpgradeModal from "@/components/UpgradeModal";
@@ -14,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import {
   Search, ExternalLink, Loader2, Camera, Car, Scale, Star,
   Truck, Bookmark, BookmarkCheck, Clock,
-  Heart, AlertCircle, Zap,
+  Heart, AlertCircle, Zap, Globe,
   ChevronLeft, ChevronRight, ChevronDown, Pencil, Calendar, Palette, Fuel, Gauge,
   ShieldCheck, Receipt, Check,
 } from "lucide-react";
@@ -269,6 +270,7 @@ const SearchResults = () => {
   const [pendingSearchQuery, setPendingSearchQuery] = useState("");
   const isFromGarage = searchParams.get("fromGarage") === "true";
   const [garageVehicleLabel, setGarageVehicleLabel] = useState<string | null>(null);
+  const [vinCountryInfo, setVinCountryInfo] = useState<VinCountryInfo | null>(null);
 
 
   // ── Filter & Sort State ──
@@ -308,18 +310,24 @@ const SearchResults = () => {
 
   useEffect(() => {
     const v = searchParams.get("vehicle");
-    const isVin = !!searchParams.get("vin");
+    const vinParam = searchParams.get("vin");
+    const isVin = !!vinParam;
     if (v) {
       try {
         const parsed = JSON.parse(decodeURIComponent(v));
         setVehicleInfo(parsed);
-        // VIN searches already have model — skip model input prompt
         if (isVin || parsed.model) {
           setVehicleModelConfirmed(true);
+        }
+        if (isVin && vinParam) {
+          setVinCountryInfo(getCountryFromVIN(vinParam));
+        } else {
+          setVinCountryInfo(null);
         }
       } catch { }
     } else {
       setVehicleInfo(null);
+      setVinCountryInfo(null);
     }
   }, [searchParams]);
 
@@ -355,7 +363,7 @@ const SearchResults = () => {
               query: searchQuery,
               category: selectedCategory || undefined,
               offset,
-              marketplace: country.ebayMarketplace,
+              marketplace: vinCountryInfo?.ebayMarketplace || country.ebayMarketplace,
             };
             if (conditionFilter !== "All") body.conditionFilter = conditionFilter;
             if (shippingFilter !== "All") body.shippingFilter = shippingFilter;
@@ -403,7 +411,7 @@ const SearchResults = () => {
 
     return () => { cancelled = true; clearTimeout(debounceTimer); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter]);
+  }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter, vinCountryInfo]);
 
 
   // ── Saved parts ──
@@ -728,6 +736,8 @@ const SearchResults = () => {
                   }
                   const vehicle = data.vehicle;
                   setVinVehicle(vehicle);
+                  const vinCountry = getCountryFromVIN(cleaned);
+                  setVinCountryInfo(vinCountry);
                   const sq = vehicle.model
                     ? `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim()
                     : `${vehicle.make} ${vehicle.year}`.trim();
@@ -813,6 +823,24 @@ const SearchResults = () => {
 
         {activeQuery ? (
           <>
+            {/* VIN Country Detection Banner */}
+            {vinCountryInfo && (
+              <div className="mb-4 rounded-xl border border-white/[0.06] bg-zinc-900/60 px-4 py-3 flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <Globe size={16} className="text-zinc-400 shrink-0" />
+                  <span className="text-sm text-zinc-300">
+                    Vehicle manufactured in <span className="font-semibold text-white">{vinCountryInfo.name}</span>
+                  </span>
+                </div>
+                <span className="text-xs text-zinc-500">
+                  Showing results from <span className="font-medium text-zinc-300">{vinCountryInfo.ebayDomain}</span>
+                  {vinCountryInfo.fallback && (
+                    <span className="text-amber-400/80 ml-1.5">— {vinCountryInfo.fallbackNote}</span>
+                  )}
+                </span>
+              </div>
+            )}
+
             {/* Vehicle Info Card */}
             {vehicleInfo && (
               <div className="mb-8 rounded-2xl bg-[#111] border border-white/[0.08] overflow-hidden">
