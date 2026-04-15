@@ -157,7 +157,9 @@ const HeroSection = () => {
       }
       const vehicle = data.vehicle;
       setVinVehicle(vehicle);
-      const searchQuery = `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim();
+      const searchQuery = vehicle.model
+        ? `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim()
+        : `${vehicle.make} ${vehicle.year}`.trim();
       navigate(`/search?q=${encodeURIComponent(searchQuery)}&vin=${cleaned}&vehicle=${encodeURIComponent(JSON.stringify(vehicle))}`);
     } catch {
       setVinError("Failed to decode VIN. Please try again.");
