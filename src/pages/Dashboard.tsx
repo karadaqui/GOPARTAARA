@@ -279,6 +279,8 @@ const Dashboard = () => {
   const isEliteUser = userPlan.isElite;
   const isPro = userPlan.isPro;
   const isFree = userPlan.isFree;
+  const isTrial = userPlan.isTrial;
+  const trialEndsAt = userPlan.trialEndsAt;
 
   // For admin users, show full email; for regular users, require display_name
   const hasDisplayName = !!profile?.display_name?.trim();
@@ -308,6 +310,7 @@ const Dashboard = () => {
   const planBadge = () => {
     if (currentPlan === "admin") return <span className="px-2.5 py-0.5 rounded-full bg-destructive/15 border border-destructive/30 text-destructive text-xs font-semibold">ADMIN</span>;
     if (currentPlan === "elite") return <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-xs font-semibold">ELITE ⭐</span>;
+    if (currentPlan === "pro" && isTrial) return <span className="px-2.5 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs font-semibold">PRO TRIAL</span>;
     if (currentPlan === "pro") return <span className="px-2.5 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs font-semibold">PRO</span>;
     return <span className="px-2.5 py-0.5 rounded-full bg-muted border border-border text-muted-foreground text-xs font-semibold">FREE PLAN</span>;
   };
