@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Bell, Trash2, ExternalLink, Loader2, CheckCircle2, Clock, Package } from "lucide-react";
+import { Loader2, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -70,7 +70,7 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
     }
   };
 
-  const activeCount = alerts.filter((a) => a.active && !a.triggered).length;
+  
 
   return (
     <div className="glass rounded-2xl p-4 sm:p-8">
