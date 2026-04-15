@@ -957,6 +957,16 @@ const SearchResults = () => {
                           </div>
                           <div className="flex flex-col sm:flex-row gap-2">
                             <a href={buildEbayAffiliateUrl(item.url)} target="_blank" rel="noopener noreferrer"
+                              onClick={() => {
+                                addRecentView({
+                                  id: item.id,
+                                  title: item.partName,
+                                  price: item.price,
+                                  image: item.imageUrl,
+                                  url: buildEbayAffiliateUrl(item.url),
+                                  supplier: "eBay",
+                                });
+                              }}
                               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150"
                               title="Buying through this link supports PARTARA at no extra cost to you 💙">
                               <ExternalLink size={14} /> View on eBay

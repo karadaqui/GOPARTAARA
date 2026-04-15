@@ -15,6 +15,7 @@ import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
 import WelcomeModal from "@/components/WelcomeModal";
 import LocationBanner from "@/components/LocationBanner";
+import RecentlyViewed from "@/components/RecentlyViewed";
 
 const Index = () => {
   const location = useLocation();
@@ -57,7 +58,8 @@ const Index = () => {
       <HowItWorksSection />
       <TestimonialsSection />
       <SuppliersSection />
-      <PricingSection />
+      <RecentlyViewed />
+      <FeaturesSection />
       
       <Footer />
       <BackToTop />
