@@ -22,6 +22,7 @@ import PrioritySupportButton from "@/components/dashboard/PrioritySupportButton"
 import ComingSoonFeatures from "@/components/dashboard/ComingSoonFeatures";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import RecentlyViewed from "@/components/RecentlyViewed";
 
 type SubStatus = {
   subscribed: boolean;
@@ -410,7 +411,9 @@ const Dashboard = () => {
           )}
         </div>
 
-        {/* Section 4 — Referral */}
+        {/* Recently Viewed */}
+        <RecentlyViewed maxItems={5} />
+
         <div className="glass rounded-2xl p-6 sm:p-8 mb-6">
           <h2 className="font-display text-lg font-semibold mb-1">🎁 Refer a Friend — Give 1 Month Pro, Get 1 Month Pro</h2>
           <p className="text-sm text-muted-foreground mb-4">
