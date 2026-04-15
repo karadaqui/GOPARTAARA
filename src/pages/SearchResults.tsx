@@ -37,6 +37,7 @@ import CountryFlag from "@/components/CountryFlag";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import FilterBar from "@/components/FilterBar";
 import TecDocPartsSection from "@/components/TecDocPartsSection";
+import { findDealByBrand, EBAY_ALL_DEALS_URL } from "@/data/ebayDeals";
 
 
 // ── Twemoji helper ──
@@ -1176,7 +1177,6 @@ const SearchResults = () => {
 
                 {/* eBay Deals Banner */}
                 {activeQuery && (() => {
-                  const { findDealByBrand, EBAY_ALL_DEALS_URL } = require("@/data/ebayDeals");
                   const matched = findDealByBrand(activeQuery);
                   return matched ? (
                     <a href={matched.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 mt-4 rounded-xl bg-gradient-to-r from-green-900/20 to-zinc-900/50 border border-green-700/20 hover:border-green-600/30 transition-all group">
