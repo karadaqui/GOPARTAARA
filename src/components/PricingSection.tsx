@@ -173,10 +173,66 @@ const PricingSection = () => {
 
   const isLoading = (id: string | null) => id !== null && loadingId === id;
 
+  const formatDate = (iso: string) => {
+    try {
+      return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+    } catch { return iso; }
+  };
+
+  const applyPromo = async () => {
+    if (!user) { navigate("/auth"); return; }
+    if (promoApplied) return;
+    setPromoLoading(true);
+    try {
+      if (promoCode === "COMMUNITY") {
+        const trialEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+        await supabase.from("profiles").update({
+          subscription_plan: "pro" as any,
+          subscription_period: "trial",
+          trial_ends_at: trialEnd,
+        }).eq("user_id", user.id);
+        toast({ title: "🎉 1 month Pro activated!", description: "Enjoy PARTARA Pro free for 30 days." });
+        setPromoApplied(true);
+        setTrialInfo({ isOnTrial: true, trialEndsAt: trialEnd });
+      } else {
+        toast({ title: "Invalid promo code", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Error applying promo", variant: "destructive" });
+    }
+    setPromoLoading(false);
+  };
 
   return (
     <section id="pricing" className="py-24">
       <div className="container max-w-5xl px-4 mx-auto">
+        {/* Trial banner for logged-in trial users */}
+        {trialInfo.isOnTrial && trialInfo.trialEndsAt && (
+          <div className="mb-8 rounded-2xl border border-primary/20 bg-primary/5 p-5 text-center">
+            <p className="text-sm font-semibold text-foreground">
+              🎉 You're on Pro trial — free until {formatDate(trialInfo.trialEndsAt)}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              After your trial, you'll move to Free unless you subscribe.
+            </p>
+          </div>
+        )}
+
+        {/* Banner for non-logged-in users */}
+        {!user && (
+          <div className="mb-8 rounded-2xl border border-primary/20 bg-primary/5 p-5 text-center">
+            <p className="text-sm font-semibold text-foreground">
+              🎁 New to PARTARA? First month Pro is FREE
+            </p>
+            <p className="text-xs text-muted-foreground mt-1 mb-3">
+              Sign up today — no credit card required.
+            </p>
+            <Button size="sm" className="rounded-xl" onClick={() => navigate("/auth")}>
+              Claim Free Month →
+            </Button>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center mb-8 space-y-4">
           <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
