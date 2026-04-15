@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Car, Plus, Trash2, Loader2, X, Search } from "lucide-react";
+import { Car, Plus, Trash2, Loader2, X, Search, CheckCircle2 } from "lucide-react";
 import VehicleNotes from "@/components/dashboard/VehicleNotes";
 import VehicleSpecsCard from "@/components/dashboard/VehicleSpecsCard";
 import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
@@ -47,6 +47,9 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
   const [vinInput, setVinInput] = useState("");
   const [vinLoading, setVinLoading] = useState(false);
   const [vinError, setVinError] = useState("");
+
+  // "none" = manual entry, "plate" = auto-filled from DVLA, "vin" = auto-filled from NHTSA
+  const [lookupSource, setLookupSource] = useState<"none" | "plate" | "vin">("none");
 
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
@@ -106,8 +109,74 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
     setYear("");
     setEngineSize("");
     setNickname("");
+    setRegPlate("");
+    setVinInput("");
+    setRegError(false);
+    setVinError("");
+    setLookupSource("none");
     setShowForm(false);
   };
+
+  const handlePlateLookup = async () => {
+    const cleaned = regPlate.replace(/\s/g, "").toUpperCase();
+    if (cleaned.length < 2) return;
+    setRegLoading(true);
+    setRegError(false);
+    try {
+      const { data, error } = await supabase.functions.invoke("vehicle-lookup", {
+        body: { registrationNumber: cleaned },
+      });
+      const v = data?.vehicle;
+      if (error || data?.error || !v?.make) {
+        setRegError(true);
+      } else {
+        setMake(v.make || "");
+        setModel(v.model || "");
+        setYear(v.yearOfManufacture?.toString() || "");
+        setEngineSize(v.engineCapacity ? `${(parseInt(v.engineCapacity) / 1000).toFixed(1)}L` : "");
+        setLookupSource("plate");
+        toast({ title: "Vehicle found", description: `${v.make} (${v.yearOfManufacture || ""}) ${v.colour || ""}`.trim() });
+      }
+    } catch {
+      setRegError(true);
+    } finally {
+      setRegLoading(false);
+    }
+  };
+
+  const handleVinLookup = async () => {
+    const cleaned = vinInput.replace(/\s/g, "").toUpperCase();
+    if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(cleaned)) { setVinError("Invalid VIN format"); return; }
+    setVinLoading(true);
+    setVinError("");
+    try {
+      const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${cleaned}?format=json`);
+      const data = await response.json();
+      const results = data.Results;
+      const getValue = (variable: string) => {
+        const item = results.find((r: any) => r.Variable === variable);
+        return (item?.Value && item.Value !== "Not Applicable" && item.Value !== "") ? item.Value : null;
+      };
+      const vMake = getValue("Make");
+      const vModel = getValue("Model");
+      const vYear = getValue("ModelYear");
+      if (!vMake) { setVinError("VIN not found"); return; }
+      setMake(vMake);
+      setModel(vModel || "");
+      setYear(vYear || "");
+      const displacement = getValue("DisplacementL");
+      if (displacement) setEngineSize(`${parseFloat(displacement).toFixed(1)}L`);
+      setLookupSource("vin");
+      toast({ title: "VIN decoded", description: `${vMake} ${vModel || ""} (${vYear || ""})` });
+    } catch {
+      setVinError("Failed to decode VIN");
+    } finally {
+      setVinLoading(false);
+    }
+  };
+
+  // When auto-filled via lookup, use plain text inputs so any value displays correctly
+  const isAutoFilled = lookupSource !== "none";
 
   return (
     <div className="glass rounded-2xl p-8">
@@ -141,80 +210,6 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
         <div className="mb-6 p-4 rounded-xl bg-secondary/50 border border-border space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
           <p className="text-sm font-medium text-foreground">Add a vehicle</p>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Make *</label>
-              <Select value={make} onValueChange={(v) => { setMake(v); setModel(""); setYear(""); }}>
-                <SelectTrigger className="rounded-xl bg-secondary border-border h-10">
-                  <SelectValue placeholder="Select make" />
-                </SelectTrigger>
-                <SelectContent>
-                  {getMakes().map((m) => (
-                    <SelectItem key={m} value={m}>{m}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Model *</label>
-              {make && getModels(make).length > 0 ? (
-                <Select value={model} onValueChange={(v) => { setModel(v); setYear(""); }}>
-                  <SelectTrigger className="rounded-xl bg-secondary border-border h-10">
-                    <SelectValue placeholder="Select model" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getModels(make).map((m) => (
-                      <SelectItem key={m} value={m}>{m}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <Input
-                  value={model}
-                  onChange={(e) => setModel(e.target.value)}
-                  placeholder="e.g. Model name"
-                  className="rounded-xl bg-secondary border-border h-10"
-                />
-              )}
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Year *</label>
-              <Select value={year} onValueChange={setYear}>
-                <SelectTrigger className="rounded-xl bg-secondary border-border h-10">
-                  <SelectValue placeholder="Select year" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(make && model ? getYears(make, model) : getAllYears()).map((y) => (
-                    <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground mb-1 block">Engine Size</label>
-              <Select value={engineSize} onValueChange={setEngineSize}>
-                <SelectTrigger className="rounded-xl bg-secondary border-border h-10">
-                  <SelectValue placeholder="Optional" />
-                </SelectTrigger>
-                <SelectContent>
-                  {ENGINE_SIZES.map((es) => (
-                    <SelectItem key={es} value={es}>{es}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Nickname (optional)</label>
-            <Input
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              placeholder="e.g. My Daily Driver"
-              className="rounded-xl bg-secondary border-border h-10"
-            />
-          </div>
-
           {/* UK Number Plate Lookup */}
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">UK Number Plate Lookup</label>
@@ -231,31 +226,7 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
                 variant="outline"
                 className="rounded-xl h-10 px-3"
                 disabled={regLoading || !regPlate.trim()}
-                onClick={async () => {
-                  const cleaned = regPlate.replace(/\s/g, "").toUpperCase();
-                  if (cleaned.length < 2) return;
-                  setRegLoading(true);
-                  setRegError(false);
-                   try {
-                    const { data, error } = await supabase.functions.invoke("vehicle-lookup", {
-                      body: { registrationNumber: cleaned },
-                    });
-                    const v = data?.vehicle;
-                    if (error || data?.error || !v?.make) {
-                      setRegError(true);
-                    } else {
-                      setMake(v.make);
-                      setModel("");
-                      setYear(v.yearOfManufacture?.toString() || "");
-                      setEngineSize(v.engineCapacity ? `${(parseInt(v.engineCapacity) / 1000).toFixed(1)}L` : "");
-                      toast({ title: "Vehicle found", description: `${v.make} (${v.yearOfManufacture || ""}) ${v.colour || ""}`.trim() });
-                    }
-                  } catch {
-                    setRegError(true);
-                  } finally {
-                    setRegLoading(false);
-                  }
-                }}
+                onClick={handlePlateLookup}
               >
                 {regLoading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
               </Button>
@@ -304,40 +275,137 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
                 variant="outline"
                 className="rounded-xl h-10 px-3"
                 disabled={vinLoading || vinInput.length !== 17}
-                onClick={async () => {
-                  const cleaned = vinInput.replace(/\s/g, "").toUpperCase();
-                  if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(cleaned)) { setVinError("Invalid VIN format"); return; }
-                  setVinLoading(true); setVinError("");
-                  try {
-                    const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${cleaned}?format=json`);
-                    const data = await response.json();
-                    const results = data.Results;
-                    const getValue = (variable: string) => {
-                      const item = results.find((r: any) => r.Variable === variable);
-                      return (item?.Value && item.Value !== "Not Applicable" && item.Value !== "") ? item.Value : null;
-                    };
-                    const vMake = getValue("Make");
-                    const vModel = getValue("Model");
-                    const vYear = getValue("ModelYear");
-                    if (!vMake) { setVinError("VIN not found"); return; }
-                    setMake(vMake);
-                    if (vModel) setModel(vModel);
-                    if (vYear) setYear(vYear);
-                    const displacement = getValue("DisplacementL");
-                    if (displacement) setEngineSize(`${parseFloat(displacement).toFixed(1)}L`);
-                    toast({ title: "VIN decoded", description: `${vMake} ${vModel || ""} (${vYear || ""})` });
-                  } catch {
-                    setVinError("Failed to decode VIN");
-                  } finally {
-                    setVinLoading(false);
-                  }
-                }}
+                onClick={handleVinLookup}
               >
                 {vinLoading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
               </Button>
             </div>
             {vinError && <p className="text-[10px] text-destructive mt-1">{vinError}</p>}
             {!vinError && <p className="text-[10px] text-muted-foreground mt-1">🌍 Auto-fills make, model & year from VIN</p>}
+          </div>
+
+          {/* Success banner when auto-filled */}
+          {isAutoFilled && (
+            <p className="text-xs text-green-400 font-medium flex items-center gap-1.5">
+              <CheckCircle2 size={14} />
+              Vehicle found — details pre-filled below. Edit if needed.
+            </p>
+          )}
+
+          {/* Vehicle detail fields — text inputs when auto-filled, selects when manual */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Make *</label>
+              {isAutoFilled ? (
+                <Input
+                  value={make}
+                  onChange={(e) => setMake(e.target.value)}
+                  placeholder="e.g. Honda"
+                  className="rounded-xl bg-secondary border-border h-10"
+                />
+              ) : (
+                <Select value={make} onValueChange={(v) => { setMake(v); setModel(""); setYear(""); }}>
+                  <SelectTrigger className="rounded-xl bg-secondary border-border h-10">
+                    <SelectValue placeholder="Select make" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getMakes().map((m) => (
+                      <SelectItem key={m} value={m}>{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Model *</label>
+              {isAutoFilled ? (
+                <>
+                  <Input
+                    value={model}
+                    onChange={(e) => setModel(e.target.value)}
+                    placeholder="e.g. Civic, Golf, A3..."
+                    className="rounded-xl bg-secondary border-border h-10"
+                  />
+                  {lookupSource === "plate" && !model && (
+                    <p className="text-[10px] text-amber-400/80 mt-1">Model not available from DVLA — please enter manually</p>
+                  )}
+                </>
+              ) : (
+                make && getModels(make).length > 0 ? (
+                  <Select value={model} onValueChange={(v) => { setModel(v); setYear(""); }}>
+                    <SelectTrigger className="rounded-xl bg-secondary border-border h-10">
+                      <SelectValue placeholder="Select model" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getModels(make).map((m) => (
+                        <SelectItem key={m} value={m}>{m}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    value={model}
+                    onChange={(e) => setModel(e.target.value)}
+                    placeholder="e.g. Model name"
+                    className="rounded-xl bg-secondary border-border h-10"
+                  />
+                )
+              )}
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Year *</label>
+              {isAutoFilled ? (
+                <Input
+                  value={year}
+                  onChange={(e) => setYear(e.target.value)}
+                  placeholder="e.g. 2019"
+                  className="rounded-xl bg-secondary border-border h-10"
+                />
+              ) : (
+                <Select value={year} onValueChange={setYear}>
+                  <SelectTrigger className="rounded-xl bg-secondary border-border h-10">
+                    <SelectValue placeholder="Select year" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(make && model ? getYears(make, model) : getAllYears()).map((y) => (
+                      <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Engine Size</label>
+              {isAutoFilled ? (
+                <Input
+                  value={engineSize}
+                  onChange={(e) => setEngineSize(e.target.value)}
+                  placeholder="e.g. 2.0L"
+                  className="rounded-xl bg-secondary border-border h-10"
+                />
+              ) : (
+                <Select value={engineSize} onValueChange={setEngineSize}>
+                  <SelectTrigger className="rounded-xl bg-secondary border-border h-10">
+                    <SelectValue placeholder="Optional" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ENGINE_SIZES.map((es) => (
+                      <SelectItem key={es} value={es}>{es}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">Nickname (optional)</label>
+            <Input
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="e.g. My Daily Driver"
+              className="rounded-xl bg-secondary border-border h-10"
+            />
           </div>
 
           <Button onClick={handleAdd} disabled={saving} className="rounded-xl gap-2 w-full">
@@ -387,9 +455,7 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
                   <Trash2 size={14} />
                 </button>
               </div>
-              {/* Vehicle Specs from NHTSA + FuelEconomy */}
               <VehicleSpecsCard make={v.make} model={v.model} year={v.year} />
-              {/* Vehicle Notes — Business feature */}
               <BusinessFeatureGate isBusinessUser={isBusinessUser} label="Elite plan feature">
                 <VehicleNotes vehicleId={v.id} userId={userId} />
               </BusinessFeatureGate>
