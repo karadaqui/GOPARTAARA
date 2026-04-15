@@ -46,6 +46,7 @@ const SubscriptionPolicy = lazy(() => import("./pages/SubscriptionPolicy.tsx"));
 const CompleteProfile = lazy(() => import("./pages/CompleteProfile.tsx"));
 const Messages = lazy(() => import("./pages/Messages.tsx"));
 const ConfirmShopDelete = lazy(() => import("./pages/ConfirmShopDelete.tsx"));
+const RecentParts = lazy(() => import("./pages/RecentParts.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -92,6 +93,7 @@ const App = () => (
               <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
               <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
               <Route path="/confirm-shop-delete/:token" element={<ConfirmShopDelete />} />
+              <Route path="/recent" element={<RecentParts />} />
               <Route path="*" element={<NotFound />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
