@@ -294,6 +294,20 @@ const PricingSection = () => {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {individualPlans.map((plan) => {
             const effectivePriceId = annual && plan.annualPriceId ? plan.annualPriceId : plan.priceId;
+            
+            // Determine Pro button text based on trial status
+            let ctaText = plan.cta;
+            let ctaSubtext: string | undefined;
+            if (plan.name === "Pro") {
+              const hadTrial = trialInfo.isOnTrial || trialInfo.trialEndsAt !== null;
+              if (!user || !hadTrial) {
+                ctaText = "Start Free Month →";
+                ctaSubtext = "No credit card required";
+              } else {
+                ctaText = annual ? "Go Pro — £7.99/mo" : "Go Pro — £9.99/mo";
+              }
+            }
+            
             return (
               <PlanCard
                 key={plan.name}
@@ -304,11 +318,12 @@ const PricingSection = () => {
                 billedNote={annual ? plan.annualBilled : undefined}
                 period={plan.period}
                 features={plan.features}
-                cta={plan.cta}
+                cta={ctaText}
+                ctaSubtext={ctaSubtext}
                 popular={plan.popular}
                 loading={isLoading(effectivePriceId)}
                 slowWarning={slowWarning}
-                onSelect={() => startCheckout(effectivePriceId)}
+                onSelect={() => startCheckout(effectivePriceId, plan.name)}
               />
             );
           })}
@@ -435,6 +450,7 @@ interface PlanCardProps {
   searchFeatures?: string[];
   sellerFeatures?: string[];
   cta: string;
+  ctaSubtext?: string;
   popular: boolean;
   loading: boolean;
   slowWarning: boolean;
