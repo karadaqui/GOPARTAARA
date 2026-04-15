@@ -28,7 +28,7 @@ import VehicleExpiryEditor from "@/components/garage/VehicleExpiryEditor";
 import VehicleNotes from "@/components/dashboard/VehicleNotes";
 import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import { useUserPlan } from "@/hooks/useUserPlan";
-import { findDealByBrand } from "@/data/ebayDeals";
+import { findDealByBrand, isUKUser } from "@/data/ebayDeals";
 
 interface Vehicle {
   id: string;
