@@ -6,7 +6,6 @@ import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import {
-  getRecentViews,
   clearRecentViews,
   type RecentViewItem,
 } from "@/lib/recentViews";

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import {
-  getRecentViews,
   clearRecentViews as clearStorage,
   type RecentViewItem,
 } from "@/lib/recentViews";
