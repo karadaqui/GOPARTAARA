@@ -1,13 +1,15 @@
-import { Check, X, Loader2, Star, Zap, Shield, Building2 } from "lucide-react";
+import { Check, X, Loader2, Star, Zap, Shield, Building2, Gift, Sparkles } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, useEffect } from "react";
+import { toast as sonnerToast } from "sonner";
 
 /* ── Stripe IDs ─────────────────────────────────────────── */
 
@@ -130,6 +132,20 @@ const PricingSection = () => {
   const [slowWarning, setSlowWarning] = useState(false);
   const [annual, setAnnual] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [trialInfo, setTrialInfo] = useState<{ isOnTrial: boolean; trialEndsAt: string | null }>({ isOnTrial: false, trialEndsAt: null });
+
+  // Fetch trial info
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("subscription_period, trial_ends_at").eq("user_id", user.id).single().then(({ data }) => {
+      if (data?.subscription_period === "trial" && data?.trial_ends_at) {
+        setTrialInfo({ isOnTrial: true, trialEndsAt: data.trial_ends_at });
+      }
+    });
+  }, [user]);
 
   useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
 

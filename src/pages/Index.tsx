@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
+import FreeTrialBanner from "@/components/FreeTrialBanner";
 import EbayDealsSection from "@/components/EbayDealsSection";
 import AmazonDealsSection from "@/components/AmazonDealsSection";
 import FeaturesSection from "@/components/FeaturesSection";
@@ -9,13 +10,12 @@ import CommunityBanner from "@/components/CommunityBanner";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import SuppliersSection from "@/components/SuppliersSection";
-
 import PricingSection from "@/components/PricingSection";
-
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
 import WelcomeModal from "@/components/WelcomeModal";
+import TrialWelcomeModal from "@/components/TrialWelcomeModal";
 import LocationBanner from "@/components/LocationBanner";
 import RecentlyViewed from "@/components/RecentlyViewed";
 
@@ -55,6 +55,7 @@ const Index = () => {
       />
       <Navbar />
       <HeroSection />
+      <FreeTrialBanner />
       <EbayDealsSection />
       <AmazonDealsSection />
       <RecentlyViewed />
@@ -63,12 +64,12 @@ const Index = () => {
       <HowItWorksSection />
       <TestimonialsSection />
       <SuppliersSection />
-      <FeaturesSection />
       <PricingSection />
       
       <Footer />
       <BackToTop />
       <WelcomeModal />
+      <TrialWelcomeModal />
       <LocationBanner />
     </div>
   );
