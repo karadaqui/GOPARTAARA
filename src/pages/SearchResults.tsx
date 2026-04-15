@@ -363,7 +363,7 @@ const SearchResults = () => {
               query: searchQuery,
               category: selectedCategory || undefined,
               offset,
-              marketplace: country.ebayMarketplace,
+              marketplace: vinCountryInfo?.ebayMarketplace || country.ebayMarketplace,
             };
             if (conditionFilter !== "All") body.conditionFilter = conditionFilter;
             if (shippingFilter !== "All") body.shippingFilter = shippingFilter;
@@ -823,6 +823,24 @@ const SearchResults = () => {
 
         {activeQuery ? (
           <>
+            {/* VIN Country Detection Banner */}
+            {vinCountryInfo && (
+              <div className="mb-4 rounded-xl border border-white/[0.06] bg-zinc-900/60 px-4 py-3 flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <Globe size={16} className="text-zinc-400 shrink-0" />
+                  <span className="text-sm text-zinc-300">
+                    Vehicle manufactured in <span className="font-semibold text-white">{vinCountryInfo.name}</span>
+                  </span>
+                </div>
+                <span className="text-xs text-zinc-500">
+                  Showing results from <span className="font-medium text-zinc-300">{vinCountryInfo.ebayDomain}</span>
+                  {vinCountryInfo.fallback && (
+                    <span className="text-amber-400/80 ml-1.5">— {vinCountryInfo.fallbackNote}</span>
+                  )}
+                </span>
+              </div>
+            )}
+
             {/* Vehicle Info Card */}
             {vehicleInfo && (
               <div className="mb-8 rounded-2xl bg-[#111] border border-white/[0.08] overflow-hidden">
