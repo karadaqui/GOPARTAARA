@@ -1,17 +1,44 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserPlan } from "@/hooks/useUserPlan";
-import { Gift } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 const FreeTrialBanner = () => {
   const { user } = useAuth();
   const { isFree, loading } = useUserPlan();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [activating, setActivating] = useState(false);
 
-  // Show to non-logged-in users OR free plan users
   if (loading) return null;
   if (user && !isFree) return null;
+
+  const handleClick = async () => {
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+    setActivating(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("activate-trial", {
+        body: {},
+      });
+      if (error || data?.error) {
+        const msg = data?.error || error?.message || "Something went wrong";
+        toast({ title: msg, variant: "destructive" });
+      } else {
+        toast({ title: "🎉 1 month Pro activated!", description: "Enjoy PARTARA Pro free for 30 days." });
+        setTimeout(() => window.location.reload(), 1000);
+      }
+    } catch {
+      toast({ title: "Connection error. Please try again.", variant: "destructive" });
+    }
+    setActivating(false);
+  };
 
   return (
     <div className="container px-4 mx-auto mt-6 mb-2">
@@ -28,9 +55,11 @@ const FreeTrialBanner = () => {
           </div>
         </div>
         <Button
-          onClick={() => navigate(user ? "/pricing" : "/auth")}
+          onClick={handleClick}
+          disabled={activating}
           className="rounded-xl px-6 whitespace-nowrap min-h-[48px]"
         >
+          {activating ? <Loader2 size={16} className="animate-spin mr-2" /> : null}
           Claim Free Month →
         </Button>
       </div>

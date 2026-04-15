@@ -149,6 +149,37 @@ const PricingSection = () => {
 
   useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
 
+  const activateTrial = async (promoCode?: string) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({ title: "Please sign in first", variant: "destructive" });
+        navigate("/auth");
+        return false;
+      }
+      const { data, error } = await supabase.functions.invoke("activate-trial", {
+        body: { promoCode },
+      });
+      if (error || data?.error) {
+        const msg = data?.error || error?.message || "Something went wrong";
+        if (msg === "Trial already used") {
+          toast({ title: "You've already used your free trial", variant: "destructive" });
+        } else if (msg === "Invalid promo code") {
+          toast({ title: "Invalid promo code", variant: "destructive" });
+        } else {
+          toast({ title: msg, variant: "destructive" });
+        }
+        return false;
+      }
+      toast({ title: "🎉 1 month Pro activated!", description: "Enjoy PARTARA Pro free for 30 days." });
+      setTimeout(() => window.location.reload(), 1000);
+      return true;
+    } catch {
+      toast({ title: "Connection error. Please try again.", variant: "destructive" });
+      return false;
+    }
+  };
+
   const startCheckout = async (priceId: string | null, planName?: string) => {
     if (!priceId) {
       toast({ title: "Free plan", description: "You're already on the Free plan!" });
@@ -158,30 +189,11 @@ const PricingSection = () => {
 
     // For Pro plan, check if user can get a free trial first
     if (planName === "Pro") {
-      try {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("subscription_plan, subscription_period, trial_ends_at")
-          .eq("user_id", user.id)
-          .single();
-
-        const hadTrial = profile?.subscription_period === "trial" || profile?.trial_ends_at !== null;
-
-        if (!hadTrial) {
-          const trialEnd = new Date();
-          trialEnd.setDate(trialEnd.getDate() + 30);
-          const { error } = await supabase.from("profiles").update({
-            subscription_plan: "pro" as any,
-            subscription_period: "trial",
-            trial_ends_at: trialEnd.toISOString(),
-          }).eq("user_id", user.id);
-          if (!error) {
-            toast({ title: "🎉 Welcome to Pro!", description: "Free for 30 days — no card needed." });
-            setTimeout(() => window.location.reload(), 1000);
-            return;
-          }
-        }
-      } catch { /* fall through to Stripe */ }
+      const hadTrial = trialInfo.isOnTrial || trialInfo.trialEndsAt !== null;
+      if (!hadTrial) {
+        await activateTrial();
+        return;
+      }
     }
 
     setLoadingId(priceId);
@@ -215,26 +227,9 @@ const PricingSection = () => {
       return;
     }
     if (promoApplied) return;
-    if (promoCode.trim().toUpperCase() !== "COMMUNITY") {
-      toast({ title: "Invalid promo code", variant: "destructive" });
-      return;
-    }
     setPromoLoading(true);
-    try {
-      const trialEnd = new Date();
-      trialEnd.setDate(trialEnd.getDate() + 30);
-      const { error } = await supabase.from("profiles").update({
-        subscription_plan: "pro" as any,
-        subscription_period: "trial",
-        trial_ends_at: trialEnd.toISOString(),
-      }).eq("user_id", user.id);
-      if (error) throw error;
-      toast({ title: "🎉 1 month Pro activated!", description: "Enjoy PARTARA Pro free for 30 days." });
-      setPromoApplied(true);
-      setTimeout(() => window.location.reload(), 1500);
-    } catch {
-      toast({ title: "Something went wrong. Try again.", variant: "destructive" });
-    }
+    const success = await activateTrial(promoCode.trim());
+    if (success) setPromoApplied(true);
     setPromoLoading(false);
   };
 
