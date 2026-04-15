@@ -100,7 +100,7 @@ export const EBAY_DEALS: EbayDeal[] = [
     type: 'tools',
     brand: null,
     label: 'Car Technology',
-    discount: 'Top deals',
+    discount: 'Up to 50% off',
     description: 'Dash cams, sat navs & in-car tech',
     expiryDate: null,
     url: withEbayAffiliate('https://www.ebay.co.uk/e/motors/in-car-technology-deals'),
