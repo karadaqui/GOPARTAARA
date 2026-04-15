@@ -236,18 +236,19 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
                   if (cleaned.length < 2) return;
                   setRegLoading(true);
                   setRegError(false);
-                  try {
+                   try {
                     const { data, error } = await supabase.functions.invoke("vehicle-lookup", {
                       body: { registrationNumber: cleaned },
                     });
-                    if (error || data?.error || !data?.make) {
+                    const v = data?.vehicle;
+                    if (error || data?.error || !v?.make) {
                       setRegError(true);
                     } else {
-                      setMake(data.make);
-                      setModel(data.model || "");
-                      setYear(data.yearOfManufacture?.toString() || "");
-                      setEngineSize(data.engineCapacity ? `${(parseInt(data.engineCapacity) / 1000).toFixed(1)}L` : "");
-                      toast({ title: "Vehicle found", description: `${data.make} ${data.model} (${data.yearOfManufacture})` });
+                      setMake(v.make);
+                      setModel("");
+                      setYear(v.yearOfManufacture?.toString() || "");
+                      setEngineSize(v.engineCapacity ? `${(parseInt(v.engineCapacity) / 1000).toFixed(1)}L` : "");
+                      toast({ title: "Vehicle found", description: `${v.make} (${v.yearOfManufacture || ""}) ${v.colour || ""}`.trim() });
                     }
                   } catch {
                     setRegError(true);
