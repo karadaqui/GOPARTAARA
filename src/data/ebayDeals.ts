@@ -99,7 +99,7 @@ export const EBAY_DEALS: EbayDeal[] = [
     id: 'all-deals',
     type: 'all',
     brand: null,
-    label: 'All eBay UK Deals',
+    label: 'All automotive eBay UK Deals',
     discount: 'Browse every deal',
     description: 'Full automotive deals page',
     expiryDate: null,
