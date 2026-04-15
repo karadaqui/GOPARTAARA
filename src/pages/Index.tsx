@@ -53,12 +53,12 @@ const Index = () => {
       />
       <Navbar />
       <HeroSection />
+      <RecentlyViewed />
       <FeaturesSection />
       <CommunityBanner />
       <HowItWorksSection />
       <TestimonialsSection />
       <SuppliersSection />
-      <RecentlyViewed />
       <FeaturesSection />
       <PricingSection />
       

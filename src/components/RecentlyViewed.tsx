@@ -76,6 +76,7 @@ const RecentlyViewed = () => {
                 <img
                   src={item.image}
                   alt={item.title}
+                  onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
                   className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
                   loading="lazy"
                 />
@@ -87,8 +88,9 @@ const RecentlyViewed = () => {
                   {item.title}
                 </p>
                 <p className="text-sm font-bold text-foreground">
-                  {currencySymbol(item.currency)}
-                  {parseFloat(item.price).toFixed(2)}
+                  {parseFloat(item.price) > 0
+                    ? `${currencySymbol(item.currency)}${parseFloat(item.price).toFixed(2)}`
+                    : 'View Price'}
                 </p>
               </div>
             </a>

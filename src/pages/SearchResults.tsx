@@ -962,18 +962,15 @@ const SearchResults = () => {
                                 try {
                                   const stored = localStorage.getItem('partara_recent_views');
                                   const existing = stored ? JSON.parse(stored) : [];
-                                  const itemId = String(item.itemId || item.id || '');
+                                  const itemId = String(item.id || Math.random());
                                   const filtered = existing.filter((i: any) => String(i.id) !== itemId);
-                                  const price = item.sellingStatus?.currentPrice?.[0]?.['__value__'] || '0';
-                                  const currency = item.sellingStatus?.currentPrice?.[0]?.['@currencyId'] || 'GBP';
-                                  const image = Array.isArray(item.galleryURL) ? item.galleryURL[0] : (item.galleryURL || '');
                                   const newItem = {
                                     id: itemId,
-                                    title: item.title || '',
-                                    price: String(price),
-                                    currency: currency,
-                                    image: image,
-                                    url: buildEbayAffiliateUrl(item.viewItemURL || item.url || ''),
+                                    title: item.partName || 'Car Part',
+                                    price: String(item.price || '0'),
+                                    currency: 'GBP',
+                                    image: item.imageUrl || '',
+                                    url: buildEbayAffiliateUrl(item.url || ''),
                                     viewedAt: new Date().toISOString()
                                   };
                                   const updated = [newItem, ...filtered].slice(0, 20);
