@@ -126,6 +126,60 @@ const HeroSection = () => {
     }
   };
 
+  const isValidVin = (vin: string) => {
+    const cleaned = vin.replace(/\s/g, "").toUpperCase();
+    if (cleaned.length !== 17) return false;
+    return /^[A-HJ-NPR-Z0-9]{17}$/.test(cleaned);
+  };
+
+  const handleVinLookup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) { setAuthGateOpen(true); return; }
+    if (searchLimit.limitReached) {
+      toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" });
+      navigate("/pricing");
+      return;
+    }
+    const cleaned = vinNumber.replace(/\s/g, "").toUpperCase();
+    if (cleaned.length !== 17) { setVinError("VIN must be exactly 17 characters"); return; }
+    if (!isValidVin(cleaned)) { setVinError("Invalid VIN — letters I, O, Q are not allowed"); return; }
+
+    setVinLoading(true);
+    setVinError("");
+    setVinVehicle(null);
+    try {
+      const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${cleaned}?format=json`);
+      const data = await response.json();
+      const results = data.Results;
+      const getValue = (variable: string) => {
+        const item = results.find((r: any) => r.Variable === variable);
+        return (item?.Value && item.Value !== "Not Applicable" && item.Value !== "") ? item.Value : null;
+      };
+      const vehicle = {
+        vin: cleaned,
+        make: getValue("Make"),
+        model: getValue("Model"),
+        year: getValue("ModelYear"),
+        series: getValue("Series"),
+        bodyClass: getValue("BodyClass"),
+        engine: getValue("DisplacementL") ? getValue("DisplacementL") + "L" : getValue("EngineCylinders") ? getValue("EngineCylinders") + " cyl" : null,
+        fuel: getValue("FuelTypePrimary"),
+        transmission: getValue("TransmissionStyle"),
+        drive: getValue("DriveType"),
+        manufacturer: getValue("Manufacturer"),
+        country: getValue("PlantCountry"),
+      };
+      if (!vehicle.make) { setVinError("VIN not found. Please check and try again."); return; }
+      setVinVehicle(vehicle);
+      const searchQuery = `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim();
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}&vin=${cleaned}&vehicle=${encodeURIComponent(JSON.stringify(vehicle))}`);
+    } catch {
+      setVinError("Failed to decode VIN. Please try again.");
+    } finally {
+      setVinLoading(false);
+    }
+  };
+
   const activeSupplier = { name: "eBay", description: "Global — works in all countries" };
   const comingSoonSuppliers = [
     { name: "Amazon" },
