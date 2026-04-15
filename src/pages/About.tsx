@@ -63,14 +63,14 @@ const About = () => (
   <div className="min-h-screen bg-background">
     <SEOHead
       title="About PARTARA"
-      description="Learn how PARTARA is revolutionising car part search in the UK. Search 1,000,000+ parts from trusted suppliers with photo search and reg plate lookup."
+      description="Search 1M+ parts from eBay Global — more suppliers coming. Built by a small UK team passionate about making car parts simple."
       path="/about"
       jsonLd={{
         "@context": "https://schema.org",
         "@type": "AboutPage",
         "name": "About PARTARA",
         "url": "https://gopartara.com/about",
-        "description": "Learn how PARTARA is revolutionising car part search in the UK."
+        "description": "Search 1M+ parts from eBay Global — more suppliers coming."
       }}
     />
     <Navbar />
@@ -90,35 +90,43 @@ const About = () => (
           hoping you'd picked a trustworthy source.
         </p>
         <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
-          We built PARTARA to fix that. As a UK-based platform built by car enthusiasts and engineers, we
-          created a platform that lets you search by part name, vehicle reg plate, or even a photo —
-          then compare prices across trusted UK &amp; global suppliers, browse a verified marketplace, set price alerts,
-          and manage your garage — all in one place.
+          We built PARTARA to fix that. Right now, we search over 1,000,000+ parts from eBay Global — 
+          covering the UK and beyond. Every search is live, every deal is real. We're actively working 
+          to bring more suppliers onboard.
         </p>
       </section>
 
-      {/* Mission */}
+      {/* Current Stats */}
+      <section className="container px-4 mb-24 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {[
+            { stat: "1,000,000+", label: "Parts searchable" },
+            { stat: "eBay Global", label: "Live and active" },
+            { stat: "UK Reg Lookup", label: "Via DVLA data" },
+          ].map((item) => (
+            <div key={item.label} className="rounded-2xl border border-border bg-card p-6 text-center">
+              <p className="font-display text-2xl font-bold text-primary">{item.stat}</p>
+              <p className="text-sm text-muted-foreground mt-1">{item.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Team */}
       <section className="relative mb-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/[0.03] to-transparent" />
-        <div className="container px-4 py-16 md:py-20 max-w-4xl mx-auto relative">
-          <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary mb-4 w-full text-center">
-            Our Mission
+        <div className="container px-4 py-16 md:py-20 max-w-4xl mx-auto relative text-center">
+          <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary mb-4">
+            Our Team
           </span>
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-8 text-center">
-            Car Parts, Without the Hassle
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-6">
+            Small Team, Big Dreams
           </h2>
-          <div className="grid md:grid-cols-2 gap-8 text-muted-foreground leading-relaxed">
-            <p>
-              Our mission is to make finding car parts as easy as searching the web. We believe
-              every driver — whether you're maintaining a family car or running a busy workshop —
-              deserves fast access to the right part at a fair price.
-            </p>
-            <p>
-              We're building the most comprehensive parts platform in the UK, connecting buyers
-              to trusted suppliers and verified sellers. Transparent pricing, real availability,
-              community reviews, and zero hidden fees — that's the PARTARA promise.
-            </p>
-          </div>
+          <p className="text-muted-foreground text-lg leading-relaxed max-w-2xl mx-auto">
+            We're a small independent team based in the UK, passionate about making car parts 
+            simple and affordable for every driver. We're not backed by big money — we're powered 
+            by a genuine love for cars and a belief that everyone deserves fair prices.
+          </p>
         </div>
       </section>
 
@@ -151,11 +159,11 @@ const About = () => (
         </div>
       </section>
 
-      {/* Why Choose Us — unique selling points */}
+      {/* Features */}
       <section className="container px-4 mb-24">
         <div className="text-center mb-12">
           <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary mb-4">
-            What Sets Us Apart
+            What's Available
           </span>
           <h2 className="font-display text-3xl md:text-4xl font-bold">
             Features Built for Real Drivers
@@ -214,7 +222,7 @@ const About = () => (
             Ready to Find Your Part?
           </h2>
           <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-            Join thousands of drivers and mechanics who save time and money with PARTARA.
+            Join drivers and mechanics who save time and money with PARTARA. Your first month Pro is free.
           </p>
           <Link to="/">
             <Button size="lg" className="rounded-xl px-8">

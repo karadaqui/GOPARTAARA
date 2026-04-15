@@ -2,12 +2,14 @@ import { Check, X, Loader2, Star, Zap, Shield, Building2 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
+
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, useEffect } from "react";
+
 
 /* ── Stripe IDs ─────────────────────────────────────────── */
 
@@ -130,6 +132,20 @@ const PricingSection = () => {
   const [slowWarning, setSlowWarning] = useState(false);
   const [annual, setAnnual] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [trialInfo, setTrialInfo] = useState<{ isOnTrial: boolean; trialEndsAt: string | null }>({ isOnTrial: false, trialEndsAt: null });
+
+  // Fetch trial info
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("subscription_period, trial_ends_at").eq("user_id", user.id).single().then(({ data }) => {
+      if (data?.subscription_period === "trial" && data?.trial_ends_at) {
+        setTrialInfo({ isOnTrial: true, trialEndsAt: data.trial_ends_at });
+      }
+    });
+  }, [user]);
 
   useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
 
@@ -157,10 +173,66 @@ const PricingSection = () => {
 
   const isLoading = (id: string | null) => id !== null && loadingId === id;
 
+  const formatDate = (iso: string) => {
+    try {
+      return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+    } catch { return iso; }
+  };
+
+  const applyPromo = async () => {
+    if (!user) { navigate("/auth"); return; }
+    if (promoApplied) return;
+    setPromoLoading(true);
+    try {
+      if (promoCode === "COMMUNITY") {
+        const trialEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+        await supabase.from("profiles").update({
+          subscription_plan: "pro" as any,
+          subscription_period: "trial",
+          trial_ends_at: trialEnd,
+        }).eq("user_id", user.id);
+        toast({ title: "🎉 1 month Pro activated!", description: "Enjoy PARTARA Pro free for 30 days." });
+        setPromoApplied(true);
+        setTrialInfo({ isOnTrial: true, trialEndsAt: trialEnd });
+      } else {
+        toast({ title: "Invalid promo code", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Error applying promo", variant: "destructive" });
+    }
+    setPromoLoading(false);
+  };
 
   return (
     <section id="pricing" className="py-24">
       <div className="container max-w-5xl px-4 mx-auto">
+        {/* Trial banner for logged-in trial users */}
+        {trialInfo.isOnTrial && trialInfo.trialEndsAt && (
+          <div className="mb-8 rounded-2xl border border-primary/20 bg-primary/5 p-5 text-center">
+            <p className="text-sm font-semibold text-foreground">
+              🎉 You're on Pro trial — free until {formatDate(trialInfo.trialEndsAt)}
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              After your trial, you'll move to Free unless you subscribe.
+            </p>
+          </div>
+        )}
+
+        {/* Banner for non-logged-in users */}
+        {!user && (
+          <div className="mb-8 rounded-2xl border border-primary/20 bg-primary/5 p-5 text-center">
+            <p className="text-sm font-semibold text-foreground">
+              🎁 New to PARTARA? First month Pro is FREE
+            </p>
+            <p className="text-xs text-muted-foreground mt-1 mb-3">
+              Sign up today — no credit card required.
+            </p>
+            <Button size="sm" className="rounded-xl" onClick={() => navigate("/auth")}>
+              Claim Free Month →
+            </Button>
+          </div>
+        )}
+
         {/* Header */}
         <div className="text-center mb-8 space-y-4">
           <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
@@ -206,6 +278,30 @@ const PricingSection = () => {
             );
           })}
         </div>
+
+        {/* Promo Code */}
+        {user && !promoApplied && !trialInfo.isOnTrial && (
+          <div className="mt-8 max-w-md mx-auto">
+            <p className="text-sm text-muted-foreground text-center mb-3">Have a promo code?</p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Enter code"
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                className="flex-1 bg-card border border-border rounded-xl px-4 py-2 text-foreground text-sm focus:border-primary outline-none min-h-[48px]"
+              />
+              <Button
+                variant="outline"
+                className="rounded-xl min-h-[48px]"
+                onClick={applyPromo}
+                disabled={promoLoading || !promoCode}
+              >
+                {promoLoading ? <Loader2 size={16} className="animate-spin" /> : "Apply"}
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Business CTA */}
         <div className="mt-12 rounded-2xl border border-border/30 bg-card/30 backdrop-blur-sm p-8 sm:p-10 text-center">

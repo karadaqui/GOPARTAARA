@@ -379,3 +379,21 @@
     display: none;
   }
 }
+
+/* Mobile performance: reduce animations and fix touch targets */
+@media (max-width: 768px) {
+  .animate-scroll-left,
+  .animate-scroll-right {
+    animation: none !important;
+  }
+
+  /* Prevent iOS zoom on inputs */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  /* Minimum touch targets */
+  button, a, [role="button"] {
+    min-height: 44px;
+  }
+}
