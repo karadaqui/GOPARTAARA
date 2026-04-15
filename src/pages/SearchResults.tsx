@@ -1317,6 +1317,39 @@ const SearchResults = () => {
           </div>
         </div>
       )}
+      {vinCountryInfo && (
+        <VinCountryModal
+          open={vinCountryModalOpen}
+          onClose={() => setVinCountryModalOpen(false)}
+          countryInfo={vinCountryInfo}
+          onSearchGlobal={() => {
+            setVinCountryModalOpen(false);
+            // Use the default fallback marketplace and proceed with search
+            const sq = query.trim();
+            if (sq) {
+              setActiveQuery(sq); setSearchMode("text"); setCurrentPage(1);
+              setSearchParams({ q: sq, vin: vinNumber || "", vehicle: vehicleInfo ? JSON.stringify(vehicleInfo) : "" });
+            }
+          }}
+          onSelectMarket={(market) => {
+            setVinCountryModalOpen(false);
+            // Override marketplace to the selected one
+            setVinCountryInfo({
+              ...vinCountryInfo,
+              ebayMarketplace: market.ebayMarketplace,
+              ebayDomain: market.domain,
+              mkrid: market.mkrid,
+              fallback: false,
+              fallbackNote: undefined,
+            });
+            const sq = query.trim();
+            if (sq) {
+              setActiveQuery(sq); setSearchMode("text"); setCurrentPage(1);
+              setSearchParams({ q: sq, vin: vinNumber || "", vehicle: vehicleInfo ? JSON.stringify(vehicleInfo) : "" });
+            }
+          }}
+        />
+      )}
       <UpgradeModal
         open={upgradeOpen}
         onOpenChange={setUpgradeOpen}
