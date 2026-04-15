@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { sanitizeInput, checkRateLimit, getCachedSearch, setCachedSearch } from "@/lib/sanitize";
 import { buildEbayAffiliateUrl } from "@/lib/ebayAffiliate";
-import { addRecentView } from "@/lib/recentViews";
+
 import { useUserPlan } from "@/hooks/useUserPlan";
 import UpgradeModal from "@/components/UpgradeModal";
 
