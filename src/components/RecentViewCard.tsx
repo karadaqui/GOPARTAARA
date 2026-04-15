@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Bookmark, BookmarkCheck, Bell, BellRing } from "lucide-react";
+import { Bookmark, BookmarkCheck, Bell, BellRing, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -18,20 +18,13 @@ const currencySymbol = (c: string) => (c === "GBP" ? "£" : c === "EUR" ? "€" 
 const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: RecentViewCardProps) => {
   const { user } = useAuth();
   const [showAlertInput, setShowAlertInput] = useState(false);
-  const [targetPrice, setTargetPrice] = useState("");
+  const [alertPrice, setAlertPrice] = useState("");
   const [saving, setSaving] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
   const alertPanelRef = useRef<HTMLDivElement>(null);
 
   const isSaved = savedIds.has(item.id);
   const hasAlert = alertIds.has(item.id);
-
-  // Auto-focus input when alert panel opens
-  useEffect(() => {
-    if (showAlertInput && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [showAlertInput]);
+  const sym = currencySymbol(item.currency);
 
   // Close alert panel on click outside
   useEffect(() => {
@@ -39,7 +32,7 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
     const handleClickOutside = (e: MouseEvent) => {
       if (alertPanelRef.current && !alertPanelRef.current.contains(e.target as Node)) {
         setShowAlertInput(false);
-        setTargetPrice("");
+        setAlertPrice("");
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -74,14 +67,32 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
     e.stopPropagation();
     if (!user) { toast.error("Sign in to set price alerts"); return; }
     if (hasAlert) { toast.info("Alert already set for this part"); return; }
-    setShowAlertInput(!showAlertInput);
+    const price = parseFloat(item.price) || 0;
+    setAlertPrice(price > 0 ? (price * 0.9).toFixed(2) : "0.00");
+    setShowAlertInput(true);
   };
 
-  const confirmAlert = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const increment = () => {
+    const current = parseFloat(alertPrice) || 0;
+    setAlertPrice((Math.round((current + 1) * 100) / 100).toFixed(2));
+  };
+
+  const decrement = () => {
+    const current = parseFloat(alertPrice) || 0;
+    if (current <= 0) return;
+    setAlertPrice((Math.round((current - 1) * 100) / 100).toFixed(2));
+  };
+
+  const handleManualInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (/^\d*\.?\d{0,2}$/.test(val)) {
+      setAlertPrice(val);
+    }
+  };
+
+  const confirmAlert = async () => {
     if (!user) return;
-    const tp = parseFloat(targetPrice);
+    const tp = parseFloat(alertPrice);
     if (!tp || tp <= 0) { toast.error("Enter a valid target price"); return; }
     try {
       const { error } = await supabase.from("price_alerts").insert({
@@ -98,12 +109,10 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
       if (error) throw error;
       onAlertSet(item.id);
       setShowAlertInput(false);
-      setTargetPrice("");
+      setAlertPrice("");
       toast.success("🔔 Alert set! We'll notify you when price drops.");
     } catch { toast.error("Failed to set alert"); }
   };
-
-  const sym = currencySymbol(item.currency);
 
   return (
     <div className="group">
@@ -146,26 +155,64 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
         </button>
       </div>
 
-      {/* Price alert input */}
+      {/* Premium price alert input */}
       {showAlertInput && (
-        <div ref={alertPanelRef} className="mt-1 px-1 flex gap-1">
-          <input
-            ref={inputRef}
-            type="number"
-            placeholder={`Target ${sym}`}
-            className="flex-1 bg-secondary border border-border rounded text-xs px-2 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-destructive"
-            value={targetPrice}
-            onChange={(e) => setTargetPrice(e.target.value)}
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") confirmAlert(e as any);
-            }}
-          />
+        <div ref={alertPanelRef} className="mt-2 p-3 bg-secondary border border-border/50 rounded-xl">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">
+              Set Price Alert
+            </p>
+            <button onClick={() => { setShowAlertInput(false); setAlertPrice(""); }} className="text-muted-foreground/50 hover:text-muted-foreground">
+              <X size={14} />
+            </button>
+          </div>
+
+          {parseFloat(item.price) > 0 && (
+            <p className="text-[11px] text-muted-foreground/50 mb-2">
+              Current price: <span className="text-muted-foreground">{sym}{parseFloat(item.price).toFixed(2)}</span>
+            </p>
+          )}
+
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-sm text-muted-foreground font-medium">{sym}</span>
+            <button
+              onClick={decrement}
+              className="w-8 h-8 flex items-center justify-center rounded-lg border border-border bg-secondary text-muted-foreground hover:border-muted-foreground/50 hover:text-foreground transition-all active:scale-95 text-lg font-light"
+            >
+              −
+            </button>
+            <input
+              type="text"
+              value={alertPrice}
+              onChange={handleManualInput}
+              onBlur={() => {
+                const val = parseFloat(alertPrice);
+                if (isNaN(val) || val < 0) setAlertPrice("0.00");
+                else setAlertPrice(val.toFixed(2));
+              }}
+              className="flex-1 text-center bg-secondary border border-border rounded-lg py-1.5 text-foreground font-semibold text-sm focus:outline-none focus:border-destructive/50 transition-colors"
+              placeholder="0.00"
+              autoFocus
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            />
+            <button
+              onClick={increment}
+              className="w-8 h-8 flex items-center justify-center rounded-lg border border-border bg-secondary text-muted-foreground hover:border-muted-foreground/50 hover:text-foreground transition-all active:scale-95 text-lg font-light"
+            >
+              +
+            </button>
+          </div>
+
+          <p className="text-[10px] text-muted-foreground/50 text-center mb-3">
+            Alert when price drops below {sym}{alertPrice || "0.00"}
+          </p>
+
           <button
             onClick={confirmAlert}
-            className="px-3 py-1.5 bg-destructive text-destructive-foreground text-xs font-medium rounded hover:bg-destructive/90 transition-colors"
+            disabled={!alertPrice || parseFloat(alertPrice) <= 0}
+            className="w-full py-2 bg-destructive hover:bg-destructive/90 disabled:opacity-40 disabled:cursor-not-allowed text-destructive-foreground text-sm font-semibold rounded-lg transition-all active:scale-[0.98]"
           >
-            Set Alert
+            🔔 Set Alert
           </button>
         </div>
       )}
