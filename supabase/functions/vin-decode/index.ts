@@ -25,30 +25,44 @@ Deno.serve(async (req) => {
     const data = await response.json();
     const results = data.Results;
 
-    const getValue = (variable: string) => {
-      const item = results.find((r: any) => r.Variable === variable);
-      const val = item?.Value;
-      return val && val !== "Not Applicable" && val !== "" && val !== null ? val : null;
+    const getValue = (...variables: string[]): string | null => {
+      for (const variable of variables) {
+        const item = results.find((r: any) => r.Variable === variable);
+        const val = item?.Value;
+        if (val && val !== "Not Applicable" && val !== "" && val !== "null") {
+          return val;
+        }
+      }
+      return null;
     };
+
+    const displacementL = getValue("Displacement (L)", "DisplacementL");
+    const displacementCC = getValue("Displacement (CC)", "DisplacementCC");
+    const cylinders = getValue("Engine Number of Cylinders", "EngineCylinders");
+
+    const engine = displacementL
+      ? parseFloat(displacementL).toFixed(1) + "L"
+      : displacementCC
+        ? (parseFloat(displacementCC) / 1000).toFixed(1) + "L"
+        : cylinders
+          ? cylinders + " cyl"
+          : null;
 
     const vehicle = {
       vin: vin.toUpperCase(),
       make: getValue("Make"),
       model: getValue("Model"),
-      year: getValue("ModelYear"),
-      series: getValue("Series"),
-      bodyClass: getValue("BodyClass"),
-      engine: getValue("DisplacementL")
-        ? parseFloat(getValue("DisplacementL")!).toFixed(1) + "L"
-        : getValue("EngineCylinders")
-          ? getValue("EngineCylinders") + " cyl"
-          : null,
-      fuel: getValue("FuelTypePrimary"),
-      transmission: getValue("TransmissionStyle"),
-      drive: getValue("DriveType"),
-      manufacturer: getValue("Manufacturer"),
-      country: getValue("PlantCountry"),
-      trim: getValue("Trim"),
+      year: getValue("Model Year", "ModelYear"),
+      series: getValue("Series", "Series2"),
+      trim: getValue("Trim", "Trim2"),
+      bodyClass: getValue("Body Class", "BodyClass"),
+      engine,
+      fuel: getValue("Fuel Type - Primary", "FuelTypePrimary"),
+      transmission: getValue("Transmission Style", "TransmissionStyle"),
+      drive: getValue("Drive Type", "DriveType"),
+      manufacturer: getValue("Manufacturer Name", "Manufacturer"),
+      country: getValue("Plant Country", "PlantCountry"),
+      doors: getValue("Doors", "NumberOfDoors"),
     };
 
     if (!vehicle.make) {
