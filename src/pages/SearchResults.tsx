@@ -235,7 +235,11 @@ const SearchResults = () => {
   const [query, setQuery] = useState(urlQuery);
   const [activeQuery, setActiveQuery] = useState(urlQuery);
   const [identifying, setIdentifying] = useState(false);
-  const [searchMode, setSearchMode] = useState<"text" | "reg">("text");
+  const [searchMode, setSearchMode] = useState<"text" | "reg" | "vin">("text");
+  const [vinNumber, setVinNumber] = useState("");
+  const [vinLoading, setVinLoading] = useState(false);
+  const [vinError, setVinError] = useState("");
+  const [vinVehicle, setVinVehicle] = useState<Record<string, string | null> | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [compareParts, setCompareParts] = useState<CompareItem[]>([]);
   const [showCompare, setShowCompare] = useState(false);
@@ -636,7 +640,11 @@ const SearchResults = () => {
             </button>
             <button onClick={() => setSearchMode("reg")}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${searchMode === "reg" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
-              <Car size={14} /> Reg Plate
+              <Car size={14} /> Reg Plate 🇬🇧
+            </button>
+            <button onClick={() => setSearchMode("vin")}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${searchMode === "vin" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
+              <Search size={14} /> VIN 🌍
             </button>
           </div>
 
