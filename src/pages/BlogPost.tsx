@@ -157,6 +157,21 @@ const BlogPost = () => {
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 
+        {/* Amazon Affiliate Section */}
+        <div className="mt-8 p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+          <p className="text-sm font-semibold text-zinc-300 mb-2">
+            🛒 Find related parts on Amazon UK
+          </p>
+          <a
+            href={`https://www.amazon.co.uk/s?k=${encodeURIComponent(post.keywords?.join(' ') || post.category || 'car parts')}&tag=gopartara-21`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-red-400 text-sm hover:underline"
+          >
+            Search Amazon UK for {post.category || 'car'} parts →
+          </a>
+        </div>
+
         {/* CTA */}
         <div className="mt-12 rounded-2xl border border-primary/20 bg-primary/5 p-6 sm:p-8 text-center">
           <h3 className="font-display text-xl font-bold mb-2">Find car parts on PARTARA</h3>
