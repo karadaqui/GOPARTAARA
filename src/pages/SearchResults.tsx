@@ -310,18 +310,24 @@ const SearchResults = () => {
 
   useEffect(() => {
     const v = searchParams.get("vehicle");
-    const isVin = !!searchParams.get("vin");
+    const vinParam = searchParams.get("vin");
+    const isVin = !!vinParam;
     if (v) {
       try {
         const parsed = JSON.parse(decodeURIComponent(v));
         setVehicleInfo(parsed);
-        // VIN searches already have model — skip model input prompt
         if (isVin || parsed.model) {
           setVehicleModelConfirmed(true);
+        }
+        if (isVin && vinParam) {
+          setVinCountryInfo(getCountryFromVIN(vinParam));
+        } else {
+          setVinCountryInfo(null);
         }
       } catch { }
     } else {
       setVehicleInfo(null);
+      setVinCountryInfo(null);
     }
   }, [searchParams]);
 
