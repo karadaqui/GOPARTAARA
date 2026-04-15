@@ -4,7 +4,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { sanitizeInput, checkRateLimit, getCachedSearch, setCachedSearch } from "@/lib/sanitize";
 import { buildEbayAffiliateUrl } from "@/lib/ebayAffiliate";
 import { getCountryFromVIN, type VinCountryInfo } from "@/lib/vinCountry";
-import VinCountryModal, { type EbayMarket } from "@/components/VinCountryModal";
+import VinCountryModal from "@/components/VinCountryModal";
 
 import { useUserPlan } from "@/hooks/useUserPlan";
 import UpgradeModal from "@/components/UpgradeModal";
