@@ -730,6 +730,8 @@ const SearchResults = () => {
                   }
                   const vehicle = data.vehicle;
                   setVinVehicle(vehicle);
+                  const vinCountry = getCountryFromVIN(cleaned);
+                  setVinCountryInfo(vinCountry);
                   const sq = vehicle.model
                     ? `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim()
                     : `${vehicle.make} ${vehicle.year}`.trim();
