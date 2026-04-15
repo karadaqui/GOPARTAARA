@@ -37,7 +37,7 @@ import CountryFlag from "@/components/CountryFlag";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import FilterBar from "@/components/FilterBar";
 import TecDocPartsSection from "@/components/TecDocPartsSection";
-import { findDealByBrand, EBAY_ALL_DEALS_URL } from "@/data/ebayDeals";
+import { findDealByBrand, EBAY_ALL_DEALS_URL, isUKUser } from "@/data/ebayDeals";
 
 
 // ── Twemoji helper ──
@@ -1175,26 +1175,30 @@ const SearchResults = () => {
                   </a>
                 </div>
 
-                {/* eBay Deals Banner */}
-                {activeQuery && (() => {
+                {/* eBay Deals Banner — UK only */}
+                {activeQuery && isUKUser() && (() => {
                   const matched = findDealByBrand(activeQuery);
                   return matched ? (
-                    <a href={matched.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 mt-4 rounded-xl bg-gradient-to-r from-green-900/20 to-zinc-900/50 border border-green-700/20 hover:border-green-600/30 transition-all group">
-                      <div className="text-2xl">🔥</div>
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold text-white">{matched.brand} Parts Deals on eBay</p>
-                        <p className="text-xs text-green-400">{matched.discount} · Shop exclusive {matched.brand} deals</p>
+                    <a href={matched.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between w-full p-4 mt-4 bg-gradient-to-r from-red-950/40 to-zinc-900/60 border border-red-800/30 hover:border-red-600/40 rounded-2xl transition-all group">
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl">🔥</span>
+                        <div>
+                          <p className="text-sm font-bold text-white">{matched.brand} Parts on Sale — eBay UK</p>
+                          <p className="text-xs text-red-400">{matched.discount} · Exclusive UK deal</p>
+                        </div>
                       </div>
-                      <span className="text-xs text-zinc-500 group-hover:text-green-400 transition-colors">View deals →</span>
+                      <span className="text-xs font-semibold text-red-400 group-hover:translate-x-0.5 transition-transform">View deal →</span>
                     </a>
                   ) : (
-                    <a href={EBAY_ALL_DEALS_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 mt-4 rounded-xl bg-gradient-to-r from-green-900/20 to-zinc-900/50 border border-green-700/20 hover:border-green-600/30 transition-all group">
-                      <div className="text-2xl">🔥</div>
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold text-white">eBay Motors Deals</p>
-                        <p className="text-xs text-green-400">See today's best automotive offers</p>
+                    <a href={EBAY_ALL_DEALS_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between w-full p-4 mt-4 bg-gradient-to-r from-red-950/40 to-zinc-900/60 border border-red-800/30 hover:border-red-600/40 rounded-2xl transition-all group">
+                      <div className="flex items-center gap-3">
+                        <span className="text-xl">🔥</span>
+                        <div>
+                          <p className="text-sm font-bold text-white">eBay Motors Deals — eBay UK</p>
+                          <p className="text-xs text-red-400">See today's best automotive offers</p>
+                        </div>
                       </div>
-                      <span className="text-xs text-zinc-500 group-hover:text-green-400 transition-colors">View deals →</span>
+                      <span className="text-xs font-semibold text-red-400 group-hover:translate-x-0.5 transition-transform">View deal →</span>
                     </a>
                   );
                 })()}

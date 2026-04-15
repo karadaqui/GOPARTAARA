@@ -28,7 +28,7 @@ import VehicleExpiryEditor from "@/components/garage/VehicleExpiryEditor";
 import VehicleNotes from "@/components/dashboard/VehicleNotes";
 import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import { useUserPlan } from "@/hooks/useUserPlan";
-import { findDealByBrand } from "@/data/ebayDeals";
+import { findDealByBrand, isUKUser } from "@/data/ebayDeals";
 
 interface Vehicle {
   id: string;
@@ -430,11 +430,11 @@ const Garage = () => {
                   <Search size={14} />
                   Search Parts
                  </Button>
-                 {(() => {
+                 {isUKUser() && (() => {
                    const deal = findDealByBrand(v.make);
                    return deal ? (
-                     <a href={deal.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 mt-2 text-xs text-green-400 hover:text-green-300 transition-colors">
-                       🔥 {deal.discount} on {v.make} parts on eBay →
+                     <a href={deal.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 mt-2 text-[11px] text-red-400/80 hover:text-red-400 transition-colors">
+                       🔥 Save 10%+ on {v.make} parts on eBay UK →
                      </a>
                    ) : null;
                  })()}
