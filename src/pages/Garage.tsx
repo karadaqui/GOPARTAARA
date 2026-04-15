@@ -427,9 +427,18 @@ const Garage = () => {
                   onClick={() => navigate(`/search?q=${encodeURIComponent(`${v.make} ${v.model} ${v.year}`)}&fromGarage=true`)}
                 >
                   <Search size={14} />
-                  Search Parts
-                </Button>
-              </div>
+                   Search Parts
+                 </Button>
+                 {(() => {
+                   const { findDealByBrand } = require("@/data/ebayDeals");
+                   const deal = findDealByBrand(v.make);
+                   return deal ? (
+                     <a href={deal.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 mt-2 text-xs text-green-400 hover:text-green-300 transition-colors">
+                       🔥 {deal.discount} on {v.make} parts on eBay →
+                     </a>
+                   ) : null;
+                 })()}
+               </div>
             );
           })}
         </div>

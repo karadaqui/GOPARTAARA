@@ -1174,6 +1174,31 @@ const SearchResults = () => {
                   </a>
                 </div>
 
+                {/* eBay Deals Banner */}
+                {activeQuery && (() => {
+                  const { findDealByBrand, EBAY_ALL_DEALS_URL } = require("@/data/ebayDeals");
+                  const matched = findDealByBrand(activeQuery);
+                  return matched ? (
+                    <a href={matched.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 mt-4 rounded-xl bg-gradient-to-r from-green-900/20 to-zinc-900/50 border border-green-700/20 hover:border-green-600/30 transition-all group">
+                      <div className="text-2xl">🔥</div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-white">{matched.brand} Parts Deals on eBay</p>
+                        <p className="text-xs text-green-400">{matched.discount} · Shop exclusive {matched.brand} deals</p>
+                      </div>
+                      <span className="text-xs text-zinc-500 group-hover:text-green-400 transition-colors">View deals →</span>
+                    </a>
+                  ) : (
+                    <a href={EBAY_ALL_DEALS_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 mt-4 rounded-xl bg-gradient-to-r from-green-900/20 to-zinc-900/50 border border-green-700/20 hover:border-green-600/30 transition-all group">
+                      <div className="text-2xl">🔥</div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-white">eBay Motors Deals</p>
+                        <p className="text-xs text-green-400">See today's best automotive offers</p>
+                      </div>
+                      <span className="text-xs text-zinc-500 group-hover:text-green-400 transition-colors">View deals →</span>
+                    </a>
+                  );
+                })()}
+
                 {/* Pagination */}
                 {totalPages > 1 && (
                   <div className="flex items-center justify-center gap-1 mt-8 flex-wrap">
