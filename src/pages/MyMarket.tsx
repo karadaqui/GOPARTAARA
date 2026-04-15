@@ -717,10 +717,10 @@ const MyMarket = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container max-w-5xl py-20 px-4">
-        {/* Boost success banner */}
-        {showBoostSuccess && (
-          <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
-            <p className="text-sm font-medium text-emerald-400">🎉 Your listing is now featured! It will appear at the top of marketplace.</p>
+        {/* Boost pending banner — waiting for Stripe payment confirmation */}
+        {showBoostPending && (
+          <div className="mb-6 p-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 text-center">
+            <p className="text-sm font-medium text-yellow-400">⏳ Payment received — your boost is being activated. This page will refresh shortly.</p>
           </div>
         )}
 
