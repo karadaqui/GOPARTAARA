@@ -176,12 +176,12 @@ export const useUserPlan = (): UserPlan => {
   const isElite = ["elite", "admin"].includes(plan);
   const isPro = isPaid;
   const isFree = plan === "free";
+  const isTrial = subscriptionPeriod === "trial";
 
   const canUseFeature = useCallback(
     (feature: keyof PlanFeatures) => {
       const val = features[feature];
       if (typeof val === "boolean") return val;
-      // For numeric: Infinity means unlimited
       return true;
     },
     [features]
@@ -189,7 +189,6 @@ export const useUserPlan = (): UserPlan => {
 
   const requiredPlanFor = useCallback(
     (feature: keyof PlanFeatures) => {
-      // Find the cheapest plan that enables this feature
       if (PLAN_FEATURES.pro[feature]) return "Pro";
       if (PLAN_FEATURES.elite[feature]) return "Elite";
       return "Pro";
@@ -205,6 +204,8 @@ export const useUserPlan = (): UserPlan => {
     isElite,
     isPro,
     isFree,
+    isTrial,
+    trialEndsAt,
     loading,
     canUseFeature,
     requiredPlanFor,
