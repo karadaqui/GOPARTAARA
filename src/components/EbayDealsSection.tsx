@@ -91,8 +91,8 @@ const EbayDealsSection = () => {
               <h2 className="font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
                 eBay Motors Deals
               </h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                6 brand links + tools + all deals, now in a proper responsive grid.
+              <p className="mt-1 text-sm text-muted-foreground font-sans">
+                BMW, Vauxhall, MINI, Ford, Renault, Dacia + tools + all deals.
               </p>
             </div>
             <p className="text-xs font-medium text-muted-foreground">
