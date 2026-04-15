@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { Bell, Trash2, ExternalLink, Loader2, CheckCircle2, Clock } from "lucide-react";
-
+import { Bell, Trash2, ExternalLink, Loader2, CheckCircle2, Clock, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -22,6 +21,7 @@ interface PriceAlert {
   current_price: number | null;
   email: string;
   url: string | null;
+  image_url: string | null;
   active: boolean;
   triggered: boolean;
   triggered_at: string | null;
@@ -42,7 +42,6 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
       .order("created_at", { ascending: false });
 
     if (!error && data) {
-      // Deduplicate by part_name + supplier (keep most recent)
       const seen = new Set<string>();
       const unique = (data as unknown as PriceAlert[]).filter((a) => {
         const key = `${a.part_name}||${a.supplier || ""}||${a.target_price}`;
@@ -61,120 +60,125 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
 
   const deleteAlert = async (id: string) => {
     setConfirmDeleteId(null);
+    setAlerts((prev) => prev.filter((a) => a.id !== id));
     const { error } = await supabase.from("price_alerts").delete().eq("id", id);
     if (error) {
       toast.error("Failed to delete alert", { description: error.message });
+      fetchAlerts();
     } else {
-      setAlerts((prev) => prev.filter((a) => a.id !== id));
       toast.success("Price alert deleted");
     }
   };
 
-  const activeAlerts = alerts.filter((a) => a.active && !a.triggered);
-  const triggeredAlerts = alerts.filter((a) => a.triggered);
+  const activeCount = alerts.filter((a) => a.active && !a.triggered).length;
 
   return (
     <div className="glass rounded-2xl p-4 sm:p-8">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-display text-base sm:text-lg font-semibold flex items-center gap-2">
-          <Bell size={18} className="text-primary" />
-          Price Alerts
-        </h2>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-muted-foreground">{activeAlerts.length} active</span>
-          {triggeredAlerts.length > 0 && (
-            <span className="text-xs text-emerald-400">{triggeredAlerts.length} triggered</span>
-          )}
+      {/* Header */}
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <p className="text-[11px] font-semibold tracking-widest uppercase text-destructive/60 mb-1">
+            MONITORING
+          </p>
+          <h2 className="text-lg font-bold text-foreground">
+            Price Alerts
+            <span className="ml-2 text-xs font-normal text-muted-foreground">
+              {alerts.length} active
+            </span>
+          </h2>
         </div>
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-6">
+        <div className="flex items-center justify-center py-8">
           <Loader2 size={20} className="animate-spin text-muted-foreground" />
         </div>
       ) : alerts.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-6">
+        <p className="text-sm text-muted-foreground text-center py-8">
           No price alerts yet. Search for parts and click the bell icon to set one!
         </p>
       ) : (
-        <div className="space-y-3">
-          {alerts.map((alert) => (
-            <div
-              key={alert.id}
-              className={`flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-3 p-3 rounded-xl border ${
-                alert.triggered
-                  ? "bg-emerald-500/5 border-emerald-500/20"
-                  : "bg-secondary/30 border-border"
-              }`}
-            >
-              <div className="flex items-start gap-2 sm:gap-3 w-full sm:w-auto sm:flex-1 min-w-0">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                  alert.triggered ? "bg-emerald-500/15" : "bg-primary/10"
-                }`}>
-                  {alert.triggered ? (
-                    <CheckCircle2 size={14} className="text-emerald-400" />
+        <div className="grid grid-cols-1 gap-3">
+          {alerts.map((alert) => {
+            const targetHit = alert.current_price != null && alert.current_price <= alert.target_price;
+
+            return (
+              <div
+                key={alert.id}
+                className="flex items-center gap-4 bg-secondary/30 border border-border/50 rounded-xl p-4 hover:border-border transition-all group"
+              >
+                {/* Product Image */}
+                <div className="w-16 h-16 flex-shrink-0 bg-secondary rounded-lg overflow-hidden">
+                  {(alert as any).image_url ? (
+                    <img
+                      src={(alert as any).image_url}
+                      alt={alert.part_name}
+                      onError={(e) => { e.currentTarget.style.display = "none"; }}
+                      className="w-full h-full object-contain p-1"
+                    />
                   ) : (
-                    <Bell size={14} className="text-primary" />
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground/40">
+                      <Package size={20} />
+                    </div>
                   )}
                 </div>
+
+                {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium line-clamp-2">{alert.part_name}</p>
-                  <div className="flex flex-wrap gap-1.5 mt-1.5">
-                    {alert.supplier && (
-                      <span className="text-xs bg-secondary px-2 py-0.5 rounded-md text-muted-foreground">{alert.supplier}</span>
-                    )}
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-md font-medium">
-                      Target: £{Number(alert.target_price).toFixed(2)}
-                    </span>
-                    {alert.current_price != null && (
-                      <span className={`text-xs px-2 py-0.5 rounded-md font-medium ${
-                        alert.current_price <= alert.target_price
-                          ? "bg-emerald-500/15 text-emerald-400"
-                          : "bg-secondary text-muted-foreground"
-                      }`}>
-                        Now: £{Number(alert.current_price).toFixed(2)}
+                  <p className="text-sm font-medium text-foreground truncate mb-1">
+                    {alert.part_name}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div>
+                      <p className="text-[10px] text-muted-foreground/60 uppercase tracking-wide">Target</p>
+                      <p className="text-sm font-bold text-emerald-400">
+                        £{Number(alert.target_price).toFixed(2)}
+                      </p>
+                    </div>
+                    <div className="w-px h-8 bg-border" />
+                    <div>
+                      <p className="text-[10px] text-muted-foreground/60 uppercase tracking-wide">Current</p>
+                      <p className={`text-sm font-bold ${targetHit ? "text-emerald-400" : "text-foreground/80"}`}>
+                        {alert.current_price != null
+                          ? `£${Number(alert.current_price).toFixed(2)}`
+                          : "Checking..."}
+                      </p>
+                    </div>
+                    {targetHit && (
+                      <span className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-semibold rounded-full">
+                        🎯 TARGET HIT!
                       </span>
                     )}
                   </div>
-                  <div className="mt-1.5">
-                    {alert.triggered && alert.triggered_at && (
-                      <span className="text-emerald-400 text-[10px] flex items-center gap-0.5">
-                        <CheckCircle2 size={10} /> Triggered {new Date(alert.triggered_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
-                      </span>
-                    )}
-                    {!alert.triggered && alert.last_checked_at && (
-                      <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                        <Clock size={10} /> Checked {new Date(alert.last_checked_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
-                      </span>
-                    )}
-                    {!alert.triggered && !alert.last_checked_at && (
-                      <span className="text-[10px] text-muted-foreground">
-                        Set {new Date(alert.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
-                      </span>
-                    )}
-                  </div>
+                  <p className="text-[10px] text-muted-foreground/50 mt-1">
+                    {alert.last_checked_at
+                      ? `Checked ${new Date(alert.last_checked_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`
+                      : `Set ${new Date(alert.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}`}
+                  </p>
                 </div>
-                <div className="flex items-center gap-1 shrink-0">
+
+                {/* Actions */}
+                <div className="flex flex-col gap-2 flex-shrink-0">
                   {alert.url && (
                     <a
                       href={alert.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                      className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground border border-border rounded-lg hover:border-muted-foreground/50 hover:text-foreground transition-all text-center"
                     >
-                      <ExternalLink size={13} />
+                      View ↗
                     </a>
                   )}
                   <button
                     onClick={() => setConfirmDeleteId(alert.id)}
-                    className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-destructive transition-colors"
+                    className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground/50 border border-border/50 rounded-lg hover:border-destructive/30 hover:text-destructive transition-all"
                   >
-                    <Trash2 size={13} />
+                    Remove
                   </button>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

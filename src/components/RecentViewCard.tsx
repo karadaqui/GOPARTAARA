@@ -71,7 +71,8 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
         url: item.url,
         supplier: "eBay",
         email: user.email || "",
-      });
+        image_url: item.image || null,
+      } as any);
       if (error) throw error;
       onAlertSet(item.id);
       setShowAlertInput(false);
