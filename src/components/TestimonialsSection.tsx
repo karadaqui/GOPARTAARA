@@ -34,7 +34,7 @@ const TestimonialCard = ({ t }: { t: typeof testimonials[0] }) => (
       </div>
       <div>
         <p className="text-sm font-semibold text-foreground">{t.name}</p>
-        <p className="text-[11px] text-muted-foreground">{t.flag} {t.location}</p>
+        <p className="text-[11px] text-muted-foreground flex items-center gap-1"><span className="text-[10px] bg-secondary px-1.5 py-0.5 rounded text-muted-foreground font-bold">{t.countryBadge}</span> {t.location}</p>
       </div>
     </div>
   </div>

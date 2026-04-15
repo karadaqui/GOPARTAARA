@@ -562,7 +562,7 @@ const SearchResults = () => {
     return { label: locale.t("good_price"), variant: "good" as const };
   };
 
-  const getFlag = (code: string) => countryFlags[code] || "🌍";
+  const getFlag = (code: string) => countryBadges[code] || "🌍";
 
   const shuffleResults = <T,>(items: T[]) => {
     const shuffled = [...items];
