@@ -190,7 +190,10 @@ const PricingSection = () => {
         return false;
       }
       toast({ title: "🎉 1 month Pro activated!", description: "Enjoy PARTARA Pro free for 30 days." });
-      setTimeout(() => window.location.reload(), 1500);
+      await supabase.auth.refreshSession();
+      setTimeout(() => {
+        window.location.href = "/dashboard";
+      }, 1500);
       return true;
     } catch (err) {
       console.error("activateTrial error:", err);

@@ -44,11 +44,13 @@ serve(async (req) => {
       );
     }
 
+    console.log('Updating profile for user:', user.id);
     const { data: profile } = await supabase
       .from("profiles")
       .select("subscription_plan, subscription_period, trial_ends_at")
       .eq("user_id", user.id)
       .single();
+    console.log('Found profile:', JSON.stringify(profile));
 
     const alreadyHadTrial = profile?.trial_ends_at !== null && profile?.trial_ends_at !== undefined;
 
