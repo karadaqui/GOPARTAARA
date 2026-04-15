@@ -279,6 +279,30 @@ const PricingSection = () => {
           })}
         </div>
 
+        {/* Promo Code */}
+        {user && !promoApplied && !trialInfo.isOnTrial && (
+          <div className="mt-8 max-w-md mx-auto">
+            <p className="text-sm text-muted-foreground text-center mb-3">Have a promo code?</p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Enter code"
+                value={promoCode}
+                onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                className="flex-1 bg-card border border-border rounded-xl px-4 py-2 text-foreground text-sm focus:border-primary outline-none min-h-[48px]"
+              />
+              <Button
+                variant="outline"
+                className="rounded-xl min-h-[48px]"
+                onClick={applyPromo}
+                disabled={promoLoading || !promoCode}
+              >
+                {promoLoading ? <Loader2 size={16} className="animate-spin" /> : "Apply"}
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Business CTA */}
         <div className="mt-12 rounded-2xl border border-border/30 bg-card/30 backdrop-blur-sm p-8 sm:p-10 text-center">
           <div className="flex items-center justify-center gap-2 mb-3">
