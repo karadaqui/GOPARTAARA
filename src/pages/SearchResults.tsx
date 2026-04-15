@@ -836,8 +836,8 @@ const SearchResults = () => {
 
         {activeQuery ? (
           <>
-            {/* VIN Country Detection Banner */}
-            {vinCountryInfo && (
+            {/* VIN Country Detection Banner — only for supported (non-fallback) countries */}
+            {vinCountryInfo && !vinCountryInfo.fallback && (
               <div className="mb-4 rounded-xl border border-white/[0.06] bg-zinc-900/60 px-4 py-3 flex items-center gap-3 flex-wrap">
                 <div className="flex items-center gap-2">
                   <Globe size={16} className="text-zinc-400 shrink-0" />
@@ -847,9 +847,6 @@ const SearchResults = () => {
                 </div>
                 <span className="text-xs text-zinc-500">
                   Showing results from <span className="font-medium text-zinc-300">{vinCountryInfo.ebayDomain}</span>
-                  {vinCountryInfo.fallback && (
-                    <span className="text-amber-400/80 ml-1.5">— {vinCountryInfo.fallbackNote}</span>
-                  )}
                 </span>
               </div>
             )}
