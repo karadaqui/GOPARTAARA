@@ -322,7 +322,11 @@ const SearchResults = () => {
           setVehicleModelConfirmed(true);
         }
         if (isVin && vinParam) {
-          setVinCountryInfo(getCountryFromVIN(vinParam));
+          const vinCountry = getCountryFromVIN(vinParam);
+          setVinCountryInfo(vinCountry);
+          if (vinCountry.fallback) {
+            setVinCountryModalOpen(true);
+          }
         } else {
           setVinCountryInfo(null);
         }
