@@ -709,21 +709,13 @@ const SearchResults = () => {
                 if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(cleaned)) { setVinError("Invalid VIN — letters I, O, Q are not allowed"); return; }
                 setVinLoading(true); setVinError(""); setVinVehicle(null);
                 try {
-                  const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${cleaned}?format=json`);
-                  const data = await response.json();
-                  const results = data.Results;
-                  const getValue = (variable: string) => {
-                    const item = results.find((r: any) => r.Variable === variable);
-                    return (item?.Value && item.Value !== "Not Applicable" && item.Value !== "") ? item.Value : null;
-                  };
-                  const vehicle = {
-                    vin: cleaned, make: getValue("Make"), model: getValue("Model"), year: getValue("ModelYear"),
-                    series: getValue("Series"), bodyClass: getValue("BodyClass"),
-                    engine: getValue("DisplacementL") ? getValue("DisplacementL") + "L" : getValue("EngineCylinders") ? getValue("EngineCylinders") + " cyl" : null,
-                    fuel: getValue("FuelTypePrimary"), transmission: getValue("TransmissionStyle"),
-                    drive: getValue("DriveType"), manufacturer: getValue("Manufacturer"), country: getValue("PlantCountry"),
-                  };
-                  if (!vehicle.make) { setVinError("VIN not found. Please check and try again."); return; }
+                  const { data, error } = await supabase.functions.invoke("vin-decode", {
+                    body: { vin: cleaned },
+                  });
+                  if (error || data?.error || !data?.vehicle?.make) {
+                    setVinError(data?.error || "VIN not found. Please check and try again."); return;
+                  }
+                  const vehicle = data.vehicle;
                   setVinVehicle(vehicle);
                   const sq = `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim();
                   setQuery(sq); setActiveQuery(sq); setSearchMode("text");
