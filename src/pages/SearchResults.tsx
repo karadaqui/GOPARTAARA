@@ -235,7 +235,11 @@ const SearchResults = () => {
   const [query, setQuery] = useState(urlQuery);
   const [activeQuery, setActiveQuery] = useState(urlQuery);
   const [identifying, setIdentifying] = useState(false);
-  const [searchMode, setSearchMode] = useState<"text" | "reg">("text");
+  const [searchMode, setSearchMode] = useState<"text" | "reg" | "vin">("text");
+  const [vinNumber, setVinNumber] = useState("");
+  const [vinLoading, setVinLoading] = useState(false);
+  const [vinError, setVinError] = useState("");
+  const [vinVehicle, setVinVehicle] = useState<Record<string, string | null> | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const [compareParts, setCompareParts] = useState<CompareItem[]>([]);
   const [showCompare, setShowCompare] = useState(false);
@@ -636,7 +640,11 @@ const SearchResults = () => {
             </button>
             <button onClick={() => setSearchMode("reg")}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${searchMode === "reg" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
-              <Car size={14} /> Reg Plate
+              <Car size={14} /> Reg Plate 🇬🇧
+            </button>
+            <button onClick={() => setSearchMode("vin")}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${searchMode === "vin" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
+              <Search size={14} /> VIN 🌍
             </button>
           </div>
 
@@ -689,8 +697,80 @@ const SearchResults = () => {
                 {user && <SearchCounter limitData={searchLimit} />}
               </div>
             </div>
-          ) : (
+          ) : searchMode === "reg" ? (
             <VehicleLookup onLookupStart={handleVehicleLookupStart} onVehicleFound={handleVehicleLookupSuccess} />
+          ) : (
+            <div className="space-y-2">
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                if (!user) { setAuthGateOpen(true); return; }
+                const cleaned = vinNumber.replace(/\s/g, "").toUpperCase();
+                if (cleaned.length !== 17) { setVinError("VIN must be exactly 17 characters"); return; }
+                if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(cleaned)) { setVinError("Invalid VIN — letters I, O, Q are not allowed"); return; }
+                setVinLoading(true); setVinError(""); setVinVehicle(null);
+                try {
+                  const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${cleaned}?format=json`);
+                  const data = await response.json();
+                  const results = data.Results;
+                  const getValue = (variable: string) => {
+                    const item = results.find((r: any) => r.Variable === variable);
+                    return (item?.Value && item.Value !== "Not Applicable" && item.Value !== "") ? item.Value : null;
+                  };
+                  const vehicle = {
+                    vin: cleaned, make: getValue("Make"), model: getValue("Model"), year: getValue("ModelYear"),
+                    series: getValue("Series"), bodyClass: getValue("BodyClass"),
+                    engine: getValue("DisplacementL") ? getValue("DisplacementL") + "L" : getValue("EngineCylinders") ? getValue("EngineCylinders") + " cyl" : null,
+                    fuel: getValue("FuelTypePrimary"), transmission: getValue("TransmissionStyle"),
+                    drive: getValue("DriveType"), manufacturer: getValue("Manufacturer"), country: getValue("PlantCountry"),
+                  };
+                  if (!vehicle.make) { setVinError("VIN not found. Please check and try again."); return; }
+                  setVinVehicle(vehicle);
+                  const sq = `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim();
+                  setQuery(sq); setActiveQuery(sq); setSearchMode("text");
+                  setSearchParams({ q: sq, vin: cleaned, vehicle: JSON.stringify(vehicle) });
+                } catch { setVinError("Failed to decode VIN. Please try again."); } finally { setVinLoading(false); }
+              }} className="flex items-center gap-2">
+                <div className="flex-1 relative">
+                  <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500" />
+                  <input
+                    value={vinNumber}
+                    onChange={(e) => { setVinNumber(e.target.value.toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g, "").slice(0, 17)); setVinError(""); }}
+                    placeholder="Enter 17-character VIN"
+                    className="w-full pl-11 pr-16 h-14 rounded-2xl bg-[#141414] border border-white/10 text-white placeholder:text-zinc-500 focus:outline-none focus:border-red-500/50 transition-all duration-200 text-sm uppercase tracking-widest font-mono font-bold"
+                    maxLength={17}
+                  />
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-zinc-500 font-mono">{vinNumber.length}/17</span>
+                </div>
+                <button type="submit" disabled={vinLoading || vinNumber.length !== 17}
+                  className="h-14 px-6 rounded-xl bg-red-600 hover:bg-red-500 disabled:opacity-40 text-white font-semibold text-sm flex items-center gap-2 transition-colors duration-150">
+                  {vinLoading ? <Loader2 size={16} className="animate-spin" /> : <><Search size={16} /> Lookup</>}
+                </button>
+              </form>
+              {vinError && <p className="text-xs text-red-400 text-center">{vinError}</p>}
+              {vinVehicle && (
+                <div className="bg-[#111] border border-white/[0.08] rounded-2xl p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">🌍</span>
+                      <div>
+                        <h3 className="text-lg font-bold text-white">{vinVehicle.make} {vinVehicle.model}{vinVehicle.year && <span className="text-zinc-400 font-normal ml-2">({vinVehicle.year})</span>}</h3>
+                        {vinVehicle.series && <p className="text-xs text-zinc-500">{vinVehicle.series}</p>}
+                      </div>
+                    </div>
+                    <span className="text-xs font-mono bg-zinc-800 px-3 py-1 rounded-lg text-zinc-400">{vinVehicle.vin}</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {vinVehicle.engine && <div><p className="text-[10px] text-zinc-600 uppercase tracking-wide">Engine</p><p className="text-sm font-semibold text-white">{vinVehicle.engine}</p></div>}
+                    {vinVehicle.fuel && <div><p className="text-[10px] text-zinc-600 uppercase tracking-wide">Fuel</p><p className="text-sm font-semibold text-white">{vinVehicle.fuel}</p></div>}
+                    {vinVehicle.transmission && <div><p className="text-[10px] text-zinc-600 uppercase tracking-wide">Transmission</p><p className="text-sm font-semibold text-white">{vinVehicle.transmission}</p></div>}
+                    {vinVehicle.bodyClass && <div><p className="text-[10px] text-zinc-600 uppercase tracking-wide">Body</p><p className="text-sm font-semibold text-white">{vinVehicle.bodyClass}</p></div>}
+                    {vinVehicle.country && <div><p className="text-[10px] text-zinc-600 uppercase tracking-wide">Made in</p><p className="text-sm font-semibold text-white">{vinVehicle.country}</p></div>}
+                    {vinVehicle.drive && <div><p className="text-[10px] text-zinc-600 uppercase tracking-wide">Drive</p><p className="text-sm font-semibold text-white">{vinVehicle.drive}</p></div>}
+                  </div>
+                </div>
+              )}
+              {!vinError && !vinVehicle && <p className="text-xs text-zinc-500 text-center">Works for vehicles from USA, Germany, Japan, and 50+ countries</p>}
+            </div>
           )}
         </div>
       </div>
