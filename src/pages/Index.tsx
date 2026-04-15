@@ -60,6 +60,7 @@ const Index = () => {
       <SuppliersSection />
       <RecentlyViewed />
       <FeaturesSection />
+      <PricingSection />
       
       <Footer />
       <BackToTop />
