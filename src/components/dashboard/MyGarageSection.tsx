@@ -150,24 +150,20 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
     setVinLoading(true);
     setVinError("");
     try {
-      const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${cleaned}?format=json`);
-      const data = await response.json();
-      const results = data.Results;
-      const getValue = (variable: string) => {
-        const item = results.find((r: any) => r.Variable === variable);
-        return (item?.Value && item.Value !== "Not Applicable" && item.Value !== "") ? item.Value : null;
-      };
-      const vMake = getValue("Make");
-      const vModel = getValue("Model");
-      const vYear = getValue("ModelYear");
-      if (!vMake) { setVinError("VIN not found"); return; }
-      setMake(vMake);
-      setModel(vModel || "");
-      setYear(vYear || "");
-      const displacement = getValue("DisplacementL");
-      if (displacement) setEngineSize(`${parseFloat(displacement).toFixed(1)}L`);
+      const { data, error } = await supabase.functions.invoke("vin-decode", {
+        body: { vin: cleaned },
+      });
+      if (error || data?.error || !data?.vehicle?.make) {
+        setVinError(data?.error || "VIN not found");
+        return;
+      }
+      const v = data.vehicle;
+      setMake(v.make || "");
+      setModel(v.model || "");
+      setYear(v.year || "");
+      if (v.engine) setEngineSize(v.engine);
       setLookupSource("vin");
-      toast({ title: "VIN decoded", description: `${vMake} ${vModel || ""} (${vYear || ""})` });
+      toast({ title: "VIN decoded", description: `${v.make} ${v.model || ""} (${v.year || ""})` });
     } catch {
       setVinError("Failed to decode VIN");
     } finally {
