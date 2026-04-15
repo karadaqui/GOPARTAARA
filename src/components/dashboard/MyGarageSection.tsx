@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Car, Plus, Trash2, Loader2, X } from "lucide-react";
+import { Car, Plus, Trash2, Loader2, X, Search } from "lucide-react";
 import VehicleNotes from "@/components/dashboard/VehicleNotes";
 import VehicleSpecsCard from "@/components/dashboard/VehicleSpecsCard";
 import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
@@ -41,6 +41,9 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [regPlate, setRegPlate] = useState("");
+  const [regLoading, setRegLoading] = useState(false);
+  const [regError, setRegError] = useState(false);
 
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
@@ -212,10 +215,66 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
           {/* UK Number Plate Lookup */}
           <div>
             <label className="text-xs text-muted-foreground mb-1 block">UK Number Plate Lookup</label>
-            <Input
-              placeholder="AB12 CDE"
-              className="rounded-xl bg-secondary border-border h-10 uppercase tracking-widest font-mono font-bold"
-            />
+            <div className="flex gap-2">
+              <Input
+                value={regPlate}
+                onChange={(e) => { setRegPlate(e.target.value.toUpperCase()); setRegError(false); }}
+                placeholder="AB12 CDE"
+                className="rounded-xl bg-secondary border-border h-10 uppercase tracking-widest font-mono font-bold flex-1"
+              />
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="rounded-xl h-10 px-3"
+                disabled={regLoading || !regPlate.trim()}
+                onClick={async () => {
+                  const cleaned = regPlate.replace(/\s/g, "").toUpperCase();
+                  if (cleaned.length < 2) return;
+                  setRegLoading(true);
+                  setRegError(false);
+                  try {
+                    const { data, error } = await supabase.functions.invoke("vehicle-lookup", {
+                      body: { registrationNumber: cleaned },
+                    });
+                    if (error || data?.error || !data?.make) {
+                      setRegError(true);
+                    } else {
+                      setMake(data.make);
+                      setModel(data.model || "");
+                      setYear(data.yearOfManufacture?.toString() || "");
+                      setEngineSize(data.engineCapacity ? `${(parseInt(data.engineCapacity) / 1000).toFixed(1)}L` : "");
+                      toast({ title: "Vehicle found", description: `${data.make} ${data.model} (${data.yearOfManufacture})` });
+                    }
+                  } catch {
+                    setRegError(true);
+                  } finally {
+                    setRegLoading(false);
+                  }
+                }}
+              >
+                {regLoading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
+              </Button>
+            </div>
+            {!regError && (
+              <p className="text-[10px] text-muted-foreground mt-1.5">
+                🇬🇧 UK plates supported. More countries coming soon.
+              </p>
+            )}
+            {regError && (
+              <div className="mt-2 p-3 rounded-xl bg-destructive/10 border border-destructive/20">
+                <p className="text-xs text-muted-foreground">
+                  We couldn't find this plate. Currently we support UK registration plates only.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => { setRegError(false); setRegPlate(""); }}
+                  className="mt-2 text-xs text-primary hover:underline flex items-center gap-1"
+                >
+                  👉 Try searching by part name instead →
+                </button>
+              </div>
+            )}
           </div>
 
           <Button onClick={handleAdd} disabled={saving} className="rounded-xl gap-2 w-full">
