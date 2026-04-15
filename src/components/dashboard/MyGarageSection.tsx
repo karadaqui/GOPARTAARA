@@ -280,6 +280,64 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
             )}
           </div>
 
+          {/* VIN Lookup */}
+          <div>
+            <label className="text-xs text-muted-foreground mb-1 block">VIN Number (optional)</label>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Input
+                  value={vinInput}
+                  onChange={(e) => { setVinInput(e.target.value.toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g, "").slice(0, 17)); setVinError(""); }}
+                  placeholder="17-character VIN"
+                  className="rounded-xl bg-secondary border-border h-10 uppercase tracking-widest font-mono font-bold pr-14"
+                  maxLength={17}
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground font-mono">
+                  {vinInput.length}/17
+                </span>
+              </div>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="rounded-xl h-10 px-3"
+                disabled={vinLoading || vinInput.length !== 17}
+                onClick={async () => {
+                  const cleaned = vinInput.replace(/\s/g, "").toUpperCase();
+                  if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(cleaned)) { setVinError("Invalid VIN format"); return; }
+                  setVinLoading(true); setVinError("");
+                  try {
+                    const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${cleaned}?format=json`);
+                    const data = await response.json();
+                    const results = data.Results;
+                    const getValue = (variable: string) => {
+                      const item = results.find((r: any) => r.Variable === variable);
+                      return (item?.Value && item.Value !== "Not Applicable" && item.Value !== "") ? item.Value : null;
+                    };
+                    const vMake = getValue("Make");
+                    const vModel = getValue("Model");
+                    const vYear = getValue("ModelYear");
+                    if (!vMake) { setVinError("VIN not found"); return; }
+                    setMake(vMake);
+                    if (vModel) setModel(vModel);
+                    if (vYear) setYear(vYear);
+                    const displacement = getValue("DisplacementL");
+                    if (displacement) setEngineSize(`${parseFloat(displacement).toFixed(1)}L`);
+                    toast({ title: "VIN decoded", description: `${vMake} ${vModel || ""} (${vYear || ""})` });
+                  } catch {
+                    setVinError("Failed to decode VIN");
+                  } finally {
+                    setVinLoading(false);
+                  }
+                }}
+              >
+                {vinLoading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
+              </Button>
+            </div>
+            {vinError && <p className="text-[10px] text-destructive mt-1">{vinError}</p>}
+            {!vinError && <p className="text-[10px] text-muted-foreground mt-1">🌍 Auto-fills make, model & year from VIN</p>}
+          </div>
+
           <Button onClick={handleAdd} disabled={saving} className="rounded-xl gap-2 w-full">
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
             Save Vehicle
