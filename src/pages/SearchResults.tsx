@@ -308,8 +308,19 @@ const SearchResults = () => {
 
   useEffect(() => {
     const v = searchParams.get("vehicle");
-    if (v) { try { setVehicleInfo(JSON.parse(decodeURIComponent(v))); } catch { } }
-    else setVehicleInfo(null);
+    const isVin = !!searchParams.get("vin");
+    if (v) {
+      try {
+        const parsed = JSON.parse(decodeURIComponent(v));
+        setVehicleInfo(parsed);
+        // VIN searches already have model — skip model input prompt
+        if (isVin || parsed.model) {
+          setVehicleModelConfirmed(true);
+        }
+      } catch { }
+    } else {
+      setVehicleInfo(null);
+    }
   }, [searchParams]);
 
   // ── eBay search ──
@@ -717,8 +728,12 @@ const SearchResults = () => {
                   }
                   const vehicle = data.vehicle;
                   setVinVehicle(vehicle);
-                  const sq = `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim();
+                  const sq = vehicle.model
+                    ? `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim()
+                    : `${vehicle.make} ${vehicle.year}`.trim();
                   setQuery(sq); setActiveQuery(sq); setSearchMode("text");
+                  setVehicleInfo({ make: vehicle.make, model: vehicle.model, yearOfManufacture: vehicle.year } as any);
+                  setVehicleModelConfirmed(true);
                   setSearchParams({ q: sq, vin: cleaned, vehicle: JSON.stringify(vehicle) });
                 } catch { setVinError("Failed to decode VIN. Please try again."); } finally { setVinLoading(false); }
               }} className="flex items-center gap-2">
