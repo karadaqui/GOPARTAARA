@@ -149,24 +149,32 @@ const PricingSection = () => {
 
   useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
 
-  const activateTrial = async (promo?: string) => {
+  const activateTrial = async (promo?: string): Promise<boolean> => {
     try {
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError || !sessionData?.session) {
+      const storageKey = `sb-${import.meta.env.VITE_SUPABASE_PROJECT_ID}-auth-token`;
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) {
         toast({ title: "Please sign in first", variant: "destructive" });
         navigate("/auth");
         return false;
       }
-      const accessToken = sessionData.session.access_token;
+      const sessionData = JSON.parse(raw);
+      const accessToken = sessionData?.access_token;
+      if (!accessToken) {
+        toast({ title: "Session expired. Please sign in again.", variant: "destructive" });
+        navigate("/auth");
+        return false;
+      }
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/activate-trial`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
+            "Authorization": `Bearer ${accessToken}`,
+            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           },
-          body: JSON.stringify({ promoCode: promo || undefined }),
+          body: JSON.stringify({ promoCode: promo?.trim().toUpperCase() || undefined }),
         }
       );
       const result = await response.json();
@@ -182,12 +190,11 @@ const PricingSection = () => {
         return false;
       }
       toast({ title: "🎉 1 month Pro activated!", description: "Enjoy PARTARA Pro free for 30 days." });
-      await supabase.auth.refreshSession();
-      setTimeout(() => window.location.reload(), 1000);
+      setTimeout(() => window.location.reload(), 1500);
       return true;
     } catch (err) {
       console.error("activateTrial error:", err);
-      toast({ title: "Connection error. Please try again.", variant: "destructive" });
+      toast({ title: "Something went wrong. Please try again.", variant: "destructive" });
       return false;
     }
   };
