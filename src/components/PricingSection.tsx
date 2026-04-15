@@ -547,6 +547,9 @@ const PlanCard = ({
           </span>
         ) : cta}
       </Button>
+      {ctaSubtext && (
+        <p className="text-[11px] text-muted-foreground text-center mt-2">{ctaSubtext}</p>
+      )}
     </div>
   );
 };
