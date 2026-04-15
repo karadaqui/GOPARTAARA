@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Bookmark, BookmarkCheck, Bell, BellRing, X } from "lucide-react";
+import { Bookmark, BookmarkCheck, Bell, BellRing } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
@@ -26,7 +26,6 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
   const hasAlert = alertIds.has(item.id);
   const sym = currencySymbol(item.currency);
 
-  // Close alert panel on click outside
   useEffect(() => {
     if (!showAlertInput) return;
     const handleClickOutside = (e: MouseEvent) => {
@@ -70,24 +69,6 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
     const price = parseFloat(item.price) || 0;
     setAlertPrice(price > 0 ? (price * 0.9).toFixed(2) : "0.00");
     setShowAlertInput(true);
-  };
-
-  const increment = () => {
-    const current = parseFloat(alertPrice) || 0;
-    setAlertPrice((Math.round((current + 1) * 100) / 100).toFixed(2));
-  };
-
-  const decrement = () => {
-    const current = parseFloat(alertPrice) || 0;
-    if (current <= 0) return;
-    setAlertPrice((Math.round((current - 1) * 100) / 100).toFixed(2));
-  };
-
-  const handleManualInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    if (/^\d*\.?\d{0,2}$/.test(val)) {
-      setAlertPrice(val);
-    }
   };
 
   const confirmAlert = async () => {
@@ -157,60 +138,77 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
 
       {/* Premium price alert input */}
       {showAlertInput && (
-        <div ref={alertPanelRef} className="mt-2 p-3 bg-secondary border border-border/50 rounded-xl">
-          <div className="flex items-center justify-between mb-3">
+        <div ref={alertPanelRef} className="mt-2 p-3 bg-secondary border border-border/50 rounded-xl w-full overflow-hidden">
+          <div className="flex items-center justify-between mb-2">
             <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">
               Set Price Alert
             </p>
-            <button onClick={() => { setShowAlertInput(false); setAlertPrice(""); }} className="text-muted-foreground/50 hover:text-muted-foreground">
-              <X size={14} />
+            <button
+              onClick={() => { setShowAlertInput(false); setAlertPrice(""); }}
+              className="text-muted-foreground/50 hover:text-muted-foreground text-lg leading-none"
+            >
+              ×
             </button>
           </div>
 
           {parseFloat(item.price) > 0 && (
             <p className="text-[11px] text-muted-foreground/50 mb-2">
-              Current price: <span className="text-muted-foreground">{sym}{parseFloat(item.price).toFixed(2)}</span>
+              Current: <span className="text-muted-foreground font-medium">{sym}{parseFloat(item.price).toFixed(2)}</span>
             </p>
           )}
 
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-sm text-muted-foreground font-medium">{sym}</span>
+          <div className="flex items-center gap-1.5 mb-2 w-full">
             <button
-              onClick={decrement}
-              className="w-8 h-8 flex items-center justify-center rounded-lg border border-border bg-secondary text-muted-foreground hover:border-muted-foreground/50 hover:text-foreground transition-all active:scale-95 text-lg font-light"
+              onClick={() => {
+                const v = Math.max(0, parseFloat(alertPrice || "0") - 1);
+                setAlertPrice(v.toFixed(2));
+              }}
+              className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-lg border border-border bg-secondary text-foreground text-xl font-light hover:bg-muted active:scale-95 transition-all select-none"
             >
               −
             </button>
-            <input
-              type="text"
-              value={alertPrice}
-              onChange={handleManualInput}
-              onBlur={() => {
-                const val = parseFloat(alertPrice);
-                if (isNaN(val) || val < 0) setAlertPrice("0.00");
-                else setAlertPrice(val.toFixed(2));
-              }}
-              className="flex-1 text-center bg-secondary border border-border rounded-lg py-1.5 text-foreground font-semibold text-sm focus:outline-none focus:border-destructive/50 transition-colors"
-              placeholder="0.00"
-              autoFocus
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-            />
+            <div className="flex-1 relative min-w-0">
+              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-medium pointer-events-none">
+                {sym}
+              </span>
+              <input
+                type="number"
+                min="0"
+                step="1"
+                value={alertPrice}
+                onChange={(e) => {
+                  const v = parseFloat(e.target.value);
+                  if (isNaN(v) || v < 0) setAlertPrice("0.00");
+                  else setAlertPrice(v.toFixed(2));
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "-") e.preventDefault();
+                  if (e.key === "Enter") confirmAlert();
+                }}
+                className="w-full pl-7 pr-2 py-1.5 bg-secondary border border-border rounded-lg text-foreground text-sm font-semibold text-center focus:outline-none focus:border-destructive/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                autoFocus
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+              />
+            </div>
             <button
-              onClick={increment}
-              className="w-8 h-8 flex items-center justify-center rounded-lg border border-border bg-secondary text-muted-foreground hover:border-muted-foreground/50 hover:text-foreground transition-all active:scale-95 text-lg font-light"
+              onClick={() => {
+                const v = parseFloat(alertPrice || "0") + 1;
+                setAlertPrice(v.toFixed(2));
+              }}
+              className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-lg border border-border bg-secondary text-foreground text-xl font-light hover:bg-muted active:scale-95 transition-all select-none"
             >
               +
             </button>
           </div>
 
-          <p className="text-[10px] text-muted-foreground/50 text-center mb-3">
-            Alert when price drops below {sym}{alertPrice || "0.00"}
+          <p className="text-[10px] text-muted-foreground/50 text-center mb-2.5">
+            Notify me when below {sym}{alertPrice || "0.00"}
           </p>
 
           <button
             onClick={confirmAlert}
             disabled={!alertPrice || parseFloat(alertPrice) <= 0}
-            className="w-full py-2 bg-destructive hover:bg-destructive/90 disabled:opacity-40 disabled:cursor-not-allowed text-destructive-foreground text-sm font-semibold rounded-lg transition-all active:scale-[0.98]"
+            className="w-full py-2 rounded-lg bg-destructive hover:bg-destructive/90 disabled:opacity-40 disabled:cursor-not-allowed text-destructive-foreground text-sm font-semibold transition-all active:scale-[0.98]"
           >
             🔔 Set Alert
           </button>
