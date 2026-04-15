@@ -121,14 +121,17 @@ const MyMarket = () => {
   const [boostListingId, setBoostListingId] = useState<string | null>(null);
   const [boostingPriceId, setBoostingPriceId] = useState<string | null>(null);
   const [showBoostSuccess, setShowBoostSuccess] = useState(false);
+  const [showBoostPending, setShowBoostPending] = useState(false);
 
-  // Check for ?boosted=true in URL
+  // Check for ?boost_pending=true in URL (user returned from Stripe checkout)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("boosted") === "true") {
-      setShowBoostSuccess(true);
+    if (params.get("boost_pending") === "true") {
+      setShowBoostPending(true);
       window.history.replaceState({}, "", "/my-market");
-      setTimeout(() => setShowBoostSuccess(false), 8000);
+      setTimeout(() => setShowBoostPending(false), 10000);
+      // Refresh listings after a delay to pick up webhook-confirmed boost
+      setTimeout(() => window.location.reload(), 5000);
     }
   }, []);
 
