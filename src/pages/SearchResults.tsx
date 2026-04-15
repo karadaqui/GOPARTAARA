@@ -37,7 +37,7 @@ import CountryFlag from "@/components/CountryFlag";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import FilterBar from "@/components/FilterBar";
 import TecDocPartsSection from "@/components/TecDocPartsSection";
-import { findDealByBrand, EBAY_ALL_DEALS_URL } from "@/data/ebayDeals";
+import { findDealByBrand, EBAY_ALL_DEALS_URL, isUKUser } from "@/data/ebayDeals";
 
 
 // ── Twemoji helper ──
