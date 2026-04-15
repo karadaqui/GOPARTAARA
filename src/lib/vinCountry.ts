@@ -7,6 +7,7 @@ export interface VinCountryInfo {
   name: string;
   ebayMarketplace: string;
   ebayDomain: string;
+  mkrid: string;
   fallback?: boolean; // true if we redirect to a different eBay site
   fallbackNote?: string;
 }
