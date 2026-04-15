@@ -272,6 +272,7 @@ const SearchResults = () => {
   const isFromGarage = searchParams.get("fromGarage") === "true";
   const [garageVehicleLabel, setGarageVehicleLabel] = useState<string | null>(null);
   const [vinCountryInfo, setVinCountryInfo] = useState<VinCountryInfo | null>(null);
+  const [vinCountryModalOpen, setVinCountryModalOpen] = useState(false);
 
 
   // ── Filter & Sort State ──
