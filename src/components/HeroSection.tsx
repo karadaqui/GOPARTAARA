@@ -247,7 +247,7 @@ const HeroSection = () => {
                   }`}
                 >
                   <Search size={14} />
-                  Search by Part
+                  Part Search
                 </button>
                 <button
                   onClick={() => setActiveTab("plate")}
@@ -258,7 +258,18 @@ const HeroSection = () => {
                   }`}
                 >
                   <Car size={14} />
-                  Search by Plate
+                  Reg Plate 🇬🇧
+                </button>
+                <button
+                  onClick={() => setActiveTab("vin")}
+                  className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ${
+                    activeTab === "vin"
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Search size={14} />
+                  VIN 🌍
                 </button>
               </div>
             </div>
