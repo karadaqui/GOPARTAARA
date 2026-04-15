@@ -83,7 +83,7 @@ const EbayDealsSection = () => {
         <div className="mb-5 flex flex-col gap-4 md:mb-6">
           <div className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-semibold text-primary">
             <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-            UK eBay affiliate deals
+            eBay UK affiliate deals
           </div>
 
           <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
