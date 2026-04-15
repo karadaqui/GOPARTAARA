@@ -5,9 +5,12 @@ import {
   clearRecentViews as clearStorage,
   type RecentViewItem,
 } from "@/lib/recentViews";
+import RecentViewCard from "@/components/RecentViewCard";
+import { useRecentViewActions } from "@/hooks/useRecentViewActions";
 
 const RecentlyViewed = () => {
   const [items, setItems] = useState<RecentViewItem[]>([]);
+  const { savedIds, alertIds, onSaved, onAlertSet } = useRecentViewActions();
 
   useEffect(() => {
     const load = () => {
@@ -28,12 +31,9 @@ const RecentlyViewed = () => {
     setItems([]);
   };
 
-  const currencySymbol = (c: string) => (c === "GBP" ? "£" : c === "EUR" ? "€" : "$");
-
   return (
     <section className="py-12 px-4">
       <div className="container max-w-6xl mx-auto">
-        {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <p className="text-xs font-semibold tracking-[0.25em] uppercase text-primary/60 mb-1">
@@ -61,39 +61,17 @@ const RecentlyViewed = () => {
           </div>
         </div>
 
-        {/* Horizontal scroll */}
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
           {items.slice(0, 5).map((item) => (
-            <a
-              key={item.id}
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-shrink-0 w-48 snap-start group"
-            >
-              {/* Image */}
-              <div className="relative w-full h-36 rounded-xl overflow-hidden bg-secondary mb-3">
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  onError={(e) => { e.currentTarget.src = '/placeholder.svg'; }}
-                  className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
-                  loading="lazy"
-                />
-              </div>
-
-              {/* Info */}
-              <div className="px-1">
-                <p className="text-xs text-muted-foreground font-medium leading-snug line-clamp-2 mb-1.5 group-hover:text-foreground transition-colors">
-                  {item.title}
-                </p>
-                <p className="text-sm font-bold text-foreground">
-                  {parseFloat(item.price) > 0
-                    ? `${currencySymbol(item.currency)}${parseFloat(item.price).toFixed(2)}`
-                    : 'View Price'}
-                </p>
-              </div>
-            </a>
+            <div key={item.id} className="flex-shrink-0 w-48 snap-start">
+              <RecentViewCard
+                item={item}
+                savedIds={savedIds}
+                alertIds={alertIds}
+                onSaved={onSaved}
+                onAlertSet={onAlertSet}
+              />
+            </div>
           ))}
         </div>
       </div>
