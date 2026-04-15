@@ -120,7 +120,7 @@ const MyMarket = () => {
   const [boostModalOpen, setBoostModalOpen] = useState(false);
   const [boostListingId, setBoostListingId] = useState<string | null>(null);
   const [boostingPriceId, setBoostingPriceId] = useState<string | null>(null);
-  const [showBoostSuccess, setShowBoostSuccess] = useState(false);
+  const [showBoostPending, setShowBoostPending] = useState(false);
   const [showBoostPending, setShowBoostPending] = useState(false);
 
   // Check for ?boost_pending=true in URL (user returned from Stripe checkout)
