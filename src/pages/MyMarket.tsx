@@ -121,7 +121,6 @@ const MyMarket = () => {
   const [boostListingId, setBoostListingId] = useState<string | null>(null);
   const [boostingPriceId, setBoostingPriceId] = useState<string | null>(null);
   const [showBoostPending, setShowBoostPending] = useState(false);
-  const [showBoostPending, setShowBoostPending] = useState(false);
 
   // Check for ?boost_pending=true in URL (user returned from Stripe checkout)
   useEffect(() => {
