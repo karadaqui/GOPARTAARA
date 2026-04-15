@@ -16,10 +16,14 @@ const HeroSection = () => {
   const { user } = useAuth();
   const searchLimit = useSearchLimit();
   const [identifying, setIdentifying] = useState(false);
-  const [activeTab, setActiveTab] = useState<"part" | "plate">("part");
+  const [activeTab, setActiveTab] = useState<"part" | "plate" | "vin">("part");
   const [regNumber, setRegNumber] = useState("");
   const [regLoading, setRegLoading] = useState(false);
   const [regVehicle, setRegVehicle] = useState<{ make: string; yearOfManufacture?: number; colour?: string; engineCapacity?: number } | null>(null);
+  const [vinNumber, setVinNumber] = useState("");
+  const [vinLoading, setVinLoading] = useState(false);
+  const [vinVehicle, setVinVehicle] = useState<Record<string, string | null> | null>(null);
+  const [vinError, setVinError] = useState("");
   const [authGateOpen, setAuthGateOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const navigate = useNavigate();
