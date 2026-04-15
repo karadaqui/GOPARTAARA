@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserPlan } from "@/hooks/useUserPlan";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -24,21 +23,30 @@ const FreeTrialBanner = () => {
     }
     setActivating(true);
     try {
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError || !sessionData?.session) {
+      const storageKey = `sb-${import.meta.env.VITE_SUPABASE_PROJECT_ID}-auth-token`;
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) {
         toast({ title: "Please sign in first", variant: "destructive" });
         navigate("/auth");
         setActivating(false);
         return;
       }
-      const accessToken = sessionData.session.access_token;
+      const sessionData = JSON.parse(raw);
+      const accessToken = sessionData?.access_token;
+      if (!accessToken) {
+        toast({ title: "Session expired. Please sign in again.", variant: "destructive" });
+        navigate("/auth");
+        setActivating(false);
+        return;
+      }
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/activate-trial`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
+            "Authorization": `Bearer ${accessToken}`,
+            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           },
           body: JSON.stringify({}),
         }
@@ -49,12 +57,11 @@ const FreeTrialBanner = () => {
         toast({ title: msg, variant: "destructive" });
       } else {
         toast({ title: "🎉 1 month Pro activated!", description: "Enjoy PARTARA Pro free for 30 days." });
-        await supabase.auth.refreshSession();
-        setTimeout(() => window.location.reload(), 1000);
+        setTimeout(() => window.location.reload(), 1500);
       }
     } catch (err) {
       console.error("activateTrial error:", err);
-      toast({ title: "Connection error. Please try again.", variant: "destructive" });
+      toast({ title: "Something went wrong. Please try again.", variant: "destructive" });
     }
     setActivating(false);
   };

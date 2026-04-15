@@ -68,6 +68,7 @@ serve(async (req) => {
         subscription_plan: "pro",
         subscription_period: "trial",
         trial_ends_at: trialEnd.toISOString(),
+        updated_at: new Date().toISOString(),
       })
       .eq("user_id", user.id);
 
