@@ -1,15 +1,15 @@
-import { Check, X, Loader2, Star, Zap, Shield, Building2, Gift, Sparkles } from "lucide-react";
+import { Check, X, Loader2, Star, Zap, Shield, Building2 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
+
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, useEffect } from "react";
-import { toast as sonnerToast } from "sonner";
+
 
 /* ── Stripe IDs ─────────────────────────────────────────── */
 
