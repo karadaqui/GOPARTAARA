@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Car, Plus, Trash2, Loader2, X } from "lucide-react";
+import { Car, Plus, Trash2, Loader2, X, Search } from "lucide-react";
 import VehicleNotes from "@/components/dashboard/VehicleNotes";
 import VehicleSpecsCard from "@/components/dashboard/VehicleSpecsCard";
 import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
