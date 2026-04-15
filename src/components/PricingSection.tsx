@@ -149,19 +149,29 @@ const PricingSection = () => {
 
   useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
 
-  const activateTrial = async (promoCode?: string) => {
+  const activateTrial = async (promo?: string) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !sessionData?.session) {
         toast({ title: "Please sign in first", variant: "destructive" });
         navigate("/auth");
         return false;
       }
-      const { data, error } = await supabase.functions.invoke("activate-trial", {
-        body: { promoCode },
-      });
-      if (error || data?.error) {
-        const msg = data?.error || error?.message || "Something went wrong";
+      const accessToken = sessionData.session.access_token;
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/activate-trial`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ promoCode: promo || undefined }),
+        }
+      );
+      const result = await response.json();
+      if (!response.ok || result.error) {
+        const msg = result.error || "Something went wrong";
         if (msg === "Trial already used") {
           toast({ title: "You've already used your free trial", variant: "destructive" });
         } else if (msg === "Invalid promo code") {
@@ -172,9 +182,11 @@ const PricingSection = () => {
         return false;
       }
       toast({ title: "🎉 1 month Pro activated!", description: "Enjoy PARTARA Pro free for 30 days." });
+      await supabase.auth.refreshSession();
       setTimeout(() => window.location.reload(), 1000);
       return true;
-    } catch {
+    } catch (err) {
+      console.error("activateTrial error:", err);
       toast({ title: "Connection error. Please try again.", variant: "destructive" });
       return false;
     }
