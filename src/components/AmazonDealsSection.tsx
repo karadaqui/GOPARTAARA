@@ -1,14 +1,41 @@
 import { isUKUser } from "@/data/ebayDeals";
 
 const AMAZON_UK_DEALS = [
-  { id: 'amazon-auto-accessories', label: 'Car Accessories Deals', discount: 'Up to 40% off today', description: 'Dash cams, phone mounts, LED lights & more', icon: '📱', url: 'https://www.amazon.co.uk/deals?category=automotive&tag=gopartara-21' },
-  { id: 'amazon-tools', label: 'Garage Tools & Equipment', discount: 'Limited time deals', description: 'Battery testers, OBD scanners, tyre inflators', icon: '🔧', url: 'https://www.amazon.co.uk/s?i=automotive&rh=n%3A301309031%2Cp_n_deal_type%3A26901098031&tag=gopartara-21' },
-  { id: 'amazon-lighting', label: 'LED & Car Lighting', discount: 'Up to 50% off', description: 'Headlight bulbs, DRL lights, interior LEDs', icon: '💡', url: 'https://www.amazon.co.uk/s?i=automotive&rh=n%3A11710671031%2Cp_n_deal_type%3A26901098031&tag=gopartara-21' },
-  { id: 'amazon-cleaning', label: 'Car Care & Cleaning', discount: 'Up to 35% off', description: 'Wax, polish, shampoo & detailing kits', icon: '🧴', url: 'https://www.amazon.co.uk/s?i=automotive&rh=n%3A11710601031%2Cp_n_deal_type%3A26901098031&tag=gopartara-21' },
-  { id: 'amazon-dash-cams', label: 'Dash Cams on Sale', discount: 'Up to 20% off', description: '4K front & rear dash cameras', icon: '📹', url: 'https://www.amazon.co.uk/s?k=dash+cam&i=automotive&rh=p_n_deal_type%3A26901098031&tag=gopartara-21' },
+  {
+    id: 'amazon-accessories',
+    label: 'Car Accessories',
+    discount: "Shop today's deals",
+    description: 'Mounts, organizers, seat covers & more',
+    icon: '🚗',
+    url: 'https://www.amazon.co.uk/b?_encoding=UTF8&node=301308031&tag=gopartara-21'
+  },
+  {
+    id: 'amazon-oils-fluids',
+    label: 'Oils & Fluids',
+    discount: "Shop today's deals",
+    description: 'Engine oil, coolant, brake fluid & more',
+    icon: '🛢️',
+    url: 'https://www.amazon.co.uk/b?_encoding=UTF8&node=301315031&tag=gopartara-21'
+  },
+  {
+    id: 'amazon-tools',
+    label: 'Tools & Equipment',
+    discount: "Shop today's deals",
+    description: 'Garage tools, jacks, diagnostic kits',
+    icon: '🔧',
+    url: 'https://www.amazon.co.uk/b?_encoding=UTF8&node=2486235031&tag=gopartara-21'
+  },
+  {
+    id: 'amazon-electronics',
+    label: 'Vehicle Electronics',
+    discount: "Shop today's deals",
+    description: 'Dash cams, GPS, CarPlay adapters & more',
+    icon: '📱',
+    url: 'https://www.amazon.co.uk/b?_encoding=UTF8&node=3013843031&tag=gopartara-21'
+  },
 ];
 
-const AMAZON_ALL_DEALS_URL = 'https://www.amazon.co.uk/deals?category=automotive&tag=gopartara-21';
+const AMAZON_ALL_DEALS_URL = 'https://www.amazon.co.uk/b?_encoding=UTF8&node=248877031&tag=gopartara-21';
 
 const AmazonDealsSection = () => {
   if (!isUKUser()) return null;
