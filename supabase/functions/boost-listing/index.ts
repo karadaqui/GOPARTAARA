@@ -54,33 +54,18 @@ Deno.serve(async (req) => {
         },
       ],
       mode: "payment",
-      success_url: `https://gopartara.com/my-market?boosted=true&listing=${listingId}&package=${encodeURIComponent(packageName)}&days=${durationDays}`,
+      success_url: `https://gopartara.com/my-market?boost_pending=true&listing=${listingId}`,
       cancel_url: `https://gopartara.com/my-market`,
       metadata: {
         listing_id: listingId,
         package_name: packageName,
         duration_days: String(durationDays),
         user_id: userId,
+        type: "boost",
       },
     });
 
-    // Update listing after checkout session created
-    const adminClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
-
-    const featuredUntil = new Date();
-    featuredUntil.setDate(featuredUntil.getDate() + durationDays);
-
-    await adminClient
-      .from("seller_listings")
-      .update({
-        featured: true,
-        featured_until: featuredUntil.toISOString(),
-        boost_package: packageName,
-      })
-      .eq("id", listingId);
+    // DO NOT update listing here — wait for Stripe webhook confirmation
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

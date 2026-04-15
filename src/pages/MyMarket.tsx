@@ -120,15 +120,17 @@ const MyMarket = () => {
   const [boostModalOpen, setBoostModalOpen] = useState(false);
   const [boostListingId, setBoostListingId] = useState<string | null>(null);
   const [boostingPriceId, setBoostingPriceId] = useState<string | null>(null);
-  const [showBoostSuccess, setShowBoostSuccess] = useState(false);
+  const [showBoostPending, setShowBoostPending] = useState(false);
 
-  // Check for ?boosted=true in URL
+  // Check for ?boost_pending=true in URL (user returned from Stripe checkout)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("boosted") === "true") {
-      setShowBoostSuccess(true);
+    if (params.get("boost_pending") === "true") {
+      setShowBoostPending(true);
       window.history.replaceState({}, "", "/my-market");
-      setTimeout(() => setShowBoostSuccess(false), 8000);
+      setTimeout(() => setShowBoostPending(false), 10000);
+      // Refresh listings after a delay to pick up webhook-confirmed boost
+      setTimeout(() => window.location.reload(), 5000);
     }
   }, []);
 
@@ -714,10 +716,10 @@ const MyMarket = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="container max-w-5xl py-20 px-4">
-        {/* Boost success banner */}
-        {showBoostSuccess && (
-          <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
-            <p className="text-sm font-medium text-emerald-400">🎉 Your listing is now featured! It will appear at the top of marketplace.</p>
+        {/* Boost pending banner — waiting for Stripe payment confirmation */}
+        {showBoostPending && (
+          <div className="mb-6 p-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 text-center">
+            <p className="text-sm font-medium text-yellow-400">⏳ Payment received — your boost is being activated. This page will refresh shortly.</p>
           </div>
         )}
 
