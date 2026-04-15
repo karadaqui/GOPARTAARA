@@ -740,13 +740,24 @@ const SearchResults = () => {
                   setVinVehicle(vehicle);
                   const vinCountry = getCountryFromVIN(cleaned);
                   setVinCountryInfo(vinCountry);
-                  const sq = vehicle.model
-                    ? `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim()
-                    : `${vehicle.make} ${vehicle.year}`.trim();
-                  setQuery(sq); setActiveQuery(sq); setSearchMode("text");
-                  setVehicleInfo({ make: vehicle.make, model: vehicle.model, yearOfManufacture: vehicle.year } as any);
-                  setVehicleModelConfirmed(true);
-                  setSearchParams({ q: sq, vin: cleaned, vehicle: JSON.stringify(vehicle) });
+                  if (vinCountry.fallback) {
+                    setVinCountryModalOpen(true);
+                    // Still prepare the search query for when user picks a market
+                    const sq = vehicle.model
+                      ? `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim()
+                      : `${vehicle.make} ${vehicle.year}`.trim();
+                    setQuery(sq);
+                    setVehicleInfo({ make: vehicle.make, model: vehicle.model, yearOfManufacture: vehicle.year } as any);
+                    setVehicleModelConfirmed(true);
+                  } else {
+                    const sq = vehicle.model
+                      ? `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim()
+                      : `${vehicle.make} ${vehicle.year}`.trim();
+                    setQuery(sq); setActiveQuery(sq); setSearchMode("text");
+                    setVehicleInfo({ make: vehicle.make, model: vehicle.model, yearOfManufacture: vehicle.year } as any);
+                    setVehicleModelConfirmed(true);
+                    setSearchParams({ q: sq, vin: cleaned, vehicle: JSON.stringify(vehicle) });
+                  }
                 } catch { setVinError("Failed to decode VIN. Please try again."); } finally { setVinLoading(false); }
               }} className="flex items-center gap-2">
                 <div className="flex-1 relative">
