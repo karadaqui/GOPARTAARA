@@ -864,6 +864,25 @@ const SearchResults = () => {
                     };
                     return (
                       <div key={item.id}
+                        onClick={() => {
+                          try {
+                            const stored = localStorage.getItem('partara_recent_views');
+                            const existing = stored ? JSON.parse(stored) : [];
+                            const itemId = String(item.id || Math.random());
+                            const filtered = existing.filter((i: any) => String(i.id) !== itemId);
+                            const newItem = {
+                              id: itemId,
+                              title: item.partName || 'Car Part',
+                              price: String(item.price || '0'),
+                              currency: 'GBP',
+                              image: item.imageUrl || '',
+                              url: buildEbayAffiliateUrl(item.url || ''),
+                              viewedAt: new Date().toISOString()
+                            };
+                            const updated = [newItem, ...filtered].slice(0, 20);
+                            localStorage.setItem('partara_recent_views', JSON.stringify(updated));
+                          } catch(e) {}
+                        }}
                         className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-all duration-300 flex flex-col relative cursor-pointer animate-fade-in"
                         style={{ animationDelay: `${idx * 50}ms` }}>
                         <div className="h-7 flex items-center justify-center text-xs font-semibold tracking-wide uppercase border-b border-white/10" style={conditionBarStyle}>
@@ -958,25 +977,6 @@ const SearchResults = () => {
                           </div>
                           <div className="flex flex-col sm:flex-row gap-2">
                             <a href={buildEbayAffiliateUrl(item.url)} target="_blank" rel="noopener noreferrer"
-                              onClick={() => {
-                                try {
-                                  const stored = localStorage.getItem('partara_recent_views');
-                                  const existing = stored ? JSON.parse(stored) : [];
-                                  const itemId = String(item.id || Math.random());
-                                  const filtered = existing.filter((i: any) => String(i.id) !== itemId);
-                                  const newItem = {
-                                    id: itemId,
-                                    title: item.partName || 'Car Part',
-                                    price: String(item.price || '0'),
-                                    currency: 'GBP',
-                                    image: item.imageUrl || '',
-                                    url: buildEbayAffiliateUrl(item.url || ''),
-                                    viewedAt: new Date().toISOString()
-                                  };
-                                  const updated = [newItem, ...filtered].slice(0, 20);
-                                  localStorage.setItem('partara_recent_views', JSON.stringify(updated));
-                                } catch(e) {}
-                              }}
                               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150"
                               title="Buying through this link supports PARTARA at no extra cost to you ">
                               <ExternalLink size={14} /> View on eBay
