@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Bookmark, BookmarkCheck, Bell, BellRing } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,9 +20,31 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
   const [showAlertInput, setShowAlertInput] = useState(false);
   const [targetPrice, setTargetPrice] = useState("");
   const [saving, setSaving] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const alertPanelRef = useRef<HTMLDivElement>(null);
 
   const isSaved = savedIds.has(item.id);
   const hasAlert = alertIds.has(item.id);
+
+  // Auto-focus input when alert panel opens
+  useEffect(() => {
+    if (showAlertInput && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [showAlertInput]);
+
+  // Close alert panel on click outside
+  useEffect(() => {
+    if (!showAlertInput) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (alertPanelRef.current && !alertPanelRef.current.contains(e.target as Node)) {
+        setShowAlertInput(false);
+        setTargetPrice("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showAlertInput]);
 
   const handleSave = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -72,7 +94,7 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
         supplier: "eBay",
         email: user.email || "",
         image_url: item.image || null,
-      } as any);
+      });
       if (error) throw error;
       onAlertSet(item.id);
       setShowAlertInput(false);
@@ -126,20 +148,24 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
 
       {/* Price alert input */}
       {showAlertInput && (
-        <div className="mt-1 px-1 flex gap-1">
+        <div ref={alertPanelRef} className="mt-1 px-1 flex gap-1">
           <input
+            ref={inputRef}
             type="number"
             placeholder={`Target ${sym}`}
-            className="flex-1 bg-secondary border border-border rounded text-xs px-2 py-1 text-foreground"
+            className="flex-1 bg-secondary border border-border rounded text-xs px-2 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-destructive"
             value={targetPrice}
             onChange={(e) => setTargetPrice(e.target.value)}
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") confirmAlert(e as any);
+            }}
           />
           <button
             onClick={confirmAlert}
-            className="px-2 py-1 bg-destructive text-destructive-foreground text-xs rounded hover:bg-destructive/90"
+            className="px-3 py-1.5 bg-destructive text-destructive-foreground text-xs font-medium rounded hover:bg-destructive/90 transition-colors"
           >
-            Set
+            Set Alert
           </button>
         </div>
       )}
