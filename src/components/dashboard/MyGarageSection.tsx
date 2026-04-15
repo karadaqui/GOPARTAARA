@@ -44,6 +44,9 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
   const [regPlate, setRegPlate] = useState("");
   const [regLoading, setRegLoading] = useState(false);
   const [regError, setRegError] = useState(false);
+  const [vinInput, setVinInput] = useState("");
+  const [vinLoading, setVinLoading] = useState(false);
+  const [vinError, setVinError] = useState("");
 
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
