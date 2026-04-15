@@ -411,7 +411,7 @@ const SearchResults = () => {
 
     return () => { cancelled = true; clearTimeout(debounceTimer); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter]);
+  }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter, vinCountryInfo]);
 
 
   // ── Saved parts ──
