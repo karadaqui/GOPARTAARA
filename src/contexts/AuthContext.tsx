@@ -44,6 +44,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           window.history.replaceState(null, "", window.location.pathname + window.location.search);
         }
 
+        // Check trial expiry and handle trial welcome
+        try {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("subscription_plan, subscription_period, trial_ends_at")
+            .eq("user_id", session.user.id)
+            .single();
+
+          if (profile) {
+            // Check if trial expired
+            if (
+              profile.subscription_period === "trial" &&
+              profile.trial_ends_at &&
+              new Date(profile.trial_ends_at) < new Date()
+            ) {
+              await supabase.from("profiles").update({
+                subscription_plan: "free",
+                subscription_period: "free",
+              }).eq("user_id", session.user.id);
+            }
+
+            // Show trial welcome modal for new trial users
+            if (profile.subscription_period === "trial" && profile.trial_ends_at) {
+              const alreadyShown = sessionStorage.getItem("partara_trial_welcome_shown");
+              if (!alreadyShown) {
+                localStorage.setItem("partara_trial_welcome", profile.trial_ends_at);
+              }
+            }
+          }
+        } catch {
+          // silently fail
+        }
+
         const storedRef = localStorage.getItem("partara_ref");
         if (storedRef) {
           try {
