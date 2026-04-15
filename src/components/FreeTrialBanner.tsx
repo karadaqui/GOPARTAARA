@@ -24,17 +24,36 @@ const FreeTrialBanner = () => {
     }
     setActivating(true);
     try {
-      const { data, error } = await supabase.functions.invoke("activate-trial", {
-        body: {},
-      });
-      if (error || data?.error) {
-        const msg = data?.error || error?.message || "Something went wrong";
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !sessionData?.session) {
+        toast({ title: "Please sign in first", variant: "destructive" });
+        navigate("/auth");
+        setActivating(false);
+        return;
+      }
+      const accessToken = sessionData.session.access_token;
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/activate-trial`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({}),
+        }
+      );
+      const result = await response.json();
+      if (!response.ok || result.error) {
+        const msg = result.error || "Something went wrong";
         toast({ title: msg, variant: "destructive" });
       } else {
         toast({ title: "🎉 1 month Pro activated!", description: "Enjoy PARTARA Pro free for 30 days." });
+        await supabase.auth.refreshSession();
         setTimeout(() => window.location.reload(), 1000);
       }
-    } catch {
+    } catch (err) {
+      console.error("activateTrial error:", err);
       toast({ title: "Connection error. Please try again.", variant: "destructive" });
     }
     setActivating(false);
