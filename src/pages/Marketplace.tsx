@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -7,12 +7,15 @@ import BackToTop from "@/components/BackToTop";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Search, Store, Eye, Package, Scale, Star, Wrench } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Search, Store, Eye, Package, Scale, Star, Wrench, Bookmark } from "lucide-react";
 import VerifiedSellerBadge from "@/components/badges/VerifiedSellerBadge";
+import SafeImage from "@/components/SafeImage";
 import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsComparison";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthGateModal from "@/components/AuthGateModal";
+import ScrollReveal from "@/components/ScrollReveal";
 
 interface ListingWithSeller {
   id: string;
@@ -40,6 +43,23 @@ const CATEGORIES = [
   "Lighting", "Wheels & Tyres", "Other"
 ];
 
+const conditionFromTags = (tags: string[]): string | null => {
+  const lower = tags.map(t => t.toLowerCase());
+  if (lower.includes("new")) return "NEW";
+  if (lower.includes("used")) return "USED";
+  if (lower.includes("for parts")) return "FOR PARTS";
+  return null;
+};
+
+const conditionColor = (c: string) => {
+  switch (c) {
+    case "NEW": return "bg-green-500/20 text-green-400";
+    case "USED": return "bg-amber-500/20 text-amber-400";
+    case "FOR PARTS": return "bg-red-500/20 text-red-400";
+    default: return "";
+  }
+};
+
 const Marketplace = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
@@ -55,31 +75,25 @@ const Marketplace = () => {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user) {
-      setAuthGateOpen(true);
-      setLoading(false);
-      return;
-    }
+    if (!user) { setAuthGateOpen(true); setLoading(false); return; }
     loadListings();
   }, [user, authLoading]);
 
   const loadListings = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("seller_listings")
-      .select("*, seller_profiles(id, business_name, logo_url, seller_tier, approved)")
-      .eq("active", true)
-      .eq("approval_status", "approved")
-      .order("created_at", { ascending: false });
-
-    const filtered = ((data as unknown as (ListingWithSeller & { seller_profiles: ListingWithSeller['seller_profiles'] & { approved: boolean } })[]) || [])
-      .filter(l => l.seller_profiles?.approved);
-
-    setListings(filtered as unknown as ListingWithSeller[]);
+    try {
+      const { data } = await supabase
+        .from("seller_listings")
+        .select("*, seller_profiles(id, business_name, logo_url, seller_tier, approved)")
+        .eq("active", true).eq("approval_status", "approved")
+        .order("created_at", { ascending: false });
+      const filtered = ((data as any[]) || []).filter((l: any) => l.seller_profiles?.approved);
+      setListings(filtered as unknown as ListingWithSeller[]);
+    } catch {}
     setLoading(false);
   };
 
-  const filtered = listings.filter(l => {
+  const filtered = useMemo(() => listings.filter(l => {
     if (category !== "All" && l.category !== category) return false;
     if (search) {
       const q = search.toLowerCase();
@@ -90,11 +104,10 @@ const Marketplace = () => {
       if (!l.compatible_vehicles.some(cv => cv.toLowerCase().includes(v))) return false;
     }
     return true;
-  });
+  }), [listings, category, search, vehicleFilter]);
 
-  // Separate featured vs regular
-  const featured = filtered.filter(l => l.seller_profiles.seller_tier === "featured" || l.seller_profiles.seller_tier === "pro");
-  const regular = filtered.filter(l => l.seller_profiles.seller_tier !== "featured" && l.seller_profiles.seller_tier !== "pro");
+  const featured = useMemo(() => filtered.filter(l => l.seller_profiles.seller_tier === "featured" || l.seller_profiles.seller_tier === "pro"), [filtered]);
+  const regular = useMemo(() => filtered.filter(l => l.seller_profiles.seller_tier !== "featured" && l.seller_profiles.seller_tier !== "pro"), [filtered]);
 
   const toggleCompare = (listing: ListingWithSeller) => {
     const isSelected = compareParts.some((p) => p.id === listing.id);
@@ -102,86 +115,101 @@ const Marketplace = () => {
       setCompareParts((prev) => prev.filter((p) => p.id !== listing.id));
     } else if (compareParts.length < 3) {
       setCompareParts((prev) => [...prev, {
-        id: listing.id,
-        title: listing.title,
-        price: listing.price,
-        sellerName: listing.seller_profiles.business_name,
-        sellerTier: listing.seller_profiles.seller_tier,
-        category: listing.category || undefined,
-        compatibleVehicles: listing.compatible_vehicles,
-        imageUrl: listing.photos[0] || undefined,
-        source: "marketplace" as const,
+        id: listing.id, title: listing.title, price: listing.price,
+        sellerName: listing.seller_profiles.business_name, sellerTier: listing.seller_profiles.seller_tier,
+        category: listing.category || undefined, compatibleVehicles: listing.compatible_vehicles,
+        imageUrl: listing.photos[0] || undefined, source: "marketplace" as const,
       }]);
     }
   };
 
-  const renderListingCard = (listing: ListingWithSeller, isFeaturedCard: boolean) => {
+  const renderCard = (listing: ListingWithSeller, isFeatured: boolean, index: number) => {
     const isComparing = compareParts.some((p) => p.id === listing.id);
+    const condition = conditionFromTags(listing.tags);
+
     return (
-      <div
-        key={listing.id}
-        className={`text-left glass rounded-xl overflow-hidden card-hover relative ${
-          isFeaturedCard ? "border-yellow-500/30 ring-1 ring-yellow-500/20" : ""
-        } ${isComparing ? "ring-2 ring-primary/50" : ""}`}
-      >
-        {isFeaturedCard && (
-          <div className="absolute top-2 left-2 z-10">
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 text-[10px] font-semibold">
-              <Star size={10} fill="currentColor" /> Featured
-            </span>
-          </div>
-        )}
-        <button
-          onClick={() => navigate(`/listing/${listing.id}`)}
-          className="w-full text-left"
-        >
-          {listing.photos[0] ? (
-            <img src={listing.photos[0]} alt={listing.title} className="w-full h-44 object-cover" />
-          ) : (
-            <div className="w-full h-44 bg-secondary flex items-center justify-center">
-              <Package size={32} className="text-muted-foreground" />
-            </div>
-          )}
-          <div className="p-4">
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-display font-bold text-sm line-clamp-2 flex-1">{listing.title}</h3>
-              {listing.price && <span className="text-primary font-bold ml-2">£{listing.price.toFixed(2)}</span>}
-            </div>
-            <div className="flex items-center gap-2 mb-3">
-              {listing.seller_profiles.logo_url ? (
-                <img src={listing.seller_profiles.logo_url} alt="" className="w-5 h-5 rounded-full object-cover" />
+      <ScrollReveal key={listing.id} delay={index * 50}>
+        <div className={`group relative rounded-2xl overflow-hidden border transition-all duration-200 bg-card ${
+          isFeatured ? "border-yellow-500/30 ring-1 ring-yellow-500/20" : "border-border"
+        } ${isComparing ? "ring-2 ring-primary/50" : ""} hover:border-muted-foreground/30 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20`}>
+
+          {/* Image */}
+          <button onClick={() => navigate(`/listing/${listing.id}`)} className="w-full text-left block">
+            <div className="relative aspect-[4/3] overflow-hidden">
+              {listing.photos[0] ? (
+                <SafeImage src={listing.photos[0]} alt={listing.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
               ) : (
-                <Store size={14} className="text-muted-foreground" />
+                <div className="w-full h-full bg-secondary flex items-center justify-center">
+                  <Package size={32} className="text-muted-foreground" />
+                </div>
               )}
-              <span className="text-xs text-muted-foreground">{listing.seller_profiles.business_name}</span>
-              {listing.seller_profiles.seller_tier === "pro" && (
-                <VerifiedSellerBadge variant="pro_seller" size="sm" />
+
+              {/* Condition badge — top left */}
+              {condition && (
+                <span className={`absolute top-2.5 left-2.5 text-[10px] font-bold px-2.5 py-1 rounded-full ${conditionColor(condition)}`}>
+                  {condition}
+                </span>
+              )}
+
+              {/* Featured badge — top right */}
+              {isFeatured && (
+                <span className="absolute top-2.5 right-2.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 text-[10px] font-semibold backdrop-blur-sm">
+                  <Star size={10} fill="currentColor" /> Featured
+                </span>
               )}
             </div>
-            <div className="flex flex-wrap gap-1 mb-2">
-              {listing.category && <Badge variant="outline" className="text-[10px]">{listing.category}</Badge>}
-              {listing.tags.slice(0, 2).map(t => (
-                <Badge key={t} variant="secondary" className="text-[10px]">{t}</Badge>
-              ))}
+
+            {/* Card body */}
+            <div className="p-4">
+              <h3 className="font-display font-bold text-sm line-clamp-2 mb-2 text-foreground group-hover:text-primary transition-colors">
+                {listing.title}
+              </h3>
+              <div className="flex items-center justify-between mb-3">
+                {listing.price ? (
+                  <span className="text-lg font-black text-foreground">£{listing.price.toFixed(2)}</span>
+                ) : (
+                  <span className="text-sm text-muted-foreground">Price on request</span>
+                )}
+                {listing.category && (
+                  <Badge variant="outline" className="text-[10px] shrink-0">{listing.category}</Badge>
+                )}
+              </div>
+
+              {/* Seller + stats */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 min-w-0">
+                  {listing.seller_profiles.logo_url ? (
+                    <SafeImage src={listing.seller_profiles.logo_url} alt="" className="w-5 h-5 rounded-full object-cover shrink-0" />
+                  ) : (
+                    <div className="w-5 h-5 rounded-full bg-secondary flex items-center justify-center shrink-0 text-[10px] font-bold text-muted-foreground">
+                      {listing.seller_profiles.business_name?.[0] || 'S'}
+                    </div>
+                  )}
+                  <span className="text-xs text-muted-foreground truncate">{listing.seller_profiles.business_name}</span>
+                  {listing.seller_profiles.seller_tier === "pro" && <VerifiedSellerBadge variant="pro_seller" size="sm" />}
+                </div>
+                <div className="flex items-center gap-2.5 text-xs text-muted-foreground shrink-0">
+                  <span className="flex items-center gap-0.5"><Eye size={11} /> {listing.view_count || 0}</span>
+                  <span className="flex items-center gap-0.5"><Bookmark size={11} /> {listing.save_count || 0}</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-3 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1"><Eye size={12} /> {listing.view_count}</span>
-            </div>
-          </div>
-        </button>
-        <button
-          onClick={(e) => { e.stopPropagation(); toggleCompare(listing); }}
-          disabled={!isComparing && compareParts.length >= 3}
-          className={`absolute top-2 right-2 h-8 w-8 rounded-lg flex items-center justify-center transition-all ${
-            isComparing
-              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30"
-              : "bg-background/80 backdrop-blur-sm text-muted-foreground hover:text-foreground border border-border/50"
-          } ${!isComparing && compareParts.length >= 3 ? "opacity-40 cursor-not-allowed" : ""}`}
-          title={isComparing ? "Remove from compare" : "Add to compare"}
-        >
-          <Scale size={14} />
-        </button>
-      </div>
+          </button>
+
+          {/* Compare button */}
+          <button
+            onClick={(e) => { e.stopPropagation(); toggleCompare(listing); }}
+            disabled={!isComparing && compareParts.length >= 3}
+            className={`absolute top-2 right-2 h-8 w-8 rounded-lg flex items-center justify-center transition-all z-10 ${
+              isComparing ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30"
+                : "bg-background/80 backdrop-blur-sm text-muted-foreground hover:text-foreground border border-border/50"
+            } ${!isComparing && compareParts.length >= 3 ? "opacity-40 cursor-not-allowed" : ""} ${isFeatured ? "!right-auto left-2 !top-auto bottom-2" : ""}`}
+            title={isComparing ? "Remove from compare" : "Add to compare"}
+          >
+            <Scale size={14} />
+          </button>
+        </div>
+      </ScrollReveal>
     );
   };
 
@@ -191,27 +219,18 @@ const Marketplace = () => {
         title="Parts Marketplace | PARTARA"
         description="Browse and buy car parts from verified UK sellers on the PARTARA marketplace."
         path="/marketplace"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          "name": "PARTARA Parts Marketplace",
-          "url": "https://gopartara.com/marketplace",
-          "description": "Browse and buy car parts from verified UK sellers."
-        }}
+        jsonLd={{ "@context": "https://schema.org", "@type": "CollectionPage", "name": "PARTARA Parts Marketplace", "url": "https://gopartara.com/marketplace", "description": "Browse and buy car parts from verified UK sellers." }}
       />
       <Navbar />
 
       <AuthGateModal
         open={authGateOpen}
-        onOpenChange={(open) => {
-          setAuthGateOpen(open);
-          if (!open && !user) navigate("/");
-        }}
+        onOpenChange={(open) => { setAuthGateOpen(open); if (!open && !user) navigate("/"); }}
         title="Sign in to browse the marketplace"
         description="Create a free account to browse parts from verified UK sellers."
       />
 
-      <div className="container max-w-6xl pt-24 pb-20 px-4 flex-1">
+      <div className="container max-w-7xl pt-24 pb-20 px-4 flex-1">
         <div className="text-center mb-10">
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">
             <span className="text-primary">Parts</span> Marketplace
@@ -219,24 +238,21 @@ const Marketplace = () => {
           <p className="text-muted-foreground text-lg">Browse parts from verified sellers across the UK</p>
         </div>
 
-        {/* Sell CTA Banner */}
-        <div className="bg-zinc-900/80 border border-white/10 rounded-xl px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
+        {/* Sell CTA */}
+        <div className="bg-card border border-border rounded-xl px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
           <p className="text-sm text-foreground">
             <Wrench size={14} className="inline mr-1.5 -mt-0.5 text-primary" />
             Have parts to sell? List for free — reach thousands of UK car owners
           </p>
-          <Button size="sm" className="rounded-xl gap-1.5 shrink-0" onClick={() => navigate("/my-market")}>
+          <Button size="sm" className="rounded-xl gap-1.5 shrink-0 h-10 min-w-[120px]" onClick={() => navigate("/my-market")}>
             List Your Parts →
           </Button>
         </div>
 
-        {/* Free listing & commission banners */}
+        {/* Info banners */}
         <div className="space-y-2 mb-8">
           <div className="bg-green-900/30 border border-green-500/30 rounded-xl px-4 py-2.5 text-sm text-green-400">
             🎉 Free to list — All PARTARA members can list up to 5 parts for free. Upgrade to Pro for unlimited listings.
-          </div>
-          <div className="bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 text-xs text-zinc-500">
-            ℹ️ Commission policy: Listing is currently free. A small commission may be introduced in the future with 30 days notice to all sellers.
           </div>
         </div>
 
@@ -245,7 +261,7 @@ const Marketplace = () => {
             <Store size={48} className="text-muted-foreground mx-auto mb-4" />
             <h3 className="font-display text-lg font-bold mb-2">Sign in to browse the marketplace</h3>
             <p className="text-muted-foreground mb-4">Create a free account to view listings from verified sellers.</p>
-            <Button onClick={() => navigate("/auth")} className="rounded-xl">Get Started</Button>
+            <Button onClick={() => navigate("/auth")} className="rounded-xl h-11">Get Started</Button>
           </div>
         ) : (
           <>
@@ -254,29 +270,13 @@ const Marketplace = () => {
               <div className="flex flex-col md:flex-row gap-3">
                 <div className="relative flex-1">
                   <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    placeholder="Search parts..."
-                    className="pl-9 bg-secondary border-border rounded-xl"
-                  />
+                  <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search parts..." className="pl-9 bg-secondary border-border rounded-xl text-base" />
                 </div>
-                <Input
-                  value={vehicleFilter}
-                  onChange={e => setVehicleFilter(e.target.value)}
-                  placeholder="Filter by vehicle (e.g. BMW 3 Series)"
-                  className="bg-secondary border-border rounded-xl md:w-64"
-                />
+                <Input value={vehicleFilter} onChange={e => setVehicleFilter(e.target.value)} placeholder="Filter by vehicle (e.g. BMW 3 Series)" className="bg-secondary border-border rounded-xl md:w-64 text-base" />
               </div>
               <div className="flex flex-wrap gap-2 mt-3">
                 {CATEGORIES.map(c => (
-                  <Button
-                    key={c}
-                    size="sm"
-                    variant={category === c ? "default" : "outline"}
-                    onClick={() => setCategory(c)}
-                    className="rounded-full text-xs h-7"
-                  >
+                  <Button key={c} size="sm" variant={category === c ? "default" : "outline"} onClick={() => setCategory(c)} className="rounded-full text-xs h-8 min-h-[32px]">
                     {c}
                   </Button>
                 ))}
@@ -285,8 +285,17 @@ const Marketplace = () => {
 
             {/* Results */}
             {loading ? (
-              <div className="flex justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="rounded-2xl border border-border bg-card overflow-hidden">
+                    <Skeleton className="w-full aspect-[4/3]" />
+                    <div className="p-4 space-y-3">
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-6 w-1/3" />
+                      <Skeleton className="h-3 w-1/2" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : filtered.length === 0 ? (
               <div className="glass rounded-2xl p-12 text-center">
@@ -296,36 +305,31 @@ const Marketplace = () => {
               </div>
             ) : (
               <>
-                {/* Featured Listings */}
                 {featured.length > 0 && (
                   <div className="mb-8">
                     <h2 className="font-display text-lg font-bold mb-4 flex items-center gap-2">
-                      <Star size={16} className="text-yellow-400 fill-yellow-400" />
-                      Featured Listings
+                      <Star size={16} className="text-yellow-400 fill-yellow-400" /> Featured Listings
                     </h2>
-                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
-                      {featured.map(l => renderListingCard(l, true))}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {featured.map((l, i) => renderCard(l, true, i))}
                     </div>
                   </div>
                 )}
-
-                {/* Regular Listings */}
                 {regular.length > 0 && (
                   <div>
                     {featured.length > 0 && <h2 className="font-display text-lg font-bold mb-4">All Listings</h2>}
-                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5">
-                      {regular.map(l => renderListingCard(l, false))}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {regular.map((l, i) => renderCard(l, false, i))}
                     </div>
                   </div>
                 )}
               </>
             )}
 
-            {/* CTA */}
             <div className="glass rounded-2xl p-8 mt-12 text-center">
               <h2 className="font-display text-xl font-bold mb-2">Sell Your Parts on PARTARA</h2>
               <p className="text-muted-foreground mb-4">Reach thousands of car owners and mechanics.</p>
-              <Button onClick={() => navigate("/my-market")} className="rounded-xl gap-2">
+              <Button onClick={() => navigate("/my-market")} className="rounded-xl gap-2 h-11">
                 <Store size={16} /> List Your Parts
               </Button>
             </div>
@@ -333,17 +337,9 @@ const Marketplace = () => {
         )}
       </div>
 
-      <CompareBar
-        items={compareParts}
-        onOpen={() => setShowCompare(true)}
-        onClear={() => setCompareParts([])}
-      />
+      <CompareBar items={compareParts} onOpen={() => setShowCompare(true)} onClear={() => setCompareParts([])} />
       {showCompare && (
-        <CompareModal
-          items={compareParts}
-          onRemove={(id) => setCompareParts((prev) => prev.filter((p) => p.id !== id))}
-          onClose={() => setShowCompare(false)}
-        />
+        <CompareModal items={compareParts} onRemove={(id) => setCompareParts((prev) => prev.filter((p) => p.id !== id))} onClose={() => setShowCompare(false)} />
       )}
 
       <Footer />
