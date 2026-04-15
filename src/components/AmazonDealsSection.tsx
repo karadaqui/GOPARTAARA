@@ -67,7 +67,7 @@ const AmazonDealsSection = () => {
               Amazon Automotive Deals
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Clean grid layout for accessories, fluids, tools and electronics.
+              Accessories, fluids, tools and electronics.
             </p>
           </div>
 
