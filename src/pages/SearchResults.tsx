@@ -1058,6 +1058,31 @@ const SearchResults = () => {
                     <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="flex items-center gap-0.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border border-white/[0.06]">Next <ChevronRight size={14} /></button>
                   </div>
                 )}
+
+                {/* Amazon Affiliate Banner */}
+                {activeQuery && (
+                  <a
+                    href={`https://www.amazon.co.uk/s?k=${encodeURIComponent(activeQuery)}&tag=gopartara-21`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between w-full p-4 mt-6 bg-zinc-900/50 border border-zinc-800/50 rounded-xl hover:border-zinc-700/50 transition-all group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-lg">📦</span>
+                      <div>
+                        <p className="text-sm font-medium text-zinc-300">
+                          Also search Amazon UK
+                        </p>
+                        <p className="text-xs text-zinc-600">
+                          Compare prices on Amazon for "{activeQuery}"
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-zinc-600 group-hover:text-zinc-400 transition-colors">
+                      →
+                    </span>
+                  </a>
+                )}
               </div>
             ) : !liveLoading ? (
               /* ── Empty / Error State ── */
