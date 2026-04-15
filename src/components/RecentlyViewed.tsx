@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import {
-  getRecentViews,
   clearRecentViews as clearStorage,
   type RecentViewItem,
 } from "@/lib/recentViews";
@@ -11,7 +10,15 @@ const RecentlyViewed = () => {
   const [items, setItems] = useState<RecentViewItem[]>([]);
 
   useEffect(() => {
-    setItems(getRecentViews());
+    const load = () => {
+      try {
+        const stored = localStorage.getItem('partara_recent_views');
+        setItems(stored ? JSON.parse(stored) : []);
+      } catch { setItems([]); }
+    };
+    load();
+    window.addEventListener('storage', load);
+    return () => window.removeEventListener('storage', load);
   }, []);
 
   if (items.length === 0) return null;

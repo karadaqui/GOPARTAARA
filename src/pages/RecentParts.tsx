@@ -6,7 +6,6 @@ import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import {
-  getRecentViews,
   clearRecentViews,
   type RecentViewItem,
 } from "@/lib/recentViews";
@@ -16,7 +15,15 @@ const RecentParts = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setItems(getRecentViews());
+    const load = () => {
+      try {
+        const stored = localStorage.getItem('partara_recent_views');
+        setItems(stored ? JSON.parse(stored) : []);
+      } catch { setItems([]); }
+    };
+    load();
+    window.addEventListener('storage', load);
+    return () => window.removeEventListener('storage', load);
   }, []);
 
   const handleClear = () => {
@@ -79,6 +86,9 @@ const RecentParts = () => {
               ))}
             </div>
           )}
+          <p className="text-xs text-muted-foreground/40 text-center mt-12">
+            Items appear here after you view parts on eBay
+          </p>
         </div>
       </main>
       <Footer />
