@@ -2,68 +2,84 @@ import { Star } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const testimonials = [
-  {
-    quote: "PARTARA saved me £40 on my BMW's brake pads. Found the same part £40 cheaper than my local garage quoted.",
-    name: "James T.",
-    location: "Leeds",
-  },
-  {
-    quote: "The photo search feature is incredible. I had no idea what a part was called, took a photo, and found it in seconds.",
-    name: "Sarah M.",
-    location: "Manchester",
-  },
-  {
-    quote: "As a DIY mechanic I use PARTARA every week. It's become my go-to before buying any part.",
-    name: "Mike R.",
-    location: "Birmingham",
-  },
+  { name: "James T.", location: "Leeds, UK", flag: "🇬🇧", rating: 5, text: "PARTARA saved me £40 on my BMW's brake pads. Found the same part cheaper than my local garage quoted. Unbelievable.", avatar: "J" },
+  { name: "Sarah M.", location: "Manchester, UK", flag: "🇬🇧", rating: 5, text: "The photo search is incredible. I had no idea what a part was called, took a photo and found it in seconds.", avatar: "S" },
+  { name: "Mike R.", location: "Birmingham, UK", flag: "🇬🇧", rating: 4, text: "As a DIY mechanic I use PARTARA every week. It's become my go-to before buying any part.", avatar: "M" },
+  { name: "Thomas K.", location: "Berlin, Germany", flag: "🇩🇪", rating: 5, text: "Searched for Audi A4 parts across multiple suppliers in one place. Saved hours of research. Brilliant tool.", avatar: "T" },
+  { name: "Emma L.", location: "Sydney, Australia", flag: "🇦🇺", rating: 4, text: "Found rare parts for my classic car that I couldn't find anywhere else. The reg plate lookup is super accurate.", avatar: "E" },
+  { name: "Carlos M.", location: "Madrid, Spain", flag: "🇪🇸", rating: 5, text: "Price alerts saved me €60 on a water pump. Got the notification the same day the price dropped. Amazing.", avatar: "C" },
+  { name: "Luca B.", location: "Milan, Italy", flag: "🇮🇹", rating: 5, text: "Compared prices from 6 different suppliers in 30 seconds. Ended up saving €45 on brake discs.", avatar: "L" },
+  { name: "David W.", location: "Glasgow, UK", flag: "🇬🇧", rating: 4, text: "The marketplace is great for finding secondhand parts locally. Listed my old parts and sold them within 3 days.", avatar: "D" },
+  { name: "Priya S.", location: "Toronto, Canada", flag: "🇨🇦", rating: 5, text: "Finally a car parts site that actually works on mobile. Found what I needed in under a minute.", avatar: "P" },
+  { name: "François D.", location: "Lyon, France", flag: "🇫🇷", rating: 4, text: "The TecDoc integration means I always find the right part for my exact vehicle. No more ordering wrong parts.", avatar: "F" },
+  { name: "Ahmed R.", location: "Dubai, UAE", flag: "🇦🇪", rating: 5, text: "Used it to find parts for my Range Rover. The global eBay search is exactly what I needed.", avatar: "A" },
+  { name: "Sophie H.", location: "Amsterdam, Netherlands", flag: "🇳🇱", rating: 5, text: "My garage uses PARTARA daily now. We save at least 2 hours per week on parts research.", avatar: "S" },
 ];
+
+const TestimonialCard = ({ t }: { t: typeof testimonials[0] }) => (
+  <div className="w-[320px] flex-shrink-0 rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm p-5 mx-2 transition-all duration-300 hover:border-primary/20 hover:bg-card/60">
+    <div className="flex items-center gap-0.5 mb-3">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          size={13}
+          className={star <= t.rating ? "fill-primary text-primary" : "text-muted-foreground/30"}
+        />
+      ))}
+    </div>
+    <p className="text-sm text-foreground leading-relaxed mb-4 line-clamp-3">"{t.text}"</p>
+    <div className="flex items-center gap-3 pt-3 border-t border-border/30">
+      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
+        {t.avatar}
+      </div>
+      <div>
+        <p className="text-sm font-semibold text-foreground">{t.name}</p>
+        <p className="text-[11px] text-muted-foreground">{t.flag} {t.location}</p>
+      </div>
+    </div>
+  </div>
+);
+
+const row1 = testimonials.slice(0, 6);
+const row2 = testimonials.slice(6);
 
 const TestimonialsSection = () => (
   <section className="py-24 md:py-32 relative overflow-hidden">
     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.02] to-transparent pointer-events-none" />
-    <div className="container px-4 relative">
-      <ScrollReveal className="text-center mb-16">
-        <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
-          Testimonials
-        </span>
-        <h2 className="font-display text-3xl md:text-5xl font-bold mb-5 tracking-tight">
-          What Our Users Say
-        </h2>
-        <p className="text-muted-foreground max-w-xl mx-auto text-base md:text-lg leading-relaxed">
-          Real feedback from real car owners across the UK.
-        </p>
-      </ScrollReveal>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-        {testimonials.map((t, i) => (
-          <ScrollReveal key={t.name} delay={i + 1}>
-            <div className="rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm p-6 sm:p-8 flex flex-col h-full transition-all duration-300 hover:border-primary/20 hover:bg-card/60">
-              {/* Stars */}
-              <div className="flex items-center gap-0.5 mb-4">
-                {Array.from({ length: 5 }).map((_, si) => (
-                  <Star key={si} size={14} className="fill-primary text-primary" />
-                ))}
-              </div>
+    <ScrollReveal className="text-center mb-16 px-4">
+      <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
+        Testimonials
+      </span>
+      <h2 className="font-display text-3xl md:text-5xl font-bold mb-5 tracking-tight">
+        What Our Users Say
+      </h2>
+      <p className="text-muted-foreground max-w-xl mx-auto text-base md:text-lg leading-relaxed">
+        Trusted by car owners and mechanics across the globe
+      </p>
+    </ScrollReveal>
 
-              {/* Quote */}
-              <p className="text-sm text-foreground leading-relaxed flex-1 mb-6">
-                "{t.quote}"
-              </p>
+    <div className="relative">
+      {/* Fade edges */}
+      <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
 
-              {/* Author */}
-              <div className="flex items-center gap-3 pt-4 border-t border-border/30">
-                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold">
-                  {t.name.charAt(0)}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{t.name}</p>
-                  <p className="text-xs text-muted-foreground">{t.location}</p>
-                </div>
-              </div>
-            </div>
-          </ScrollReveal>
-        ))}
+      {/* Row 1 — scroll left */}
+      <div className="overflow-hidden mb-4">
+        <div className="animate-scroll-left flex hover:[animation-play-state:paused]" style={{ width: "max-content" }}>
+          {[...row1, ...row1].map((t, i) => (
+            <TestimonialCard key={`r1-${i}`} t={t} />
+          ))}
+        </div>
+      </div>
+
+      {/* Row 2 — scroll right */}
+      <div className="overflow-hidden">
+        <div className="animate-scroll-right flex hover:[animation-play-state:paused]" style={{ width: "max-content" }}>
+          {[...row2, ...row2].map((t, i) => (
+            <TestimonialCard key={`r2-${i}`} t={t} />
+          ))}
+        </div>
       </div>
     </div>
   </section>
