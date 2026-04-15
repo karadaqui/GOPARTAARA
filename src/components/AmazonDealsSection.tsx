@@ -77,7 +77,7 @@ const AmazonDealsSection = () => {
             rel="noopener noreferrer"
             className="inline-flex w-full items-center justify-center rounded-xl border border-border/70 bg-secondary/70 px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary/35 hover:text-primary lg:w-auto"
           >
-            All Amazon Deals →
+            All Amazon Automotive Deals →
           </a>
         </div>
 
