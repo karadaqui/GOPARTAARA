@@ -136,24 +136,32 @@ export const markUpgradeShown = (feature: string) => {
 export const useUserPlan = (): UserPlan => {
   const { user } = useAuth();
   const [plan, setPlan] = useState<PlanType>("free");
+  const [subscriptionPeriod, setSubscriptionPeriod] = useState<string>("free");
+  const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
     if (!user) {
       setPlan("free");
+      setSubscriptionPeriod("free");
+      setTrialEndsAt(null);
       setLoading(false);
       return;
     }
     try {
       const { data } = await supabase
         .from("profiles")
-        .select("subscription_plan")
+        .select("subscription_plan, subscription_period, trial_ends_at")
         .eq("user_id", user.id)
         .single();
       const dbPlan = data?.subscription_plan || "free";
       setPlan(dbPlan as PlanType);
+      setSubscriptionPeriod(data?.subscription_period || "free");
+      setTrialEndsAt(data?.trial_ends_at || null);
     } catch {
       setPlan("free");
+      setSubscriptionPeriod("free");
+      setTrialEndsAt(null);
     }
     setLoading(false);
   }, [user]);
