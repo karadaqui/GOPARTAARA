@@ -4,6 +4,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { sanitizeInput, checkRateLimit, getCachedSearch, setCachedSearch } from "@/lib/sanitize";
 import { buildEbayAffiliateUrl } from "@/lib/ebayAffiliate";
 import { getCountryFromVIN, type VinCountryInfo } from "@/lib/vinCountry";
+import VinCountryModal from "@/components/VinCountryModal";
 
 import { useUserPlan } from "@/hooks/useUserPlan";
 import UpgradeModal from "@/components/UpgradeModal";
@@ -271,6 +272,7 @@ const SearchResults = () => {
   const isFromGarage = searchParams.get("fromGarage") === "true";
   const [garageVehicleLabel, setGarageVehicleLabel] = useState<string | null>(null);
   const [vinCountryInfo, setVinCountryInfo] = useState<VinCountryInfo | null>(null);
+  const [vinCountryModalOpen, setVinCountryModalOpen] = useState(false);
 
 
   // ── Filter & Sort State ──
@@ -320,7 +322,11 @@ const SearchResults = () => {
           setVehicleModelConfirmed(true);
         }
         if (isVin && vinParam) {
-          setVinCountryInfo(getCountryFromVIN(vinParam));
+          const vinCountry = getCountryFromVIN(vinParam);
+          setVinCountryInfo(vinCountry);
+          if (vinCountry.fallback) {
+            setVinCountryModalOpen(true);
+          }
         } else {
           setVinCountryInfo(null);
         }
@@ -738,13 +744,24 @@ const SearchResults = () => {
                   setVinVehicle(vehicle);
                   const vinCountry = getCountryFromVIN(cleaned);
                   setVinCountryInfo(vinCountry);
-                  const sq = vehicle.model
-                    ? `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim()
-                    : `${vehicle.make} ${vehicle.year}`.trim();
-                  setQuery(sq); setActiveQuery(sq); setSearchMode("text");
-                  setVehicleInfo({ make: vehicle.make, model: vehicle.model, yearOfManufacture: vehicle.year } as any);
-                  setVehicleModelConfirmed(true);
-                  setSearchParams({ q: sq, vin: cleaned, vehicle: JSON.stringify(vehicle) });
+                  if (vinCountry.fallback) {
+                    setVinCountryModalOpen(true);
+                    // Still prepare the search query for when user picks a market
+                    const sq = vehicle.model
+                      ? `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim()
+                      : `${vehicle.make} ${vehicle.year}`.trim();
+                    setQuery(sq);
+                    setVehicleInfo({ make: vehicle.make, model: vehicle.model, yearOfManufacture: vehicle.year } as any);
+                    setVehicleModelConfirmed(true);
+                  } else {
+                    const sq = vehicle.model
+                      ? `${vehicle.make} ${vehicle.model} ${vehicle.year}`.trim()
+                      : `${vehicle.make} ${vehicle.year}`.trim();
+                    setQuery(sq); setActiveQuery(sq); setSearchMode("text");
+                    setVehicleInfo({ make: vehicle.make, model: vehicle.model, yearOfManufacture: vehicle.year } as any);
+                    setVehicleModelConfirmed(true);
+                    setSearchParams({ q: sq, vin: cleaned, vehicle: JSON.stringify(vehicle) });
+                  }
                 } catch { setVinError("Failed to decode VIN. Please try again."); } finally { setVinLoading(false); }
               }} className="flex items-center gap-2">
                 <div className="flex-1 relative">
@@ -823,8 +840,8 @@ const SearchResults = () => {
 
         {activeQuery ? (
           <>
-            {/* VIN Country Detection Banner */}
-            {vinCountryInfo && (
+            {/* VIN Country Detection Banner — only for supported (non-fallback) countries */}
+            {vinCountryInfo && !vinCountryInfo.fallback && (
               <div className="mb-4 rounded-xl border border-white/[0.06] bg-zinc-900/60 px-4 py-3 flex items-center gap-3 flex-wrap">
                 <div className="flex items-center gap-2">
                   <Globe size={16} className="text-zinc-400 shrink-0" />
@@ -834,9 +851,6 @@ const SearchResults = () => {
                 </div>
                 <span className="text-xs text-zinc-500">
                   Showing results from <span className="font-medium text-zinc-300">{vinCountryInfo.ebayDomain}</span>
-                  {vinCountryInfo.fallback && (
-                    <span className="text-amber-400/80 ml-1.5">— {vinCountryInfo.fallbackNote}</span>
-                  )}
                 </span>
               </div>
             )}
@@ -1306,6 +1320,39 @@ const SearchResults = () => {
             </div>
           </div>
         </div>
+      )}
+      {vinCountryInfo && (
+        <VinCountryModal
+          open={vinCountryModalOpen}
+          onClose={() => setVinCountryModalOpen(false)}
+          countryInfo={vinCountryInfo}
+          onSearchGlobal={() => {
+            setVinCountryModalOpen(false);
+            // Use the default fallback marketplace and proceed with search
+            const sq = query.trim();
+            if (sq) {
+              setActiveQuery(sq); setSearchMode("text"); setCurrentPage(1);
+              setSearchParams({ q: sq, vin: vinNumber || "", vehicle: vehicleInfo ? JSON.stringify(vehicleInfo) : "" });
+            }
+          }}
+          onSelectMarket={(market) => {
+            setVinCountryModalOpen(false);
+            // Override marketplace to the selected one
+            setVinCountryInfo({
+              ...vinCountryInfo,
+              ebayMarketplace: market.ebayMarketplace,
+              ebayDomain: market.domain,
+              mkrid: market.mkrid,
+              fallback: false,
+              fallbackNote: undefined,
+            });
+            const sq = query.trim();
+            if (sq) {
+              setActiveQuery(sq); setSearchMode("text"); setCurrentPage(1);
+              setSearchParams({ q: sq, vin: vinNumber || "", vehicle: vehicleInfo ? JSON.stringify(vehicleInfo) : "" });
+            }
+          }}
+        />
       )}
       <UpgradeModal
         open={upgradeOpen}
