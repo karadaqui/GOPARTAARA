@@ -209,21 +209,13 @@ const MyGarageSection = ({ userId, isPro, isBusinessUser = false }: Props) => {
             />
           </div>
 
-          {/* Reg plate - Coming Soon */}
-          <div className="relative">
+          {/* UK Number Plate Lookup */}
+          <div>
             <label className="text-xs text-muted-foreground mb-1 block">UK Number Plate Lookup</label>
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center justify-center z-10 rounded-xl">
-                <span className="px-3 py-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold tracking-wide uppercase shadow-lg">
-                  Coming Soon
-                </span>
-              </div>
-              <Input
-                disabled
-                placeholder="AB12 CDE"
-                className="rounded-xl bg-secondary/50 border-border h-10 uppercase tracking-widest font-mono font-bold opacity-40"
-              />
-            </div>
+            <Input
+              placeholder="AB12 CDE"
+              className="rounded-xl bg-secondary border-border h-10 uppercase tracking-widest font-mono font-bold"
+            />
           </div>
 
           <Button onClick={handleAdd} disabled={saving} className="rounded-xl gap-2 w-full">
