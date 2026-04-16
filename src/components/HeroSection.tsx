@@ -13,50 +13,41 @@ import AuthGateModal from "@/components/AuthGateModal";
 
 const buildPhotoSearchTerms = (
   partName: string,
-  aiResult: { detectedMake?: string | null; detectedPartNumber?: string | null } | null,
+  _aiResult: { detectedMake?: string | null; detectedPartNumber?: string | null } | null,
   garageVehicle?: { make: string; model: string; year?: string | number } | null,
 ): { term: string; label: string; icon: string }[] => {
-  const engineCodes = [
-    'R-VTEC', 'i-VTEC', 'VTEC', 'VVT-i', 'VVTi', 'D-4D', 'D4D',
-    'TDCi', 'TDi', 'HDi', 'CDTi', 'CDTI', 'DTi', 'DTH', 'JTD', 'JTDM',
-    'TSi', 'TFSI', 'FSi', 'GDi', 'T-GDi', 'MPI', 'SPI', 'EFI',
-    'DOHC', 'SOHC', 'OHC', 'OHV', 'CRDI', 'CRDi', 'SCi',
-    'BlueHDi', 'BlueMotion', 'EcoBoost', 'EcoBlue', 'SkyActiv',
-    'Multijet', 'MultiJet', 'TwinPower', 'xDrive', 'sDrive', 'quattro',
-    '4Motion', '4MATIC', 'AWD', 'FWD', 'RWD',
-  ];
-  let cleaned = partName;
-  engineCodes.forEach(code => {
-    cleaned = cleaned.replace(new RegExp(`\\b${code}\\b`, 'gi'), '');
-  });
-  cleaned = cleaned.replace(/\s+/g, ' ').trim().split(' ').slice(0, 4).join(' ');
+  const cleanPart = partName
+    .replace(/\b(R-VTEC|i-VTEC|VTEC|VVTi|TDi|TDCi|HDi|CDTi|TSi|TFSI|DOHC|SOHC|CRDi|EcoBoost|BlueHDi|Multijet|D4D)\b/gi, '')
+    .replace(/\s+/g, ' ').trim()
+    .split(' ').slice(0, 4).join(' ');
 
-  const terms: { term: string; label: string; icon: string }[] = [];
+  const make = garageVehicle?.make || '';
+  const model = garageVehicle?.model || '';
 
-  if (garageVehicle?.make && garageVehicle?.model) {
-    terms.push({ term: `${garageVehicle.make} ${garageVehicle.model} ${cleaned}`, label: "Your vehicle", icon: "🎯" });
-    terms.push({ term: `${garageVehicle.make} ${cleaned}`, label: "Broader search", icon: "🔍" });
-  } else if (garageVehicle?.make) {
-    terms.push({ term: `${garageVehicle.make} ${cleaned}`, label: "Your vehicle make", icon: "🎯" });
-    terms.push({ term: cleaned, label: "Universal search", icon: "🌐" });
+  const dedupe = (term: string) => {
+    const seen = new Set<string>();
+    return term.split(' ').filter(w => {
+      const low = w.toLowerCase();
+      if (seen.has(low)) return false;
+      seen.add(low);
+      return true;
+    }).join(' ');
+  };
+
+  const raw: { term: string; label: string; icon: string }[] = [];
+
+  if (make && model) {
+    raw.push({ term: dedupe(`${make} ${model} ${cleanPart}`), label: "Your vehicle", icon: "🎯" });
+    raw.push({ term: dedupe(`${make} ${cleanPart}`), label: "Broader search", icon: "🔍" });
+  } else if (make) {
+    raw.push({ term: dedupe(`${make} ${cleanPart}`), label: "Your vehicle make", icon: "🎯" });
+    raw.push({ term: dedupe(cleanPart), label: "Universal search", icon: "🌐" });
   } else {
-    // No garage vehicle — use AI make only, NEVER AI model
-    const aiMake = aiResult?.detectedMake || '';
-    if (aiMake) {
-      terms.push({ term: `${aiMake} ${cleaned}`, label: "Detected make", icon: "🔍" });
-    }
-    terms.push({ term: cleaned, label: "Universal search", icon: "🌐" });
+    raw.push({ term: dedupe(cleanPart), label: "Universal search", icon: "🌐" });
   }
 
-  // Add part number if detected
-  const pn = aiResult?.detectedPartNumber;
-  if (pn && pn.length > 3 && !terms.find(x => x.term === pn)) {
-    terms.push({ term: pn, label: "Part number", icon: "🔢" });
-  }
-
-  // Deduplicate and limit
   const seen = new Set<string>();
-  return terms.filter(t => {
+  return raw.filter(t => {
     if (t.term.length < 3 || seen.has(t.term)) return false;
     seen.add(t.term);
     return true;
