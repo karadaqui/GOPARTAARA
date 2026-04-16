@@ -155,15 +155,19 @@ const HeroSection = () => {
         setIdentifying(false);
         return;
       }
-      // Extract make/model from first compatible vehicle if available
+      // Use detectedMake from AI, or fall back to first compatible vehicle
+      const aiMake = data?.detectedMake || undefined;
       const firstVehicle = (data?.compatibleVehicles || [])[0] || "";
       const vehicleParts = firstVehicle.split(" ");
-      const detectedMake = vehicleParts[0] || undefined;
+      const detectedMake = aiMake || vehicleParts[0] || undefined;
       const detectedModel = vehicleParts.length > 1 ? vehicleParts[1] : undefined;
+      const detectedPartNumber = data?.detectedPartNumber || undefined;
 
       // Generate smart cleaned search terms
-      const smartTerms = generateSmartSearchTerms(partName, detectedMake, detectedModel);
+      const smartTerms = generateSmartSearchTerms(partName, detectedMake, detectedModel, detectedPartNumber);
 
+      setEditedPartName(partName);
+      setEditingPartName(false);
       setPhotoResult({
         partName,
         category: data?.category || "",
@@ -173,6 +177,8 @@ const HeroSection = () => {
         searchTerms: smartTerms.map(t => t.term),
         confidence,
         details: data?.details || "",
+        detectedMake: data?.detectedMake || null,
+        detectedPartNumber: data?.detectedPartNumber || null,
         _smartLabels: smartTerms.map(t => ({ label: t.label, icon: t.icon })),
       });
       toast({ title: `Identified: ${partName}`, description: `Confidence: ${confidence}` });
