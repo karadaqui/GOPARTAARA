@@ -481,20 +481,33 @@ const HeroSection = () => {
                         <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
                           Search Results
                         </p>
-                        {photoResult.searchTerms.map((term, i) => (
-                          <button
-                            key={i}
-                            onClick={() => navigate(`/search?q=${encodeURIComponent(term)}&photo=1`)}
-                            className="flex items-center justify-between w-full p-3 bg-secondary hover:bg-secondary/80 rounded-xl transition-all group text-left"
-                          >
-                            <span className="text-sm text-muted-foreground group-hover:text-foreground">
-                              {term}
-                            </span>
-                            <span className="text-xs text-muted-foreground/60 group-hover:text-muted-foreground">
-                              Search →
-                            </span>
-                          </button>
-                        ))}
+                        {photoResult.searchTerms.map((term, i) => {
+                          const smartLabel = photoResult._smartLabels?.[i];
+                          return (
+                            <button
+                              key={i}
+                              onClick={() => navigate(`/search?q=${encodeURIComponent(term)}&photo=1`)}
+                              className="flex items-center justify-between w-full p-3 bg-secondary hover:bg-secondary/80 rounded-xl transition-all group text-left"
+                            >
+                              <div className="flex items-center gap-2">
+                                {smartLabel && <span className="text-sm">{smartLabel.icon}</span>}
+                                <div>
+                                  {smartLabel && (
+                                    <span className="text-[10px] text-muted-foreground/60 uppercase tracking-wider block">
+                                      {smartLabel.label}
+                                    </span>
+                                  )}
+                                  <span className="text-sm text-muted-foreground group-hover:text-foreground">
+                                    {term}
+                                  </span>
+                                </div>
+                              </div>
+                              <span className="text-xs text-muted-foreground/60 group-hover:text-muted-foreground">
+                                Search →
+                              </span>
+                            </button>
+                          );
+                        })}
                       </div>
                     )}
 
