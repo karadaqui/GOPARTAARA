@@ -54,8 +54,8 @@ const Index = () => {
         }}
       />
       <Navbar />
-      <CommunityBanner />
       <HeroSection />
+      <CommunityBanner />
       <EbayDealsSection />
       <AmazonDealsSection />
       <RecentlyViewed />
