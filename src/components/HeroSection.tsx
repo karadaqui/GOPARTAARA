@@ -436,6 +436,24 @@ const HeroSection = () => {
                 {/* Photo identification results */}
                 {photoResult && (
                   <div className="mt-6 bg-card border border-border rounded-2xl p-5 text-left max-w-3xl mx-auto">
+                    {/* Garage vehicle banner */}
+                    {garageVehicle ? (
+                      <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-blue-950/30 border border-blue-800/30 rounded-xl">
+                        <span className="text-blue-400 text-sm">🚗</span>
+                        <span className="text-blue-300 text-xs">
+                          Searching for your {garageVehicle.make} {garageVehicle.model}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-secondary/50 border border-border/30 rounded-xl">
+                        <span className="text-muted-foreground text-xs">
+                          💡 Add your car to My Garage for more accurate results
+                        </span>
+                        <a href="/garage" className="text-primary text-xs underline ml-auto">
+                          Add car →
+                        </a>
+                      </div>
+                    )}
                     {/* Part identified */}
                     <div className="flex items-start gap-3 mb-4">
                       <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center text-primary flex-shrink-0">
