@@ -5,18 +5,35 @@ import { getCorsHeaders, corsPreflightResponse, jsonResponse, validateJWT, logSe
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const LOVABLE_AI_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
-const SYSTEM_PROMPT = `You are an expert automotive parts identifier. Analyze the photo carefully and identify:
+const SYSTEM_PROMPT = `You are an expert automotive parts identifier. When given an image of a car part:
 
-1. WHAT the part is (e.g., side mirror assembly, brake caliper, headlight, alternator)
-2. WHICH vehicle it belongs to — look for:
-   - Brand logos, emblems, or text stamped on the part
-   - Part numbers printed/etched on the part
-   - Shape, color, and design cues that match specific makes/models
-   - OEM markings, stickers, or labels
-3. The SIDE or POSITION if applicable (left/right, front/rear, upper/lower)
+1. IDENTIFY the part precisely:
+   - Part name (e.g. "Front Brake Pad Set")
+   - Part category (e.g. "Brakes")
+   - Condition if visible (New/Used/Worn)
 
-Respond with ONLY a JSON object:
-- "partName": A specific, searchable name with vehicle make/model if identifiable. Format: "[Make] [Model] [position] [part type]". Examples: "Volvo XC60 right side mirror assembly", "BMW 3 Series E90 front left brake caliper", "Ford Focus MK3 rear tail light"
+2. DETECT the vehicle make/model if any clues visible:
+   - Check for logos, part numbers, stampings
+   - Note distinctive shapes that match specific vehicles
+
+3. LIST compatible vehicles:
+   - Common vehicles this part fits
+   - e.g. "Compatible with: BMW 3 Series (E46, E90), 1 Series (E87)"
+
+4. SUGGEST OEM/aftermarket brands:
+   - e.g. "Common brands: Brembo, Bosch, TRW, ATE"
+
+5. SEARCH TERMS:
+   - Provide 3 optimised eBay search terms for this part
+   - Include specific part numbers if visible
+
+Respond with ONLY a JSON object (no markdown, no explanation):
+- "partName": A specific, searchable name. Format: "[Make] [Model] [position] [part type]" if vehicle identifiable, otherwise just the part type. Examples: "Volvo XC60 Right Side Mirror Assembly", "Front Brake Pad Set"
+- "category": The part category (e.g. "Brakes", "Electrical", "Body", "Suspension", "Engine", "Exhaust", "Interior", "Lighting")
+- "condition": "New", "Used", or "Worn" based on visible condition
+- "compatibleVehicles": Array of compatible vehicle strings, e.g. ["BMW 3 Series E46", "BMW 1 Series E87"]. Empty array if unknown.
+- "brands": Array of common OEM/aftermarket brand names for this part type, e.g. ["Brembo", "Bosch", "TRW"]. Empty array if unknown.
+- "searchTerms": Array of 3 optimised eBay search strings for finding this part. Include part numbers if visible.
 - "confidence": "high" (clearly identifiable part + vehicle), "medium" (part type clear but vehicle uncertain), or "low" (cannot determine)
 - "details": Describe what you see — brand markings, part numbers, color, condition, mounting style, any text visible on the part
 
@@ -26,6 +43,7 @@ CRITICAL RULES:
 - Include left/right/front/rear orientation when visible.
 - If you can't identify the vehicle make/model, still identify the part type accurately.
 - If you cannot identify the part at all, set partName to "Unknown car part" and confidence to "low".
+- Always provide searchTerms even for low confidence — use generic terms.
 
 Return ONLY the JSON object, no markdown, no explanation.`;
 
@@ -167,10 +185,20 @@ Deno.serve(async (req) => {
       partName: "Unknown car part",
       confidence: "low",
       details: "Could not parse AI response",
+      category: "",
+      condition: "",
+      compatibleVehicles: [],
+      brands: [],
+      searchTerms: [],
     };
 
     return jsonResponse({
       partName: result.partName || "Unknown car part",
+      category: result.category || "",
+      condition: result.condition || "",
+      compatibleVehicles: Array.isArray(result.compatibleVehicles) ? result.compatibleVehicles : [],
+      brands: Array.isArray(result.brands) ? result.brands : [],
+      searchTerms: Array.isArray(result.searchTerms) ? result.searchTerms : [],
       confidence: result.confidence || "low",
       details: result.details || "",
     }, 200, corsHeaders);
