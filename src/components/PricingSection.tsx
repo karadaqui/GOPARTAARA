@@ -133,11 +133,13 @@ const PricingSection = () => {
 
   useEffect(() => {
     if (!user) { setHadTrial(false); return; }
-    supabase.from("profiles").select("trial_ends_at, subscription_period, subscription_plan")
-      .eq("user_id", user.id).maybeSingle()
-      .then(({ data }) => {
+    (async () => {
+      try {
+        const { data } = await supabase.from("profiles").select("trial_ends_at, subscription_period, subscription_plan")
+          .eq("user_id", user.id).maybeSingle();
         setHadTrial(!!(data?.trial_ends_at || (data?.subscription_plan && data.subscription_plan !== "free")));
-      }).catch(() => {});
+      } catch {}
+    })();
   }, [user]);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
