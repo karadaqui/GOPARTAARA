@@ -74,6 +74,7 @@ interface PhotoResult {
   searchTerms: string[];
   confidence: string;
   details: string;
+  _smartLabels?: { label: string; icon: string }[];
 }
 
 const HeroSection = () => {
