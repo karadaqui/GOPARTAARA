@@ -92,10 +92,13 @@ const Navbar = () => {
               e.preventDefault();
             }
           }}
-          className="font-display text-2xl font-bold tracking-tight group no-underline"
+          className="no-underline group"
         >
-          <span className="text-primary transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(0_85%_50%/0.6)]">PART</span>
-          <span className="text-foreground">ARA</span>
+          <span className="logo-text text-2xl">
+            <span className="logo-go">go</span>
+            <span className="logo-part transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(0_85%_50%/0.6)]">PART</span>
+            <span className="logo-ara">ARA</span>
+          </span>
         </a>
 
         <div className="flex items-center gap-3">

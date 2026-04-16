@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -378,4 +378,39 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+}
+
+/* Logo styles */
+.logo-text {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.03em;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0;
+}
+
+.logo-go {
+  font-size: 0.65em;
+  font-weight: 800;
+  color: #dc2626;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  transform: translateY(-0.1em);
+  display: inline-block;
+  margin-right: 1px;
+  opacity: 0.85;
+}
+
+.logo-part {
+  font-size: 1em;
+  font-weight: 800;
+  color: #dc2626;
+  letter-spacing: -0.03em;
+}
+
+.logo-ara {
+  font-size: 1em;
+  font-weight: 800;
+  color: white;
+  letter-spacing: -0.03em;
 }
