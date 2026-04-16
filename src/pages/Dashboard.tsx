@@ -107,11 +107,13 @@ const Dashboard = () => {
   };
 
   const fetchSavedPartsCount = async () => {
-    const { count } = await supabase
-      .from("saved_parts")
-      .select("*", { count: "exact", head: true })
-      .eq("user_id", user!.id);
-    setSavedPartsCount(count || 0);
+    try {
+      const { count, error } = await supabase
+        .from("saved_parts")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user!.id);
+      if (!error) setSavedPartsCount(count || 0);
+    } catch { /* silently ignore 503 */ }
   };
 
   const fetchActiveListings = async () => {
@@ -305,9 +307,18 @@ const Dashboard = () => {
     ? (user?.email || "Admin")
     : (profile?.display_name || "there");
 
+  const getDisplayPlan = () => {
+    if (currentPlan === "admin") return "Admin Plan";
+    if (currentPlan === "pro" && profile?.subscription_period === "trial") return "Pro Trial";
+    if (currentPlan === "pro") return "Pro Plan";
+    if (currentPlan === "elite") return "Elite Plan";
+    return "Free Plan";
+  };
+
   const planBadge = () => {
     if (currentPlan === "admin") return <span className="px-2.5 py-0.5 rounded-full bg-destructive/15 border border-destructive/30 text-destructive text-xs font-semibold">ADMIN</span>;
     if (currentPlan === "elite") return <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-xs font-semibold">ELITE ⭐</span>;
+    if (currentPlan === "pro" && profile?.subscription_period === "trial") return <span className="px-2.5 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs font-semibold">PRO TRIAL</span>;
     if (currentPlan === "pro") return <span className="px-2.5 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs font-semibold">PRO</span>;
     return <span className="px-2.5 py-0.5 rounded-full bg-muted border border-border text-muted-foreground text-xs font-semibold">FREE PLAN</span>;
   };
@@ -382,7 +393,7 @@ const Dashboard = () => {
           <StatCard
             icon={<Search size={18} className="text-primary" />}
             label="Searches This Month"
-            value={isPro ? "Unlimited" : `${monthlySearchCount}/5`}
+            value={isAdmin || isPro ? "Unlimited" : `${monthlySearchCount}/5`}
           />
           <StatCard
             icon={<ShoppingBag size={18} className="text-primary" />}

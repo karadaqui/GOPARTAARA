@@ -136,8 +136,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/";
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      Object.keys(localStorage)
+        .filter(k => k.includes('sb-') || k.includes('supabase'))
+        .forEach(k => localStorage.removeItem(k));
+      window.location.href = '/';
+    }
   };
 
   return (
