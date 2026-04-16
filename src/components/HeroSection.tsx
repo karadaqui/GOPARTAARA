@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Search, Camera, Loader2, Car, ArrowUp, ImageIcon, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -97,11 +97,26 @@ const HeroSection = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [garageVehicle, setGarageVehicle] = useState<{ make: string; model: string; year?: number } | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 50);
     return () => clearTimeout(t);
   }, []);
+
+  // Fetch user's first garage vehicle
+  useEffect(() => {
+    if (!user) { setGarageVehicle(null); return; }
+    supabase
+      .from("user_vehicles")
+      .select("make, model, year")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .then(({ data }) => {
+        if (data?.[0]) setGarageVehicle(data[0]);
+      });
+  }, [user]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,16 +167,12 @@ const HeroSection = () => {
         setIdentifying(false);
         return;
       }
-      // Use detectedMake from AI, or fall back to first compatible vehicle
-      const aiMake = data?.detectedMake || undefined;
-      const firstVehicle = (data?.compatibleVehicles || [])[0] || "";
-      const vehicleParts = firstVehicle.split(" ");
-      const detectedMake = aiMake || vehicleParts[0] || undefined;
-      const detectedModel = vehicleParts.length > 1 ? vehicleParts[1] : undefined;
-      const detectedPartNumber = data?.detectedPartNumber || undefined;
-
-      // Generate smart cleaned search terms
-      const smartTerms = generateSmartSearchTerms(partName, detectedMake, detectedModel, detectedPartNumber);
+      // Generate search terms: garage vehicle > AI make only (never AI model)
+      const smartTerms = buildPhotoSearchTerms(
+        partName,
+        { detectedMake: data?.detectedMake, detectedPartNumber: data?.detectedPartNumber },
+        garageVehicle,
+      );
 
       setEditedPartName(partName);
       setEditingPartName(false);
