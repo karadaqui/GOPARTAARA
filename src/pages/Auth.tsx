@@ -143,9 +143,12 @@ const Auth = () => {
           ) : (
             <>
               <div className="text-center mb-8">
-                <a href="/" className="font-display text-2xl font-bold tracking-tight inline-block mb-2">
-                  <span className="text-primary">PART</span>
-                  <span className="text-foreground">ARA</span>
+                <a href="/" className="inline-block mb-2">
+                  <span className="logo-text text-2xl">
+                    <span className="logo-go">go</span>
+                    <span className="logo-part">PART</span>
+                    <span className="logo-ara">ARA</span>
+                  </span>
                 </a>
                 <h1 className="font-display text-xl font-semibold">
                   {isLogin ? "Welcome back" : "Create an account"}

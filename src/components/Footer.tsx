@@ -14,8 +14,12 @@ const Footer = () => {
       <div className="container px-4">
         <div className="grid sm:grid-cols-2 md:grid-cols-5 gap-8 mb-12">
           <div>
-            <button onClick={() => handleLink("/")} className="font-display text-xl font-bold tracking-tight">
-              <span className="text-primary">PART</span>ARA
+            <button onClick={() => handleLink("/")} className="inline-block">
+              <span className="logo-text text-xl">
+                <span className="logo-go">go</span>
+                <span className="logo-part">PART</span>
+                <span className="logo-ara">ARA</span>
+              </span>
             </button>
             <p className="text-muted-foreground text-sm mt-3 leading-relaxed">
               The smarter way to find car parts. Search 1,000,000+ parts from trusted UK &amp; global suppliers.
