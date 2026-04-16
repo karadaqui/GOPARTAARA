@@ -129,6 +129,16 @@ const PricingSection = () => {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [slowWarning, setSlowWarning] = useState(false);
   const [annual, setAnnual] = useState(false);
+  const [hadTrial, setHadTrial] = useState(true); // default true to avoid flash
+
+  useEffect(() => {
+    if (!user) { setHadTrial(false); return; }
+    supabase.from("profiles").select("trial_ends_at, subscription_period, subscription_plan")
+      .eq("user_id", user.id).maybeSingle()
+      .then(({ data }) => {
+        setHadTrial(!!(data?.trial_ends_at || (data?.subscription_plan && data.subscription_plan !== "free")));
+      }).catch(() => {});
+  }, [user]);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
