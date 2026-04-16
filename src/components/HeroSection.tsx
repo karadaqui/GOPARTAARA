@@ -11,7 +11,62 @@ import SearchCounter from "@/components/SearchCounter";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
 
-interface PhotoResult {
+const buildSmartSearchTerm = (
+  partName: string,
+  make?: string,
+  model?: string,
+): string => {
+  const engineCodes = [
+    'R-VTEC', 'i-VTEC', 'VTEC', 'VVT-i', 'VVTi', 'D-4D', 'D4D',
+    'TDCi', 'TDi', 'HDi', 'CDTi', 'CDTI', 'DTi', 'DTH', 'JTD', 'JTDM',
+    'TSi', 'TFSI', 'FSi', 'GDi', 'T-GDi', 'MPI', 'SPI', 'EFI',
+    'DOHC', 'SOHC', 'OHC', 'OHV', 'CRDI', 'CRDi', 'SCi',
+    'BlueHDi', 'BlueMotion', 'EcoBoost', 'EcoBlue', 'SkyActiv',
+    'Multijet', 'MultiJet', 'TwinPower', 'xDrive', 'sDrive', 'quattro',
+    '4Motion', '4MATIC', 'AWD', 'FWD', 'RWD',
+  ];
+  let cleaned = partName;
+  engineCodes.forEach(code => {
+    cleaned = cleaned.replace(new RegExp(`\\b${code}\\b`, 'gi'), '');
+  });
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  const words = cleaned.split(' ').filter(w => w.length > 1);
+  const partWords = words.slice(0, 5).join(' ');
+  const parts: string[] = [];
+  if (make) parts.push(make);
+  if (model) parts.push(model);
+  parts.push(partWords);
+  const final = [...new Set(parts.join(' ').split(' '))].join(' ').trim();
+  return final.length > 60 ? final.substring(0, 60).trim() : final;
+};
+
+const generateSmartSearchTerms = (
+  partName: string,
+  make?: string,
+  model?: string,
+  partNumber?: string,
+): { term: string; label: string; icon: string }[] => {
+  const terms: { term: string; label: string; icon: string }[] = [];
+  if (make && model) {
+    terms.push({ term: buildSmartSearchTerm(partName, make, model), label: "Specific search", icon: "🎯" });
+  }
+  if (make) {
+    const t = buildSmartSearchTerm(partName, make);
+    if (!terms.find(x => x.term === t)) {
+      terms.push({ term: t, label: "Broader search", icon: "🔍" });
+    }
+  }
+  const universal = buildSmartSearchTerm(partName);
+  if (!terms.find(x => x.term === universal)) {
+    terms.push({ term: universal, label: "Universal search", icon: "🌐" });
+  }
+  if (partNumber && partNumber.length > 3 && !terms.find(x => x.term === partNumber)) {
+    terms.push({ term: partNumber, label: "Part number", icon: "🔢" });
+  }
+  return terms.filter(t => t.term.length > 2).slice(0, 3);
+};
+
+
   partName: string;
   category: string;
   condition: string;
