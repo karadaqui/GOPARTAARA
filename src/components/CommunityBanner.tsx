@@ -1,18 +1,37 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const CommunityBanner = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const handleClaimFreeMonth = async () => {
-    if (!user) { navigate('/auth'); return; }
-    const { activateTrial } = await import('@/utils/activateTrial');
-    const result = await activateTrial(supabase);
-    if (result.success) toast.success(result.message);
-    else toast.error(result.message);
+    try {
+      const raw = localStorage.getItem('sb-bkwieknlxvkrzluongif-auth-token');
+      if (!raw) { navigate('/auth'); return; }
+      const token = JSON.parse(raw)?.access_token;
+
+      const response = await fetch(
+        'https://bkwieknlxvkrzluongif.supabase.co/functions/v1/activate-trial',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({}),
+        }
+      );
+
+      const result = await response.json();
+      if (result.success) {
+        toast.success('🎉 1 month Pro activated!');
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        toast.error(result.error || 'Something went wrong');
+      }
+    } catch {
+      toast.error('Connection error. Please try again.');
+    }
   };
 
   return (
@@ -30,13 +49,11 @@ const CommunityBanner = () => {
         </div>
       </div>
 
-      {/* Heading */}
       <h3 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight mb-6">
         We're small.<br />
         Our ambitions aren't.
       </h3>
 
-      {/* Paragraph 1 */}
       <p className="text-muted-foreground text-base leading-relaxed mb-4">
         Right now, PARTARA searches over{" "}
         <span className="text-foreground font-semibold">1,000,000+ parts</span> through{" "}
@@ -45,7 +62,6 @@ const CommunityBanner = () => {
         and we never miss a discount.
       </p>
 
-      {/* Paragraph 2 */}
       <p className="text-muted-foreground text-sm leading-relaxed mb-8">
         We're an independent team with big dreams — working hard
         to bring every driver, every car owner, every mechanic
@@ -54,7 +70,6 @@ const CommunityBanner = () => {
         we'll get there faster.
       </p>
 
-      {/* What's live now */}
       <div className="mb-6">
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
           What's live today
@@ -76,7 +91,6 @@ const CommunityBanner = () => {
         </div>
       </div>
 
-      {/* Coming soon suppliers */}
       <div className="mb-8">
         <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
           Suppliers &amp; markets we're adding
@@ -100,10 +114,8 @@ const CommunityBanner = () => {
         </div>
       </div>
 
-      {/* Divider */}
       <div className="w-12 h-px bg-border mx-auto mb-8" />
 
-      {/* Free Pro offer */}
       <div className="mb-8">
         <p className="text-3xl mb-3" aria-hidden="true">🎁</p>
         <h4 className="text-lg font-semibold text-foreground mb-2">
@@ -123,7 +135,6 @@ const CommunityBanner = () => {
         </button>
       </div>
 
-      {/* Feedback */}
       <p className="text-xs text-muted-foreground">
         We read every message. Tell us what you think →{" "}
         <a
