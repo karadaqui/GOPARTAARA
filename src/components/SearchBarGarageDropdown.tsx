@@ -66,7 +66,7 @@ const SearchBarGarageDropdown = ({ onSelect }: Props) => {
             </DropdownMenuItem>
           ))
         ) : (
-          <DropdownMenuItem onClick={() => navigate("/dashboard#garage")}>
+          <DropdownMenuItem onClick={() => navigate("/garage")}>
             <Plus size={14} className="mr-2 text-primary" />
             Add Vehicle
           </DropdownMenuItem>
