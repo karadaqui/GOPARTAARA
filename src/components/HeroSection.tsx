@@ -422,6 +422,19 @@ const HeroSection = () => {
                     Upload a photo of any car part — our system will identify it and find the best prices
                   </p>
                   {user && <SearchCounter limitData={searchLimit} />}
+                  <div className="flex items-center justify-center mt-3">
+                    <a
+                      href="#mission"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        document.getElementById('mission-section')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors group"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse flex-shrink-0" />
+                      New? Get your first month Pro free →
+                    </a>
+                  </div>
                 </div>
 
                 {/* Photo identification results */}
