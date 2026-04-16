@@ -11,11 +11,23 @@ import SearchCounter from "@/components/SearchCounter";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
 
+interface PhotoResult {
+  partName: string;
+  category: string;
+  condition: string;
+  compatibleVehicles: string[];
+  brands: string[];
+  searchTerms: string[];
+  confidence: string;
+  details: string;
+}
+
 const HeroSection = () => {
   const [query, setQuery] = useState("");
   const { user } = useAuth();
   const searchLimit = useSearchLimit();
   const [identifying, setIdentifying] = useState(false);
+  const [photoResult, setPhotoResult] = useState<PhotoResult | null>(null);
   const [activeTab, setActiveTab] = useState<"part" | "plate" | "vin">("part");
   const [regNumber, setRegNumber] = useState("");
   const [regLoading, setRegLoading] = useState(false);
@@ -67,6 +79,7 @@ const HeroSection = () => {
       return;
     }
     setIdentifying(true);
+    setPhotoResult(null);
     try {
       const reader = new FileReader();
       const base64 = await new Promise<string>((resolve, reject) => {
@@ -83,8 +96,17 @@ const HeroSection = () => {
         setIdentifying(false);
         return;
       }
-      toast({ title: `Identified: ${partName}`, description: `Confidence: ${confidence}. Searching now...` });
-      navigate(`/search?q=${encodeURIComponent(partName)}&photo=1`);
+      setPhotoResult({
+        partName,
+        category: data?.category || "",
+        condition: data?.condition || "",
+        compatibleVehicles: data?.compatibleVehicles || [],
+        brands: data?.brands || [],
+        searchTerms: data?.searchTerms || [],
+        confidence,
+        details: data?.details || "",
+      });
+      toast({ title: `Identified: ${partName}`, description: `Confidence: ${confidence}` });
     } catch (err: any) {
       console.error("Photo identify failed:", err);
       toast({ title: "Identification failed", description: err.message || "Please try again or search manually.", variant: "destructive" });
