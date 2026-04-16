@@ -11,6 +11,60 @@ import SearchCounter from "@/components/SearchCounter";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
 
+const buildSmartSearchTerm = (
+  partName: string,
+  make?: string,
+  model?: string,
+): string => {
+  const engineCodes = [
+    'R-VTEC', 'i-VTEC', 'VTEC', 'VVT-i', 'VVTi', 'D-4D', 'D4D',
+    'TDCi', 'TDi', 'HDi', 'CDTi', 'CDTI', 'DTi', 'DTH', 'JTD', 'JTDM',
+    'TSi', 'TFSI', 'FSi', 'GDi', 'T-GDi', 'MPI', 'SPI', 'EFI',
+    'DOHC', 'SOHC', 'OHC', 'OHV', 'CRDI', 'CRDi', 'SCi',
+    'BlueHDi', 'BlueMotion', 'EcoBoost', 'EcoBlue', 'SkyActiv',
+    'Multijet', 'MultiJet', 'TwinPower', 'xDrive', 'sDrive', 'quattro',
+    '4Motion', '4MATIC', 'AWD', 'FWD', 'RWD',
+  ];
+  let cleaned = partName;
+  engineCodes.forEach(code => {
+    cleaned = cleaned.replace(new RegExp(`\\b${code}\\b`, 'gi'), '');
+  });
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  const words = cleaned.split(' ').filter(w => w.length > 1);
+  const partWords = words.slice(0, 5).join(' ');
+  const parts: string[] = [];
+  if (make) parts.push(make);
+  if (model) parts.push(model);
+  parts.push(partWords);
+  const final = [...new Set(parts.join(' ').split(' '))].join(' ').trim();
+  return final.length > 60 ? final.substring(0, 60).trim() : final;
+};
+
+const generateSmartSearchTerms = (
+  partName: string,
+  make?: string,
+  model?: string,
+  partNumber?: string,
+): { term: string; label: string; icon: string }[] => {
+  const terms: { term: string; label: string; icon: string }[] = [];
+  if (make && model) {
+    terms.push({ term: buildSmartSearchTerm(partName, make, model), label: "Specific search", icon: "🎯" });
+  }
+  if (make) {
+    const t = buildSmartSearchTerm(partName, make);
+    if (!terms.find(x => x.term === t)) {
+      terms.push({ term: t, label: "Broader search", icon: "🔍" });
+    }
+  }
+  const universal = buildSmartSearchTerm(partName);
+  if (!terms.find(x => x.term === universal)) {
+    terms.push({ term: universal, label: "Universal search", icon: "🌐" });
+  }
+  if (partNumber && partNumber.length > 3 && !terms.find(x => x.term === partNumber)) {
+    terms.push({ term: partNumber, label: "Part number", icon: "🔢" });
+  }
+  return terms.filter(t => t.term.length > 2).slice(0, 3);
+};
 interface PhotoResult {
   partName: string;
   category: string;
@@ -20,6 +74,7 @@ interface PhotoResult {
   searchTerms: string[];
   confidence: string;
   details: string;
+  _smartLabels?: { label: string; icon: string }[];
 }
 
 const HeroSection = () => {
@@ -96,15 +151,25 @@ const HeroSection = () => {
         setIdentifying(false);
         return;
       }
+      // Extract make/model from first compatible vehicle if available
+      const firstVehicle = (data?.compatibleVehicles || [])[0] || "";
+      const vehicleParts = firstVehicle.split(" ");
+      const detectedMake = vehicleParts[0] || undefined;
+      const detectedModel = vehicleParts.length > 1 ? vehicleParts[1] : undefined;
+
+      // Generate smart cleaned search terms
+      const smartTerms = generateSmartSearchTerms(partName, detectedMake, detectedModel);
+
       setPhotoResult({
         partName,
         category: data?.category || "",
         condition: data?.condition || "",
         compatibleVehicles: data?.compatibleVehicles || [],
         brands: data?.brands || [],
-        searchTerms: data?.searchTerms || [],
+        searchTerms: smartTerms.map(t => t.term),
         confidence,
         details: data?.details || "",
+        _smartLabels: smartTerms.map(t => ({ label: t.label, icon: t.icon })),
       });
       toast({ title: `Identified: ${partName}`, description: `Confidence: ${confidence}` });
     } catch (err: any) {
@@ -416,20 +481,33 @@ const HeroSection = () => {
                         <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
                           Search Results
                         </p>
-                        {photoResult.searchTerms.map((term, i) => (
-                          <button
-                            key={i}
-                            onClick={() => navigate(`/search?q=${encodeURIComponent(term)}&photo=1`)}
-                            className="flex items-center justify-between w-full p-3 bg-secondary hover:bg-secondary/80 rounded-xl transition-all group text-left"
-                          >
-                            <span className="text-sm text-muted-foreground group-hover:text-foreground">
-                              {term}
-                            </span>
-                            <span className="text-xs text-muted-foreground/60 group-hover:text-muted-foreground">
-                              Search →
-                            </span>
-                          </button>
-                        ))}
+                        {photoResult.searchTerms.map((term, i) => {
+                          const smartLabel = photoResult._smartLabels?.[i];
+                          return (
+                            <button
+                              key={i}
+                              onClick={() => navigate(`/search?q=${encodeURIComponent(term)}&photo=1`)}
+                              className="flex items-center justify-between w-full p-3 bg-secondary hover:bg-secondary/80 rounded-xl transition-all group text-left"
+                            >
+                              <div className="flex items-center gap-2">
+                                {smartLabel && <span className="text-sm">{smartLabel.icon}</span>}
+                                <div>
+                                  {smartLabel && (
+                                    <span className="text-[10px] text-muted-foreground/60 uppercase tracking-wider block">
+                                      {smartLabel.label}
+                                    </span>
+                                  )}
+                                  <span className="text-sm text-muted-foreground group-hover:text-foreground">
+                                    {term}
+                                  </span>
+                                </div>
+                              </div>
+                              <span className="text-xs text-muted-foreground/60 group-hover:text-muted-foreground">
+                                Search →
+                              </span>
+                            </button>
+                          );
+                        })}
                       </div>
                     )}
 
