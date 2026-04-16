@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Search, Camera, Loader2, Car, ArrowUp, ImageIcon, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,11 +11,11 @@ import SearchCounter from "@/components/SearchCounter";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
 
-const buildSmartSearchTerm = (
+const buildPhotoSearchTerms = (
   partName: string,
-  make?: string,
-  model?: string,
-): string => {
+  aiResult: { detectedMake?: string | null; detectedPartNumber?: string | null } | null,
+  garageVehicle?: { make: string; model: string; year?: string | number } | null,
+): { term: string; label: string; icon: string }[] => {
   const engineCodes = [
     'R-VTEC', 'i-VTEC', 'VTEC', 'VVT-i', 'VVTi', 'D-4D', 'D4D',
     'TDCi', 'TDi', 'HDi', 'CDTi', 'CDTI', 'DTi', 'DTH', 'JTD', 'JTDM',
@@ -29,41 +29,38 @@ const buildSmartSearchTerm = (
   engineCodes.forEach(code => {
     cleaned = cleaned.replace(new RegExp(`\\b${code}\\b`, 'gi'), '');
   });
-  cleaned = cleaned.replace(/\s+/g, ' ').trim();
-  const words = cleaned.split(' ').filter(w => w.length > 1);
-  const partWords = words.slice(0, 5).join(' ');
-  const parts: string[] = [];
-  if (make) parts.push(make);
-  if (model) parts.push(model);
-  parts.push(partWords);
-  const final = [...new Set(parts.join(' ').split(' '))].join(' ').trim();
-  return final.length > 60 ? final.substring(0, 60).trim() : final;
-};
+  cleaned = cleaned.replace(/\s+/g, ' ').trim().split(' ').slice(0, 4).join(' ');
 
-const generateSmartSearchTerms = (
-  partName: string,
-  make?: string,
-  model?: string,
-  partNumber?: string,
-): { term: string; label: string; icon: string }[] => {
   const terms: { term: string; label: string; icon: string }[] = [];
-  if (make && model) {
-    terms.push({ term: buildSmartSearchTerm(partName, make, model), label: "Specific search", icon: "🎯" });
-  }
-  if (make) {
-    const t = buildSmartSearchTerm(partName, make);
-    if (!terms.find(x => x.term === t)) {
-      terms.push({ term: t, label: "Broader search", icon: "🔍" });
+
+  if (garageVehicle?.make && garageVehicle?.model) {
+    terms.push({ term: `${garageVehicle.make} ${garageVehicle.model} ${cleaned}`, label: "Your vehicle", icon: "🎯" });
+    terms.push({ term: `${garageVehicle.make} ${cleaned}`, label: "Broader search", icon: "🔍" });
+  } else if (garageVehicle?.make) {
+    terms.push({ term: `${garageVehicle.make} ${cleaned}`, label: "Your vehicle make", icon: "🎯" });
+    terms.push({ term: cleaned, label: "Universal search", icon: "🌐" });
+  } else {
+    // No garage vehicle — use AI make only, NEVER AI model
+    const aiMake = aiResult?.detectedMake || '';
+    if (aiMake) {
+      terms.push({ term: `${aiMake} ${cleaned}`, label: "Detected make", icon: "🔍" });
     }
+    terms.push({ term: cleaned, label: "Universal search", icon: "🌐" });
   }
-  const universal = buildSmartSearchTerm(partName);
-  if (!terms.find(x => x.term === universal)) {
-    terms.push({ term: universal, label: "Universal search", icon: "🌐" });
+
+  // Add part number if detected
+  const pn = aiResult?.detectedPartNumber;
+  if (pn && pn.length > 3 && !terms.find(x => x.term === pn)) {
+    terms.push({ term: pn, label: "Part number", icon: "🔢" });
   }
-  if (partNumber && partNumber.length > 3 && !terms.find(x => x.term === partNumber)) {
-    terms.push({ term: partNumber, label: "Part number", icon: "🔢" });
-  }
-  return terms.filter(t => t.term.length > 2).slice(0, 3);
+
+  // Deduplicate and limit
+  const seen = new Set<string>();
+  return terms.filter(t => {
+    if (t.term.length < 3 || seen.has(t.term)) return false;
+    seen.add(t.term);
+    return true;
+  }).slice(0, 3);
 };
 interface PhotoResult {
   partName: string;
