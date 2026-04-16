@@ -5,50 +5,43 @@ import { getCorsHeaders, corsPreflightResponse, jsonResponse, validateJWT, logSe
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const LOVABLE_AI_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
-const SYSTEM_PROMPT = `You are an expert automotive parts identifier. When given an image of a car part:
+const SYSTEM_PROMPT = `You are a professional automotive parts expert with 20+ years experience.
 
-1. IDENTIFY the part precisely:
-   - Part name (e.g. "Front Brake Pad Set")
-   - Part category (e.g. "Brakes")
-   - Condition if visible (New/Used/Worn)
+Analyze the car part in the image and identify it PRECISELY.
 
-2. DETECT the vehicle make/model if any clues visible:
-   - Check for logos, part numbers, stampings
-   - Note distinctive shapes that match specific vehicles
+RULES:
+- Be SPECIFIC. Do not use vague terms like "engine component" or "air box"
+- If you see an intake manifold, say "intake manifold" NOT "air intake"
+- If you see brake pads, say "brake pad set" NOT "brake component"
+- If you see a water pump, say "water pump" NOT "cooling component"
+- Look for: part numbers, brand logos, casting marks, OEM stamps
+- Consider the shape, material, ports, connectors to identify correctly
+- Include left/right/front/rear orientation when visible
+- If you cannot identify the part at all, set partName to "Unknown car part" and confidence to "low"`;
 
-3. LIST compatible vehicles:
-   - Common vehicles this part fits
-   - e.g. "Compatible with: BMW 3 Series (E46, E90), 1 Series (E87)"
+const USER_PROMPT = `Look at this car part image carefully.
+Identify the EXACT part name - be very specific.
+Do NOT generalise. If it's a manifold, say manifold. If it's a brake disc, say brake disc.
 
-4. SUGGEST OEM/aftermarket brands:
-   - e.g. "Common brands: Brembo, Bosch, TRW, ATE"
-
-5. SEARCH TERMS:
-   - Provide 3 optimised eBay search terms for this part
-   - Include specific part numbers if visible
-
-Respond with ONLY a JSON object (no markdown, no explanation):
-- "partName": A specific, searchable name. Format: "[Make] [Model] [position] [part type]" if vehicle identifiable, otherwise just the part type. Examples: "Volvo XC60 Right Side Mirror Assembly", "Front Brake Pad Set"
-- "category": The part category (e.g. "Brakes", "Electrical", "Body", "Suspension", "Engine", "Exhaust", "Interior", "Lighting")
-- "condition": "New", "Used", or "Worn" based on visible condition
-- "compatibleVehicles": Array of compatible vehicle strings, e.g. ["BMW 3 Series E46", "BMW 1 Series E87"]. Empty array if unknown.
-- "brands": Array of common OEM/aftermarket brand names for this part type, e.g. ["Brembo", "Bosch", "TRW"]. Empty array if unknown.
-- "searchTerms": Array of 3 optimised eBay search strings for finding this part. Include part numbers if visible.
-- "confidence": "high" (clearly identifiable part + vehicle), "medium" (part type clear but vehicle uncertain), or "low" (cannot determine)
-- "details": Describe what you see — brand markings, part numbers, color, condition, mounting style, any text visible on the part
-
-CRITICAL RULES:
-- Focus on the ACTUAL part visible in the photo. Do NOT guess unrelated parts.
-- If you see a mirror, it's a mirror — not a spark plug or alternator.
-- Include left/right/front/rear orientation when visible.
-- If you can't identify the vehicle make/model, still identify the part type accurately.
-- If you cannot identify the part at all, set partName to "Unknown car part" and confidence to "low".
-- Always provide searchTerms even for low confidence — use generic terms.
-
-Return ONLY the JSON object, no markdown, no explanation.`;
+Return ONLY this JSON, nothing else:
+{
+  "partName": "exact specific part name here",
+  "partCategory": "one of: Engine, Brakes, Suspension, Exhaust, Electrical, Cooling, Steering, Transmission, Body, Filters",
+  "condition": "New or Used or Unknown",
+  "compatibleVehicles": ["list of cars this typically fits, max 5"],
+  "topBrands": ["top 3 aftermarket brands for this part"],
+  "searchTerms": [
+    "most specific eBay search term with make and part name",
+    "medium specific search term",
+    "broad search term for this part type"
+  ],
+  "confidence": "high or medium or low",
+  "detectedMake": "car make if visible or null",
+  "detectedPartNumber": "part number if visible or null"
+}`;
 
 const BodySchema = z.object({
-  image: z.string().min(1).max(10_000_000), // Max ~7.5MB base64
+  image: z.string().min(1).max(10_000_000),
 });
 
 function parseResult(content: string) {
@@ -77,7 +70,7 @@ async function callClaude(apiKey: string, mediaType: string, base64Data: string)
         role: "user",
         content: [
           { type: "image", source: { type: "base64", media_type: mediaType, data: base64Data } },
-          { type: "text", text: "Identify this car part." },
+          { type: "text", text: USER_PROMPT },
         ],
       }],
     }),
@@ -99,11 +92,11 @@ async function callLovableAI(apiKey: string, imageDataUri: string): Promise<stri
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: [
-          { type: "text", text: "Identify this car part:" },
+          { type: "text", text: USER_PROMPT },
           { type: "image_url", image_url: { url: imageDataUri } },
         ]},
       ],
-      temperature: 0.3,
+      temperature: 0.2,
     }),
   });
   if (!response.ok) {
@@ -119,11 +112,9 @@ Deno.serve(async (req) => {
 
   if (req.method === "OPTIONS") return corsPreflightResponse(corsHeaders);
 
-  // Request size limit (8MB for images)
   const sizeCheck = checkRequestSize(req, 8_388_608);
   if (sizeCheck) return sizeCheck;
 
-  // Rate limit (10/min)
   const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   const { allowed } = await checkRateLimit(clientIp, "identify-part");
   if (!allowed) {
@@ -131,7 +122,6 @@ Deno.serve(async (req) => {
     return rateLimitResponse(corsHeaders);
   }
 
-  // JWT validation (mandatory)
   const auth = await validateJWT(req, corsHeaders);
   if (auth.error) {
     await logSecurityEvent("unauthenticated_access", req, undefined, "identify-part");
@@ -184,23 +174,26 @@ Deno.serve(async (req) => {
     const result = parseResult(content!) || {
       partName: "Unknown car part",
       confidence: "low",
-      details: "Could not parse AI response",
       category: "",
       condition: "",
       compatibleVehicles: [],
       brands: [],
       searchTerms: [],
+      detectedMake: null,
+      detectedPartNumber: null,
     };
 
     return jsonResponse({
       partName: result.partName || "Unknown car part",
-      category: result.category || "",
+      category: result.partCategory || result.category || "",
       condition: result.condition || "",
       compatibleVehicles: Array.isArray(result.compatibleVehicles) ? result.compatibleVehicles : [],
-      brands: Array.isArray(result.brands) ? result.brands : [],
+      brands: Array.isArray(result.topBrands) ? result.topBrands : (Array.isArray(result.brands) ? result.brands : []),
       searchTerms: Array.isArray(result.searchTerms) ? result.searchTerms : [],
       confidence: result.confidence || "low",
       details: result.details || "",
+      detectedMake: result.detectedMake || null,
+      detectedPartNumber: result.detectedPartNumber || null,
     }, 200, corsHeaders);
   } catch (error) {
     console.error("Identify error:", error);
