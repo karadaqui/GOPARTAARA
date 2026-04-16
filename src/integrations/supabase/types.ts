@@ -1164,6 +1164,7 @@ export type Database = {
           registration_number: string | null
           tax_expiry_date: string | null
           user_id: string
+          vin: string | null
           year: number
         }
         Insert: {
@@ -1177,6 +1178,7 @@ export type Database = {
           registration_number?: string | null
           tax_expiry_date?: string | null
           user_id: string
+          vin?: string | null
           year: number
         }
         Update: {
@@ -1190,6 +1192,7 @@ export type Database = {
           registration_number?: string | null
           tax_expiry_date?: string | null
           user_id?: string
+          vin?: string | null
           year?: number
         }
         Relationships: []
