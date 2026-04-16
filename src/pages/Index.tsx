@@ -54,12 +54,11 @@ const Index = () => {
         }}
       />
       <Navbar />
+      <CommunityBanner />
       <HeroSection />
       <EbayDealsSection />
       <AmazonDealsSection />
       <RecentlyViewed />
-      <FeaturesSection />
-      <CommunityBanner />
       <HowItWorksSection />
       <TestimonialsSection />
       <SuppliersSection />
