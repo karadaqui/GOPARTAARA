@@ -455,10 +455,11 @@ const HeroSection = () => {
                               autoFocus
                               onKeyDown={(e) => {
                                 if (e.key === "Enter" && editedPartName.trim()) {
-                                  const make = photoResult.detectedMake || undefined;
-                                  const firstV = photoResult.compatibleVehicles[0] || "";
-                                  const model = firstV.split(" ")[1] || undefined;
-                                  const smartTerms = generateSmartSearchTerms(editedPartName.trim(), make, model, photoResult.detectedPartNumber || undefined);
+                                  const smartTerms = buildPhotoSearchTerms(
+                                    editedPartName.trim(),
+                                    { detectedMake: photoResult.detectedMake, detectedPartNumber: photoResult.detectedPartNumber },
+                                    garageVehicle,
+                                  );
                                   setPhotoResult({
                                     ...photoResult,
                                     partName: editedPartName.trim(),
@@ -472,10 +473,11 @@ const HeroSection = () => {
                             <button
                               onClick={() => {
                                 if (editedPartName.trim()) {
-                                  const make = photoResult.detectedMake || undefined;
-                                  const firstV = photoResult.compatibleVehicles[0] || "";
-                                  const model = firstV.split(" ")[1] || undefined;
-                                  const smartTerms = generateSmartSearchTerms(editedPartName.trim(), make, model, photoResult.detectedPartNumber || undefined);
+                                  const smartTerms = buildPhotoSearchTerms(
+                                    editedPartName.trim(),
+                                    { detectedMake: photoResult.detectedMake, detectedPartNumber: photoResult.detectedPartNumber },
+                                    garageVehicle,
+                                  );
                                   setPhotoResult({
                                     ...photoResult,
                                     partName: editedPartName.trim(),
