@@ -252,6 +252,12 @@ const Garage = () => {
               >
                 <span className="flex items-center gap-1.5 justify-center"><span className="text-[10px] bg-blue-900/40 border border-blue-500/30 text-blue-300 px-1.5 py-0.5 rounded font-bold tracking-wider leading-none">UK</span> Plate Lookup</span>
               </button>
+              <button
+                onClick={() => setMode("vin")}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-colors ${mode === "vin" ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground hover:text-foreground"}`}
+              >
+                VIN 🌍
+              </button>
             </div>
 
             {mode === "plate" && (
