@@ -178,6 +178,7 @@ const Garage = () => {
     setMake(""); setModel(""); setYear(""); setEngineSize(""); setNickname("");
     setRegNumber(""); setDvlaVehicle(null); setNeedsModelConfirm(false);
     setConfirmedModel(""); setShowForm(false); setMode("manual");
+    setVin(""); setVinFound(false); setVinLoading(false);
   };
 
   const getModelPlaceholder = (mk: string) => {
