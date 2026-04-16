@@ -2,14 +2,12 @@ import { Check, X, Loader2, Star, Zap, Shield, Building2 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, useEffect } from "react";
-
 
 /* ── Stripe IDs ─────────────────────────────────────────── */
 
@@ -132,92 +130,15 @@ const PricingSection = () => {
   const [slowWarning, setSlowWarning] = useState(false);
   const [annual, setAnnual] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [promoCode, setPromoCode] = useState("");
-  const [promoApplied, setPromoApplied] = useState(false);
-  const [promoLoading, setPromoLoading] = useState(false);
-  const [trialInfo, setTrialInfo] = useState<{ isOnTrial: boolean; trialEndsAt: string | null }>({ isOnTrial: false, trialEndsAt: null });
-
-  // Fetch trial info
-  useEffect(() => {
-    if (!user) return;
-    supabase.from("profiles").select("subscription_period, trial_ends_at").eq("user_id", user.id).single().then(({ data }) => {
-      if (data?.subscription_period === "trial" && data?.trial_ends_at) {
-        setTrialInfo({ isOnTrial: true, trialEndsAt: data.trial_ends_at });
-      }
-    });
-  }, [user]);
 
   useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);
 
-  const activateTrial = async (promo?: string): Promise<boolean> => {
-    try {
-      const storageKey = `sb-${import.meta.env.VITE_SUPABASE_PROJECT_ID}-auth-token`;
-      const raw = localStorage.getItem(storageKey);
-      if (!raw) {
-        toast({ title: "Please sign in first", variant: "destructive" });
-        navigate("/auth");
-        return false;
-      }
-      const sessionData = JSON.parse(raw);
-      const accessToken = sessionData?.access_token;
-      if (!accessToken) {
-        toast({ title: "Session expired. Please sign in again.", variant: "destructive" });
-        navigate("/auth");
-        return false;
-      }
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/activate-trial`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${accessToken}`,
-            "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-          },
-          body: JSON.stringify({ promoCode: promo?.trim().toUpperCase() || undefined }),
-        }
-      );
-      const result = await response.json();
-      if (!response.ok || result.error) {
-        const msg = result.error || "Something went wrong";
-        if (msg === "Trial already used") {
-          toast({ title: "You've already used your free trial", variant: "destructive" });
-        } else if (msg === "Invalid promo code") {
-          toast({ title: "Invalid promo code", variant: "destructive" });
-        } else {
-          toast({ title: msg, variant: "destructive" });
-        }
-        return false;
-      }
-      toast({ title: "🎉 1 month Pro activated!", description: "Enjoy PARTARA Pro free for 30 days." });
-      await supabase.auth.refreshSession();
-      setTimeout(() => {
-        window.location.href = "/dashboard";
-      }, 1500);
-      return true;
-    } catch (err) {
-      console.error("activateTrial error:", err);
-      toast({ title: "Something went wrong. Please try again.", variant: "destructive" });
-      return false;
-    }
-  };
-
-  const startCheckout = async (priceId: string | null, planName?: string) => {
+  const startCheckout = async (priceId: string | null) => {
     if (!priceId) {
       toast({ title: "Free plan", description: "You're already on the Free plan!" });
       return;
     }
-    if (!user) { navigate("/auth?redirect=pricing"); return; }
-
-    // For Pro plan, check if user can get a free trial first
-    if (planName === "Pro") {
-      const hadTrial = trialInfo.isOnTrial || trialInfo.trialEndsAt !== null;
-      if (!hadTrial) {
-        await activateTrial();
-        return;
-      }
-    }
-
+    if (!user) { navigate("/auth"); return; }
     setLoadingId(priceId);
     setSlowWarning(false);
     timeoutRef.current = setTimeout(() => setSlowWarning(true), CHECKOUT_TIMEOUT_MS);
@@ -236,55 +157,10 @@ const PricingSection = () => {
 
   const isLoading = (id: string | null) => id !== null && loadingId === id;
 
-  const formatDate = (iso: string) => {
-    try {
-      return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
-    } catch { return iso; }
-  };
-
-  const applyPromo = async () => {
-    if (!user) {
-      toast({ title: "Please sign in first", variant: "destructive" });
-      navigate("/auth");
-      return;
-    }
-    if (promoApplied) return;
-    setPromoLoading(true);
-    const success = await activateTrial(promoCode.trim());
-    if (success) setPromoApplied(true);
-    setPromoLoading(false);
-  };
 
   return (
     <section id="pricing" className="py-24">
       <div className="container max-w-5xl px-4 mx-auto">
-        {/* Trial banner for logged-in trial users */}
-        {trialInfo.isOnTrial && trialInfo.trialEndsAt && (
-          <div className="mb-8 rounded-2xl border border-primary/20 bg-primary/5 p-5 text-center">
-            <p className="text-sm font-semibold text-foreground">
-              🎉 You're on Pro trial — free until {formatDate(trialInfo.trialEndsAt)}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              After your trial, you'll move to Free unless you subscribe.
-            </p>
-          </div>
-        )}
-
-        {/* Banner for non-logged-in users */}
-        {!user && (
-          <div className="mb-8 rounded-2xl border border-primary/20 bg-primary/5 p-5 text-center">
-            <p className="text-sm font-semibold text-foreground">
-              🎁 New to PARTARA? First month Pro is FREE
-            </p>
-            <p className="text-xs text-muted-foreground mt-1 mb-3">
-              Sign up today — no credit card required.
-            </p>
-            <Button size="sm" className="rounded-xl" onClick={() => navigate("/auth")}>
-              Claim Free Month →
-            </Button>
-          </div>
-        )}
-
         {/* Header */}
         <div className="text-center mb-8 space-y-4">
           <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
@@ -311,20 +187,6 @@ const PricingSection = () => {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {individualPlans.map((plan) => {
             const effectivePriceId = annual && plan.annualPriceId ? plan.annualPriceId : plan.priceId;
-            
-            // Determine Pro button text based on trial status
-            let ctaText = plan.cta;
-            let ctaSubtext: string | undefined;
-            if (plan.name === "Pro") {
-              const hadTrial = trialInfo.isOnTrial || trialInfo.trialEndsAt !== null;
-              if (!user || !hadTrial) {
-                ctaText = "Start Free Month →";
-                ctaSubtext = "No credit card required";
-              } else {
-                ctaText = annual ? "Go Pro — £7.99/mo" : "Go Pro — £9.99/mo";
-              }
-            }
-            
             return (
               <PlanCard
                 key={plan.name}
@@ -335,40 +197,15 @@ const PricingSection = () => {
                 billedNote={annual ? plan.annualBilled : undefined}
                 period={plan.period}
                 features={plan.features}
-                cta={ctaText}
-                ctaSubtext={ctaSubtext}
+                cta={plan.cta}
                 popular={plan.popular}
                 loading={isLoading(effectivePriceId)}
                 slowWarning={slowWarning}
-                onSelect={() => startCheckout(effectivePriceId, plan.name)}
+                onSelect={() => startCheckout(effectivePriceId)}
               />
             );
           })}
         </div>
-
-        {/* Promo Code */}
-        {user && !promoApplied && !trialInfo.isOnTrial && (
-          <div className="mt-8 max-w-md mx-auto">
-            <p className="text-sm text-muted-foreground text-center mb-3">Have a promo code?</p>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Enter code"
-                value={promoCode}
-                onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                className="flex-1 bg-card border border-border rounded-xl px-4 py-2 text-foreground text-sm focus:border-primary outline-none min-h-[48px]"
-              />
-              <Button
-                variant="outline"
-                className="rounded-xl min-h-[48px]"
-                onClick={applyPromo}
-                disabled={promoLoading || !promoCode}
-              >
-                {promoLoading ? <Loader2 size={16} className="animate-spin" /> : "Apply"}
-              </Button>
-            </div>
-          </div>
-        )}
 
         {/* Business CTA */}
         <div className="mt-12 rounded-2xl border border-border/30 bg-card/30 backdrop-blur-sm p-8 sm:p-10 text-center">
@@ -467,7 +304,6 @@ interface PlanCardProps {
   searchFeatures?: string[];
   sellerFeatures?: string[];
   cta: string;
-  ctaSubtext?: string;
   popular: boolean;
   loading: boolean;
   slowWarning: boolean;
@@ -485,7 +321,7 @@ const FeatureItem = ({ text }: { text: string }) => (
 );
 
 const PlanCard = ({
-  name, tagline, price, period, originalPrice, billedNote, features, searchFeatures, sellerFeatures, cta, ctaSubtext, popular, loading, slowWarning, onSelect, was, saving, icon: Icon,
+  name, tagline, price, period, originalPrice, billedNote, features, searchFeatures, sellerFeatures, cta, popular, loading, slowWarning, onSelect, was, saving, icon: Icon,
 }: PlanCardProps) => {
   const isBundle = !!(searchFeatures && sellerFeatures);
 
@@ -564,9 +400,6 @@ const PlanCard = ({
           </span>
         ) : cta}
       </Button>
-      {ctaSubtext && (
-        <p className="text-[11px] text-muted-foreground text-center mt-2">{ctaSubtext}</p>
-      )}
     </div>
   );
 };

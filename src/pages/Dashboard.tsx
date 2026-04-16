@@ -279,8 +279,6 @@ const Dashboard = () => {
   const isEliteUser = userPlan.isElite;
   const isPro = userPlan.isPro;
   const isFree = userPlan.isFree;
-  const isTrial = userPlan.isTrial;
-  const trialEndsAt = userPlan.trialEndsAt;
 
   // For admin users, show full email; for regular users, require display_name
   const hasDisplayName = !!profile?.display_name?.trim();
@@ -310,7 +308,6 @@ const Dashboard = () => {
   const planBadge = () => {
     if (currentPlan === "admin") return <span className="px-2.5 py-0.5 rounded-full bg-destructive/15 border border-destructive/30 text-destructive text-xs font-semibold">ADMIN</span>;
     if (currentPlan === "elite") return <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-xs font-semibold">ELITE ⭐</span>;
-    if (currentPlan === "pro" && isTrial) return <span className="px-2.5 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs font-semibold">PRO TRIAL</span>;
     if (currentPlan === "pro") return <span className="px-2.5 py-0.5 rounded-full bg-blue-500/15 border border-blue-500/30 text-blue-400 text-xs font-semibold">PRO</span>;
     return <span className="px-2.5 py-0.5 rounded-full bg-muted border border-border text-muted-foreground text-xs font-semibold">FREE PLAN</span>;
   };
@@ -470,38 +467,6 @@ const Dashboard = () => {
                   <p className="text-xs text-muted-foreground">Manually Assigned</p>
                 </div>
               </div>
-            </div>
-          ) : currentPlan !== "free" && isTrial ? (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                  <Crown size={20} className="text-blue-400" />
-                </div>
-                <div>
-                  <p className="font-display font-bold text-lg capitalize">{currentPlan} Plan <span className="text-sm font-normal text-blue-400">(Trial)</span></p>
-                  <p className="text-xs text-muted-foreground">Free trial · No credit card required</p>
-                </div>
-              </div>
-
-              {trialEndsAt && (
-                <div className="rounded-xl bg-secondary/40 border border-border p-4 space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Trial expires</span>
-                    <span className="font-medium">{new Date(trialEndsAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Days remaining</span>
-                    <span className="font-medium">
-                      {Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))} days
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              <Button size="sm" className="rounded-xl gap-2" onClick={() => navigate("/pricing")}>
-                <Sparkles size={14} />
-                Upgrade to Paid Plan
-              </Button>
             </div>
           ) : currentPlan !== "free" ? (
             <div className="space-y-4">

@@ -48,7 +48,7 @@ const ReferralSection = ({ userId, referralCode, bonusSearches }: ReferralSectio
         Referral Program
       </h2>
       <p className="text-sm text-muted-foreground mb-4">
-        Share your link → Friend signs up → You <span className="text-primary font-semibold">BOTH get 1 month Pro free</span>!
+        Share your link — you both get <span className="text-primary font-semibold">5 bonus searches</span> when someone signs up!
       </p>
 
       {/* Referral link */}

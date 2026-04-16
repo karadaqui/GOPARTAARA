@@ -35,45 +35,18 @@ const CompleteProfile = () => {
       return;
     }
     setSaving(true);
-    try {
-      // Update via Supabase auth metadata
-      const { error: authError } = await supabase.auth.updateUser({
-        data: { full_name: trimmed, display_name: trimmed },
-      });
-      if (authError) throw authError;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ display_name: trimmed })
+      .eq("user_id", user.id);
 
-      // Also update profiles table via REST with localStorage token
-      const storageKey = `sb-${import.meta.env.VITE_SUPABASE_PROJECT_ID}-auth-token`;
-      const raw = localStorage.getItem(storageKey);
-      const sessionData = JSON.parse(raw || "{}");
-      const accessToken = sessionData?.access_token;
-
-      if (accessToken) {
-        await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/profiles?user_id=eq.${user.id}`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${accessToken}`,
-              "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-              "Prefer": "return=minimal",
-            },
-            body: JSON.stringify({ display_name: trimmed }),
-          }
-        );
-      }
-
-      toast({ title: "Welcome!", description: "Your profile is all set." });
-      setTimeout(() => {
-        navigate("/");
-        window.location.reload();
-      }, 1000);
-    } catch (err: any) {
-      console.error("updateDisplayName error:", err);
-      toast({ title: "Error", description: err.message || "Failed to update display name.", variant: "destructive" });
-    }
     setSaving(false);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Welcome!", description: "Your profile is all set." });
+      navigate("/");
+    }
   };
 
   return (

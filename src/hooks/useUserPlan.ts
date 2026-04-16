@@ -110,10 +110,10 @@ export interface UserPlan {
   isElite: boolean;
   isPro: boolean;
   isFree: boolean;
-  isTrial: boolean;
-  trialEndsAt: string | null;
   loading: boolean;
+  /** Call to check if user can perform an action with a limit. Returns true if allowed. */
   canUseFeature: (feature: keyof PlanFeatures) => boolean;
+  /** Min plan required for a boolean feature */
   requiredPlanFor: (feature: keyof PlanFeatures) => string;
   refresh: () => Promise<void>;
 }
@@ -136,32 +136,24 @@ export const markUpgradeShown = (feature: string) => {
 export const useUserPlan = (): UserPlan => {
   const { user } = useAuth();
   const [plan, setPlan] = useState<PlanType>("free");
-  const [subscriptionPeriod, setSubscriptionPeriod] = useState<string>("free");
-  const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
     if (!user) {
       setPlan("free");
-      setSubscriptionPeriod("free");
-      setTrialEndsAt(null);
       setLoading(false);
       return;
     }
     try {
       const { data } = await supabase
         .from("profiles")
-        .select("subscription_plan, subscription_period, trial_ends_at")
+        .select("subscription_plan")
         .eq("user_id", user.id)
         .single();
       const dbPlan = data?.subscription_plan || "free";
       setPlan(dbPlan as PlanType);
-      setSubscriptionPeriod(data?.subscription_period || "free");
-      setTrialEndsAt(data?.trial_ends_at || null);
     } catch {
       setPlan("free");
-      setSubscriptionPeriod("free");
-      setTrialEndsAt(null);
     }
     setLoading(false);
   }, [user]);
@@ -176,12 +168,12 @@ export const useUserPlan = (): UserPlan => {
   const isElite = ["elite", "admin"].includes(plan);
   const isPro = isPaid;
   const isFree = plan === "free";
-  const isTrial = subscriptionPeriod === "trial";
 
   const canUseFeature = useCallback(
     (feature: keyof PlanFeatures) => {
       const val = features[feature];
       if (typeof val === "boolean") return val;
+      // For numeric: Infinity means unlimited
       return true;
     },
     [features]
@@ -189,6 +181,7 @@ export const useUserPlan = (): UserPlan => {
 
   const requiredPlanFor = useCallback(
     (feature: keyof PlanFeatures) => {
+      // Find the cheapest plan that enables this feature
       if (PLAN_FEATURES.pro[feature]) return "Pro";
       if (PLAN_FEATURES.elite[feature]) return "Elite";
       return "Pro";
@@ -204,8 +197,6 @@ export const useUserPlan = (): UserPlan => {
     isElite,
     isPro,
     isFree,
-    isTrial,
-    trialEndsAt,
     loading,
     canUseFeature,
     requiredPlanFor,
