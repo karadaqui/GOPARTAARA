@@ -367,6 +367,7 @@ interface PlanCardProps {
   searchFeatures?: string[];
   sellerFeatures?: string[];
   cta: string;
+  ctaSubtext?: string;
   popular: boolean;
   loading: boolean;
   slowWarning: boolean;
