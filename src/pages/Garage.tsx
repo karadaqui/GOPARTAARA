@@ -314,6 +314,106 @@ const Garage = () => {
               </div>
             )}
 
+            {mode === "vin" && (
+              <div className="mb-6 space-y-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1.5 block">
+                    VIN Number <span className="text-muted-foreground/50">(17 characters)</span>
+                  </label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={vin}
+                      onChange={e => setVin(e.target.value.toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g, ''))}
+                      maxLength={17}
+                      placeholder="e.g. WBA3A5G59DNP26082"
+                      className="flex-1 rounded-xl bg-secondary border-border font-mono tracking-widest"
+                    />
+                    <Button
+                      onClick={async () => {
+                        if (vin.length !== 17) { toast({ title: 'Must be 17 characters', variant: 'destructive' }); return; }
+                        setVinLoading(true);
+                        try {
+                          const { data, error } = await supabase.functions.invoke('vin-decode', {
+                            body: { vin }
+                          });
+                          if (error || !data?.vehicle?.make) {
+                            toast({ title: 'VIN not found', description: 'Check and try again.', variant: 'destructive' });
+                            return;
+                          }
+                          const v = data.vehicle;
+                          setMake(v.make || '');
+                          setModel(v.model || '');
+                          setYear(String(v.year || ''));
+                          setEngineSize(v.engine || '');
+                          setVinFound(true);
+                          toast({ title: '✅ Vehicle found!' });
+                        } catch {
+                          toast({ title: 'Could not decode VIN', variant: 'destructive' });
+                        } finally {
+                          setVinLoading(false);
+                        }
+                      }}
+                      disabled={vin.length !== 17 || vinLoading}
+                      className="rounded-xl px-6"
+                    >
+                      {vinLoading ? <Loader2 size={14} className="animate-spin" /> : 'Decode'}
+                    </Button>
+                  </div>
+                  <p className={`text-xs mt-1 text-right ${vin.length === 17 ? 'text-emerald-400' : 'text-muted-foreground/40'}`}>
+                    {vin.length}/17
+                  </p>
+                </div>
+
+                {vinFound && (
+                  <div className="space-y-3">
+                    <p className="text-xs text-emerald-400 font-medium">✅ Vehicle found — edit if needed</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Make</label>
+                        <Input value={make} onChange={e => setMake(e.target.value)} className="rounded-xl bg-secondary border-border" />
+                      </div>
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Model</label>
+                        <Input value={model} onChange={e => setModel(e.target.value)} className="rounded-xl bg-secondary border-border" />
+                      </div>
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Year</label>
+                        <Input value={year} onChange={e => setYear(e.target.value)} className="rounded-xl bg-secondary border-border" />
+                      </div>
+                      <div>
+                        <label className="text-xs text-muted-foreground mb-1 block">Engine</label>
+                        <Input value={engineSize} onChange={e => setEngineSize(e.target.value)} className="rounded-xl bg-secondary border-border" />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground mb-1 block">Nickname (optional)</label>
+                      <Input value={nickname} onChange={e => setNickname(e.target.value)} placeholder='e.g. "My BMW"' className="rounded-xl bg-secondary border-border" />
+                    </div>
+                    <Button
+                      onClick={() => {
+                        if (!make || !model || !year) {
+                          toast({ title: "Missing fields", description: "Make, model and year are required.", variant: "destructive" });
+                          return;
+                        }
+                        handleSave();
+                      }}
+                      disabled={saving}
+                      className="w-full rounded-xl gap-2"
+                    >
+                      {saving ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+                      Save Vehicle
+                    </Button>
+                  </div>
+                )}
+
+                {!vinFound && (
+                  <p className="text-xs text-muted-foreground/50 text-center pt-2">
+                    Works for USA · Germany · UK · Japan · Korea · Italy & more
+                  </p>
+                )}
+              </div>
+            )}
+
             {(mode === "manual" || dvlaVehicle) && (
               <div className="space-y-4">
                 {mode === "manual" && (
