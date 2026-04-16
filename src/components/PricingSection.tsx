@@ -258,8 +258,9 @@ const PricingSection = () => {
                     method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                     body: JSON.stringify({ promoCode: code })
                   });
-                  const d = await r.json();
+                   const d = await r.json();
                   if (d.success) { toast({ title: '🎉 1 month Pro activated!' }); setTimeout(() => window.location.reload(), 1500); }
+                  else if (d.error === 'Promo code already used') { toast({ title: '✅ Your promo code was already applied — your Pro membership is active and running. No need to apply again!' }); }
                   else toast({ title: d.error || 'Invalid code', variant: 'destructive' });
                 } catch { toast({ title: 'Connection error', variant: 'destructive' }); }
               }}
