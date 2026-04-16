@@ -74,6 +74,8 @@ interface PhotoResult {
   searchTerms: string[];
   confidence: string;
   details: string;
+  detectedMake?: string | null;
+  detectedPartNumber?: string | null;
   _smartLabels?: { label: string; icon: string }[];
 }
 
