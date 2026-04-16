@@ -11,11 +11,11 @@ import SearchCounter from "@/components/SearchCounter";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
 
-const buildSmartSearchTerm = (
+const buildPhotoSearchTerms = (
   partName: string,
-  make?: string,
-  model?: string,
-): string => {
+  aiResult: { detectedMake?: string | null; detectedPartNumber?: string | null } | null,
+  garageVehicle?: { make: string; model: string; year?: string | number } | null,
+): { term: string; label: string; icon: string }[] => {
   const engineCodes = [
     'R-VTEC', 'i-VTEC', 'VTEC', 'VVT-i', 'VVTi', 'D-4D', 'D4D',
     'TDCi', 'TDi', 'HDi', 'CDTi', 'CDTI', 'DTi', 'DTH', 'JTD', 'JTDM',
@@ -29,41 +29,38 @@ const buildSmartSearchTerm = (
   engineCodes.forEach(code => {
     cleaned = cleaned.replace(new RegExp(`\\b${code}\\b`, 'gi'), '');
   });
-  cleaned = cleaned.replace(/\s+/g, ' ').trim();
-  const words = cleaned.split(' ').filter(w => w.length > 1);
-  const partWords = words.slice(0, 5).join(' ');
-  const parts: string[] = [];
-  if (make) parts.push(make);
-  if (model) parts.push(model);
-  parts.push(partWords);
-  const final = [...new Set(parts.join(' ').split(' '))].join(' ').trim();
-  return final.length > 60 ? final.substring(0, 60).trim() : final;
-};
+  cleaned = cleaned.replace(/\s+/g, ' ').trim().split(' ').slice(0, 4).join(' ');
 
-const generateSmartSearchTerms = (
-  partName: string,
-  make?: string,
-  model?: string,
-  partNumber?: string,
-): { term: string; label: string; icon: string }[] => {
   const terms: { term: string; label: string; icon: string }[] = [];
-  if (make && model) {
-    terms.push({ term: buildSmartSearchTerm(partName, make, model), label: "Specific search", icon: "🎯" });
-  }
-  if (make) {
-    const t = buildSmartSearchTerm(partName, make);
-    if (!terms.find(x => x.term === t)) {
-      terms.push({ term: t, label: "Broader search", icon: "🔍" });
+
+  if (garageVehicle?.make && garageVehicle?.model) {
+    terms.push({ term: `${garageVehicle.make} ${garageVehicle.model} ${cleaned}`, label: "Your vehicle", icon: "🎯" });
+    terms.push({ term: `${garageVehicle.make} ${cleaned}`, label: "Broader search", icon: "🔍" });
+  } else if (garageVehicle?.make) {
+    terms.push({ term: `${garageVehicle.make} ${cleaned}`, label: "Your vehicle make", icon: "🎯" });
+    terms.push({ term: cleaned, label: "Universal search", icon: "🌐" });
+  } else {
+    // No garage vehicle — use AI make only, NEVER AI model
+    const aiMake = aiResult?.detectedMake || '';
+    if (aiMake) {
+      terms.push({ term: `${aiMake} ${cleaned}`, label: "Detected make", icon: "🔍" });
     }
+    terms.push({ term: cleaned, label: "Universal search", icon: "🌐" });
   }
-  const universal = buildSmartSearchTerm(partName);
-  if (!terms.find(x => x.term === universal)) {
-    terms.push({ term: universal, label: "Universal search", icon: "🌐" });
+
+  // Add part number if detected
+  const pn = aiResult?.detectedPartNumber;
+  if (pn && pn.length > 3 && !terms.find(x => x.term === pn)) {
+    terms.push({ term: pn, label: "Part number", icon: "🔢" });
   }
-  if (partNumber && partNumber.length > 3 && !terms.find(x => x.term === partNumber)) {
-    terms.push({ term: partNumber, label: "Part number", icon: "🔢" });
-  }
-  return terms.filter(t => t.term.length > 2).slice(0, 3);
+
+  // Deduplicate and limit
+  const seen = new Set<string>();
+  return terms.filter(t => {
+    if (t.term.length < 3 || seen.has(t.term)) return false;
+    seen.add(t.term);
+    return true;
+  }).slice(0, 3);
 };
 interface PhotoResult {
   partName: string;
@@ -100,11 +97,26 @@ const HeroSection = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [garageVehicle, setGarageVehicle] = useState<{ make: string; model: string; year?: number } | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 50);
     return () => clearTimeout(t);
   }, []);
+
+  // Fetch user's first garage vehicle
+  useEffect(() => {
+    if (!user) { setGarageVehicle(null); return; }
+    supabase
+      .from("user_vehicles")
+      .select("make, model, year")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .then(({ data }) => {
+        if (data?.[0]) setGarageVehicle(data[0]);
+      });
+  }, [user]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,16 +167,12 @@ const HeroSection = () => {
         setIdentifying(false);
         return;
       }
-      // Use detectedMake from AI, or fall back to first compatible vehicle
-      const aiMake = data?.detectedMake || undefined;
-      const firstVehicle = (data?.compatibleVehicles || [])[0] || "";
-      const vehicleParts = firstVehicle.split(" ");
-      const detectedMake = aiMake || vehicleParts[0] || undefined;
-      const detectedModel = vehicleParts.length > 1 ? vehicleParts[1] : undefined;
-      const detectedPartNumber = data?.detectedPartNumber || undefined;
-
-      // Generate smart cleaned search terms
-      const smartTerms = generateSmartSearchTerms(partName, detectedMake, detectedModel, detectedPartNumber);
+      // Generate search terms: garage vehicle > AI make only (never AI model)
+      const smartTerms = buildPhotoSearchTerms(
+        partName,
+        { detectedMake: data?.detectedMake, detectedPartNumber: data?.detectedPartNumber },
+        garageVehicle,
+      );
 
       setEditedPartName(partName);
       setEditingPartName(false);
@@ -428,6 +436,24 @@ const HeroSection = () => {
                 {/* Photo identification results */}
                 {photoResult && (
                   <div className="mt-6 bg-card border border-border rounded-2xl p-5 text-left max-w-3xl mx-auto">
+                    {/* Garage vehicle banner */}
+                    {garageVehicle ? (
+                      <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-blue-950/30 border border-blue-800/30 rounded-xl">
+                        <span className="text-blue-400 text-sm">🚗</span>
+                        <span className="text-blue-300 text-xs">
+                          Searching for your {garageVehicle.make} {garageVehicle.model}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-secondary/50 border border-border/30 rounded-xl">
+                        <span className="text-muted-foreground text-xs">
+                          💡 Add your car to My Garage for more accurate results
+                        </span>
+                        <a href="/garage" className="text-primary text-xs underline ml-auto">
+                          Add car →
+                        </a>
+                      </div>
+                    )}
                     {/* Part identified */}
                     <div className="flex items-start gap-3 mb-4">
                       <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center text-primary flex-shrink-0">
@@ -447,10 +473,11 @@ const HeroSection = () => {
                               autoFocus
                               onKeyDown={(e) => {
                                 if (e.key === "Enter" && editedPartName.trim()) {
-                                  const make = photoResult.detectedMake || undefined;
-                                  const firstV = photoResult.compatibleVehicles[0] || "";
-                                  const model = firstV.split(" ")[1] || undefined;
-                                  const smartTerms = generateSmartSearchTerms(editedPartName.trim(), make, model, photoResult.detectedPartNumber || undefined);
+                                  const smartTerms = buildPhotoSearchTerms(
+                                    editedPartName.trim(),
+                                    { detectedMake: photoResult.detectedMake, detectedPartNumber: photoResult.detectedPartNumber },
+                                    garageVehicle,
+                                  );
                                   setPhotoResult({
                                     ...photoResult,
                                     partName: editedPartName.trim(),
@@ -464,10 +491,11 @@ const HeroSection = () => {
                             <button
                               onClick={() => {
                                 if (editedPartName.trim()) {
-                                  const make = photoResult.detectedMake || undefined;
-                                  const firstV = photoResult.compatibleVehicles[0] || "";
-                                  const model = firstV.split(" ")[1] || undefined;
-                                  const smartTerms = generateSmartSearchTerms(editedPartName.trim(), make, model, photoResult.detectedPartNumber || undefined);
+                                  const smartTerms = buildPhotoSearchTerms(
+                                    editedPartName.trim(),
+                                    { detectedMake: photoResult.detectedMake, detectedPartNumber: photoResult.detectedPartNumber },
+                                    garageVehicle,
+                                  );
                                   setPhotoResult({
                                     ...photoResult,
                                     partName: editedPartName.trim(),
