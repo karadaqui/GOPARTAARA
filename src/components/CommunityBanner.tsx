@@ -1,7 +1,19 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const CommunityBanner = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleClaimFreeMonth = async () => {
+    if (!user) { navigate('/auth'); return; }
+    const { activateTrial } = await import('@/utils/activateTrial');
+    const result = await activateTrial(supabase);
+    if (result.success) toast.success(result.message);
+    else toast.error(result.message);
+  };
 
   return (
     <div className="py-16 px-4 max-w-2xl mx-auto text-center">
@@ -104,7 +116,7 @@ const CommunityBanner = () => {
         </p>
         <button
           type="button"
-          onClick={() => navigate("/pricing")}
+          onClick={handleClaimFreeMonth}
           className="inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground px-6 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity"
         >
           Claim Free Month →
