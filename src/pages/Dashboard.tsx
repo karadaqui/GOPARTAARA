@@ -379,7 +379,7 @@ const Dashboard = () => {
               </p>
             </div>
 
-            {isFree && (
+            {isFree && !isAdmin && (
               <Button className="rounded-xl gap-2 shrink-0" onClick={() => navigate("/pricing")}>
                 <Sparkles size={14} />
                 Upgrade to Pro →
@@ -486,9 +486,11 @@ const Dashboard = () => {
                   <Crown size={20} className="text-primary" />
                 </div>
                 <div>
-                  <p className="font-display font-bold text-lg capitalize">{currentPlan} Plan</p>
+                  <p className="font-display font-bold text-lg">{getDisplayPlan()}</p>
                   <p className="text-xs text-muted-foreground">
-                    {currentPlan === "pro" ? "£9.99/mo" : currentPlan === "elite" ? "£19.99/mo" : ""}
+                    {profile?.subscription_period === "trial" && profile?.trial_ends_at
+                      ? `Free trial until ${new Date(profile.trial_ends_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}`
+                      : currentPlan === "pro" ? "£9.99/mo" : currentPlan === "elite" ? "£19.99/mo" : ""}
                   </p>
                 </div>
               </div>
