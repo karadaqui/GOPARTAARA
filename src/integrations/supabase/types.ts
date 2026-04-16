@@ -737,6 +737,7 @@ export type Database = {
           email: string | null
           first_payment_date: string | null
           id: string
+          promo_code_used: string | null
           referral_code: string
           refund_date: string | null
           refund_granted: boolean
@@ -755,6 +756,7 @@ export type Database = {
           email?: string | null
           first_payment_date?: string | null
           id?: string
+          promo_code_used?: string | null
           referral_code?: string
           refund_date?: string | null
           refund_granted?: boolean
@@ -773,6 +775,7 @@ export type Database = {
           email?: string | null
           first_payment_date?: string | null
           id?: string
+          promo_code_used?: string | null
           referral_code?: string
           refund_date?: string | null
           refund_granted?: boolean
