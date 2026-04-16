@@ -1,6 +1,6 @@
 const CommunityBanner = () => {
   return (
-    <section className="px-4 py-6 max-w-4xl mx-auto">
+    <section id="mission-section" className="px-4 py-6 max-w-4xl mx-auto">
       <div className="rounded-2xl border border-border overflow-hidden bg-secondary/60">
         {/* Red top accent line */}
         <div className="h-0.5 w-full bg-primary" />
