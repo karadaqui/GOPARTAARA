@@ -72,7 +72,7 @@ const Garage = () => {
   const [authGateOpen, setAuthGateOpen] = useState(false);
 
   // Form state
-  const [mode, setMode] = useState<"manual" | "plate">("manual");
+  const [mode, setMode] = useState<"manual" | "plate" | "vin">("manual");
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
@@ -83,6 +83,9 @@ const Garage = () => {
   const [dvlaVehicle, setDvlaVehicle] = useState<any>(null);
   const [needsModelConfirm, setNeedsModelConfirm] = useState(false);
   const [confirmedModel, setConfirmedModel] = useState("");
+  const [vin, setVin] = useState("");
+  const [vinLoading, setVinLoading] = useState(false);
+  const [vinFound, setVinFound] = useState(false);
 
   const PAID_PLANS = ["pro","elite","admin"];
 
