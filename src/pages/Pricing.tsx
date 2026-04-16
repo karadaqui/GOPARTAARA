@@ -128,7 +128,6 @@ const Pricing = () => {
               placeholder="🤫 psst... try COMMUNITY"
               className="flex-1 bg-zinc-800 border-zinc-700 text-foreground uppercase"
             />
-            />
             <Button
               onClick={handleApplyPromo}
               disabled={promoLoading || !promoCode.trim()}
