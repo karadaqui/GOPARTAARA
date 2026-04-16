@@ -48,10 +48,10 @@ const CommunityBanner = () => {
         </div>
 
         {/* Headline */}
-        <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight mb-3 leading-tight">
+        <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight mb-3 leading-tight">
           We're small.{' '}
           <span className="text-primary">Our ambitions aren't.</span>
-        </h1>
+        </h2>
 
         {/* Description */}
         <p className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-5 max-w-xl mx-auto">
