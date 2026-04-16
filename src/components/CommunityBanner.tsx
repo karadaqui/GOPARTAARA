@@ -37,125 +37,61 @@ const CommunityBanner = () => {
   };
 
   return (
-    <div className="py-16 px-4 max-w-2xl mx-auto text-center">
-      {/* Live badge */}
-      <div className="flex justify-center mb-6">
-        <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 text-sm">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-          </span>
-          <span className="text-emerald-400 font-medium">
+    <section className="w-full border-b border-border/60 bg-gradient-to-b from-secondary/80 to-transparent py-8 px-4">
+      <div className="max-w-3xl mx-auto text-center">
+        {/* Live badge */}
+        <div className="inline-flex items-center gap-2 mb-4 bg-secondary/60 border border-border/40 rounded-full px-4 py-1.5">
+          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
+          <span className="text-xs font-semibold text-muted-foreground tracking-wide">
             LIVE · eBay Global · 1,000,000+ parts
           </span>
         </div>
-      </div>
 
-      <h3 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight mb-6">
-        We're small.<br />
-        Our ambitions aren't.
-      </h3>
+        {/* Headline */}
+        <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight mb-3 leading-tight">
+          We're small.{' '}
+          <span className="text-primary">Our ambitions aren't.</span>
+        </h1>
 
-      <p className="text-muted-foreground text-base leading-relaxed mb-4">
-        Right now, PARTARA searches over{" "}
-        <span className="text-foreground font-semibold">1,000,000+ parts</span> through{" "}
-        <span className="text-foreground font-semibold">eBay Global</span> — covering the UK and beyond.
-        Every search is live, every deal is real,
-        and we never miss a discount.
-      </p>
-
-      <p className="text-muted-foreground text-sm leading-relaxed mb-8">
-        We're an independent team with big dreams — working hard
-        to bring every driver, every car owner, every mechanic
-        the best prices from trusted suppliers worldwide.
-        Global coverage is coming. With your support,
-        we'll get there faster.
-      </p>
-
-      <div className="mb-6">
-        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
-          What's live today
+        {/* Description */}
+        <p className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-5 max-w-xl mx-auto">
+          PARTARA searches <strong className="text-foreground">1,000,000+ parts</strong> from eBay Global —
+          live prices, real deals, every time.
+          We're an independent team working hard to add
+          more suppliers. With your support, we'll get there faster.
         </p>
-        <div className="flex flex-wrap justify-center gap-3">
-          {[
-            { name: "eBay UK", status: "live" },
-            { name: "eBay Global", status: "live" },
-            { name: "Amazon UK Deals", status: "live" },
-          ].map((s) => (
-            <span
-              key={s.name}
-              className="inline-flex items-center gap-1.5 text-sm text-emerald-400 bg-emerald-500/10 rounded-full px-3 py-1"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              {s.name}
-            </span>
-          ))}
+
+        {/* Free Pro CTA */}
+        <div className="inline-flex flex-col sm:flex-row items-center gap-3 bg-gradient-to-r from-primary/10 to-secondary/50 border border-primary/40 rounded-2xl px-6 py-4 mb-5">
+          <div className="text-left">
+            <p className="text-foreground font-bold text-sm">
+              🎁 First Month Pro — Completely Free
+            </p>
+            <p className="text-muted-foreground text-xs">
+              No credit card · Cancel anytime ·
+              Share & your friend gets 1 month free too
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleClaimFreeMonth}
+            className="flex-shrink-0 px-5 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold rounded-xl transition-all hover:shadow-lg hover:shadow-primary/20 whitespace-nowrap"
+          >
+            Claim Free Month →
+          </button>
         </div>
-      </div>
 
-      <div className="mb-8">
-        <p className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
-          Suppliers &amp; markets we're adding
-        </p>
+        {/* Coming soon suppliers */}
         <div className="flex flex-wrap justify-center gap-2">
-          {[
-            "Euro Car Parts",
-            "GSF Car Parts",
-            "Autodoc",
-            "Halfords",
-            "Global Suppliers",
-          ].map((supplier) => (
-            <span
-              key={supplier}
-              className="text-sm text-muted-foreground bg-muted/40 rounded-full px-3 py-1"
-            >
-              {supplier}
-              <span className="ml-1 text-xs text-yellow-500">· soon</span>
+          <span className="text-xs text-muted-foreground/60">Adding soon:</span>
+          {['Euro Car Parts', 'GSF', 'Autodoc', 'Halfords'].map(s => (
+            <span key={s} className="text-xs text-muted-foreground/60 bg-secondary border border-border rounded-full px-2.5 py-0.5">
+              {s}
             </span>
           ))}
         </div>
       </div>
-
-      <div className="w-12 h-px bg-border mx-auto mb-8" />
-
-      <div className="mb-8">
-        <p className="text-3xl mb-3" aria-hidden="true">🎁</p>
-        <h4 className="text-lg font-semibold text-foreground mb-2">
-          First Month Pro — Free
-        </h4>
-        <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-          New to PARTARA? Your first month Pro is on us —
-          no card needed. Already a member? Share your referral link
-          and your friend gets 1 month free too.
-        </p>
-        <button
-          type="button"
-          onClick={handleClaimFreeMonth}
-          className="inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground px-6 py-2.5 text-sm font-medium hover:opacity-90 transition-opacity"
-        >
-          Claim Free Month →
-        </button>
-      </div>
-
-      <p className="text-xs text-muted-foreground">
-        We read every message. Tell us what you think →{" "}
-        <a
-          href="mailto:info@gopartara.com"
-          className="text-muted-foreground hover:text-foreground transition-colors"
-        >
-          info@gopartara.com
-        </a>
-        {" "}·{" "}
-        <a
-          href="https://wa.me/447423753090"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-emerald-400 hover:text-emerald-300 transition-colors"
-        >
-          WhatsApp
-        </a>
-      </p>
-    </div>
+    </section>
   );
 };
 
