@@ -26,6 +26,29 @@ const CommunityBanner = () => {
               <p className="text-muted-foreground/70 text-sm leading-relaxed max-w-md">
                 We're an independent team working hard to give every driver access to the best prices from trusted suppliers worldwide. Your support helps us add more suppliers, faster.
               </p>
+              <div className="mt-5 flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Search parts e.g. BMW brake pads..."
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && e.currentTarget.value.trim()) {
+                      window.location.href = `/search?q=${encodeURIComponent(e.currentTarget.value.trim())}`;
+                    }
+                  }}
+                  className="flex-1 bg-secondary border border-border rounded-xl px-4 py-2.5 text-foreground text-sm placeholder:text-muted-foreground/50 focus:border-primary outline-none transition-colors"
+                />
+                <button
+                  onClick={(e) => {
+                    const input = (e.currentTarget as HTMLElement).previousElementSibling as HTMLInputElement;
+                    if (input?.value?.trim()) {
+                      window.location.href = `/search?q=${encodeURIComponent(input.value.trim())}`;
+                    }
+                  }}
+                  className="px-5 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold rounded-xl transition-all whitespace-nowrap"
+                >
+                  Search
+                </button>
+              </div>
             </div>
 
             {/* Right: Free Pro CTA card */}
