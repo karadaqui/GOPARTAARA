@@ -199,6 +199,7 @@ const PricingSection = () => {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {individualPlans.map((plan) => {
             const effectivePriceId = annual && plan.annualPriceId ? plan.annualPriceId : plan.priceId;
+            const proTrialCta = plan.name === "Pro" && !hadTrial;
             return (
               <PlanCard
                 key={plan.name}
@@ -209,14 +210,64 @@ const PricingSection = () => {
                 billedNote={annual ? plan.annualBilled : undefined}
                 period={plan.period}
                 features={plan.features}
-                cta={plan.cta}
+                cta={proTrialCta ? "Start Free — 1 Month Pro" : plan.cta}
+                ctaSubtext={proTrialCta ? "No credit card required" : undefined}
                 popular={plan.popular}
                 loading={isLoading(effectivePriceId)}
                 slowWarning={slowWarning}
-                onSelect={() => startCheckout(effectivePriceId)}
+                onSelect={proTrialCta ? async () => {
+                  if (!user) { navigate("/auth"); return; }
+                  const raw = localStorage.getItem('sb-bkwieknlxvkrzluongif-auth-token');
+                  if (!raw) { navigate("/auth"); return; }
+                  const token = JSON.parse(raw)?.access_token;
+                  try {
+                    const r = await fetch('https://bkwieknlxvkrzluongif.supabase.co/functions/v1/activate-trial', {
+                      method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                      body: JSON.stringify({})
+                    });
+                    const d = await r.json();
+                    if (d.success) { toast({ title: '🎉 1 month Pro activated!' }); setTimeout(() => window.location.reload(), 1500); }
+                    else toast({ title: d.error || 'Something went wrong', variant: 'destructive' });
+                  } catch { toast({ title: 'Connection error', variant: 'destructive' }); }
+                } : () => startCheckout(effectivePriceId)}
               />
             );
           })}
+        </div>
+
+        {/* Promo code section */}
+        <div className="text-center mt-8">
+          <p className="text-muted-foreground text-xs mb-2">Have a promo code?</p>
+          <div className="flex gap-2 justify-center max-w-[280px] mx-auto">
+            <input
+              id="promoInput"
+              type="text"
+              placeholder="Enter code e.g. COMMUNITY"
+              className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-foreground text-[13px] outline-none focus:border-primary"
+            />
+            <button
+              onClick={async () => {
+                const el = document.getElementById('promoInput') as HTMLInputElement | null;
+                const code = el?.value.trim().toUpperCase();
+                if (!code) return;
+                const raw = localStorage.getItem('sb-bkwieknlxvkrzluongif-auth-token');
+                if (!raw) { toast({ title: 'Please sign in first', variant: 'destructive' }); return; }
+                const token = JSON.parse(raw)?.access_token;
+                try {
+                  const r = await fetch('https://bkwieknlxvkrzluongif.supabase.co/functions/v1/activate-trial', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ promoCode: code })
+                  });
+                  const d = await r.json();
+                  if (d.success) { toast({ title: '🎉 1 month Pro activated!' }); setTimeout(() => window.location.reload(), 1500); }
+                  else toast({ title: d.error || 'Invalid code', variant: 'destructive' });
+                } catch { toast({ title: 'Connection error', variant: 'destructive' }); }
+              }}
+              className="bg-primary text-primary-foreground border-none rounded-lg px-4 py-2 text-[13px] font-semibold cursor-pointer hover:opacity-90 transition-opacity"
+            >
+              Apply
+            </button>
+          </div>
         </div>
 
         {/* Business CTA */}
