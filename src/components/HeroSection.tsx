@@ -11,11 +11,23 @@ import SearchCounter from "@/components/SearchCounter";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
 
+interface PhotoResult {
+  partName: string;
+  category: string;
+  condition: string;
+  compatibleVehicles: string[];
+  brands: string[];
+  searchTerms: string[];
+  confidence: string;
+  details: string;
+}
+
 const HeroSection = () => {
   const [query, setQuery] = useState("");
   const { user } = useAuth();
   const searchLimit = useSearchLimit();
   const [identifying, setIdentifying] = useState(false);
+  const [photoResult, setPhotoResult] = useState<PhotoResult | null>(null);
   const [activeTab, setActiveTab] = useState<"part" | "plate" | "vin">("part");
   const [regNumber, setRegNumber] = useState("");
   const [regLoading, setRegLoading] = useState(false);
@@ -67,6 +79,7 @@ const HeroSection = () => {
       return;
     }
     setIdentifying(true);
+    setPhotoResult(null);
     try {
       const reader = new FileReader();
       const base64 = await new Promise<string>((resolve, reject) => {
@@ -83,8 +96,17 @@ const HeroSection = () => {
         setIdentifying(false);
         return;
       }
-      toast({ title: `Identified: ${partName}`, description: `Confidence: ${confidence}. Searching now...` });
-      navigate(`/search?q=${encodeURIComponent(partName)}&photo=1`);
+      setPhotoResult({
+        partName,
+        category: data?.category || "",
+        condition: data?.condition || "",
+        compatibleVehicles: data?.compatibleVehicles || [],
+        brands: data?.brands || [],
+        searchTerms: data?.searchTerms || [],
+        confidence,
+        details: data?.details || "",
+      });
+      toast({ title: `Identified: ${partName}`, description: `Confidence: ${confidence}` });
     } catch (err: any) {
       console.error("Photo identify failed:", err);
       toast({ title: "Identification failed", description: err.message || "Please try again or search manually.", variant: "destructive" });
@@ -327,6 +349,96 @@ const HeroSection = () => {
                   </p>
                   {user && <SearchCounter limitData={searchLimit} />}
                 </div>
+
+                {/* Photo identification results */}
+                {photoResult && (
+                  <div className="mt-6 bg-card border border-border rounded-2xl p-5 text-left max-w-3xl mx-auto">
+                    {/* Part identified */}
+                    <div className="flex items-start gap-3 mb-4">
+                      <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center text-primary flex-shrink-0">
+                        🔍
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">
+                          Part Identified
+                        </p>
+                        <p className="text-foreground font-bold text-lg">{photoResult.partName}</p>
+                        <div className="flex gap-2 mt-1">
+                          {photoResult.category && (
+                            <span className="text-xs bg-secondary text-muted-foreground px-2 py-0.5 rounded-full">
+                              {photoResult.category}
+                            </span>
+                          )}
+                          {photoResult.condition && (
+                            <span className="text-xs bg-secondary text-muted-foreground px-2 py-0.5 rounded-full">
+                              {photoResult.condition}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Compatible vehicles */}
+                    {photoResult.compatibleVehicles.length > 0 && (
+                      <div className="mb-4">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
+                          Compatible Vehicles
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {photoResult.compatibleVehicles.map((v) => (
+                            <span key={v} className="px-2.5 py-1 bg-blue-950/40 border border-blue-800/30 text-blue-300 text-xs rounded-full">
+                              🚗 {v}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Recommended brands */}
+                    {photoResult.brands.length > 0 && (
+                      <div className="mb-4">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
+                          Top Brands
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {photoResult.brands.map((b) => (
+                            <span key={b} className="px-2.5 py-1 bg-secondary text-muted-foreground text-xs rounded-full font-medium">
+                              {b}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Search buttons */}
+                    {photoResult.searchTerms.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
+                          Search Results
+                        </p>
+                        {photoResult.searchTerms.map((term, i) => (
+                          <button
+                            key={i}
+                            onClick={() => navigate(`/search?q=${encodeURIComponent(term)}&photo=1`)}
+                            className="flex items-center justify-between w-full p-3 bg-secondary hover:bg-secondary/80 rounded-xl transition-all group text-left"
+                          >
+                            <span className="text-sm text-muted-foreground group-hover:text-foreground">
+                              {term}
+                            </span>
+                            <span className="text-xs text-muted-foreground/60 group-hover:text-muted-foreground">
+                              Search →
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Confidence indicator */}
+                    <p className="text-xs text-muted-foreground/50 mt-3 text-center">
+                      Confidence: {photoResult.confidence === "high" ? "🟢 High" : photoResult.confidence === "medium" ? "🟡 Medium" : "🔴 Low"}
+                    </p>
+                  </div>
+                )}
               </>
             ) : activeTab === "plate" ? (
               <>
