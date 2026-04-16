@@ -237,12 +237,12 @@ const PricingSection = () => {
 
         {/* Promo code section */}
         <div className="text-center mt-8">
-          <p className="text-muted-foreground text-xs mb-2">Have a promo code?</p>
+          <p className="text-muted-foreground text-xs mb-2">Got a secret code? 👀</p>
           <div className="flex gap-2 justify-center max-w-[280px] mx-auto">
             <input
               id="promoInput"
               type="text"
-              placeholder="Enter code e.g. COMMUNITY"
+              placeholder="🤫 psst... try COMMUNITY"
               className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-foreground text-[13px] outline-none focus:border-primary"
             />
             <button
