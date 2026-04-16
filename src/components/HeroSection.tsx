@@ -65,8 +65,7 @@ const generateSmartSearchTerms = (
   }
   return terms.filter(t => t.term.length > 2).slice(0, 3);
 };
-
-
+interface PhotoResult {
   partName: string;
   category: string;
   condition: string;
