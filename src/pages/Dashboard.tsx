@@ -523,13 +523,23 @@ const Dashboard = () => {
                   {portalLoading ? <Loader2 size={14} className="animate-spin" /> : <ExternalLink size={14} />}
                   Manage Subscription
                 </Button>
-                {profile?.first_payment_date && !profile.refund_granted && (() => {
-                  const daysSince = (Date.now() - new Date(profile.first_payment_date!).getTime()) / (1000 * 60 * 60 * 24);
-                  return daysSince <= 7;
-                })() && (
-                  <Button variant="outline" size="sm" className="rounded-xl gap-2" onClick={() => navigate("/refund")}>
-                    Request Refund
-                  </Button>
+                {/* Show refund button only for paying users, not trial/promo users */}
+                {(profile as any)?.promo_code_used || profile?.subscription_period === "trial" ? (
+                  <div className="w-full mt-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3">
+                    <p className="text-sm font-medium text-emerald-400">🎁 Free Trial Active</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Your Pro membership was activated with a promo code or free trial. Free memberships are non-refundable as no payment was taken. After your trial ends, you can subscribe or stay on the free plan.
+                    </p>
+                  </div>
+                ) : (
+                  profile?.first_payment_date && !profile.refund_granted && (() => {
+                    const daysSince = (Date.now() - new Date(profile.first_payment_date!).getTime()) / (1000 * 60 * 60 * 24);
+                    return daysSince <= 7;
+                  })() && (
+                    <Button variant="outline" size="sm" className="rounded-xl gap-2" onClick={() => navigate("/refund")}>
+                      Request Refund
+                    </Button>
+                  )
                 )}
               </div>
             </div>
