@@ -433,11 +433,73 @@ const HeroSection = () => {
                       <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center text-primary flex-shrink-0">
                         🔍
                       </div>
-                      <div>
+                      <div className="flex-1">
                         <p className="text-xs text-muted-foreground uppercase tracking-wide mb-0.5">
                           Part Identified
                         </p>
-                        <p className="text-foreground font-bold text-lg">{photoResult.partName}</p>
+                        {editingPartName ? (
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={editedPartName}
+                              onChange={(e) => setEditedPartName(e.target.value)}
+                              className="bg-secondary border border-border rounded-lg px-3 py-1.5 text-foreground font-bold text-lg flex-1 outline-none focus:ring-1 focus:ring-primary"
+                              autoFocus
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && editedPartName.trim()) {
+                                  const make = photoResult.detectedMake || undefined;
+                                  const firstV = photoResult.compatibleVehicles[0] || "";
+                                  const model = firstV.split(" ")[1] || undefined;
+                                  const smartTerms = generateSmartSearchTerms(editedPartName.trim(), make, model, photoResult.detectedPartNumber || undefined);
+                                  setPhotoResult({
+                                    ...photoResult,
+                                    partName: editedPartName.trim(),
+                                    searchTerms: smartTerms.map(t => t.term),
+                                    _smartLabels: smartTerms.map(t => ({ label: t.label, icon: t.icon })),
+                                  });
+                                  setEditingPartName(false);
+                                }
+                              }}
+                            />
+                            <button
+                              onClick={() => {
+                                if (editedPartName.trim()) {
+                                  const make = photoResult.detectedMake || undefined;
+                                  const firstV = photoResult.compatibleVehicles[0] || "";
+                                  const model = firstV.split(" ")[1] || undefined;
+                                  const smartTerms = generateSmartSearchTerms(editedPartName.trim(), make, model, photoResult.detectedPartNumber || undefined);
+                                  setPhotoResult({
+                                    ...photoResult,
+                                    partName: editedPartName.trim(),
+                                    searchTerms: smartTerms.map(t => t.term),
+                                    _smartLabels: smartTerms.map(t => ({ label: t.label, icon: t.icon })),
+                                  });
+                                  setEditingPartName(false);
+                                }
+                              }}
+                              className="px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors"
+                            >
+                              Update
+                            </button>
+                            <button
+                              onClick={() => { setEditingPartName(false); setEditedPartName(photoResult.partName); }}
+                              className="px-3 py-1.5 bg-secondary text-muted-foreground rounded-lg text-sm hover:bg-secondary/80 transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <p className="text-foreground font-bold text-lg">{photoResult.partName}</p>
+                            <button
+                              onClick={() => { setEditingPartName(true); setEditedPartName(photoResult.partName); }}
+                              className="p-1 text-muted-foreground hover:text-foreground transition-colors"
+                              title="Edit part name"
+                            >
+                              <Pencil size={14} />
+                            </button>
+                          </div>
+                        )}
                         <div className="flex gap-2 mt-1">
                           {photoResult.category && (
                             <span className="text-xs bg-secondary text-muted-foreground px-2 py-0.5 rounded-full">
