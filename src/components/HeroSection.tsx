@@ -150,15 +150,25 @@ const HeroSection = () => {
         setIdentifying(false);
         return;
       }
+      // Extract make/model from first compatible vehicle if available
+      const firstVehicle = (data?.compatibleVehicles || [])[0] || "";
+      const vehicleParts = firstVehicle.split(" ");
+      const detectedMake = vehicleParts[0] || undefined;
+      const detectedModel = vehicleParts.length > 1 ? vehicleParts[1] : undefined;
+
+      // Generate smart cleaned search terms
+      const smartTerms = generateSmartSearchTerms(partName, detectedMake, detectedModel);
+
       setPhotoResult({
         partName,
         category: data?.category || "",
         condition: data?.condition || "",
         compatibleVehicles: data?.compatibleVehicles || [],
         brands: data?.brands || [],
-        searchTerms: data?.searchTerms || [],
+        searchTerms: smartTerms.map(t => t.term),
         confidence,
         details: data?.details || "",
+        _smartLabels: smartTerms.map(t => ({ label: t.label, icon: t.icon })),
       });
       toast({ title: `Identified: ${partName}`, description: `Confidence: ${confidence}` });
     } catch (err: any) {
