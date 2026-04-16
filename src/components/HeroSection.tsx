@@ -85,6 +85,8 @@ const HeroSection = () => {
   const searchLimit = useSearchLimit();
   const [identifying, setIdentifying] = useState(false);
   const [photoResult, setPhotoResult] = useState<PhotoResult | null>(null);
+  const [editingPartName, setEditingPartName] = useState(false);
+  const [editedPartName, setEditedPartName] = useState("");
   const [activeTab, setActiveTab] = useState<"part" | "plate" | "vin">("part");
   const [regNumber, setRegNumber] = useState("");
   const [regLoading, setRegLoading] = useState(false);
