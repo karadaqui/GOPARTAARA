@@ -45,12 +45,10 @@ const Pricing = () => {
       if (result.success) {
         toast.success('🎉 1 month Pro activated!');
         setTimeout(() => window.location.reload(), 1500);
-      } else if (result.error === 'Trial already used') {
-        toast.error('You have already used your free trial');
+      } else if (result.already_used) {
+        toast.success(result.message);
       } else if (result.error === 'Invalid promo code') {
         toast.error('Invalid promo code');
-      } else if (result.error === 'Promo code already used') {
-        toast.success('✅ Your promo code was already applied — your Pro membership is active and running. No need to apply again!');
       } else {
         toast.error(result.error || 'Something went wrong');
       }
