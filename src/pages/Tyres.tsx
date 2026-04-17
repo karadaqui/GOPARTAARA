@@ -75,9 +75,9 @@ const Tyres = () => {
         ),
       );
 
-      const allProducts = results
-        .filter((r): r is PromiseFulfilledResult<TyreProduct[]> => r.status === 'fulfilled')
-        .flatMap((r) => r.value);
+      const allProducts: TyreProduct[] = results
+        .filter((r) => r.status === 'fulfilled')
+        .flatMap((r) => (r as PromiseFulfilledResult<TyreProduct[]>).value);
 
       setTyreProducts(allProducts);
     } catch (e) {
