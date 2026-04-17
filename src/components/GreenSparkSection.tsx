@@ -126,7 +126,7 @@ const GreenSparkSection = () => {
 
       {/* Disclaimer */}
       <p className="text-[10px] text-muted-foreground mt-3">
-        Powered by The Green Spark Plug Co. · UK only · Affiliate links — we may earn a small commission.
+        Powered by The Green Spark Plug Co. · Ships to UK, EU, USA, Australia & beyond · Affiliate link — we may earn a small commission at no extra cost to you.
       </p>
     </section>
   );
