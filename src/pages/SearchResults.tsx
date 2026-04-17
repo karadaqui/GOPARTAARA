@@ -1259,7 +1259,6 @@ const SearchResults = () => {
                     </span>
                   </a>
                 )}
-                </div>
                 </>
                 )}
                 {isClassicPartSearch(activeQuery) && brandFilter !== "eBay" && brandFilter !== "Amazon" && (
