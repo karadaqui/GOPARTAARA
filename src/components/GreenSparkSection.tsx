@@ -1,4 +1,4 @@
-import { isUKUser } from "@/data/ebayDeals";
+// Green Spark Plug Co. — global affiliate section (worldwide shipping)
 
 const AFFILIATE_BASE =
   "https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara&p=";
@@ -20,7 +20,7 @@ const CATEGORIES = [
     icon: "🔋",
     label: "Batteries",
     desc: "Classic & vintage batteries",
-    badge: "Free UK delivery £100+",
+    badge: "Ships worldwide · UK, EU, USA, Australia & more",
     url: buildLink("/battery"),
   },
   {
@@ -49,7 +49,6 @@ const CATEGORIES = [
 const BRANDS = ["NGK", "Bosch", "Denso", "Champion", "Beru", "Sealey", "Lucas", "Draper"];
 
 const GreenSparkSection = () => {
-  if (!isUKUser()) return null;
 
   return (
     <section className="px-4 py-6 max-w-7xl mx-auto">
