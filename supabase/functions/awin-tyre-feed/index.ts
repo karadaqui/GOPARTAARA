@@ -14,9 +14,8 @@ serve(async (req) => {
     const { width, profile, rim, advertiserId } = await req.json()
 
     const tyreSize = `${width}/${profile} R${rim}`.replace('RR', 'R')
-    const widthStr = String(width)
+    const widthStr = String(width).toLowerCase()
 
-    // AWIN feed list URL
     const feedListUrl =
       'https://ui.awin.com/productdata-darwin-download/publisher/2845282/f0b723c9643205a96aeb31377b805e02/1/feedList'
 
@@ -31,6 +30,9 @@ serve(async (req) => {
         )
       : null
 
+    console.log('Advertiser ID:', targetId)
+    console.log('Feed URL:', feed?.url)
+
     if (!feed?.url) {
       return new Response(
         JSON.stringify({
@@ -44,40 +46,36 @@ serve(async (req) => {
     const feedRes = await fetch(feed.url)
     const allProducts = await feedRes.json()
 
-    console.log('Feed products total:', Array.isArray(allProducts) ? allProducts.length : 0)
+    console.log('Total products in feed:', Array.isArray(allProducts) ? allProducts.length : 'not array')
     console.log('Sample product name:', allProducts?.[0]?.product_name)
-    console.log('Searching for:', { width, profile, rim })
 
     const filtered = Array.isArray(allProducts)
       ? allProducts
           .filter((p: any) => {
             const name = (p.product_name || p.name || '').toLowerCase()
-            // Just match the width - most specific identifier
-            return name.includes(widthStr)
+            const desc = (p.description || '').toLowerCase()
+            const combined = name + ' ' + desc
+            return combined.includes(widthStr)
           })
-          .slice(0, 8)
+          .slice(0, 12)
           .map((p: any) => ({
-            id: p.aw_product_id || p.product_id,
-            title: p.product_name || p.name,
+            id: p.aw_product_id || p.product_id || Math.random(),
+            title: p.product_name || p.name || '',
             price: `£${parseFloat(p.search_price || p.price || 0).toFixed(2)}`,
-            image: p.merchant_image_url || p.image_url || p.image,
-            url: p.aw_deep_link || p.affiliate_url || p.url,
+            image: p.merchant_image_url || p.image_url || '',
+            url: p.aw_deep_link || p.url || '',
             brand: p.brand_name || p.brand || '',
             shipping:
-              p.delivery_cost === '0' || p.delivery_cost === 0
+              !p.delivery_cost || p.delivery_cost === '0' || p.delivery_cost === 0
                 ? 'Free delivery'
-                : p.delivery_cost
-                  ? `£${p.delivery_cost} delivery`
-                  : 'See site',
-            inStock: p.in_stock === 'yes' || p.in_stock === true,
-            supplier: String(targetId),
-            supplierName: feed.advertiserName || 'Tyre Supplier',
-            rating: p.rating || '',
-            tyreSize,
+                : `£${p.delivery_cost} delivery`,
+            inStock: true,
+            supplierName: feed.advertiserName || '',
+            advertiserId: String(targetId),
           }))
       : []
 
-    console.log('Filtered:', filtered.length)
+    console.log('Filtered count:', filtered.length)
 
     return new Response(
       JSON.stringify({ products: filtered, tyreSize }),
