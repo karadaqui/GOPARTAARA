@@ -1,6 +1,6 @@
 // AWIN product feed proxy for Green Spark Plug Co. (advertiser 16976)
-// Fetches the AWIN datafeed, filters by query, returns up to 6 matching products.
-// Cached in-memory for 1 hour (the feed is large; refetching every search is wasteful).
+// Fetches the publisher feed list, finds the GSP feed download URL, then filters by query.
+// Cached in-memory for 1 hour.
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,49 +8,100 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const ADVERTISER_ID = "16976";
+const ADVERTISER_ID = 16976;
+const PUBLISHER_ID = "2845282";
+const FEED_TOKEN = "f0b723c9643205a96aeb31377b805e02";
+const FEED_LIST_URL = `https://ui.awin.com/productdata-darwin-download/publisher/${PUBLISHER_ID}/${FEED_TOKEN}/1/feedList`;
+const DIRECT_FEED_URL = `https://ui.awin.com/productdata-darwin-download/publisher/${PUBLISHER_ID}/${FEED_TOKEN}/1/${ADVERTISER_ID}`;
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
 
-interface AwinProduct {
-  aw_product_id?: string;
-  product_name?: string;
-  description?: string;
-  search_price?: string;
-  merchant_image_url?: string;
-  aw_deep_link?: string;
-  brand_name?: string;
-  delivery_cost?: string;
-  in_stock?: string;
-}
+let feedCache: { fetchedAt: number; products: any[] } | null = null;
 
-let feedCache: { fetchedAt: number; products: AwinProduct[] } | null = null;
-
-async function loadFeed(token: string): Promise<AwinProduct[]> {
+async function loadFeed(): Promise<any[]> {
   const now = Date.now();
   if (feedCache && now - feedCache.fetchedAt < CACHE_TTL_MS) {
     return feedCache.products;
   }
 
-  const feedUrl =
-    `https://productdata.awin.com/datafeed/download/apikey/${token}` +
-    `/language/en/fid/${ADVERTISER_ID}` +
-    `/columns/aw_product_id,product_name,description,search_price,merchant_image_url,aw_deep_link,brand_name,delivery_cost,in_stock` +
-    `/format/json/delimiter/%2C/compression/none/`;
+  let products: any[] = [];
 
-  const response = await fetch(feedUrl);
-  if (!response.ok) {
-    throw new Error(`AWIN API error: ${response.status}`);
+  // Try feed list first to find the canonical download URL
+  try {
+    const feedListRes = await fetch(FEED_LIST_URL);
+    if (feedListRes.ok) {
+      const feedList = await feedListRes.json();
+      if (Array.isArray(feedList)) {
+        const gspFeed = feedList.find((f: any) =>
+          f.advertiserId === ADVERTISER_ID ||
+          f.advertiser_id === String(ADVERTISER_ID) ||
+          f.advertiserId === String(ADVERTISER_ID)
+        );
+        const feedUrl = gspFeed?.downloadUrl || gspFeed?.url || gspFeed?.feedUrl;
+        if (feedUrl) {
+          const feedRes = await fetch(feedUrl);
+          if (feedRes.ok) {
+            const data = await feedRes.json();
+            products = Array.isArray(data) ? data : (data?.products ?? []);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error("feedList fetch failed", err);
   }
 
-  const data = await response.json();
-  const products: AwinProduct[] = Array.isArray(data)
-    ? data
-    : Array.isArray(data?.products)
-    ? data.products
-    : [];
+  // Fallback: direct feed URL
+  if (products.length === 0) {
+    const directRes = await fetch(DIRECT_FEED_URL);
+    if (!directRes.ok) {
+      throw new Error(`AWIN direct feed error: ${directRes.status}`);
+    }
+    const data = await directRes.json();
+    products = Array.isArray(data) ? data : (data?.products ?? []);
+  }
 
   feedCache = { fetchedAt: now, products };
   return products;
+}
+
+function processProducts(products: any[], query: string) {
+  const q = (query || "").toLowerCase().trim();
+  if (!q) return [];
+
+  return products
+    .filter((p: any) => {
+      const name = (p.product_name || p.name || p.title || "").toLowerCase();
+      const desc = (p.description || p.product_description || "").toLowerCase();
+      return name.includes(q) || desc.includes(q);
+    })
+    .slice(0, 6)
+    .map((p: any) => {
+      const priceNum = parseFloat(p.search_price || p.price || "0");
+      const deliveryRaw = p.delivery_cost;
+      const deliveryNum = parseFloat(deliveryRaw || "0");
+      let shipping = "See site for delivery";
+      if (deliveryRaw === "0" || deliveryRaw === 0 || deliveryNum === 0) {
+        shipping = "Free delivery";
+      } else if (!isNaN(deliveryNum) && deliveryNum > 0) {
+        shipping = `£${deliveryNum.toFixed(2)} delivery`;
+      }
+      return {
+        id: p.aw_product_id || p.product_id || p.id,
+        title: p.product_name || p.name || p.title,
+        price: isNaN(priceNum) ? (p.search_price || p.price) : `£${priceNum.toFixed(2)}`,
+        image: p.merchant_image_url || p.image_url || p.image,
+        url: p.aw_deep_link || p.affiliate_url || p.url,
+        brand: p.brand_name || p.brand || "Green Spark Plug Co.",
+        shipping,
+        inStock:
+          p.in_stock === "yes" ||
+          p.in_stock === true ||
+          p.in_stock === 1 ||
+          p.in_stock === "1",
+        supplier: "greensparkplug",
+        supplierName: "Green Spark Plug Co.",
+      };
+    });
 }
 
 Deno.serve(async (req) => {
@@ -60,51 +111,15 @@ Deno.serve(async (req) => {
 
   try {
     const { query } = await req.json().catch(() => ({ query: "" }));
-    const q = (query || "").toString().trim().toLowerCase();
 
-    if (!q) {
+    if (!query) {
       return new Response(JSON.stringify({ products: [] }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const token = Deno.env.get("AWIN_API_TOKEN");
-    if (!token) {
-      console.error("AWIN_API_TOKEN not configured");
-      return new Response(JSON.stringify({ products: [], error: "missing_token" }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const products = await loadFeed(token);
-
-    const filtered = products
-      .filter((p) => {
-        const name = (p.product_name || "").toLowerCase();
-        const desc = (p.description || "").toLowerCase();
-        return name.includes(q) || desc.includes(q);
-      })
-      .slice(0, 6)
-      .map((p) => {
-        const priceNum = parseFloat(p.search_price || "0");
-        const deliveryNum = parseFloat(p.delivery_cost || "0");
-        return {
-          id: p.aw_product_id,
-          title: p.product_name,
-          price: isNaN(priceNum) ? p.search_price : `£${priceNum.toFixed(2)}`,
-          image: p.merchant_image_url,
-          url: p.aw_deep_link,
-          brand: p.brand_name,
-          shipping:
-            !p.delivery_cost || deliveryNum === 0
-              ? "Free delivery"
-              : `£${deliveryNum.toFixed(2)} delivery`,
-          inStock: (p.in_stock || "").toLowerCase() === "yes" || p.in_stock === "1",
-          supplier: "greensparkplug",
-          supplierName: "Green Spark Plug Co.",
-        };
-      });
+    const products = await loadFeed();
+    const filtered = processProducts(products, query);
 
     return new Response(JSON.stringify({ products: filtered }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
