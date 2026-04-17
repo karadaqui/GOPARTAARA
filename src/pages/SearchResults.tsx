@@ -1026,6 +1026,33 @@ const SearchResults = () => {
                           onSave={handleSave}
                           isSaved={savedIds.has(gspKey)}
                           savingId={savingId}
+                          onCompareToggle={(c) => {
+                            const isSelected = compareParts.some((p) => p.id === c.id);
+                            if (isSelected) {
+                              setCompareParts((prev) => prev.filter((p) => p.id !== c.id));
+                            } else if (compareParts.length < 3) {
+                              setCompareParts((prev) => [
+                                ...prev,
+                                {
+                                  id: c.id,
+                                  title: c.title,
+                                  price: c.price,
+                                  condition: c.condition,
+                                  sellerName: c.sellerName,
+                                  sellerRating: 100,
+                                  freeShipping: false,
+                                  shippingCost: 0,
+                                  location: "UK",
+                                  itemCountry: "GB",
+                                  url: c.url,
+                                  imageUrl: c.imageUrl,
+                                  source: "ebay" as const,
+                                },
+                              ]);
+                            }
+                          }}
+                          isComparing={compareParts.some((p) => p.id === gspKey)}
+                          compareDisabled={compareParts.length >= 3}
                         />
                       );
                     }
