@@ -8,12 +8,21 @@ const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255
 const PROFILES = ['30','35','40','45','50','55','60','65','70','75'];
 const RIMS = ['13','14','15','16','17','18','19','20','21','22'];
 
-const TYRE_SUPPLIERS = [
-  { id: '4118', label: 'mytyres', flag: '🇬🇧' },
-  { id: '12715', label: 'Tyres UK', flag: '🇬🇧' },
-  { id: '10499', label: 'Spain', flag: '🇪🇸' },
-  { id: '12716', label: 'Italy', flag: '🇮🇹' },
-  { id: '10747', label: 'Estonia', flag: '🇪🇪' },
+type TyreSupplier = {
+  id: string;
+  name: string;
+  flag: string;
+  country: string;
+  desc: string;
+  awinmid: string;
+};
+
+const TYRE_SUPPLIERS: TyreSupplier[] = [
+  { id: '4118', name: 'mytyres.co.uk', flag: '🇬🇧', country: 'United Kingdom', desc: 'Free fitting · 34,000+ centres', awinmid: '4118' },
+  { id: '12715', name: 'Tyres UK', flag: '🇬🇧', country: 'United Kingdom', desc: '64 countries · Best prices', awinmid: '12715' },
+  { id: '10499', name: 'neumaticos-online.es', flag: '🇪🇸', country: 'Spain', desc: '2,600+ fitting centres', awinmid: '10499' },
+  { id: '12716', name: 'Pneumatici IT', flag: '🇮🇹', country: 'Italy', desc: '15% conversion rate', awinmid: '12716' },
+  { id: '10747', name: 'ReifenDirekt', flag: '🇩🇪', country: 'Germany', desc: 'Top EPC · Best performer', awinmid: '10747' },
 ];
 
 type TyreProduct = {
@@ -25,16 +34,17 @@ type TyreProduct = {
   brand: string;
   shipping: string;
   supplierName: string;
+  supplierMeta?: TyreSupplier;
 };
 
 const Tyres = () => {
   const [selectedWidth, setSelectedWidth] = useState('205');
   const [selectedProfile, setSelectedProfile] = useState('55');
   const [selectedRim, setSelectedRim] = useState('16');
-  const [activeSupplier, setActiveSupplier] = useState('4118');
   const [tyreProducts, setTyreProducts] = useState<TyreProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [countryFilter, setCountryFilter] = useState<string>('all');
 
   const sizeLabel = `${selectedWidth}/${selectedProfile} R${selectedRim}`;
 
@@ -42,17 +52,34 @@ const Tyres = () => {
     setLoading(true);
     setSearched(true);
     setTyreProducts([]);
+    setCountryFilter('all');
 
     try {
-      const { data } = await supabase.functions.invoke('awin-tyre-feed', {
-        body: {
-          width: selectedWidth,
-          profile: selectedProfile,
-          rim: selectedRim,
-          advertiserId: activeSupplier,
-        },
-      });
-      setTyreProducts(data?.products || []);
+      const results = await Promise.allSettled(
+        TYRE_SUPPLIERS.map((supplier) =>
+          supabase.functions
+            .invoke('awin-tyre-feed', {
+              body: {
+                width: selectedWidth,
+                profile: selectedProfile,
+                rim: selectedRim,
+                advertiserId: supplier.id,
+              },
+            })
+            .then(({ data }) =>
+              ((data?.products as TyreProduct[]) || []).map((p) => ({
+                ...p,
+                supplierMeta: supplier,
+              })),
+            ),
+        ),
+      );
+
+      const allProducts = results
+        .filter((r): r is PromiseFulfilledResult<TyreProduct[]> => r.status === 'fulfilled')
+        .flatMap((r) => r.value);
+
+      setTyreProducts(allProducts);
     } catch (e) {
       console.error(e);
     } finally {
@@ -60,11 +87,16 @@ const Tyres = () => {
     }
   };
 
+  const filteredProducts =
+    countryFilter === 'all'
+      ? tyreProducts
+      : tyreProducts.filter((p) => p.supplierMeta?.id === countryFilter);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
         title="Tyres & Wheels — Compare Prices Across UK & Europe | PARTARA"
-        description="Compare tyre prices from trusted UK & European retailers including mytyres.co.uk, Tyres UK, and more. Free fitting at 34,000+ centres nationwide."
+        description="Compare tyre prices from trusted UK & European retailers including mytyres.co.uk, Tyres UK, ReifenDirekt and more. Free fitting at 34,000+ centres."
       />
       <Navbar />
 
@@ -119,30 +151,12 @@ const Tyres = () => {
               </select>
             </div>
 
-            {/* Supplier tabs */}
-            <div className="flex gap-2 mb-4 overflow-x-auto scrollbar-hide pb-1">
-              {TYRE_SUPPLIERS.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => setActiveSupplier(s.id)}
-                  className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
-                    activeSupplier === s.id
-                      ? 'bg-red-600 border-red-500 text-white'
-                      : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:bg-zinc-700'
-                  }`}
-                >
-                  <span>{s.flag}</span>
-                  <span>{s.label}</span>
-                </button>
-              ))}
-            </div>
-
             <button
               onClick={searchTyres}
               disabled={loading}
               className="w-full py-3 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold rounded-xl transition-all text-sm tracking-wide"
             >
-              {loading ? '⏳ Searching...' : `Search ${sizeLabel} →`}
+              {loading ? '⏳ Searching all suppliers...' : `Search ${sizeLabel} →`}
             </button>
           </div>
         </div>
@@ -164,21 +178,55 @@ const Tyres = () => {
         {/* Results */}
         {!loading && tyreProducts.length > 0 && (
           <div className="max-w-6xl mx-auto px-4 mb-12">
+            {/* Country filter pills */}
+            <div className="flex gap-2 mb-4 overflow-x-auto scrollbar-hide pb-1 justify-center">
+              <button
+                onClick={() => setCountryFilter('all')}
+                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                  countryFilter === 'all'
+                    ? 'bg-red-600 border-red-500 text-white'
+                    : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:bg-zinc-700'
+                }`}
+              >
+                All ({tyreProducts.length})
+              </button>
+              {TYRE_SUPPLIERS.filter((s) =>
+                tyreProducts.some((p) => p.supplierMeta?.id === s.id),
+              ).map((s) => {
+                const count = tyreProducts.filter((p) => p.supplierMeta?.id === s.id).length;
+                return (
+                  <button
+                    key={s.id}
+                    onClick={() => setCountryFilter(s.id)}
+                    className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                      countryFilter === s.id
+                        ? 'bg-red-600 border-red-500 text-white'
+                        : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:bg-zinc-700'
+                    }`}
+                  >
+                    <span>{s.flag}</span>
+                    <span>{s.name}</span>
+                    <span className="text-zinc-500">({count})</span>
+                  </button>
+                );
+              })}
+            </div>
+
             <p className="text-zinc-600 text-xs mb-4 text-center">
-              {tyreProducts.length} results for{' '}
+              {filteredProducts.length} results for{' '}
               <span className="text-white font-mono font-bold">{sizeLabel}</span>
             </p>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {tyreProducts.map((product) => (
+              {filteredProducts.map((product) => (
                 <a
-                  key={product.id}
+                  key={`${product.supplierMeta?.id}-${product.id}`}
                   href={product.url}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
                   className="bg-zinc-900 border border-zinc-800 hover:border-zinc-600 rounded-2xl overflow-hidden transition-all hover:-translate-y-0.5 group"
                 >
-                  <div className="aspect-square bg-zinc-800 flex items-center justify-center overflow-hidden">
+                  <div className="relative aspect-square bg-zinc-800 flex items-center justify-center overflow-hidden">
                     {product.image ? (
                       <img
                         src={product.image}
@@ -188,6 +236,14 @@ const Tyres = () => {
                       />
                     ) : (
                       <span className="text-4xl">🏎️</span>
+                    )}
+                    {product.supplierMeta && (
+                      <div className="absolute top-2 left-2 flex items-center gap-1 bg-black/60 backdrop-blur-sm rounded-full px-2 py-0.5">
+                        <span className="text-xs">{product.supplierMeta.flag}</span>
+                        <span className="text-[9px] text-zinc-300">
+                          {product.supplierMeta.country}
+                        </span>
+                      </div>
                     )}
                   </div>
 
@@ -222,7 +278,7 @@ const Tyres = () => {
             <p className="text-3xl mb-3">🔍</p>
             <p className="text-white font-bold mb-1">No results found</p>
             <p className="text-zinc-500 text-sm">
-              Try a different size or switch supplier tab
+              Try a different size — we searched all suppliers
             </p>
           </div>
         )}
