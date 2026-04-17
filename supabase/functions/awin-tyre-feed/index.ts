@@ -52,8 +52,7 @@ serve(async (req) => {
       const result: string[] = []
       let current = ''
       let inQuotes = false
-      for (let i = 0; i < line.length; i++) {
-        const char = line[i]
+      for (const char of line) {
         if (char === '"') {
           inQuotes = !inQuotes
         } else if (char === ',' && !inQuotes) {
@@ -68,68 +67,41 @@ serve(async (req) => {
     }
 
     const headers = parseCSVLine(lines[0])
+    const nameIdx = headers.findIndex((h) => h.toLowerCase().includes('product_name'))
+    const priceIdx = headers.findIndex((h) => h.toLowerCase().includes('search_price'))
+    const imageIdx = headers.findIndex((h) => h.toLowerCase().includes('merchant_image_url'))
+    const urlIdx = headers.findIndex((h) => h.toLowerCase().includes('aw_deep_link'))
+    const brandIdx = headers.findIndex((h) => h.toLowerCase().includes('brand_name'))
+    const deliveryIdx = headers.findIndex((h) => h.toLowerCase().includes('delivery_cost'))
+    const idIdx = headers.findIndex((h) => h.toLowerCase().includes('aw_product_id'))
 
-    const idx = (name: string) =>
-      headers.findIndex((h) => h.toLowerCase().includes(name.toLowerCase()))
-
-    const nameIdx = idx('product_name') !== -1 ? idx('product_name') : idx('name')
-    const priceIdx = idx('search_price') !== -1 ? idx('search_price') : idx('price')
-    const imageIdx =
-      idx('merchant_image_url') !== -1 ? idx('merchant_image_url') : idx('image')
-    const urlIdx = idx('aw_deep_link') !== -1 ? idx('aw_deep_link') : idx('url')
-    const brandIdx = idx('brand_name') !== -1 ? idx('brand_name') : idx('brand')
-    const deliveryIdx = idx('delivery_cost')
-    const descIdx = idx('description')
-    const idIdx =
-      idx('aw_product_id') !== -1 ? idx('aw_product_id') : idx('product_id')
-
-    const widthStr = String(width).toLowerCase()
-
-    const products = lines
+    const filtered = lines
       .slice(1)
       .map((line) => parseCSVLine(line))
       .filter((cols) => {
         const name = (cols[nameIdx] || '').toLowerCase()
-        const desc = (cols[descIdx] || '').toLowerCase()
-        const combined = name + ' ' + desc
-        return combined.includes(widthStr)
+        return name.includes(String(width).toLowerCase())
       })
       .slice(0, 12)
-      .map((cols) => {
-        const rawPrice = parseFloat(cols[priceIdx] || '0')
-        const deliveryCost = cols[deliveryIdx] || ''
-        return {
-          id: cols[idIdx] || Math.random().toString(),
-          title: cols[nameIdx] || '',
-          price: `£${rawPrice.toFixed(2)}`,
-          image: cols[imageIdx] || '',
-          url: cols[urlIdx] || '',
-          brand: cols[brandIdx] || '',
-          shipping:
-            !deliveryCost || deliveryCost === '0'
-              ? 'Free delivery'
-              : `£${deliveryCost} delivery`,
-          inStock: true,
-          supplierName: feed.advertiserName || '',
-          advertiserId: String(targetId),
-        }
-      })
+      .map((cols) => ({
+        id: cols[idIdx] || String(Math.random()),
+        title: cols[nameIdx] || '',
+        price: `£${parseFloat(cols[priceIdx] || '0').toFixed(2)}`,
+        image: cols[imageIdx] || '',
+        url: cols[urlIdx] || '',
+        brand: cols[brandIdx] || '',
+        shipping:
+          !cols[deliveryIdx] || cols[deliveryIdx] === '0'
+            ? 'Free delivery'
+            : `£${cols[deliveryIdx]} delivery`,
+        inStock: true,
+        supplierName: feed.advertiserName || '',
+        advertiserId: String(targetId),
+      }))
 
-    return new Response(
-      JSON.stringify({
-        products,
-        debug: {
-          feedUrl: feed.url,
-          totalLines: lines.length,
-          headers: headers.slice(0, 10),
-          filtered: products.length,
-          searchedWidth: widthStr,
-          rim: cleanRim,
-          profile,
-        },
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    )
+    return new Response(JSON.stringify({ products: filtered }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    })
   } catch (error) {
     return new Response(
       JSON.stringify({ products: [], error: (error as Error).message }),
