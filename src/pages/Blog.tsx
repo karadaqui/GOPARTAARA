@@ -117,15 +117,15 @@ const Blog = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Blog | PARTARA"
-        description="Expert advice on car parts, maintenance tips, and industry insights from the PARTARA team."
+        title="Car Parts Blog & Guides — GOPARTARA"
+        description="Tips, guides and news for UK car owners and mechanics. How to find cheap car parts, DIY repair guides and more."
         path="/blog"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Blog",
-          "name": "PARTARA Blog",
+          "name": "GOPARTARA Blog",
           "url": "https://gopartara.com/blog",
-          "description": "Expert advice on car parts, maintenance tips, and industry insights."
+          "description": "Tips, guides and news for UK car owners and mechanics."
         }}
       />
       <Navbar />

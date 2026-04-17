@@ -92,8 +92,8 @@ const Pricing = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Pricing | PARTARA"
-        description="Compare PARTARA plans — Free, Pro, and Elite. Bundle with seller plans and save. Search 1,000,000+ parts from trusted UK &amp; global suppliers."
+        title="Pricing Plans — GOPARTARA | First Month Free"
+        description="Free and Pro plans for UK car owners. Get unlimited searches, price alerts and photo search. First month Pro is free."
         path="/pricing"
         jsonLd={{
           "@context": "https://schema.org",

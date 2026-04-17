@@ -35,15 +35,15 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="PARTARA - Find Any Car Part Instantly"
-        description="Search 1,000,000+ car parts from trusted UK &amp; global suppliers. Upload a photo or type your part name — PARTARA finds the best prices instantly."
+        title="GOPARTARA — Find Any Car Part Instantly | UK & Global Car Parts Search"
+        description="Compare prices on over 1M+ car parts from trusted UK & Global suppliers. Search by part name, VIN, reg plate or photo. Free to use — find the right part fast."
         path="/"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "WebApplication",
-          "name": "PARTARA",
+          "name": "GOPARTARA",
           "url": "https://gopartara.com",
-          "description": "Search 1,000,000+ car parts from trusted UK &amp; global suppliers.",
+          "description": "Compare prices on over 1M+ car parts from trusted UK & Global suppliers.",
           "applicationCategory": "AutomotiveApplication",
           "operatingSystem": "Web",
           "offers": {

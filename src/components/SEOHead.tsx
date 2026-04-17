@@ -13,7 +13,7 @@ const BASE_URL = "https://gopartara.com";
 const DEFAULT_IMAGE = `${BASE_URL}/og-image.png`;
 
 const SEOHead = ({ title, description, path = "", type = "website", image, jsonLd }: SEOHeadProps) => {
-  const fullTitle = title.includes("PARTARA") ? title : `${title} | PARTARA`;
+  const fullTitle = /GOPARTARA|PARTARA/i.test(title) ? title : `${title} | GOPARTARA`;
   const url = `${BASE_URL}${path}`;
   const ogImage = image || DEFAULT_IMAGE;
 
