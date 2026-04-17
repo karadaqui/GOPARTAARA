@@ -232,6 +232,30 @@ const GreenSparkProductCard = ({
           </p>
         )}
 
+        {/* Specs grid — only render keys with non-empty values */}
+        {(() => {
+          const visibleSpecs = Object.entries(product.specs || {}).filter(
+            ([, v]) => v && String(v).trim() !== "",
+          );
+          if (visibleSpecs.length === 0) return null;
+          return (
+            <div className="border-t border-zinc-800/60 pt-3">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                {visibleSpecs.map(([key, value]) => (
+                  <div key={key} className="flex flex-col min-w-0">
+                    <span className="text-[10px] text-zinc-600 uppercase tracking-wide">
+                      {SPEC_LABELS[key] || key}
+                    </span>
+                    <span className="text-[11px] text-zinc-300 font-medium truncate">
+                      {String(value)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
         <div>
           <span className="text-2xl font-bold text-amber-500">{product.price}</span>
         </div>
