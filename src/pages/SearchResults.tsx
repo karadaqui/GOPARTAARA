@@ -52,6 +52,16 @@ const parseTwemoji = () => {
 };
 
 // ── Supplier configs ──
+const SUPPLIERS = [
+  { id: 'ebay', label: 'eBay', status: 'live' },
+  { id: 'greensparkplug', label: 'Green Spark Plug Co.', status: 'live' },
+  { id: 'mytyres', label: 'mytyres.co.uk', status: 'coming' },
+  { id: 'tyresuk', label: 'Tyres UK', status: 'coming' },
+  { id: 'eurocarparts', label: 'Euro Car Parts', status: 'coming' },
+  { id: 'gsf', label: 'GSF Car Parts', status: 'coming' },
+  { id: 'autodoc', label: 'Autodoc', status: 'coming' },
+];
+
 const googleSite = (domain: string) => (q: string) =>
   `https://www.google.com/search?q=site:${domain}+${q.replace(/\s+/g, "+")}`;
 
