@@ -14,6 +14,7 @@ serve(async (req) => {
     const { width, profile, rim, advertiserId } = await req.json()
 
     const tyreSize = `${width}/${profile} R${rim}`.replace('RR', 'R')
+    const widthStr = String(width)
 
     // AWIN feed list URL
     const feedListUrl =
@@ -47,20 +48,14 @@ serve(async (req) => {
     console.log('Sample product name:', allProducts?.[0]?.product_name)
     console.log('Searching for:', { width, profile, rim })
 
-    const rimClean = String(rim).replace(/r/gi, '')
     const filtered = Array.isArray(allProducts)
       ? allProducts
           .filter((p: any) => {
             const name = (p.product_name || p.name || '').toLowerCase()
-            const desc = (p.description || '').toLowerCase()
-            const combined = name + ' ' + desc
-            // Match width AND (profile OR rim) — more flexible
-            return (
-              combined.includes(String(width)) &&
-              (combined.includes(String(profile)) || combined.includes(rimClean))
-            )
+            // Just match the width - most specific identifier
+            return name.includes(widthStr)
           })
-          .slice(0, 12)
+          .slice(0, 8)
           .map((p: any) => ({
             id: p.aw_product_id || p.product_id,
             title: p.product_name || p.name,
