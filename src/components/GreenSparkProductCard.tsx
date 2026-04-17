@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
+import { Bookmark, BookmarkCheck, ExternalLink, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import SafeImage from "@/components/SafeImage";
+import PriceAlertDialog from "@/components/PriceAlertDialog";
 
 export interface GspProduct {
   id: string;
@@ -10,6 +12,7 @@ export interface GspProduct {
   url: string;
   brand?: string;
   shipping: string;
+  description?: string;
   inStock?: boolean;
   supplier: string;
   supplierName: string;
@@ -78,7 +81,42 @@ export const useGspProducts = (query: string, enabled: boolean) => {
   return { products, loading };
 };
 
-const GreenSparkProductCard = ({ product }: { product: GspProduct }) => {
+interface GreenSparkProductCardProps {
+  product: GspProduct;
+  onSave?: (item: {
+    id: string;
+    partName: string;
+    partNumber: string;
+    price: number;
+    url: string;
+    imageUrl: string;
+  }) => void;
+  isSaved?: boolean;
+  savingId?: string | null;
+}
+
+const parsePrice = (price: string): number => {
+  const m = price.match(/[\d.]+/);
+  return m ? parseFloat(m[0]) : 0;
+};
+
+const GreenSparkProductCard = ({ product, onSave, isSaved, savingId }: GreenSparkProductCardProps) => {
+  const numericPrice = parsePrice(product.price);
+  const partNumber = `gsp-${product.id}`;
+  const isThisSaving = savingId === partNumber;
+
+  const handleSaveClick = () => {
+    if (!onSave) return;
+    onSave({
+      id: partNumber,
+      partName: product.title,
+      partNumber,
+      price: numericPrice,
+      url: product.url,
+      imageUrl: product.image,
+    });
+  };
+
   return (
     <div className="group rounded-3xl overflow-hidden border border-amber-800/40 bg-[#111]/60 backdrop-blur-sm hover:border-amber-600/60 hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-all duration-300 flex flex-col relative animate-fade-in">
       {/* Condition bar — same height/style as eBay "New" bar */}
@@ -115,13 +153,18 @@ const GreenSparkProductCard = ({ product }: { product: GspProduct }) => {
           </p>
         </a>
 
+        {/* Description */}
+        <p className="text-xs text-zinc-500 line-clamp-2 -mt-1">
+          {product.description || "Classic & vintage engine part — The Green Spark Plug Co."}
+        </p>
+
         <div>
           <span className="text-2xl font-bold text-amber-500">{product.price}</span>
         </div>
 
         <div className="flex flex-col gap-1.5">
           <span className="inline-flex items-center gap-1 text-xs text-zinc-500">
-            🚚 {product.shipping}
+            🚚 {product.shipping || "See site for delivery"}
           </span>
           <span className="inline-flex items-center gap-1 text-[11px] text-zinc-600">
             🌍 Ships worldwide
@@ -135,6 +178,7 @@ const GreenSparkProductCard = ({ product }: { product: GspProduct }) => {
           <span className="text-zinc-600 ml-auto">Affiliate</span>
         </div>
 
+        {/* CTA + Save + Price Alert — same layout as eBay card */}
         <div className="flex flex-col sm:flex-row gap-2">
           <a
             href={product.url}
@@ -143,8 +187,30 @@ const GreenSparkProductCard = ({ product }: { product: GspProduct }) => {
             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold transition-colors duration-150"
             title="Affiliate link — supports PARTARA at no extra cost"
           >
-            View on Green Spark Plug Co. →
+            <ExternalLink size={14} /> View on Green Spark Plug Co.
           </a>
+          {onSave && (
+            <button
+              onClick={handleSaveClick}
+              disabled={isThisSaving}
+              className="w-9 h-9 rounded-xl border border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] flex items-center justify-center transition-all duration-150 text-zinc-400 hover:text-white"
+              title={isSaved ? "Saved" : "Save part"}
+            >
+              {isThisSaving ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : isSaved ? (
+                <BookmarkCheck size={14} className="text-amber-500" />
+              ) : (
+                <Bookmark size={14} />
+              )}
+            </button>
+          )}
+          <PriceAlertDialog
+            supplierName="Green Spark Plug Co."
+            partQuery={product.title}
+            supplierUrl={product.url}
+            currentPrice={numericPrice}
+          />
         </div>
       </div>
     </div>
