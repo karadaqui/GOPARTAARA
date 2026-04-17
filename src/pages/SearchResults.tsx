@@ -41,6 +41,7 @@ import TecDocPartsSection from "@/components/TecDocPartsSection";
 import { findDealByBrand, EBAY_ALL_DEALS_URL, isUKUser } from "@/data/ebayDeals";
 import GreenSparkFeaturedCard, { isClassicPartSearch } from "@/components/GreenSparkFeaturedCard";
 import GreenSparkResultsRow from "@/components/GreenSparkResultsRow";
+import GreenSparkProductCard, { useGspProducts } from "@/components/GreenSparkProductCard";
 
 
 // ── Twemoji helper ──
