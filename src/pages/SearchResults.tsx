@@ -12,6 +12,7 @@ import UpgradeModal from "@/components/UpgradeModal";
 import SafeImage from "@/components/SafeImage";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import {
   Search, ExternalLink, Loader2, Camera, Car, Scale, Star,
