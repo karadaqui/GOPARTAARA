@@ -994,8 +994,31 @@ const SearchResults = () => {
                 {brandFilter !== "Green Spark Plug Co." && (
                 <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-                  {unifiedResults.map((item: any, idx: number) => {
-                    // ── eBay Card ──
+                  {(() => {
+                    // Inject GSP product cards into the eBay grid at positions 3 and 7 (after items 2 and 6)
+                    const items: Array<{ kind: "ebay"; data: any } | { kind: "gsp"; data: any }> = [];
+                    const gspToInsert = gspIsClassic && brandFilter !== "Amazon" ? gspProducts.slice(0, 4) : [];
+                    let gspIdx = 0;
+                    unifiedResults.forEach((it: any, i: number) => {
+                      items.push({ kind: "ebay", data: it });
+                      if ((i === 1 || i === 5) && gspIdx < gspToInsert.length) {
+                        // Insert up to 2 GSP cards per slot
+                        const slotSize = i === 1 ? 2 : 2;
+                        for (let s = 0; s < slotSize && gspIdx < gspToInsert.length; s++) {
+                          items.push({ kind: "gsp", data: gspToInsert[gspIdx++] });
+                        }
+                      }
+                    });
+                    // Append any leftover GSP cards at the end
+                    while (gspIdx < gspToInsert.length) {
+                      items.push({ kind: "gsp", data: gspToInsert[gspIdx++] });
+                    }
+                    return items.map((entry, idx) => {
+                      if (entry.kind === "gsp") {
+                        return <GreenSparkProductCard key={`gsp-${entry.data.id}-${idx}`} product={entry.data} />;
+                      }
+                      const item = entry.data;
+                      // ── eBay Card ──
                     const priceBadge = getPriceBadge(item.price);
                     const conditionNorm = (item.condition || "").trim().toLowerCase();
                     const conditionBarStyle = conditionNorm === "new"
