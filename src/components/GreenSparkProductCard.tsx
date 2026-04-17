@@ -68,8 +68,8 @@ export const useGspProducts = (query: string, enabled: boolean) => {
     let cancelled = false;
     setLoading(true);
 
-    // sessionStorage cache (1h) — v4 cache bust for new specs payload
-    const cacheKey = `gsp:v4:${query.toLowerCase()}`;
+    // sessionStorage cache (1h) — v5 cache bust for scraped product-page specs
+    const cacheKey = `gsp:v5:${query.toLowerCase()}`;
     try {
       const raw = sessionStorage.getItem(cacheKey);
       if (raw) {
