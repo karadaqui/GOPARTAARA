@@ -145,7 +145,7 @@ const Auth = () => {
               <div className="text-center mb-8">
                 <a href="/" className="inline-block mb-2">
                   <span className="logo-text text-2xl">
-                    <span className="logo-go">go</span>
+                    <span className="logo-go">GO</span>
                     <span className="logo-part">PART</span>
                     <span className="logo-ara">ARA</span>
                   </span>
