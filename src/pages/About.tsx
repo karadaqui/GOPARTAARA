@@ -62,8 +62,8 @@ const reasons = [
 const About = () => (
   <div className="min-h-screen bg-background">
     <SEOHead
-      title="About PARTARA"
-      description="Learn how PARTARA is revolutionising car part search in the UK. Search 1,000,000+ parts from trusted suppliers with photo search and reg plate lookup."
+      title="About GOPARTARA — UK Car Parts Search"
+      description="GOPARTARA is an independent UK car parts comparison platform. We search 1M+ parts from trusted suppliers to find you the best price."
       path="/about"
       jsonLd={{
         "@context": "https://schema.org",

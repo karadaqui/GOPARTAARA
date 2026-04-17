@@ -12,6 +12,7 @@ import UpgradeModal from "@/components/UpgradeModal";
 import SafeImage from "@/components/SafeImage";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import {
   Search, ExternalLink, Loader2, Camera, Car, Scale, Star,
@@ -650,6 +651,11 @@ const SearchResults = () => {
   // ══════════════════════════════════════════════
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "#0a0a0a" }}>
+      <SEOHead
+        title="Search Car Parts — GOPARTARA"
+        description="Search 1 million+ car parts by name, reg plate or photo. Compare live prices from eBay UK and global suppliers."
+        path="/search"
+      />
       <Navbar />
 
       {/* ── Subtle red glow at top ── */}
