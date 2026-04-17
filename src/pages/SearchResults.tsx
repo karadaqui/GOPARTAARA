@@ -1018,7 +1018,16 @@ const SearchResults = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
                   {interleavedResults.map((entry: any, idx: number) => {
                     if (entry.__gsp) {
-                      return <GreenSparkProductCard key={`gsp-${entry.id}-${idx}`} product={entry} />;
+                      const gspKey = `gsp-${entry.id}`;
+                      return (
+                        <GreenSparkProductCard
+                          key={`gsp-${entry.id}-${idx}`}
+                          product={entry}
+                          onSave={handleSave}
+                          isSaved={savedIds.has(gspKey)}
+                          savingId={savingId}
+                        />
+                      );
                     }
                     const item = entry;
                     // ── eBay Card ──
