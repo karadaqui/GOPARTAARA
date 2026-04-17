@@ -991,31 +991,14 @@ const SearchResults = () => {
                     </p>
                   </>
                 )}
-                {brandFilter !== "Green Spark Plug Co." && (() => {
-                  // Build interleaved list: eBay items + GSP product cards at positions 3 and 7
-                  type Entry = { kind: "ebay" | "gsp"; data: any };
-                  const entries: Entry[] = [];
-                  const gspToInsert: any[] = gspIsClassic && brandFilter !== "Amazon" ? gspProducts.slice(0, 4) : [];
-                  let gspIdx = 0;
-                  unifiedResults.forEach((it: any, i: number) => {
-                    entries.push({ kind: "ebay", data: it });
-                    if ((i === 1 || i === 5) && gspIdx < gspToInsert.length) {
-                      for (let s = 0; s < 2 && gspIdx < gspToInsert.length; s++) {
-                        entries.push({ kind: "gsp", data: gspToInsert[gspIdx++] });
-                      }
-                    }
-                  });
-                  while (gspIdx < gspToInsert.length) {
-                    entries.push({ kind: "gsp", data: gspToInsert[gspIdx++] });
-                  }
-                  return (
+                {brandFilter !== "Green Spark Plug Co." && (
                 <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-                  {entries.map((entry, idx) => {
-                    if (entry.kind === "gsp") {
-                      return <GreenSparkProductCard key={`gsp-${entry.data.id}-${idx}`} product={entry.data} />;
+                  {interleavedResults.map((entry: any, idx: number) => {
+                    if (entry.__gsp) {
+                      return <GreenSparkProductCard key={`gsp-${entry.id}-${idx}`} product={entry} />;
                     }
-                    const item = entry.data;
+                    const item = entry;
                     // ── eBay Card ──
                     const priceBadge = getPriceBadge(item.price);
                     const conditionNorm = (item.condition || "").trim().toLowerCase();
