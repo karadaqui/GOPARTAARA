@@ -849,15 +849,21 @@ const SearchResults = () => {
         {!supplierBannerDismissed && (
           <div className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3">
             <div className="flex items-center gap-2 shrink-0 flex-wrap">
-              <span className="flex items-center gap-1.5 text-xs font-medium text-white">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" /> eBay
-              </span>
-              <span className="text-[10px] text-zinc-600">•</span>
-              <span className="text-xs text-zinc-600 opacity-50">Amazon</span>
-              <span className="text-xs text-zinc-600 opacity-50 flex items-center gap-1"><span className="text-[10px]">🔜</span> Euro Car Parts</span>
-              <span className="text-xs text-zinc-600 opacity-50 flex items-center gap-1"><span className="text-[10px]">🔜</span> GSF</span>
-              <span className="text-xs text-zinc-600 opacity-50 flex items-center gap-1"><span className="text-[10px]">🔜</span> CP4L</span>
-              <span className="text-xs text-zinc-600 opacity-50 flex items-center gap-1"><span className="text-[10px]">🔜</span> Autodoc</span>
+              {SUPPLIERS.map((supplier, idx) => (
+                <span key={supplier.id} className="flex items-center gap-1.5">
+                  {idx > 0 && <span className="text-[10px] text-zinc-600">•</span>}
+                  {supplier.status === 'live' ? (
+                    <span className="flex items-center gap-1.5 text-xs font-medium text-white">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                      {supplier.label}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-zinc-600 opacity-50 flex items-center gap-1">
+                      <span className="text-[10px]">🔜</span> {supplier.label}
+                    </span>
+                  )}
+                </span>
+              ))}
             </div>
             <p className="text-xs text-zinc-500 flex-1 hidden sm:block">More suppliers coming soon</p>
             <button
