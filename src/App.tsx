@@ -48,6 +48,7 @@ const CompleteProfile = lazy(() => import("./pages/CompleteProfile.tsx"));
 const Messages = lazy(() => import("./pages/Messages.tsx"));
 const ConfirmShopDelete = lazy(() => import("./pages/ConfirmShopDelete.tsx"));
 const RecentParts = lazy(() => import("./pages/RecentParts.tsx"));
+const Tyres = lazy(() => import("./pages/Tyres.tsx"));
 
 const queryClient = new QueryClient();
 
