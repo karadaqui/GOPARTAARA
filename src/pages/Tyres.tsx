@@ -88,38 +88,49 @@ const Tyres = () => {
   const [countryFilter, setCountryFilter] = useState<string>('all');
 
   const searchTyres = async () => {
+    console.log('searchTyres called', { selectedWidth, selectedProfile, selectedRim });
     setLoading(true);
     setSearched(true);
     setTyreProducts([]);
     setCountryFilter('all');
 
-    const results = await Promise.allSettled(
-      TYRE_SUPPLIERS.map((supplier) =>
-        supabase.functions
-          .invoke('awin-tyre-feed', {
-            body: {
-              width: selectedWidth,
-              profile: selectedProfile,
-              rim: selectedRim,
-              advertiserId: supplier.id,
-            },
-          })
-          .then(({ data }) =>
-            ((data?.products as TyreProduct[]) || []).map((p) => ({
-              ...p,
-              supplierMeta: supplier,
-            })),
-          )
-          .catch(() => [] as TyreProduct[]),
-      ),
-    );
+    try {
+      const results = await Promise.allSettled(
+        TYRE_SUPPLIERS.map((supplier) =>
+          supabase.functions
+            .invoke('awin-tyre-feed', {
+              body: {
+                width: selectedWidth,
+                profile: selectedProfile,
+                rim: selectedRim,
+                advertiserId: supplier.id,
+              },
+            })
+            .then(({ data, error }) => {
+              console.log(`tyre feed [${supplier.name}]:`, { data, error });
+              return ((data?.products as TyreProduct[]) || []).map((p) => ({
+                ...p,
+                supplierMeta: supplier,
+              }));
+            })
+            .catch((err) => {
+              console.warn(`tyre feed [${supplier.name}] failed:`, err);
+              return [] as TyreProduct[];
+            }),
+        ),
+      );
 
-    const allProducts: TyreProduct[] = results
-      .filter((r) => r.status === 'fulfilled')
-      .flatMap((r) => (r as PromiseFulfilledResult<TyreProduct[]>).value);
+      const allProducts: TyreProduct[] = results
+        .filter((r) => r.status === 'fulfilled')
+        .flatMap((r) => (r as PromiseFulfilledResult<TyreProduct[]>).value);
 
-    setTyreProducts(allProducts);
-    setLoading(false);
+      console.log('Total products found:', allProducts.length);
+      setTyreProducts(allProducts);
+    } catch (err) {
+      console.error('searchTyres error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filteredProducts =
