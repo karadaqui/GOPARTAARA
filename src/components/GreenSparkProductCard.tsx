@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bookmark, BookmarkCheck, ExternalLink, Loader2 } from "lucide-react";
+import { Bookmark, BookmarkCheck, ExternalLink, Loader2, Scale } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import SafeImage from "@/components/SafeImage";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
@@ -93,6 +93,18 @@ interface GreenSparkProductCardProps {
   }) => void;
   isSaved?: boolean;
   savingId?: string | null;
+  onCompareToggle?: (item: {
+    id: string;
+    title: string;
+    price: number;
+    condition: string;
+    sellerName: string;
+    url: string;
+    imageUrl: string;
+    source: "gsp";
+  }) => void;
+  isComparing?: boolean;
+  compareDisabled?: boolean;
 }
 
 const parsePrice = (price: string): number => {
@@ -100,10 +112,32 @@ const parsePrice = (price: string): number => {
   return m ? parseFloat(m[0]) : 0;
 };
 
-const GreenSparkProductCard = ({ product, onSave, isSaved, savingId }: GreenSparkProductCardProps) => {
+const GreenSparkProductCard = ({
+  product,
+  onSave,
+  isSaved,
+  savingId,
+  onCompareToggle,
+  isComparing,
+  compareDisabled,
+}: GreenSparkProductCardProps) => {
   const numericPrice = parsePrice(product.price);
   const partNumber = `gsp-${product.id}`;
   const isThisSaving = savingId === partNumber;
+
+  const handleCompareClick = () => {
+    if (!onCompareToggle) return;
+    onCompareToggle({
+      id: partNumber,
+      title: product.title,
+      price: numericPrice,
+      condition: "New",
+      sellerName: product.supplierName || "Green Spark Plug Co.",
+      url: product.url,
+      imageUrl: product.image,
+      source: "gsp",
+    });
+  };
 
   const handleSaveClick = () => {
     if (!onSave) return;
@@ -189,6 +223,20 @@ const GreenSparkProductCard = ({ product, onSave, isSaved, savingId }: GreenSpar
           >
             <ExternalLink size={14} /> View on Green Spark Plug Co.
           </a>
+          {onCompareToggle && (
+            <button
+              onClick={handleCompareClick}
+              disabled={!isComparing && compareDisabled}
+              className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-150 ${
+                isComparing
+                  ? "border-amber-500 bg-amber-500/20 text-amber-400"
+                  : "border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] text-zinc-400 hover:text-white"
+              }`}
+              title={isComparing ? "Remove from compare" : "Compare"}
+            >
+              <Scale size={14} />
+            </button>
+          )}
           {onSave && (
             <button
               onClick={handleSaveClick}
