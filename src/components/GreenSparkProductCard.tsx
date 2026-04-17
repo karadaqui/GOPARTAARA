@@ -4,6 +4,23 @@ import { supabase } from "@/integrations/supabase/client";
 import SafeImage from "@/components/SafeImage";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 
+export interface GspProductSpecs {
+  partNumber?: string;
+  brand?: string;
+  manufacturer?: string;
+  packSize?: string;
+  barcode?: string;
+  diameter?: string;
+  reach?: string;
+  hex?: string;
+  thread?: string;
+  electrode?: string;
+  resistor?: string;
+  seal?: string;
+  tip?: string;
+  [key: string]: string | undefined;
+}
+
 export interface GspProduct {
   id: string;
   title: string;
@@ -16,7 +33,28 @@ export interface GspProduct {
   inStock?: boolean;
   supplier: string;
   supplierName: string;
+  condition?: string;
+  sku?: string;
+  barcode?: string;
+  category?: string;
+  specs?: GspProductSpecs;
 }
+
+const SPEC_LABELS: Record<string, string> = {
+  partNumber: "Part No.",
+  brand: "Brand",
+  manufacturer: "Manufacturer",
+  diameter: "Diameter",
+  reach: "Reach",
+  hex: "Hex Size",
+  thread: "Thread",
+  electrode: "Electrode",
+  resistor: "Resistor",
+  seal: "Seal Type",
+  tip: "Tip Type",
+  packSize: "Pack Size",
+  barcode: "Barcode",
+};
 
 export const useGspProducts = (query: string, enabled: boolean) => {
   const [products, setProducts] = useState<GspProduct[]>([]);
@@ -30,8 +68,8 @@ export const useGspProducts = (query: string, enabled: boolean) => {
     let cancelled = false;
     setLoading(true);
 
-    // sessionStorage cache (1h) — v3 cache bust to force fresh feed for all users
-    const cacheKey = `gsp:v3:${query.toLowerCase()}`;
+    // sessionStorage cache (1h) — v4 cache bust for new specs payload
+    const cacheKey = `gsp:v4:${query.toLowerCase()}`;
     try {
       const raw = sessionStorage.getItem(cacheKey);
       if (raw) {

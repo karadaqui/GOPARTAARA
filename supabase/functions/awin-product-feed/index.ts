@@ -16,6 +16,22 @@ const FEED_TOKEN = "f0b723c9643205a96aeb31377b805e02";
 const FEED_LIST_URL = `https://ui.awin.com/productdata-darwin-download/publisher/${PUBLISHER_ID}/${FEED_TOKEN}/1/feedList`;
 const CACHE_TTL_MS = 60 * 60 * 1000;
 
+interface ProductSpecs {
+  partNumber: string;
+  brand: string;
+  manufacturer: string;
+  packSize: string;
+  barcode: string;
+  diameter: string;
+  reach: string;
+  hex: string;
+  thread: string;
+  electrode: string;
+  resistor: string;
+  seal: string;
+  tip: string;
+}
+
 interface Product {
   id: string;
   title: string;
@@ -28,6 +44,18 @@ interface Product {
   inStock: boolean;
   supplier: string;
   supplierName: string;
+  condition: string;
+  sku: string;
+  barcode: string;
+  category: string;
+  specs: ProductSpecs;
+}
+
+function extractSpec(description: string, key: string): string {
+  if (!description) return "";
+  const regex = new RegExp(key + "[:\\s]+([^\\n,;|]+)", "i");
+  const match = description.match(regex);
+  return match ? match[1].trim().replace(/\.$/, "") : "";
 }
 
 interface RawProduct {
@@ -182,12 +210,16 @@ function processProducts(products: RawProduct[], query: string): Product[] {
       } else if (!isNaN(deliveryNum) && deliveryNum > 0) {
         shipping = `${symbol}${deliveryNum.toFixed(2)} delivery`;
       }
+      const pAny = p as Record<string, string>;
       const rawDesc =
-        (p as Record<string, string>).description ||
-        (p as Record<string, string>).product_description ||
-        (p as Record<string, string>).short_description ||
-        (p as Record<string, string>).aw_description ||
+        pAny.description ||
+        pAny.product_description ||
+        pAny.short_description ||
+        pAny.aw_description ||
         "";
+      const partNumber =
+        pAny.part_number || pAny.mpn || pAny.sku || pAny.merchant_product_id || "";
+      const barcode = pAny.ean || pAny.upc || pAny.isbn || "";
       return {
         id: p.aw_product_id || "",
         title: p.product_name || "",
@@ -202,6 +234,25 @@ function processProducts(products: RawProduct[], query: string): Product[] {
         inStock: (p.in_stock || "").toString().toLowerCase() === "yes" || p.in_stock === "1",
         supplier: "greensparkplug",
         supplierName: "Green Spark Plug Co.",
+        condition: pAny.condition || "New",
+        sku: partNumber,
+        barcode,
+        category: pAny.category_name || pAny.merchant_category || pAny.aw_category || "",
+        specs: {
+          partNumber,
+          brand: p.brand_name || "",
+          manufacturer: pAny.manufacturer || p.brand_name || "",
+          packSize: pAny.pack_size || pAny.package_size || "",
+          barcode,
+          diameter: extractSpec(rawDesc, "Diameter"),
+          reach: extractSpec(rawDesc, "Reach"),
+          hex: extractSpec(rawDesc, "Hex"),
+          thread: extractSpec(rawDesc, "Thread"),
+          electrode: extractSpec(rawDesc, "Electrode"),
+          resistor: extractSpec(rawDesc, "Resistor"),
+          seal: extractSpec(rawDesc, "Seal"),
+          tip: extractSpec(rawDesc, "Tip"),
+        },
       };
     });
 }
