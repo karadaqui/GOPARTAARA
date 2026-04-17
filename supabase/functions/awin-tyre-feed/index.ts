@@ -48,56 +48,38 @@ serve(async (req) => {
       )
     }
 
-    const parseCSVLine = (line: string): string[] => {
-      const result: string[] = []
-      let current = ''
-      let inQuotes = false
-      for (const char of line) {
-        if (char === '"') {
-          inQuotes = !inQuotes
-        } else if (char === ',' && !inQuotes) {
-          result.push(current.trim())
-          current = ''
-        } else {
-          current += char
-        }
-      }
-      result.push(current.trim())
-      return result
-    }
+const parseCSV = (line: string) => {
+  const r: string[] = []; let c = '', q = false
+  for (const ch of line) {
+    if (ch === '"') q = !q
+    else if (ch === ',' && !q) { r.push(c.trim()); c = '' }
+    else c += ch
+  }
+  r.push(c.trim()); return r
+}
 
-    const headers = parseCSVLine(lines[0])
-    const nameIdx = headers.findIndex((h) => h.toLowerCase().includes('product_name'))
-    const priceIdx = headers.findIndex((h) => h.toLowerCase().includes('search_price'))
-    const imageIdx = headers.findIndex((h) => h.toLowerCase().includes('merchant_image_url'))
-    const urlIdx = headers.findIndex((h) => h.toLowerCase().includes('aw_deep_link'))
-    const brandIdx = headers.findIndex((h) => h.toLowerCase().includes('brand_name'))
-    const deliveryIdx = headers.findIndex((h) => h.toLowerCase().includes('delivery_cost'))
-    const idIdx = headers.findIndex((h) => h.toLowerCase().includes('aw_product_id'))
+const headers = parseCSV(lines[0])
+const get = (n: string) => headers.findIndex(h => h.toLowerCase().includes(n))
+const ni = get('product_name'), pi = get('search_price'), 
+      ii = get('merchant_image_url'), ui = get('aw_deep_link'),
+      bi = get('brand_name'), di = get('delivery_cost'), idi = get('aw_product_id')
 
-    const filtered = lines
-      .slice(1)
-      .map((line) => parseCSVLine(line))
-      .filter((cols) => {
-        const name = (cols[nameIdx] || '').toLowerCase()
-        return name.includes(String(width).toLowerCase())
-      })
-      .slice(0, 12)
-      .map((cols) => ({
-        id: cols[idIdx] || String(Math.random()),
-        title: cols[nameIdx] || '',
-        price: `£${parseFloat(cols[priceIdx] || '0').toFixed(2)}`,
-        image: cols[imageIdx] || '',
-        url: cols[urlIdx] || '',
-        brand: cols[brandIdx] || '',
-        shipping:
-          !cols[deliveryIdx] || cols[deliveryIdx] === '0'
-            ? 'Free delivery'
-            : `£${cols[deliveryIdx]} delivery`,
-        inStock: true,
-        supplierName: feed.advertiserName || '',
-        advertiserId: String(targetId),
-      }))
+const filtered = lines.slice(1)
+  .map(parseCSV)
+  .filter(c => (c[ni]||'').toLowerCase().includes(width.toLowerCase()))
+  .slice(0, 12)
+  .map(c => ({
+    id: c[idi] || String(Math.random()),
+    title: c[ni] || '',
+    price: `£${parseFloat(c[pi]||'0').toFixed(2)}`,
+    image: c[ii] || '',
+    url: c[ui] || '',
+    brand: c[bi] || '',
+    shipping: (!c[di] || c[di]==='0') ? 'Free delivery' : `£${c[di]} delivery`,
+    inStock: true,
+    supplierName: feed.advertiserName || '',
+    advertiserId: String(targetId),
+  }))
 
     return new Response(JSON.stringify({ products: filtered }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
