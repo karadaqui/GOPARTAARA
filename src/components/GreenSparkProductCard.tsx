@@ -27,8 +27,8 @@ export const useGspProducts = (query: string, enabled: boolean) => {
     let cancelled = false;
     setLoading(true);
 
-    // sessionStorage cache (1h)
-    const cacheKey = `gsp:${query.toLowerCase()}`;
+    // sessionStorage cache (1h) — v3 cache bust to force fresh feed for all users
+    const cacheKey = `gsp:v3:${query.toLowerCase()}`;
     try {
       const raw = sessionStorage.getItem(cacheKey);
       if (raw) {
