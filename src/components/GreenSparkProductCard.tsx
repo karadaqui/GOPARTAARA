@@ -40,20 +40,23 @@ export interface GspProduct {
   specs?: GspProductSpecs;
 }
 
+// Whitelist + display order. Only these specs are shown on the card.
+const SPEC_ORDER: Array<keyof GspProductSpecs> = [
+  "partNumber",
+  "brand",
+  "diameter",
+  "reach",
+  "hex",
+  "electrode",
+];
+
 const SPEC_LABELS: Record<string, string> = {
   partNumber: "Part No.",
   brand: "Brand",
-  manufacturer: "Manufacturer",
   diameter: "Diameter",
   reach: "Reach",
   hex: "Hex Size",
-  thread: "Thread",
   electrode: "Electrode",
-  resistor: "Resistor",
-  seal: "Seal Type",
-  tip: "Tip Type",
-  packSize: "Pack Size",
-  barcode: "Barcode",
 };
 
 export const useGspProducts = (query: string, enabled: boolean) => {
@@ -225,33 +228,25 @@ const GreenSparkProductCard = ({
           </p>
         </a>
 
-        {/* Description — only show if API returned one */}
-        {product.description && (
-          <p className="text-xs text-zinc-500 line-clamp-2 -mt-1">
-            {product.description}
-          </p>
-        )}
-
-        {/* Specs grid — only render keys with non-empty values */}
+        {/* Specs — whitelist only, compact 2-col grid, key/value on one line */}
         {(() => {
-          const visibleSpecs = Object.entries(product.specs || {}).filter(
-            ([, v]) => v && String(v).trim() !== "",
-          );
+          const specs = product.specs || {};
+          const visibleSpecs = SPEC_ORDER
+            .map((k) => [k, specs[k]] as const)
+            .filter(([, v]) => v && String(v).trim() !== "" && String(v).trim() !== "-");
           if (visibleSpecs.length === 0) return null;
           return (
-            <div className="border-t border-zinc-800/60 pt-3">
-              <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
-                {visibleSpecs.map(([key, value]) => (
-                  <div key={key} className="flex flex-col min-w-0">
-                    <span className="text-[10px] text-zinc-600 uppercase tracking-wide">
-                      {SPEC_LABELS[key] || key}
-                    </span>
-                    <span className="text-[11px] text-zinc-300 font-medium truncate">
-                      {String(value)}
-                    </span>
-                  </div>
-                ))}
-              </div>
+            <div className="grid grid-cols-2 gap-x-3 gap-y-1 border-t border-zinc-800/40 pt-2 -mt-1">
+              {visibleSpecs.map(([key, value]) => (
+                <div key={key} className="flex justify-between gap-1 min-w-0">
+                  <span className="text-[10px] text-zinc-600 shrink-0">
+                    {SPEC_LABELS[key as string]}
+                  </span>
+                  <span className="text-[10px] text-zinc-300 font-medium text-right truncate">
+                    {String(value)}
+                  </span>
+                </div>
+              ))}
             </div>
           );
         })()}
