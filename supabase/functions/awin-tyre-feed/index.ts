@@ -54,6 +54,10 @@ serve(async (req) => {
       advertiserName = String(targetId)
     }
 
+    // Force uncompressed feed (gzip can't be read as plain text here)
+    feedUrl = feedUrl.replace('compression/gzip', 'compression/none')
+                     .replace('compression%2Fgzip', 'compression%2Fnone')
+
     // Download product feed
     const feedRes = await fetch(feedUrl)
     const csv = await feedRes.text()
