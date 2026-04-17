@@ -41,6 +41,7 @@ import TecDocPartsSection from "@/components/TecDocPartsSection";
 import { findDealByBrand, EBAY_ALL_DEALS_URL, isUKUser } from "@/data/ebayDeals";
 import GreenSparkFeaturedCard, { isClassicPartSearch } from "@/components/GreenSparkFeaturedCard";
 import GreenSparkResultsRow from "@/components/GreenSparkResultsRow";
+import GreenSparkProductCard, { useGspProducts } from "@/components/GreenSparkProductCard";
 
 
 // ── Twemoji helper ──
@@ -627,6 +628,28 @@ const SearchResults = () => {
       .map((result: any) => ({ ...result, _source: "ebay" as const }));
   }, [filteredResults]);
 
+  // ── Green Spark Plug Co. real product feed (AWIN) ──
+  const gspIsClassic = isClassicPartSearch(activeQuery);
+  const { products: gspProducts } = useGspProducts(activeQuery, gspIsClassic && brandFilter !== "Amazon");
+
+  // Interleave GSP products into the eBay grid at positions 3 and 7 (after items 2 and 6)
+  const interleavedResults = useMemo(() => {
+    if (!gspProducts.length || brandFilter === "Amazon") return unifiedResults;
+    const gspToInsert = gspProducts.slice(0, 4).map((p) => ({ ...p, __gsp: true }));
+    const out: any[] = [];
+    let gIdx = 0;
+    unifiedResults.forEach((it: any, i: number) => {
+      out.push(it);
+      if ((i === 1 || i === 5) && gIdx < gspToInsert.length) {
+        for (let s = 0; s < 2 && gIdx < gspToInsert.length; s++) {
+          out.push(gspToInsert[gIdx++]);
+        }
+      }
+    });
+    while (gIdx < gspToInsert.length) out.push(gspToInsert[gIdx++]);
+    return out;
+  }, [unifiedResults, gspProducts, brandFilter]);
+
   const clearAllFilters = () => {
     setConditionFilter("All");
     setShippingFilter("All");
@@ -993,7 +1016,11 @@ const SearchResults = () => {
                 {brandFilter !== "Green Spark Plug Co." && (
                 <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-                  {unifiedResults.map((item: any, idx: number) => {
+                  {interleavedResults.map((entry: any, idx: number) => {
+                    if (entry.__gsp) {
+                      return <GreenSparkProductCard key={`gsp-${entry.id}-${idx}`} product={entry} />;
+                    }
+                    const item = entry;
                     // ── eBay Card ──
                     const priceBadge = getPriceBadge(item.price);
                     const conditionNorm = (item.condition || "").trim().toLowerCase();
