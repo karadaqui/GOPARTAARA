@@ -56,13 +56,13 @@ const GreenSparkSection = () => {
       <div className="flex items-end justify-between mb-5 gap-4 flex-wrap">
         <div>
           <p className="text-[11px] font-semibold tracking-widest uppercase text-amber-500/60 mb-1">
-            CLASSIC & VINTAGE · UK SPECIALIST
+            CLASSIC & VINTAGE · WORLDWIDE SHIPPING
           </p>
           <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
             🔩 Classic & Vintage Car Parts
           </h2>
           <p className="text-muted-foreground text-xs mt-1">
-            Specialist parts for veteran, vintage & classic engines since 1980 · NGK, Bosch, Denso & more
+            Worldwide shipping · Classic & vintage parts since 1980
           </p>
         </div>
 
