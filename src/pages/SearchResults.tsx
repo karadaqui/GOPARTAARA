@@ -1257,6 +1257,12 @@ const SearchResults = () => {
                     </span>
                   </a>
                 )}
+                        </>
+                      )}
+                      {showGsp && <GreenSparkResultsRow searchQuery={activeQuery} />}
+                    </>
+                  );
+                })()}
               </div>
             ) : !liveLoading ? (
               /* ── Empty / Error State ── */
