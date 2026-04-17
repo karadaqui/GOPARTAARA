@@ -1,4 +1,4 @@
-import { isUKUser } from "@/data/ebayDeals";
+// Green Spark Plug Co. — global affiliate section (worldwide shipping)
 
 const AFFILIATE_BASE =
   "https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara&p=";
@@ -20,7 +20,7 @@ const CATEGORIES = [
     icon: "🔋",
     label: "Batteries",
     desc: "Classic & vintage batteries",
-    badge: "Free UK delivery £100+",
+    badge: "Ships worldwide · UK, EU, USA, Australia & more",
     url: buildLink("/battery"),
   },
   {
@@ -49,7 +49,6 @@ const CATEGORIES = [
 const BRANDS = ["NGK", "Bosch", "Denso", "Champion", "Beru", "Sealey", "Lucas", "Draper"];
 
 const GreenSparkSection = () => {
-  if (!isUKUser()) return null;
 
   return (
     <section className="px-4 py-6 max-w-7xl mx-auto">
@@ -57,13 +56,13 @@ const GreenSparkSection = () => {
       <div className="flex items-end justify-between mb-5 gap-4 flex-wrap">
         <div>
           <p className="text-[11px] font-semibold tracking-widest uppercase text-amber-500/60 mb-1">
-            CLASSIC & VINTAGE · UK SPECIALIST
+            CLASSIC & VINTAGE · WORLDWIDE SHIPPING
           </p>
           <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
             🔩 Classic & Vintage Car Parts
           </h2>
           <p className="text-muted-foreground text-xs mt-1">
-            Specialist parts for veteran, vintage & classic engines since 1980 · NGK, Bosch, Denso & more
+            Worldwide shipping · Classic & vintage parts since 1980
           </p>
         </div>
 
@@ -127,7 +126,7 @@ const GreenSparkSection = () => {
 
       {/* Disclaimer */}
       <p className="text-[10px] text-muted-foreground mt-3">
-        Powered by The Green Spark Plug Co. · UK only · Affiliate links — we may earn a small commission.
+        Powered by The Green Spark Plug Co. · Ships to UK, EU, USA, Australia & beyond · Affiliate link — we may earn a small commission at no extra cost to you.
       </p>
     </section>
   );
