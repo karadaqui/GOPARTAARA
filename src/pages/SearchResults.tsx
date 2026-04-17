@@ -991,6 +991,7 @@ const SearchResults = () => {
                   </>
                 )}
                 {brandFilter !== "Green Spark Plug Co." && (
+                <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
                   {unifiedResults.map((item: any, idx: number) => {
                     // ── eBay Card ──
