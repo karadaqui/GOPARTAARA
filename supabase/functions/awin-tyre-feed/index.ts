@@ -5,7 +5,15 @@ const cors = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const FEED_LIST_URL = 'https://ui.awin.com/productdata-darwin-download/publisher/2845282/f0b723c9643205a96aeb31377b805e02/1/feedList'
+// Hardcoded known-working AWIN product feed URLs (compression/none).
+// Map advertiser id -> direct CSV download URL.
+const FEED_URLS: Record<string, string> = {
+  '4118': 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12641/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription',
+}
+
+const ADVERTISER_NAMES: Record<string, string> = {
+  '4118': 'mytyres.co.uk',
+}
 
 const splitCSV = (line: string): string[] => {
   const cols: string[] = []
@@ -24,48 +32,24 @@ serve(async (req) => {
 
   try {
     const { width, advertiserId } = await req.json()
-    const targetId = parseInt(advertiserId) || 4118
+    const targetId = String(parseInt(advertiserId) || 4118)
 
-    // Get feed list as CSV
-    const listRes = await fetch(FEED_LIST_URL)
-    const listText = await listRes.text()
-    const lines = listText.split('\n').filter(l => l.trim())
-    const headers = splitCSV(lines[0])
+    const feedUrl = FEED_URLS[targetId]
+    const advertiserName = ADVERTISER_NAMES[targetId] || targetId
 
-    const idIdx = headers.findIndex(h => h.toLowerCase().includes('advertiser id') || h.toLowerCase() === 'advertiser id')
-    const urlIdx = headers.findIndex(h => h.toLowerCase() === 'url')
-    const nameIdx = headers.findIndex(h => h.toLowerCase().includes('advertiser name'))
-
-    // Find feed row for this advertiser
-    const feedRow = lines.slice(1)
-      .map(splitCSV)
-      .find(cols => parseInt(cols[idIdx]) === targetId)
-
-    let feedUrl = ''
-    let advertiserName = ''
-
-    if (feedRow) {
-      feedUrl = feedRow[urlIdx] || ''
-      advertiserName = feedRow[nameIdx] || ''
-    } else {
-      // Construct URL directly using known pattern
-      const BASE = 'https://ui.awin.com/productdata-darwin-download/publisher/2845282/f0b723c9643205a96aeb31377b805e02/1/'
-      feedUrl = `${BASE}${targetId}`
-      advertiserName = String(targetId)
+    if (!feedUrl) {
+      return new Response(
+        JSON.stringify({ products: [], error: 'no feed configured for advertiser ' + targetId }),
+        { headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
     }
 
-    // Force uncompressed feed (gzip can't be read as plain text here)
-    feedUrl = feedUrl.replace('compression/gzip', 'compression/none')
-                     .replace('compression%2Fgzip', 'compression%2Fnone')
-
-    // Download product feed
     const feedRes = await fetch(feedUrl)
     const csv = await feedRes.text()
 
-    // Check if it's valid CSV
     if (!csv || csv.toLowerCase().includes('<!doctype') || csv.toLowerCase().includes('<html')) {
       return new Response(
-        JSON.stringify({ products: [], error: 'Feed returned HTML not CSV', feedUrl }),
+        JSON.stringify({ products: [], error: 'Feed returned HTML not CSV', sample: csv.substring(0, 200) }),
         { headers: { ...cors, 'Content-Type': 'application/json' } }
       )
     }
@@ -100,13 +84,13 @@ serve(async (req) => {
         brand: c[bi] || '',
         shipping: !c[di] || c[di] === '0' ? 'Free delivery' : `£${c[di]} delivery`,
         supplierName: advertiserName,
-        advertiserId: String(targetId),
+        advertiserId: targetId,
       }))
 
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         products,
-        debug: { feedUrl, totalRows: rows.length, filtered: products.length, headers: fHeaders.slice(0,8) }
+        debug: { feedUrl, totalRows: rows.length, filtered: products.length, headers: fHeaders.slice(0, 8) }
       }),
       { headers: { ...cors, 'Content-Type': 'application/json' } }
     )
