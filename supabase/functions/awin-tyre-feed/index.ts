@@ -82,6 +82,8 @@ serve(async (req) => {
           }))
       : []
 
+    console.log('Filtered:', filtered.length)
+
     return new Response(
       JSON.stringify({ products: filtered, tyreSize }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
