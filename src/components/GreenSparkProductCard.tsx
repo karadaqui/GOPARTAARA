@@ -80,45 +80,74 @@ export const useGspProducts = (query: string, enabled: boolean) => {
 
 const GreenSparkProductCard = ({ product }: { product: GspProduct }) => {
   return (
-    <a
-      href={product.url}
-      target="_blank"
-      rel="noopener noreferrer sponsored"
-      aria-label={`${product.title} — Green Spark Plug Co. affiliate`}
-      className="group rounded-2xl overflow-hidden border border-amber-800/30 bg-amber-950/10 hover:border-amber-600/40 hover:bg-amber-950/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/30 transition-all flex flex-col"
-    >
+    <div className="group rounded-3xl overflow-hidden border border-amber-800/40 bg-[#111]/60 backdrop-blur-sm hover:border-amber-600/60 hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-all duration-300 flex flex-col relative animate-fade-in">
+      {/* Condition bar — same height/style as eBay "New" bar */}
+      <div
+        className="h-7 flex items-center justify-center text-xs font-semibold tracking-wide uppercase border-b border-white/10"
+        style={{ background: "#14532d", color: "#4ade80" }}
+      >
+        New
+      </div>
+
       {/* Image */}
-      <div className="relative aspect-square bg-zinc-900 overflow-hidden">
-        <SafeImage
-          src={product.image}
-          alt={product.title}
-          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        <div className="absolute top-2 left-2 flex items-center gap-1.5 bg-black/70 backdrop-blur-sm border border-amber-700/30 rounded-full px-2 py-0.5">
-          <span className="text-[10px]">🔩</span>
-          <span className="text-[10px] font-semibold text-amber-400">
-            Green Spark Plug Co.
+      <a href={product.url} target="_blank" rel="noopener noreferrer sponsored" className="block relative">
+        <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
+          <SafeImage
+            src={product.image}
+            alt={product.title}
+            className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500"
+          />
+          {/* Supplier label top-left on the image */}
+          <span className="absolute top-2 left-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm border border-amber-700/40 rounded-full px-2 py-0.5">
+            <span className="text-[10px]">🔩</span>
+            <span className="text-[10px] font-semibold text-amber-400">
+              Green Spark Plug Co.
+            </span>
           </span>
         </div>
-      </div>
+      </a>
 
-      {/* Body */}
-      <div className="p-3 flex-1 flex flex-col">
-        <p className="text-sm font-semibold text-foreground mb-2 line-clamp-2 leading-snug min-h-[2.5rem] group-hover:text-amber-400 transition-colors">
-          {product.title}
-        </p>
+      {/* Body — same padding/gap as eBay card */}
+      <div className="p-4 flex-1 flex flex-col gap-3">
+        <a href={product.url} target="_blank" rel="noopener noreferrer sponsored" className="block">
+          <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-amber-400 transition-colors">
+            {product.title}
+          </p>
+        </a>
 
-        <div className="flex items-baseline gap-1 mb-1">
-          <span className="text-lg font-bold text-foreground">{product.price}</span>
+        <div>
+          <span className="text-2xl font-bold text-amber-500">{product.price}</span>
         </div>
 
-        <p className="text-[11px] text-muted-foreground mb-3">{product.shipping}</p>
+        <div className="flex flex-col gap-1.5">
+          <span className="inline-flex items-center gap-1 text-xs text-zinc-500">
+            🚚 {product.shipping}
+          </span>
+          <span className="inline-flex items-center gap-1 text-[11px] text-zinc-600">
+            🌍 Ships worldwide
+          </span>
+        </div>
 
-        <span className="mt-auto block w-full text-center py-2 bg-amber-600/20 group-hover:bg-amber-600/30 border border-amber-700/30 text-amber-400 text-xs font-semibold rounded-xl transition-all">
-          View on Green Spark Plug Co. →
-        </span>
+        <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
+          <span className="font-medium truncate text-amber-400">
+            {product.brand || "Green Spark Plug Co."}
+          </span>
+          <span className="text-zinc-600 ml-auto">Affiliate</span>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-2">
+          <a
+            href={product.url}
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold transition-colors duration-150"
+            title="Affiliate link — supports PARTARA at no extra cost"
+          >
+            View on Green Spark Plug Co. →
+          </a>
+        </div>
       </div>
-    </a>
+    </div>
   );
 };
 
