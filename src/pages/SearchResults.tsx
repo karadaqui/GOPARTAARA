@@ -40,6 +40,7 @@ import FilterBar from "@/components/FilterBar";
 import TecDocPartsSection from "@/components/TecDocPartsSection";
 import { findDealByBrand, EBAY_ALL_DEALS_URL, isUKUser } from "@/data/ebayDeals";
 import GreenSparkFeaturedCard, { isClassicPartSearch } from "@/components/GreenSparkFeaturedCard";
+import GreenSparkResultsRow from "@/components/GreenSparkResultsRow";
 
 
 // ── Twemoji helper ──
@@ -981,7 +982,7 @@ const SearchResults = () => {
               </div>
             ) : unifiedResults.length > 0 ? (
               <div className="mb-10 animate-fade-in">
-                {isClassicPartSearch(activeQuery) && (
+                {isClassicPartSearch(activeQuery) && brandFilter !== "Green Spark Plug Co." && brandFilter !== "Amazon" && (
                   <>
                     <GreenSparkFeaturedCard searchQuery={activeQuery} />
                     <p className="text-[11px] text-muted-foreground mb-2 uppercase tracking-widest">
@@ -989,6 +990,8 @@ const SearchResults = () => {
                     </p>
                   </>
                 )}
+                {brandFilter !== "Green Spark Plug Co." && (
+                <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
                   {unifiedResults.map((item: any, idx: number) => {
                     // ── eBay Card ──
@@ -1255,6 +1258,11 @@ const SearchResults = () => {
                       →
                     </span>
                   </a>
+                )}
+                </>
+                )}
+                {isClassicPartSearch(activeQuery) && brandFilter !== "eBay" && brandFilter !== "Amazon" && (
+                  <GreenSparkResultsRow searchQuery={activeQuery} />
                 )}
               </div>
             ) : !liveLoading ? (
