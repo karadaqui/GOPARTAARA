@@ -24,6 +24,7 @@ interface Product {
   url: string;
   brand: string;
   shipping: string;
+  description: string;
   inStock: boolean;
   supplier: string;
   supplierName: string;
@@ -181,6 +182,12 @@ function processProducts(products: RawProduct[], query: string): Product[] {
       } else if (!isNaN(deliveryNum) && deliveryNum > 0) {
         shipping = `${symbol}${deliveryNum.toFixed(2)} delivery`;
       }
+      const rawDesc =
+        (p as Record<string, string>).description ||
+        (p as Record<string, string>).product_description ||
+        (p as Record<string, string>).short_description ||
+        (p as Record<string, string>).aw_description ||
+        "";
       return {
         id: p.aw_product_id || "",
         title: p.product_name || "",
@@ -191,6 +198,7 @@ function processProducts(products: RawProduct[], query: string): Product[] {
         url: p.aw_deep_link || "",
         brand: p.brand_name || "Green Spark Plug Co.",
         shipping,
+        description: rawDesc,
         inStock: (p.in_stock || "").toString().toLowerCase() === "yes" || p.in_stock === "1",
         supplier: "greensparkplug",
         supplierName: "Green Spark Plug Co.",

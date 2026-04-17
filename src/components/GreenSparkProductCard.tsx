@@ -187,10 +187,12 @@ const GreenSparkProductCard = ({
           </p>
         </a>
 
-        {/* Description */}
-        <p className="text-xs text-zinc-500 line-clamp-2 -mt-1">
-          {product.description || "Classic & vintage engine part — The Green Spark Plug Co."}
-        </p>
+        {/* Description — only show if API returned one */}
+        {product.description && (
+          <p className="text-xs text-zinc-500 line-clamp-2 -mt-1">
+            {product.description}
+          </p>
+        )}
 
         <div>
           <span className="text-2xl font-bold text-amber-500">{product.price}</span>
@@ -221,7 +223,7 @@ const GreenSparkProductCard = ({
             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold transition-colors duration-150"
             title="Affiliate link — supports PARTARA at no extra cost"
           >
-            <ExternalLink size={14} /> View on Green Spark Plug Co.
+            <ExternalLink size={14} /> View Product
           </a>
           {onCompareToggle && (
             <button
