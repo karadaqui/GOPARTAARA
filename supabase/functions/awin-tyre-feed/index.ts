@@ -35,7 +35,7 @@ if (String(advertiserId) === 'feedurl_12716') {
 const isDebug = String(advertiserId).startsWith('debug_')
 const actualId = isDebug ? String(advertiserId).replace('debug_', '') : String(advertiserId)
 const useDescFilter = ['12715'].includes(String(advertiserId))
-const skipFilter = HARDCODED[actualId]?.skipFilter || false
+const skipFilter = ['12715', '12716'].includes(String(advertiserId))
 const applyRimFilter = ['4118','10499','10747'].includes(String(advertiserId))
 const w = String(width||'')
 const p = String(profile||'')
@@ -155,24 +155,6 @@ const urlVal=cols[ui]||''
 const isImgUrl=(v:string)=>v.includes('.jpg')||v.includes('.png')||v.includes('.webp')||v.includes('image.')||v.includes('/tyre-p')
 const actualImg=isImgUrl(imgVal)?imgVal:(isImgUrl(urlVal)?urlVal:'')
 const actualUrl=(!isImgUrl(urlVal)&&urlVal.startsWith('http'))?urlVal:((!isImgUrl(imgVal)&&imgVal.startsWith('http'))?imgVal:'')
-if (actualId === '12716') {
-  const directUrl = cols[ui] || ''
-  const directImg = cols[ii] || ''
-  if (!directUrl) continue
-  prods.push({
-    id: cols[idi] || String(lc),
-    title: w + '/' + p + ' R' + rimNum + ' — ' + (cols[ni] || ''),
-    price: currency + rawPrice.toFixed(2),
-    image: directImg,
-    url: directUrl,
-    brand: cols[bi] || '',
-    shipping: 'Free delivery',
-    advertiserId: '12716',
-    currency,
-  })
-  if (prods.length >= 24) break loop
-  continue
-}
 if(!actualUrl)continue
 const del=cols[di]||''
     const product:any={
@@ -190,9 +172,6 @@ const del=cols[di]||''
 // Use description as display title for suppliers without size in product names
     if (['12715'].includes(actualId)) {
       product.title = (cols[descIdx]||cols[ni]||'').replace(/"/g,'').trim()
-    }
-    if (actualId === '12716') {
-      product.title = w + '/' + p + ' R' + rimNum + ' — ' + (cols[ni] || '')
     }
     
     prods.push(product)
