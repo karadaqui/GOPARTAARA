@@ -12,7 +12,9 @@ serve(async(req)=>{
 if(req.method==='OPTIONS')return new Response('ok',{headers:cors})
 try{
 const{width,advertiserId}=await req.json()
-const feed=FEEDS[String(advertiserId)]
+const isDebug = String(advertiserId).startsWith('debug_')
+const actualId = isDebug ? String(advertiserId).replace('debug_', '') : String(advertiserId)
+const feed=FEEDS[actualId]
 if(!feed)return new Response(JSON.stringify({products:[],error:'unknown'}),{headers:{...cors,'Content-Type':'application/json'}})
 const res=await fetch(feed.url)
 if(!res.body)throw new Error('nobody')
@@ -21,6 +23,27 @@ const dec=new TextDecoder()
 let buf='',hdrs:string[]=[],lc=0
 const prods:any[]=[]
 let ni=-1,pi=-1,ii=-1,ui=-1,bi=-1,di=-1,idi=-1
+
+// DEBUG MODE: collect first 3 raw lines
+if(isDebug){
+const rawLines:string[]=[]
+while(rawLines.length<3){
+const{done,value}=await reader.read()
+if(done)break
+buf+=dec.decode(value,{stream:true})
+const lines=buf.split('\n')
+buf=lines.pop()||''
+for(const line of lines){
+if(!line.trim())continue
+rawLines.push(line)
+if(rawLines.length>=3)break
+}
+}
+reader.cancel().catch(()=>{})
+return new Response(JSON.stringify({rawLines,products:[]}),{headers:{...cors,'Content-Type':'application/json'}})
+}
+
+// NORMAL MODE: process products
 loop:while(lc<500000){
 const{done,value}=await reader.read()
 if(done)break
@@ -38,7 +61,7 @@ ui=hdrs.indexOf('awdeeplink');if(ui<0)ui=hdrs.findIndex(h=>h.includes('deeplink'
 bi=hdrs.indexOf('brandname');if(bi<0)bi=hdrs.findIndex(h=>h.includes('brand'))
 di=hdrs.indexOf('deliverycost');if(di<0)di=hdrs.findIndex(h=>h.includes('delivery'))
 idi=hdrs.indexOf('awproductid');if(idi<0)idi=hdrs.findIndex(h=>h.includes('productid')||h.includes('awproduct'))
-console.log('ADV:',advertiserId,'ni:',ni,'pi:',pi,'ii:',ii,'ui:',ui,'hdrs:',hdrs.slice(0,8))
+console.log('ADV:',actualId,'ni:',ni,'pi:',pi,'ii:',ii,'ui:',ui,'hdrs:',hdrs.slice(0,8))
 continue
 }
 if(ni<0||pi<0)continue
@@ -61,7 +84,7 @@ image:actualImg,
 url:actualUrl,
 brand:cols[bi]||'',
 shipping:!del||del==='0'?'Free delivery':`${feed.cur}${parseFloat(del).toFixed(2)} delivery`,
-advertiserId:String(advertiserId),
+advertiserId:actualId,
 currency:feed.cur,
 })
 if(prods.length>=24)break loop
