@@ -16,10 +16,15 @@ function csv(line:string){const r:string[]=[];let c='',q=false;for(const ch of l
 serve(async(req)=>{
 if(req.method==='OPTIONS')return new Response('ok',{headers:cors})
 try{
-const{width,advertiserId}=await req.json()
+const{width,profile,rim,advertiserId}=await req.json()
 const isDebug = String(advertiserId).startsWith('debug_')
 const actualId = isDebug ? String(advertiserId).replace('debug_', '') : String(advertiserId)
-const skipWidthFilter = ['12715','10499','10747','12716'].includes(actualId)
+const skipWidthFilter = ['10499','10747','12716'].includes(actualId)
+const strictSizeFilter = ['4118','12715'].includes(actualId)
+const w = String(width||'')
+const p = String(profile||'')
+const r = String(rim||'').replace(/^R/i,'')
+const sizeStr = `${w}/${p} R${r}`
 
 let feedUrl = HARDCODED[actualId]?.url || ''
 const currency = HARDCODED[actualId]?.cur || CURRENCIES[actualId] || '£'
@@ -108,8 +113,18 @@ console.log('ADV:',actualId,'ni:',ni,'pi:',pi,'ii:',ii,'ui:',ui,'bi:',bi,'di:',d
 continue
 }
 if(ni<0||pi<0)continue
-const name=(cols[ni]||'').toLowerCase()
-if(!skipWidthFilter && !name.includes(String(width).toLowerCase()))continue
+const nameL = (cols[ni]||'').toLowerCase()
+if (strictSizeFilter) {
+  const matchSize = nameL.includes(w) &&
+                    nameL.includes('/'+p) &&
+                    (nameL.includes('r'+r+' ') ||
+                     nameL.includes('r'+r+')') ||
+                     nameL.includes(' '+r+' ') ||
+                     nameL.endsWith('r'+r))
+  if (!matchSize) continue
+} else if (!skipWidthFilter) {
+  if (!nameL.includes(w.toLowerCase())) continue
+}
 const rawPrice=parseFloat(cols[pi]||'0')
 if(rawPrice<=0)continue
 const imgVal=cols[ii]||''
@@ -119,9 +134,11 @@ const actualImg=isImgUrl(imgVal)?imgVal:(isImgUrl(urlVal)?urlVal:'')
 const actualUrl=(!isImgUrl(urlVal)&&urlVal.startsWith('http'))?urlVal:((!isImgUrl(imgVal)&&imgVal.startsWith('http'))?imgVal:'')
 if(!actualUrl)continue
 const del=cols[di]||''
+const rawTitle=cols[ni]||''
+const finalTitle=rawTitle.includes(w) ? rawTitle : `${sizeStr} — ${rawTitle}`
 prods.push({
 id:cols[idi]||String(lc),
-title:cols[ni]||'',
+title:finalTitle,
 price:`${currency}${rawPrice.toFixed(2)}`,
 image:actualImg,
 url:actualUrl,
