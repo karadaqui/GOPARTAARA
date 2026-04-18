@@ -14,13 +14,13 @@ const RIMS = ['13','14','15','16','17','18','19','20','21','22'];
 
 const ITEMS_PER_PAGE = 20;
 
-const COUNTRY_OPTIONS = [
-  { id: 'all', label: 'All', flag: '🌍', ships: 'All suppliers' },
-  { id: '4118', label: 'UK', flag: '🇬🇧', ships: 'UK + 35 countries' },
-  { id: '12715', label: 'Global', flag: '🌍', ships: '64 countries' },
-  { id: '10499', label: 'Spain', flag: '🇪🇸', ships: 'Spain only' },
-  { id: '12716', label: 'Italy', flag: '🇮🇹', ships: 'Italy only' },
-  { id: '10747', label: 'Baltics', flag: '🇪🇪', ships: 'Estonia, Latvia, Lithuania' },
+const SUPPLIERS = [
+  { id: 'all', flag: '🌍', label: 'All Results', ships: 'All suppliers' },
+  { id: '12715', flag: '🌍', label: 'Tyres UK', ships: 'Ships to 64 countries' },
+  { id: '4118', flag: '🇬🇧', label: 'mytyres.co.uk', ships: 'UK + 35 countries' },
+  { id: '10499', flag: '🇪🇸', label: 'neumaticos-online.es', ships: 'Spain only' },
+  { id: '12716', flag: '🇮🇹', label: 'Pneumatici IT', ships: 'Italy only' },
+  { id: '10747', flag: '🇪🇪', label: 'ReifenDirekt EE', ships: 'Estonia, Latvia, Lithuania' },
 ];
 
 type SupplierMeta = {
@@ -73,20 +73,48 @@ const Tyres = () => {
     setBrandFilter('all');
     setCurrentPage(1);
 
+    const supplierIds = ['4118', '12715', '10499', '12716', '10747'];
+
     try {
-      // Only call mytyres (4118) — fastest working feed
-      const { data } = await supabase.functions.invoke('awin-tyre-feed', {
-        body: {
-          width: selectedWidth,
-          profile: selectedProfile,
-          rim: selectedRim,
-          advertiserId: '4118',
-          offset: 0,
-          tyreType: 'all',
-        },
-      });
-      const products = (data?.products as TyreProduct[]) || [];
-      setTyreProducts(products);
+      const results = await Promise.allSettled(
+        supplierIds.map((advertiserId) =>
+          supabase.functions.invoke('awin-tyre-feed', {
+            body: {
+              width: selectedWidth,
+              profile: selectedProfile,
+              rim: selectedRim,
+              advertiserId,
+              offset: 0,
+              tyreType: 'all',
+            },
+          }).then((res) => ({ advertiserId, products: (res.data?.products as TyreProduct[]) || [] }))
+        )
+      );
+
+      const all: TyreProduct[] = [];
+      for (const r of results) {
+        if (r.status === 'fulfilled') {
+          const meta = SUPPLIERS.find((s) => s.id === r.value.advertiserId);
+          for (const p of r.value.products) {
+            all.push({
+              ...p,
+              advertiserId: r.value.advertiserId,
+              supplierMeta: meta
+                ? {
+                    name: meta.label,
+                    flag: meta.flag,
+                    country: meta.label,
+                    ships: meta.ships,
+                    fitting: '',
+                    advertiserId: r.value.advertiserId,
+                    id: r.value.advertiserId,
+                  }
+                : p.supplierMeta,
+            });
+          }
+        }
+      }
+      setTyreProducts(all);
     } catch (e) {
       console.error(e);
     } finally {
@@ -257,21 +285,21 @@ const Tyres = () => {
         {/* Filters + Results */}
         {tyreProducts.length > 0 && (
           <div className="max-w-6xl mx-auto mb-16">
-            {/* Country pills */}
+            {/* Supplier pills */}
             <div className="flex gap-2 overflow-x-auto scrollbar-hide mb-4 px-4">
-              {COUNTRY_OPTIONS.map(opt => (
+              {SUPPLIERS.map((s) => (
                 <button
-                  key={opt.id}
-                  onClick={() => { setCountryFilter(opt.id); setCurrentPage(1); }}
+                  key={s.id}
+                  onClick={() => { setCountryFilter(s.id); setCurrentPage(1); }}
                   className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                    countryFilter === opt.id
+                    countryFilter === s.id
                       ? 'bg-red-600 border-red-500 text-white'
                       : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
                   }`}
-                  title={opt.ships}
+                  title={s.ships}
                 >
-                  <span>{opt.flag}</span>
-                  <span>{opt.label}</span>
+                  <span>{s.flag}</span>
+                  <span>{s.label}</span>
                 </button>
               ))}
             </div>
@@ -341,15 +369,15 @@ const Tyres = () => {
                       <p className="text-[10px] text-zinc-700">Tyre only · Rim not included</p>
 
                       {/* Supplier info */}
-                      <div className="flex items-center justify-between mt-1">
-                        <span className="text-[10px] text-zinc-600 flex items-center gap-1">
-                          <span>{product.supplierMeta?.flag || '🇬🇧'}</span>
-                          <span>{product.supplierName}</span>
-                        </span>
-                        <span className="text-[10px] text-zinc-700 truncate ml-1">
-                          {product.supplierMeta?.ships || 'UK + 35 countries'}
+                      <div className="flex items-center gap-1 mt-1">
+                        <span className="text-sm">{product.supplierMeta?.flag || '🇬🇧'}</span>
+                        <span className="text-[10px] text-zinc-500 truncate">
+                          {product.supplierMeta?.name || product.supplierName}
                         </span>
                       </div>
+                      <p className="text-[10px] text-zinc-700">
+                        {product.supplierMeta?.ships || 'UK + 35 countries'}
+                      </p>
 
                       {/* Actions */}
                       <div className="flex gap-1 mt-2">
