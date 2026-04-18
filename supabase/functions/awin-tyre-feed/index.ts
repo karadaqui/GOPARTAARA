@@ -69,7 +69,7 @@ const reader=res.body.getReader()
 const dec=new TextDecoder()
 let buf='',hdrs:string[]=[],lc=0
 const prods:any[]=[]
-let ni=-1,pi=-1,ii=-1,ui=-1,bi=-1,di=-1,idi=-1
+let ni=-1,pi=-1,ii=-1,ui=-1,bi=-1,di=-1,idi=-1,descIdx=-1
 
 // DEBUG MODE: collect first 3 raw lines
 if(isDebug){
