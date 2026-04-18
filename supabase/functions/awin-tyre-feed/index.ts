@@ -117,6 +117,9 @@ const w = String(width)
 const p = String(profile)
 const nameL = (cols[ni]||'').toLowerCase()
 if (!skipWidthFilter && !nameL.includes(w+'/'+p)) continue
+if (['4118','10747'].includes(actualId)) {
+  if (!nameL.includes('r'+rimNum) && !nameL.includes(' '+rimNum+' ') && !nameL.includes('/'+rimNum)) continue
+}
 const rawPrice=parseFloat(cols[pi]||'0')
 if(rawPrice<=0)continue
 const imgVal=cols[ii]||''
