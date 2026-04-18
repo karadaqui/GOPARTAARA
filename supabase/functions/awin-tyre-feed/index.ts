@@ -1,123 +1,218 @@
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
+// AWIN tyre feed proxy for mytyres.co.uk (advertiser 4118, feed 12641)
+// 1. Download the CSV feed directly via the productdata API URL.
+// 2. Parse the product CSV.
+// 3. Filter by width, return up to 24 products.
+// Cached in-memory for 1 hour.
 
-const cors = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
+
+const ADVERTISER_ID = "4118";
+const PUBLISHER_ID = "2845282";
+const FEED_URL = "https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12641/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription";
+const CACHE_TTL_MS = 60 * 60 * 1000;
+
+interface Product {
+  id: string;
+  title: string;
+  price: string;
+  image: string;
+  url: string;
+  brand: string;
+  shipping: string;
+  description: string;
+  supplierName: string;
+  advertiserId: string;
 }
 
-serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
+interface RawProduct {
+  aw_product_id?: string;
+  product_name?: string;
+  description?: string;
+  search_price?: string;
+  merchant_image_url?: string;
+  aw_image_url?: string;
+  aw_deep_link?: string;
+  brand_name?: string;
+  delivery_cost?: string;
+  in_stock?: string;
+  currency?: string;
+}
+
+let feedCache: { fetchedAt: number; products: RawProduct[] } | null = null;
+
+// Minimal CSV parser supporting quoted fields with embedded commas/quotes/newlines.
+function parseCSV(text: string): string[][] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let field = "";
+  let inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') {
+          field += '"';
+          i++;
+        } else {
+          inQuotes = false;
+        }
+      } else {
+        field += c;
+      }
+    } else {
+      if (c === '"') {
+        inQuotes = true;
+      } else if (c === ",") {
+        row.push(field);
+        field = "";
+      } else if (c === "\n") {
+        row.push(field);
+        rows.push(row);
+        row = [];
+        field = "";
+      } else if (c === "\r") {
+        // skip
+      } else {
+        field += c;
+      }
+    }
+  }
+  if (field.length > 0 || row.length > 0) {
+    row.push(field);
+    rows.push(row);
+  }
+  return rows;
+}
+
+async function decompressGzip(buf: ArrayBuffer): Promise<string> {
+  const ds = new DecompressionStream("gzip");
+  const stream = new Response(buf).body!.pipeThrough(ds);
+  const text = await new Response(stream).text();
+  return text;
+}
+
+async function loadFeed(): Promise<RawProduct[]> {
+  const now = Date.now();
+  if (feedCache && now - feedCache.fetchedAt < CACHE_TTL_MS) {
+    return feedCache.products;
+  }
+
+  const feedRes = await fetch(FEED_URL);
+  if (!feedRes.ok) {
+    throw new Error(`product feed fetch failed: ${feedRes.status}`);
+  }
+
+  const buf = await feedRes.arrayBuffer();
+  const csvText = FEED_URL.includes("compression/gzip")
+    ? await decompressGzip(buf)
+    : new TextDecoder().decode(buf);
+
+  const rows = parseCSV(csvText);
+  if (rows.length < 2) {
+    feedCache = { fetchedAt: now, products: [] };
+    return [];
+  }
+  const header = rows[0].map((h) => h.trim());
+  const products: RawProduct[] = [];
+  for (let i = 1; i < rows.length; i++) {
+    const r = rows[i];
+    if (r.length < 2) continue;
+    const obj: Record<string, string> = {};
+    for (let j = 0; j < header.length; j++) {
+      obj[header[j]] = r[j] ?? "";
+    }
+    products.push(obj as RawProduct);
+  }
+
+  feedCache = { fetchedAt: now, products };
+  return products;
+}
+
+function buildAffiliateUrl(deepLink: string): string {
+  if (!deepLink) return "";
+  // If already an awin link, return as-is
+  if (deepLink.includes("awin1.com")) return deepLink;
+  return `https://www.awin1.com/cread.php?awinmid=${ADVERTISER_ID}&awinaffid=${PUBLISHER_ID}&clickref=partara-tyres&p=${encodeURIComponent(deepLink)}`;
+}
+
+function processProducts(
+  products: RawProduct[],
+  width: string,
+  profile: string,
+  rim: string,
+): Product[] {
+  const w = width.toLowerCase().trim();
+  if (!w) return [];
+
+  return products
+    .filter((p) => {
+      const name = (p.product_name || "").toLowerCase();
+      return name.includes(w);
+    })
+    .slice(0, 24)
+    .map((p) => {
+      const priceNum = parseFloat(p.search_price || "0");
+      const deliveryNum = parseFloat(p.delivery_cost || "0");
+      const currency = (p.currency || "GBP").toUpperCase();
+      const symbol = currency === "GBP" ? "£" : currency === "EUR" ? "€" : currency === "USD" ? "$" : "";
+      let shipping = "See site for delivery";
+      if (!p.delivery_cost || deliveryNum === 0) {
+        shipping = "Free delivery";
+      } else if (!isNaN(deliveryNum) && deliveryNum > 0) {
+        shipping = `${symbol}${deliveryNum.toFixed(2)} delivery`;
+      }
+      return {
+        id: p.aw_product_id || "",
+        title: p.product_name || "",
+        price: isNaN(priceNum) || priceNum === 0
+          ? (p.search_price || "")
+          : `${symbol}${priceNum.toFixed(2)}`,
+        image: p.merchant_image_url || p.aw_image_url || "",
+        url: buildAffiliateUrl(p.aw_deep_link || ""),
+        brand: p.brand_name || "",
+        shipping,
+        description: p.description || "",
+        supplierName: "mytyres.co.uk",
+        advertiserId: ADVERTISER_ID,
+      };
+    });
+}
+
+Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
 
   try {
-    const { width, profile, rim } = await req.json()
-    const cleanRim = rim.toString().replace(/^R/i, '')
+    const body = await req.json().catch(() => ({}));
+    const width = (body.width || "").toString();
+    const profile = (body.profile || "").toString();
+    const rim = (body.rim || "").toString().replace(/^R/i, "");
 
-    const searchUrl = `https://www.mytyres.co.uk/api/v1/tyres/search?width=${width}&height=${profile}&rim=${cleanRim}&vehicle=car&sort=price_asc&limit=24`
-
-    const res = await fetch(searchUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Accept': 'application/json',
-        'Referer': 'https://www.mytyres.co.uk/',
-      }
-    })
-
-    const text = await res.text()
-
-    let data: any
-    try {
-      data = JSON.parse(text)
-    } catch {
-      const pageUrl = `https://www.mytyres.co.uk/tyres/car/?width=${width}&height=${profile}&diameter=${cleanRim}`
-      const pageRes = await fetch(pageUrl, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' }
-      })
-      const html = await pageRes.text()
-
-      const products: any[] = []
-
-      const jsonLdMatch = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)
-      if (jsonLdMatch) {
-        for (const block of jsonLdMatch) {
-          try {
-            const json = JSON.parse(block.replace(/<script[^>]*>/, '').replace('</script>', ''))
-            if (json['@type'] === 'Product' || (Array.isArray(json) && json[0]?.['@type'] === 'Product')) {
-              const items = Array.isArray(json) ? json : [json]
-              for (const item of items.slice(0, 24)) {
-                const offer = item.offers || item.offer
-                const price = offer?.price || offer?.lowPrice || '0'
-                products.push({
-                  id: item.sku || item.mpn || String(Math.random()),
-                  title: item.name || '',
-                  price: `£${parseFloat(price).toFixed(2)}`,
-                  image: item.image || (Array.isArray(item.image) ? item.image[0] : ''),
-                  url: `https://www.awin1.com/cread.php?awinmid=4118&awinaffid=2845282&clickref=partara-tyres&p=${encodeURIComponent(item.url || offer?.url || pageUrl)}`,
-                  brand: item.brand?.name || item.brand || '',
-                  shipping: 'Free delivery on orders over £59',
-                  supplierName: 'mytyres.co.uk',
-                  advertiserId: '4118',
-                })
-              }
-            }
-          } catch { /* skip */ }
-        }
-      }
-
-      if (products.length > 0) {
-        return new Response(
-          JSON.stringify({ products }),
-          { headers: { ...cors, 'Content-Type': 'application/json' } }
-        )
-      }
-
-      const titleMatches = html.matchAll(/<span[^>]*class="[^"]*product[^"]*title[^"]*"[^>]*>(.*?)<\/span>/gi)
-      const priceMatches = html.matchAll(/£([\d.]+)/g)
-      const imgMatches = html.matchAll(/<img[^>]*src="(https:\/\/[^"]*(?:tyre|reifen|pneu)[^"]*\.(?:jpg|png|webp))"[^>]*>/gi)
-
-      const titles = [...titleMatches].map(m => m[1].replace(/<[^>]*>/g, '').trim())
-      const prices = [...priceMatches].map(m => m[1])
-      const imgs = [...imgMatches].map(m => m[1])
-
-      const fallbackProducts = titles.slice(0, 12).map((title, i) => ({
-        id: String(i),
-        title,
-        price: prices[i] ? `£${prices[i]}` : 'See site',
-        image: imgs[i] || '',
-        url: `https://www.awin1.com/cread.php?awinmid=4118&awinaffid=2845282&clickref=partara-tyres&p=${encodeURIComponent(pageUrl)}`,
-        brand: '',
-        shipping: 'Free delivery on orders over £59',
-        supplierName: 'mytyres.co.uk',
-        advertiserId: '4118',
-      }))
-
-      return new Response(
-        JSON.stringify({ products: fallbackProducts }),
-        { headers: { ...cors, 'Content-Type': 'application/json' } }
-      )
+    if (!width.trim()) {
+      return new Response(JSON.stringify({ products: [] }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    const items = data?.products || data?.items || data?.results || data?.tyres || []
-    const products = items.slice(0, 24).map((item: any) => ({
-      id: item.id || item.sku || String(Math.random()),
-      title: item.name || item.title || item.fullName || '',
-      price: item.price ? `£${parseFloat(item.price).toFixed(2)}` : 'See site',
-      image: item.image || item.imageUrl || item.thumbnail || '',
-      url: `https://www.awin1.com/cread.php?awinmid=4118&awinaffid=2845282&clickref=partara-tyres&p=${encodeURIComponent(item.url || item.link || '')}`,
-      brand: item.brand || item.manufacturer || '',
-      shipping: 'Free delivery on orders over £59',
-      supplierName: 'mytyres.co.uk',
-      advertiserId: '4118',
-    }))
+    const products = await loadFeed();
+    const filtered = processProducts(products, width, profile, rim);
 
+    return new Response(JSON.stringify({ products: filtered }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    console.error("awin-tyre-feed error", error);
     return new Response(
-      JSON.stringify({ products }),
-      { headers: { ...cors, 'Content-Type': 'application/json' } }
-    )
-
-  } catch (e: any) {
-    return new Response(
-      JSON.stringify({ products: [], error: e.message }),
-      { status: 500, headers: { ...cors, 'Content-Type': 'application/json' } }
-    )
+      JSON.stringify({ error: (error as Error).message, products: [] }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
-})
+});
