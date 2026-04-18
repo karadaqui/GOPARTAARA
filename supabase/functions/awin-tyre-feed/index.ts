@@ -6,7 +6,7 @@ const FEEDLIST_URL = 'https://ui.awin.com/productdata-darwin-download/publisher/
 const HARDCODED: Record<string,{cur:string,url:string,skipFilter?:boolean}> = {
   '4118':  { cur:'£', url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12641/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost' },
   '12715': { cur:'£', url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93988/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription' },
-  '12716': { cur: '€', skipFilter: true, url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93986/format/csv/language/it/delimiter/%2C/compression/gzip/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost' },
+  '12716': { cur: '€', skipFilter: true, url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93986/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost' },
 
 }
 const CURRENCIES: Record<string,string> = {
@@ -20,22 +20,10 @@ if(req.method==='OPTIONS')return new Response('ok',{headers:cors})
 try{
 const{width,profile,rim,advertiserId}=await req.json()
 
-if (String(advertiserId) === 'feedurl_12716') {
-  const listRes = await fetch('https://ui.awin.com/productdata-darwin-download/publisher/2845282/f0b723c9643205a96aeb31377b805e02/1/feedList')
-  const listText = await listRes.text()
-  const lines = listText.split('\n')
-  const line = lines.find(l => l.includes('12716')) || ''
-  const cols = line.split(',')
-  return new Response(
-    JSON.stringify({ feedLine: line.substring(0, 500), cols: cols.slice(0, 10) }),
-    { headers: { ...cors, 'Content-Type': 'application/json' } }
-  )
-}
-
 const isDebug = String(advertiserId).startsWith('debug_')
 const actualId = isDebug ? String(advertiserId).replace('debug_', '') : String(advertiserId)
 const useDescFilter = ['12715'].includes(String(advertiserId))
-const skipFilter = ['12715', '12716'].includes(String(advertiserId))
+const skipFilter = ['12715'].includes(String(advertiserId))
 const applyRimFilter = ['4118','10499','10747'].includes(String(advertiserId))
 const w = String(width||'')
 const p = String(profile||'')
