@@ -32,6 +32,7 @@ const sizeStr = `${w}/${p} R${rimNum}`
 
 let feedUrl = HARDCODED[actualId]?.url || ''
 const currency = HARDCODED[actualId]?.cur || CURRENCIES[actualId] || '£'
+console.log('FEED URL for', advertiserId, ':', feedUrl?.substring(0, 120))
 
 // For non-hardcoded advertisers, fetch URL dynamically from feedList
 if (!feedUrl) {
