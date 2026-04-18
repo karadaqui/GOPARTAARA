@@ -43,8 +43,10 @@ const Tyres = () => {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [countryFilter, setCountryFilter] = useState<string | null>(null);
+  const [tyreType, setTyreType] = useState<'all' | 'tyre' | 'wheel'>('all');
 
-  const searchTyres = async () => {
+  const searchTyres = async (typeOverride?: 'all' | 'tyre' | 'wheel') => {
+    const activeType = typeOverride ?? tyreType;
     setLoading(true);
     setSearched(true);
     setTyreProducts([]);
@@ -60,6 +62,7 @@ const Tyres = () => {
               rim: selectedRim,
               advertiserId: id,
               offset: 0,
+              tyreType: activeType,
             },
           }).then(({ data }) => (data?.products as TyreProduct[]) || [])
         )
@@ -182,7 +185,7 @@ const Tyres = () => {
             </div>
 
             <button
-              onClick={searchTyres}
+              onClick={() => searchTyres()}
               disabled={loading}
               className="w-full py-4 bg-red-600 hover:bg-red-500 active:scale-[0.98] disabled:opacity-50 text-white font-black rounded-2xl transition-all text-sm tracking-wide shadow-lg shadow-red-900/30"
             >
@@ -197,6 +200,31 @@ const Tyres = () => {
             </button>
           </div>
         </div>
+
+        {/* Tyre type filter */}
+        {searched && (
+          <div className="max-w-6xl mx-auto px-4 mb-4">
+            <div className="flex flex-wrap gap-2">
+              {(['all', 'tyre', 'wheel'] as const).map((type) => (
+                <button
+                  key={type}
+                  onClick={() => {
+                    setTyreType(type);
+                    searchTyres(type);
+                  }}
+                  disabled={loading}
+                  className={`px-4 py-2 rounded-xl text-xs font-semibold capitalize transition-colors disabled:opacity-50 ${
+                    tyreType === type
+                      ? 'bg-red-600 text-white'
+                      : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:bg-zinc-800'
+                  }`}
+                >
+                  {type === 'all' ? '🔍 All' : type === 'tyre' ? '⭕ Tyres Only' : '⚙️ Wheels Only'}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Results grid */}
         {tyreProducts.length > 0 && (
