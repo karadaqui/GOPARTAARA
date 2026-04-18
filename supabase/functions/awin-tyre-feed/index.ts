@@ -152,9 +152,6 @@ shipping:!del||del==='0'?'Free delivery':`${currency}${parseFloat(del).toFixed(2
 advertiserId:actualId,
 currency,
 }
-if(actualId==='12715' || actualId==='12716'){
-  product.title=`${w}/${p} R${rimNum} — ${product.title}`
-}
 prods.push(product)
 if(prods.length>=24)break loop
 }}
