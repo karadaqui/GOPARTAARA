@@ -89,40 +89,47 @@ const Tyres = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const searchTyres = async () => {
-    setLoading(true);
-    setSearched(true);
-    setTyreProducts([]);
-    setCountryFilter('all');
-    setBrandFilter('all');
-    setCurrentPage(1);
+    setLoading(true)
+    setSearched(true)
+    setTyreProducts([])
+    setCurrentPage(1)
+    const ids = ['4118', '10499', '10747', '12716', '12715']
 
-    const SUPPLIER_IDS = ['4118', '10499', '10747', '12716', '12715'];
-
-    const results = await Promise.allSettled(
-      SUPPLIER_IDS.map((id) =>
-        supabase.functions
-          .invoke('awin-tyre-feed', {
-            body: { width: selectedWidth, profile: selectedProfile, rim: selectedRim, advertiserId: id },
-          })
-          .then(({ data }) => {
+    try {
+      const settled = await Promise.allSettled(
+        ids.map((id) =>
+          supabase.functions.invoke('awin-tyre-feed', {
+            body: {
+              width: selectedWidth,
+              profile: selectedProfile,
+              rim: selectedRim,
+              advertiserId: id,
+            },
+          }).then(({ data, error }) => {
+            if (error) throw error
             const supplier = SUPPLIERS.find((s) => s.id === id);
-            return ((data?.products as TyreProduct[]) || []).map((p) => ({
+            return (data?.products || []).map((p: any) => ({
               ...p,
               supplierMeta: supplier as SupplierMeta | undefined,
               advertiserId: id,
-            }));
+            }))
           })
-          .catch(() => [] as TyreProduct[])
+        )
       )
-    );
 
-    const all = results
-      .filter((r) => r.status === 'fulfilled')
-      .flatMap((r) => (r as PromiseFulfilledResult<TyreProduct[]>).value);
-
-    setTyreProducts(all);
-    setLoading(false);
-  };
+      const all: any[] = []
+      settled.forEach((result) => {
+        if (result.status === 'fulfilled') {
+          all.push(...result.value)
+        }
+      })
+      setTyreProducts(all)
+    } catch (err) {
+      console.error('searchTyres error:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleSavePart = async (item: { title: string; price: string; image: string; url: string; supplier: string }) => {
     if (!user) { navigate("/auth"); return; }
