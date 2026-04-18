@@ -14,13 +14,13 @@ const RIMS = ['13','14','15','16','17','18','19','20','21','22'];
 
 const ITEMS_PER_PAGE = 20;
 
-const COUNTRY_OPTIONS = [
-  { id: 'all', label: 'All', flag: '🌍', ships: 'All suppliers' },
-  { id: '4118', label: 'UK', flag: '🇬🇧', ships: 'UK + 35 countries' },
-  { id: '12715', label: 'Global', flag: '🌍', ships: '64 countries' },
-  { id: '10499', label: 'Spain', flag: '🇪🇸', ships: 'Spain only' },
-  { id: '12716', label: 'Italy', flag: '🇮🇹', ships: 'Italy only' },
-  { id: '10747', label: 'Baltics', flag: '🇪🇪', ships: 'Estonia, Latvia, Lithuania' },
+const SUPPLIERS = [
+  { id: 'all', flag: '🌍', label: 'All Results', ships: 'All suppliers' },
+  { id: '12715', flag: '🌍', label: 'Tyres UK', ships: 'Ships to 64 countries' },
+  { id: '4118', flag: '🇬🇧', label: 'mytyres.co.uk', ships: 'UK + 35 countries' },
+  { id: '10499', flag: '🇪🇸', label: 'neumaticos-online.es', ships: 'Spain only' },
+  { id: '12716', flag: '🇮🇹', label: 'Pneumatici IT', ships: 'Italy only' },
+  { id: '10747', flag: '🇪🇪', label: 'ReifenDirekt EE', ships: 'Estonia, Latvia, Lithuania' },
 ];
 
 type SupplierMeta = {
