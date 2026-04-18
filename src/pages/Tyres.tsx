@@ -86,6 +86,8 @@ const Tyres = () => {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [countryFilter, setCountryFilter] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 24;
 
   const searchTyres = async () => {
     console.log('searchTyres called', { selectedWidth, selectedProfile, selectedRim });
@@ -93,6 +95,7 @@ const Tyres = () => {
     setSearched(true);
     setTyreProducts([]);
     setCountryFilter('all');
+    setCurrentPage(1);
 
     try {
       const results = await Promise.allSettled(
@@ -139,6 +142,17 @@ const Tyres = () => {
       : countryFilter === 'global'
         ? tyreProducts.filter((p) => p.supplierMeta?.isGlobal)
         : tyreProducts.filter((p) => p.supplierMeta?.id === countryFilter);
+
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE,
+  );
+
+  const handleCountryFilter = (id: string) => {
+    setCountryFilter(id);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -250,7 +264,7 @@ const Tyres = () => {
             <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
               <span className="text-zinc-600 text-xs flex-shrink-0">Filter:</span>
               <button
-                onClick={() => setCountryFilter('all')}
+                onClick={() => handleCountryFilter('all')}
                 className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-all border ${
                   countryFilter === 'all'
                     ? 'bg-red-600 border-red-500 text-white'
@@ -261,7 +275,7 @@ const Tyres = () => {
               </button>
               {tyreProducts.some((p) => p.supplierMeta?.isGlobal) && (
                 <button
-                  onClick={() => setCountryFilter('global')}
+                  onClick={() => handleCountryFilter('global')}
                   className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition-all border ${
                     countryFilter === 'global'
                       ? 'bg-red-600 border-red-500 text-white'
@@ -278,7 +292,7 @@ const Tyres = () => {
                 return (
                   <button
                     key={s.id}
-                    onClick={() => setCountryFilter(s.id)}
+                    onClick={() => handleCountryFilter(s.id)}
                     className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition-all border ${
                       countryFilter === s.id
                         ? 'bg-red-600 border-red-500 text-white'
@@ -298,8 +312,13 @@ const Tyres = () => {
         {/* Results grid */}
         {tyreProducts.length > 0 && (
           <div className="max-w-6xl mx-auto px-4 mb-16">
+            <p className="text-zinc-600 text-xs mb-4">
+              Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}–
+              {Math.min(currentPage * ITEMS_PER_PAGE, filteredProducts.length)} of{' '}
+              {filteredProducts.length} tyres
+            </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {filteredProducts.map((product, i) => (
+              {paginatedProducts.map((product, i) => (
                 <a
                   key={product.id || i}
                   href={product.url}
@@ -357,6 +376,53 @@ const Tyres = () => {
                 </a>
               ))}
             </div>
+
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-8 mb-4 flex-wrap">
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 disabled:opacity-30 disabled:cursor-not-allowed text-white text-sm rounded-xl transition-all"
+                >
+                  ← Prev
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(
+                    (p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1,
+                  )
+                  .reduce((acc, p, i, arr) => {
+                    if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push('...');
+                    acc.push(p);
+                    return acc;
+                  }, [] as (number | string)[])
+                  .map((p, i) =>
+                    p === '...' ? (
+                      <span key={`e-${i}`} className="text-zinc-600 px-1">
+                        ...
+                      </span>
+                    ) : (
+                      <button
+                        key={p}
+                        onClick={() => setCurrentPage(p as number)}
+                        className={`w-9 h-9 rounded-xl text-sm font-semibold transition-all ${
+                          currentPage === p
+                            ? 'bg-red-600 text-white'
+                            : 'bg-zinc-900 border border-zinc-800 hover:border-zinc-600 text-zinc-400'
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    ),
+                  )}
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 disabled:opacity-30 disabled:cursor-not-allowed text-white text-sm rounded-xl transition-all"
+                >
+                  Next →
+                </button>
+              </div>
+            )}
           </div>
         )}
 
