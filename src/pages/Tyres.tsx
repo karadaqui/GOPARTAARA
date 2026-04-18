@@ -345,11 +345,15 @@ const Tyres = () => {
                     <p className="text-xs font-semibold text-white line-clamp-2 mb-1 leading-snug group-hover:text-red-400 transition-colors">
                       {product.title}
                     </p>
-                    {product.brand && (
+                    {product.subtitle ? (
+                      <p className="text-[10px] text-zinc-500 mb-2 line-clamp-2">{product.subtitle}</p>
+                    ) : product.brand ? (
                       <p className="text-[10px] text-zinc-600 mb-2">{product.brand}</p>
-                    )}
+                    ) : null}
                     <div className="flex items-end justify-between mb-2">
-                      <p className="text-xl font-black text-white">{product.price}</p>
+                      <p className={`font-black text-white ${product.isSearchLink ? 'text-sm' : 'text-xl'}`}>
+                        {product.price}
+                      </p>
                     </div>
                     <p className="text-[10px] text-zinc-600 mb-3">🚚 {product.shipping}</p>
                     <div className="flex items-center gap-1.5">
@@ -362,7 +366,7 @@ const Tyres = () => {
                       )}
                     </div>
                     <div className="mt-2 w-full text-center py-2 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-xl transition-colors">
-                      View →
+                      {product.isSearchLink ? `Search on ${product.supplierName} →` : 'View →'}
                     </div>
                   </div>
                 </a>
