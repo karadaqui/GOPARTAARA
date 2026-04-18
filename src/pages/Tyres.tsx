@@ -90,7 +90,6 @@ const Tyres = () => {
   const ITEMS_PER_PAGE = 24;
 
   const searchTyres = async () => {
-    console.log('searchTyres called', { selectedWidth, selectedProfile, selectedRim });
     setLoading(true);
     setSearched(true);
     setTyreProducts([]);
@@ -99,38 +98,29 @@ const Tyres = () => {
 
     try {
       const results = await Promise.allSettled(
-        TYRE_SUPPLIERS.map((supplier) =>
-          supabase.functions
-            .invoke('awin-tyre-feed', {
-              body: {
-                width: selectedWidth,
-                profile: selectedProfile,
-                rim: selectedRim,
-                advertiserId: supplier.id,
-              },
-            })
-            .then(({ data, error }) => {
-              console.log(`tyre feed [${supplier.name}]:`, { data, error });
-              return ((data?.products as TyreProduct[]) || []).map((p) => ({
-                ...p,
-                supplierMeta: supplier,
-              }));
-            })
-            .catch((err) => {
-              console.warn(`tyre feed [${supplier.name}] failed:`, err);
-              return [] as TyreProduct[];
-            }),
-        ),
+        TYRE_SUPPLIERS.map(async (supplier) => {
+          const { data } = await supabase.functions.invoke('awin-tyre-feed', {
+            body: {
+              width: selectedWidth,
+              profile: selectedProfile,
+              rim: selectedRim,
+              advertiserId: supplier.id,
+            },
+          });
+          return ((data?.products as TyreProduct[]) || []).map((p) => ({
+            ...p,
+            supplierMeta: supplier,
+          }));
+        }),
       );
 
-      const allProducts: TyreProduct[] = results
+      const all: TyreProduct[] = results
         .filter((r) => r.status === 'fulfilled')
         .flatMap((r) => (r as PromiseFulfilledResult<TyreProduct[]>).value);
 
-      console.log('Total products found:', allProducts.length);
-      setTyreProducts(allProducts);
-    } catch (err) {
-      console.error('searchTyres error:', err);
+      setTyreProducts(all);
+    } catch (e) {
+      console.error(e);
     } finally {
       setLoading(false);
     }
