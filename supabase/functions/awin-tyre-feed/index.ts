@@ -77,8 +77,8 @@ serve(async (req) => {
           continue
         }
 
-        const name = (cols[ni] || '').toLowerCase()
-        if (!name.includes(String(width).toLowerCase())) continue
+        // NO FILTER — return first 24 products regardless of name
+        // Users will see all tyres from each supplier
 
         products.push({
           id: cols[idi] || String(lineCount),
