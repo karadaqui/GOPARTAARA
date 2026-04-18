@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -7,6 +7,21 @@ import { supabase } from "@/integrations/supabase/client";
 const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305'];
 const PROFILES = ['30','35','40','45','50','55','60','65','70','75'];
 const RIMS = ['13','14','15','16','17','18','19','20','21','22'];
+
+const FEEDS: Record<string, { name: string; flag: string; country: string; isGlobal: boolean }> = {
+  '4118':  { name: 'mytyres.co.uk',        flag: '🇬🇧', country: 'United Kingdom', isGlobal: true  },
+  '10499': { name: 'neumaticos-online.es', flag: '🇪🇸', country: 'Spain',          isGlobal: false },
+  '12716': { name: 'Pneumatici IT',        flag: '🇮🇹', country: 'Italy',          isGlobal: false },
+  '10747': { name: 'ReifenDirekt',         flag: '🇩🇪', country: 'Germany',        isGlobal: false },
+};
+
+type SupplierMeta = {
+  name: string;
+  flag: string;
+  country: string;
+  isGlobal: boolean;
+  advertiserId: string;
+};
 
 type TyreProduct = {
   id: string;
@@ -17,7 +32,7 @@ type TyreProduct = {
   brand: string;
   shipping: string;
   supplierName: string;
-  advertiserId: string;
+  supplierMeta?: SupplierMeta;
 };
 
 const Tyres = () => {
@@ -27,23 +42,34 @@ const Tyres = () => {
   const [tyreProducts, setTyreProducts] = useState<TyreProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
-  const [page, setPage] = useState(1);
-  const ITEMS_PER_PAGE = 24;
+  const [countryFilter, setCountryFilter] = useState<string | null>(null);
 
-  const fetchTyres = async (pageNum: number) => {
+  const searchTyres = async () => {
     setLoading(true);
+    setSearched(true);
     setTyreProducts([]);
+    setCountryFilter(null);
 
     try {
-      const { data } = await supabase.functions.invoke('awin-tyre-feed', {
-        body: {
-          width: selectedWidth,
-          profile: selectedProfile,
-          rim: selectedRim,
-          offset: (pageNum - 1) * ITEMS_PER_PAGE,
-        },
-      });
-      setTyreProducts((data?.products as TyreProduct[]) || []);
+      const results = await Promise.allSettled(
+        Object.keys(FEEDS).map(id =>
+          supabase.functions.invoke('awin-tyre-feed', {
+            body: {
+              width: selectedWidth,
+              profile: selectedProfile,
+              rim: selectedRim,
+              advertiserId: id,
+              offset: 0,
+            },
+          }).then(({ data }) => (data?.products as TyreProduct[]) || [])
+        )
+      );
+
+      const all = results
+        .filter(r => r.status === 'fulfilled')
+        .flatMap(r => (r as PromiseFulfilledResult<TyreProduct[]>).value);
+
+      setTyreProducts(all);
     } catch (e) {
       console.error(e);
     } finally {
@@ -51,20 +77,22 @@ const Tyres = () => {
     }
   };
 
-  const searchTyres = async () => {
-    setSearched(true);
-    setPage(1);
-    await fetchTyres(1);
-  };
+  const availableCountries = useMemo(() => {
+    const map = new Map<string, { flag: string; country: string; count: number }>();
+    for (const p of tyreProducts) {
+      const meta = p.supplierMeta;
+      if (!meta) continue;
+      const existing = map.get(meta.country);
+      if (existing) existing.count++;
+      else map.set(meta.country, { flag: meta.flag, country: meta.country, count: 1 });
+    }
+    return Array.from(map.values());
+  }, [tyreProducts]);
 
-  const goToPage = async (newPage: number) => {
-    setPage(newPage);
-    await fetchTyres(newPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const paginatedProducts = tyreProducts.slice(0, ITEMS_PER_PAGE);
-  const hasNextPage = tyreProducts.length >= ITEMS_PER_PAGE;
+  const filteredProducts = useMemo(() => {
+    if (!countryFilter) return tyreProducts;
+    return tyreProducts.filter(p => p.supplierMeta?.country === countryFilter);
+  }, [tyreProducts, countryFilter]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -161,7 +189,7 @@ const Tyres = () => {
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Searching...
+                  Searching across suppliers...
                 </span>
               ) : (
                 `Search ${selectedWidth}/${selectedProfile} R${selectedRim} →`
@@ -173,13 +201,43 @@ const Tyres = () => {
         {/* Results grid */}
         {tyreProducts.length > 0 && (
           <div className="max-w-6xl mx-auto px-4 mb-16">
+            {/* Country filter pills */}
+            {availableCountries.length > 1 && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                <button
+                  onClick={() => setCountryFilter(null)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
+                    countryFilter === null
+                      ? 'bg-red-600 text-white'
+                      : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 border border-zinc-800'
+                  }`}
+                >
+                  All ({tyreProducts.length})
+                </button>
+                {availableCountries.map((c) => (
+                  <button
+                    key={c.country}
+                    onClick={() => setCountryFilter(c.country)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+                      countryFilter === c.country
+                        ? 'bg-red-600 text-white'
+                        : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 border border-zinc-800'
+                    }`}
+                  >
+                    <span>{c.flag}</span>
+                    <span>{c.country} ({c.count})</span>
+                  </button>
+                ))}
+              </div>
+            )}
+
             <p className="text-zinc-600 text-xs mb-4">
-              Showing {tyreProducts.length} tyres · Page {page}
+              Showing {filteredProducts.length} tyres from {availableCountries.length} {availableCountries.length === 1 ? 'supplier' : 'suppliers'}
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {paginatedProducts.map((product, i) => (
+              {filteredProducts.map((product, i) => (
                 <a
-                  key={product.id || i}
+                  key={`${product.supplierMeta?.advertiserId || ''}-${product.id || i}`}
                   href={product.url}
                   target="_blank"
                   rel="noopener noreferrer sponsored"
@@ -199,7 +257,7 @@ const Tyres = () => {
                       <span className="text-5xl opacity-20">○</span>
                     )}
                     <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
-                      <span className="text-xs">🇬🇧</span>
+                      <span className="text-xs">{product.supplierMeta?.flag || '🌍'}</span>
                     </div>
                   </div>
 
@@ -222,26 +280,6 @@ const Tyres = () => {
                 </a>
               ))}
             </div>
-
-            {(page > 1 || hasNextPage) && (
-              <div className="flex gap-2 justify-center mt-6">
-                <button
-                  onClick={() => goToPage(page - 1)}
-                  disabled={page === 1 || loading}
-                  className="px-4 py-2 bg-zinc-800 rounded-xl text-white disabled:opacity-30"
-                >
-                  ← Prev
-                </button>
-                <span className="px-4 py-2 text-zinc-400">Page {page}</span>
-                <button
-                  onClick={() => goToPage(page + 1)}
-                  disabled={!hasNextPage || loading}
-                  className="px-4 py-2 bg-zinc-800 rounded-xl text-white disabled:opacity-30"
-                >
-                  Next →
-                </button>
-              </div>
-            )}
           </div>
         )}
 
