@@ -89,6 +89,7 @@ const Tyres = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const searchTyres = async () => {
+    console.log('searchTyres called', { selectedWidth, selectedProfile, selectedRim })
     setLoading(true)
     setSearched(true)
     setTyreProducts([])
