@@ -19,7 +19,7 @@ try{
 const{width,profile,rim,advertiserId}=await req.json()
 const isDebug = String(advertiserId).startsWith('debug_')
 const actualId = isDebug ? String(advertiserId).replace('debug_', '') : String(advertiserId)
-const skipWidthFilter = ['10499','10747','12716','12715'].includes(actualId)
+const skipWidthFilter = ['12716','12715'].includes(actualId)
 const strictSizeFilter = ['4118'].includes(actualId)
 const w = String(width||'')
 const p = String(profile||'')
