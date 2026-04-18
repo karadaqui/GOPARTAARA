@@ -26,6 +26,15 @@ const p = String(profile||'')
 const rimNum = String(rim||'').replace(/^R/i,'')
 const sizeStr = `${w}/${p} R${rimNum}`
 
+// Return empty for suppliers without size info in product names
+if (['12715','12716'].includes(String(advertiserId))) {
+  return new Response(
+    JSON.stringify({ products: [] }),
+    { headers: { ...cors, 'Content-Type': 'application/json' } }
+  )
+}
+
+
 let feedUrl = HARDCODED[actualId]?.url || ''
 const currency = HARDCODED[actualId]?.cur || CURRENCIES[actualId] || '£'
 
@@ -142,9 +151,6 @@ brand:cols[bi]||'',
 shipping:!del||del==='0'?'Free delivery':`${currency}${parseFloat(del).toFixed(2)} delivery`,
 advertiserId:actualId,
 currency,
-}
-if(actualId==='12715' || actualId==='12716'){
-  product.title=`${w}/${p} R${rimNum} — ${product.title}`
 }
 prods.push(product)
 if(prods.length>=24)break loop
