@@ -123,16 +123,7 @@ serve(async (req) => {
 
     const products = rows.slice(1)
       .map(splitCSV)
-      .filter((c) => {
-        const name = (c[ni] || '').toLowerCase()
-        const desc = descIdx >= 0 ? (c[descIdx] || '').toLowerCase() : ''
-        const combined = name + ' ' + desc
-        return (
-          combined.includes(widthLc) &&
-          combined.includes(`/${profileLc}`) &&
-          (combined.includes(`r${rimClean}`) || combined.includes(`r ${rimClean}`))
-        )
-      })
+      .filter((c) => (c[ni] || '').toLowerCase().includes(widthLc))
       .slice(0, 24)
       .map((c) => ({
         id: c[idi] || crypto.randomUUID(),
