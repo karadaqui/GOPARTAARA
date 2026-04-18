@@ -29,37 +29,31 @@ const ITEMS_PER_PAGE = 20;
 const SUPPLIERS = [
   {
     id: 'all',
-    flagEmoji: '🌍',
     siteName: 'All Results',
     shipsTo: 'All suppliers',
   },
   {
     id: '12715',
-    flagEmoji: '🌍',
     siteName: 'Tyres UK (Tyres.net)',
     shipsTo: 'Ships to 64 countries',
   },
   {
     id: '4118',
-    flagEmoji: '🇬🇧',
     siteName: 'mytyres.co.uk',
     shipsTo: 'Ships to UK + 35 countries',
   },
   {
     id: '10499',
-    flagEmoji: '🇪🇸',
     siteName: 'neumaticos-online.es',
     shipsTo: 'Ships within Spain',
   },
   {
     id: '12716',
-    flagEmoji: '🇮🇹',
     siteName: 'Pneumatici IT',
     shipsTo: 'Ships within Italy',
   },
   {
     id: '10747',
-    flagEmoji: '🇪🇪',
     siteName: 'ReifenDirekt EE',
     shipsTo: 'Ships to Estonia, Latvia, Lithuania',
   },
