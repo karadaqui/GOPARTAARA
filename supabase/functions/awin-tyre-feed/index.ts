@@ -119,8 +119,9 @@ const w = String(width)
 const p = String(profile)
 const nameL = (cols[ni]||'').toLowerCase()
 if (useDescFilter) {
-  const nameAndDesc = (nameL + ' ' + (cols[descIdx]||'').toLowerCase())
-  if (!nameAndDesc.includes(w+'/'+p)) continue
+  const desc = (cols[descIdx]||'').toLowerCase()
+  const rimN = String(rim).replace(/^R/i,'')
+  if (!desc.includes(w+'/'+p) || !desc.includes('r'+rimN)) continue
 } else if (!nameL.includes(w+'/'+p)) continue
 if (applyRimFilter) {
   const rimNum = String(rim).replace(/^R/i,'')
@@ -149,9 +150,9 @@ const del=cols[di]||''
       currency,
     }
     
-    // Add size prefix for suppliers whose products don't have size in names
+    // Use description as display title for suppliers without size in product names
     if (['12715','12716'].includes(actualId)) {
-      product.title = `${w}/${p} R${rimNum} — ${product.title}`
+      product.title = (cols[descIdx]||cols[ni]||'').replace(/"/g,'').trim()
     }
     
     prods.push(product)
