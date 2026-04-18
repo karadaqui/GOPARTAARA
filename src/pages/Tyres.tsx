@@ -269,6 +269,7 @@ const Tyres = () => {
             </div>
 
             <button
+              type="button"
               onClick={searchTyres}
               disabled={loading}
               className="w-full py-4 bg-red-600 hover:bg-red-500 active:scale-[0.98] disabled:opacity-50 text-white font-black rounded-2xl transition-all text-sm tracking-wide shadow-lg shadow-red-900/30"
