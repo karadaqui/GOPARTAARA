@@ -132,18 +132,24 @@ const actualImg=isImgUrl(imgVal)?imgVal:(isImgUrl(urlVal)?urlVal:'')
 const actualUrl=(!isImgUrl(urlVal)&&urlVal.startsWith('http'))?urlVal:((!isImgUrl(imgVal)&&imgVal.startsWith('http'))?imgVal:'')
 if(!actualUrl)continue
 const del=cols[di]||''
-const product:any={
-id:cols[idi]||String(lc),
-title:cols[ni]||'',
-price:`${currency}${rawPrice.toFixed(2)}`,
-image:actualImg,
-url:actualUrl,
-brand:cols[bi]||'',
-shipping:!del||del==='0'?'Free delivery':`${currency}${parseFloat(del).toFixed(2)} delivery`,
-advertiserId:actualId,
-currency,
-}
-prods.push(product)
+    const product:any={
+      id:cols[idi]||String(lc),
+      title:cols[ni]||'',
+      price:`${currency}${rawPrice.toFixed(2)}`,
+      image:actualImg,
+      url:actualUrl,
+      brand:cols[bi]||'',
+      shipping:!del||del==='0'?'Free delivery':`${currency}${parseFloat(del).toFixed(2)} delivery`,
+      advertiserId:actualId,
+      currency,
+    }
+    
+    // Add size prefix for suppliers whose products don't have size in names
+    if (['12715','12716'].includes(actualId)) {
+      product.title = `${w}/${p} R${rimNum} — ${product.title}`
+    }
+    
+    prods.push(product)
 if(prods.length>=24)break loop
 }}
 reader.cancel().catch(()=>{})
