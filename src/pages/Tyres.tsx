@@ -15,19 +15,49 @@ const RIMS = ['13','14','15','16','17','18','19','20','21','22'];
 const ITEMS_PER_PAGE = 20;
 
 const SUPPLIERS = [
-  { id: 'all', emoji: '🌍', name: 'All Results', ships: '' },
-  { id: '12715', emoji: '🌍', name: 'Tyres UK', ships: 'Ships to 64 countries' },
-  { id: '4118', emoji: '🇬🇧', name: 'mytyres.co.uk', ships: 'UK + 35 countries' },
-  { id: '10499', emoji: '🇪🇸', name: 'neumaticos-online.es', ships: 'Spain only' },
-  { id: '12716', emoji: '🇮🇹', name: 'Pneumatici IT', ships: 'Italy only' },
-  { id: '10747', emoji: '🇪🇪', name: 'ReifenDirekt EE', ships: 'Estonia, Latvia, Lithuania' },
+  {
+    id: 'all',
+    flagEmoji: '🌍',
+    siteName: 'All Results',
+    shipsTo: 'All suppliers',
+  },
+  {
+    id: '12715',
+    flagEmoji: '🌍',
+    siteName: 'Tyres UK (Tyres.net)',
+    shipsTo: 'Ships to 64 countries',
+  },
+  {
+    id: '4118',
+    flagEmoji: '🇬🇧',
+    siteName: 'mytyres.co.uk',
+    shipsTo: 'Ships to UK + 35 countries',
+  },
+  {
+    id: '10499',
+    flagEmoji: '🇪🇸',
+    siteName: 'neumaticos-online.es',
+    shipsTo: 'Ships within Spain',
+  },
+  {
+    id: '12716',
+    flagEmoji: '🇮🇹',
+    siteName: 'Pneumatici IT',
+    shipsTo: 'Ships within Italy',
+  },
+  {
+    id: '10747',
+    flagEmoji: '🇪🇪',
+    siteName: 'ReifenDirekt EE',
+    shipsTo: 'Ships to Estonia, Latvia, Lithuania',
+  },
 ];
 
 type SupplierMeta = {
   id: string;
-  emoji: string;
-  name: string;
-  ships: string;
+  flagEmoji: string;
+  siteName: string;
+  shipsTo: string;
 };
 
 type TyreProduct = {
@@ -274,10 +304,10 @@ const Tyres = () => {
                       ? 'bg-red-600 border-red-500 text-white'
                       : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
                   }`}
-                  title={s.ships}
+                  title={s.shipsTo}
                 >
-                  <span>{s.emoji}</span>
-                  <span>{s.name}</span>
+                  <span>{s.flagEmoji}</span>
+                  <span>{s.siteName}</span>
                 </button>
               ))}
             </div>
@@ -326,7 +356,7 @@ const Tyres = () => {
                           <span className="text-5xl opacity-20">○</span>
                         )}
                         <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
-                          <span className="text-xs">{product.supplierMeta?.emoji || '🇬🇧'}</span>
+                          <span className="text-xs">{product.supplierMeta?.flagEmoji || '🇬🇧'}</span>
                         </div>
                       </div>
                     </a>
@@ -348,13 +378,13 @@ const Tyres = () => {
 
                       {/* Supplier info */}
                       <div className="flex items-center gap-1 mt-1">
-                        <span className="text-sm">{product.supplierMeta?.emoji || '🇬🇧'}</span>
+                        <span className="text-sm">{product.supplierMeta?.flagEmoji || '🇬🇧'}</span>
                         <span className="text-[10px] text-zinc-500 truncate">
-                          {product.supplierMeta?.name || product.supplierName}
+                          {product.supplierMeta?.siteName || product.supplierName}
                         </span>
                       </div>
                       <p className="text-[10px] text-zinc-700">
-                        {product.supplierMeta?.ships || 'Ships to UK + 35 countries'}
+                        {product.supplierMeta?.shipsTo || 'Ships to UK + 35 countries'}
                       </p>
 
                       {/* Actions */}

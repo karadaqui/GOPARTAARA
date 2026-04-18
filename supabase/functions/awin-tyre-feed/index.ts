@@ -7,21 +7,75 @@ const cors = {
 
 const FEED_LIST_URL = 'https://ui.awin.com/productdata-darwin-download/publisher/2845282/f0b723c9643205a96aeb31377b805e02/1/feedList'
 
-// Direct feed URLs per advertiser (compression=none for streaming CSV)
-const FEED_URLS: Record<string, string> = {
-  '4118': 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12641/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost',
-  '12715': 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12715/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost',
-  '10499': 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/10499/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost',
-  '12716': 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12716/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost',
-  '10747': 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/10747/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost',
+// Fallback hardcoded URLs (in case feedList is unavailable)
+const FALLBACK_FEEDS: Record<string, { url: string; name: string; flag: string; country: string; isGlobal: boolean }> = {
+  '4118': {
+    url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12641/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost',
+    name: 'mytyres.co.uk', flag: '🇬🇧', country: 'United Kingdom', isGlobal: true,
+  },
+  '10499': {
+    url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/10499/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost',
+    name: 'neumaticos-online.es', flag: '🇪🇸', country: 'Spain', isGlobal: false,
+  },
+  '12716': {
+    url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12716/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost',
+    name: 'Pneumatici IT', flag: '🇮🇹', country: 'Italy', isGlobal: false,
+  },
+  '10747': {
+    url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/10747/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost',
+    name: 'ReifenDirekt', flag: '🇩🇪', country: 'Germany', isGlobal: false,
+  },
 }
 
-const META_BY_ID: Record<string, { flag: string; country: string; name: string; isGlobal: boolean }> = {
-  '4118':  { flag: '🇬🇧', country: 'United Kingdom', name: 'mytyres.co.uk',         isGlobal: true  },
-  '12715': { flag: '🌍', country: 'Global',          name: 'Tyres UK',              isGlobal: true  },
-  '10499': { flag: '🇪🇸', country: 'Spain',          name: 'neumaticos-online.es',  isGlobal: false },
-  '12716': { flag: '🇮🇹', country: 'Italy',          name: 'Pneumatici IT',         isGlobal: false },
-  '10747': { flag: '🇪🇪', country: 'Estonia',        name: 'ReifenDirekt EE',       isGlobal: false },
+const META_BY_ID: Record<string, { flag: string; country: string; isGlobal: boolean }> = {
+  '4118':  { flag: '🇬🇧', country: 'United Kingdom', isGlobal: true  },
+  '10499': { flag: '🇪🇸', country: 'Spain',          isGlobal: false },
+  '12715': { flag: '🇫🇷', country: 'France',         isGlobal: false },
+  '12716': { flag: '🇮🇹', country: 'Italy',          isGlobal: false },
+  '10747': { flag: '🇩🇪', country: 'Germany',        isGlobal: false },
+}
+
+let cachedFeedList: { advertiserId: string; feedId: string; url: string; name: string }[] | null = null
+let cacheTime = 0
+const CACHE_TTL = 60 * 60 * 1000 // 1 hour
+
+async function getFeedList() {
+  if (cachedFeedList && Date.now() - cacheTime < CACHE_TTL) return cachedFeedList
+
+  try {
+    const listRes = await fetch(FEED_LIST_URL)
+    const listText = await listRes.text()
+    const lines = listText.split('\n').filter(l => l.trim())
+    if (lines.length < 2) return null
+
+    const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim())
+    const advIdIdx = headers.findIndex(h => h.toLowerCase().includes('advertiser id'))
+    const feedIdIdx = headers.findIndex(h => h.toLowerCase().includes('feed id'))
+    const urlIdx = headers.findIndex(h => h.toLowerCase() === 'url')
+    const nameIdx = headers.findIndex(h => h.toLowerCase().includes('advertiser name'))
+
+    const allFeeds = lines.slice(1).map(line => {
+      const cols = parseCsvLine(line)
+      return {
+        advertiserId: (cols[advIdIdx] || '').replace(/"/g, '').trim(),
+        feedId: (cols[feedIdIdx] || '').replace(/"/g, '').trim(),
+        url: (cols[urlIdx] || '').replace(/"/g, '').trim(),
+        name: (cols[nameIdx] || '').replace(/"/g, '').trim(),
+      }
+    })
+
+    console.log('ALL FEEDS (first 20):', JSON.stringify(allFeeds.slice(0, 20)))
+    const targetIds = ['4118', '10499', '12715', '12716', '10747']
+    const foundFeeds = allFeeds.filter(f => targetIds.includes(f.advertiserId))
+    console.log('TYRE FEEDS FOUND:', JSON.stringify(foundFeeds))
+
+    cachedFeedList = allFeeds
+    cacheTime = Date.now()
+    return allFeeds
+  } catch (e) {
+    console.error('feedList fetch failed:', (e as Error).message)
+    return null
+  }
 }
 
 serve(async (req) => {
@@ -31,9 +85,13 @@ serve(async (req) => {
     const { width, profile, rim, offset = 0, advertiserId = '4118', tyreType = 'all' } = await req.json()
     const cleanRim = String(rim || '').replace(/^R/i, '').trim()
 
-    const feedUrl = FEED_URLS[String(advertiserId)]
-    const meta = META_BY_ID[String(advertiserId)] || { flag: '🌍', country: 'Unknown', name: `Advertiser ${advertiserId}`, isGlobal: false }
-    const supplierName = meta.name
+    const allFeeds = await getFeedList()
+    const dynamicFeed = allFeeds?.find(f => f.advertiserId === String(advertiserId))
+    const fallback = FALLBACK_FEEDS[String(advertiserId)]
+
+    let feedUrl = dynamicFeed?.url?.replace('compression/gzip', 'compression/none') || fallback?.url
+    let supplierName = dynamicFeed?.name || fallback?.name || `Advertiser ${advertiserId}`
+    const meta = META_BY_ID[String(advertiserId)] || { flag: '🌍', country: 'Unknown', isGlobal: false }
 
     if (!feedUrl) {
       return new Response(
