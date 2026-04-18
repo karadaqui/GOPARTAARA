@@ -18,6 +18,19 @@ serve(async(req)=>{
 if(req.method==='OPTIONS')return new Response('ok',{headers:cors})
 try{
 const{width,profile,rim,advertiserId}=await req.json()
+
+if (String(advertiserId) === 'feedurl_12716') {
+  const listRes = await fetch('https://ui.awin.com/productdata-darwin-download/publisher/2845282/f0b723c9643205a96aeb31377b805e02/1/feedList')
+  const listText = await listRes.text()
+  const lines = listText.split('\n')
+  const line = lines.find(l => l.includes('12716')) || ''
+  const cols = line.split(',')
+  return new Response(
+    JSON.stringify({ feedLine: line.substring(0, 500), cols: cols.slice(0, 10) }),
+    { headers: { ...cors, 'Content-Type': 'application/json' } }
+  )
+}
+
 const isDebug = String(advertiserId).startsWith('debug_')
 const actualId = isDebug ? String(advertiserId).replace('debug_', '') : String(advertiserId)
 const useDescFilter = ['12715'].includes(String(advertiserId))
