@@ -151,30 +151,26 @@ const Tyres = () => {
 
   const typeFilteredProducts = useMemo(() => {
     if (tyreType === 'all') return filteredProducts;
+
     if (tyreType === 'tyre') {
       return filteredProducts.filter(p => {
         const name = (p.title || '').toLowerCase();
-        return !name.includes('complete') && 
-               !name.includes('felge') && 
-               !name.includes('felgen') &&
-               !name.includes('rim') &&
-               !name.includes('wheel') &&
-               !name.includes('jant') &&
-               !name.includes('komplett');
+        const hasCompleteWheel = COMPLETE_WHEEL_KEYWORDS.some(kw => 
+          name.includes(kw.toLowerCase())
+        );
+        return !hasCompleteWheel;
       });
     }
+
     if (tyreType === 'complete') {
       return filteredProducts.filter(p => {
         const name = (p.title || '').toLowerCase();
-        return name.includes('complete') || 
-               name.includes('felge') ||
-               name.includes('felgen') ||
-               name.includes('komplett') ||
-               name.includes('wheel') ||
-               name.includes('rim') ||
-               name.includes('with rim');
+        return COMPLETE_WHEEL_KEYWORDS.some(kw => 
+          name.includes(kw.toLowerCase())
+        );
       });
     }
+
     return filteredProducts;
   }, [filteredProducts, tyreType]);
 
@@ -379,7 +375,16 @@ const Tyres = () => {
                       <p className="text-[10px] text-zinc-600 mb-2">{product.brand}</p>
                     )}
                     <div className="flex items-end justify-between mb-2">
-                      <p className="text-xl font-black text-white">{product.price}</p>
+                      {(() => {
+                        const currency = getCurrency(product.advertiserId || product.supplierMeta?.advertiserId || '');
+                        const displayPrice = product.price.replace(/[£€]/, currency.symbol);
+                        return (
+                          <>
+                            <p className="text-xl font-black text-white">{displayPrice}</p>
+                            <span className="text-xs text-zinc-600">{currency.code}</span>
+                          </>
+                        );
+                      })()}
                     </div>
                     <p className="text-[10px] text-zinc-400 mb-1">{product.supplierMeta?.ships || product.shipping}</p>
                     <p className="text-[10px] text-zinc-500 mb-3">{product.supplierMeta?.fitting || product.supplierName}</p>
