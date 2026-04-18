@@ -155,6 +155,24 @@ const urlVal=cols[ui]||''
 const isImgUrl=(v:string)=>v.includes('.jpg')||v.includes('.png')||v.includes('.webp')||v.includes('image.')||v.includes('/tyre-p')
 const actualImg=isImgUrl(imgVal)?imgVal:(isImgUrl(urlVal)?urlVal:'')
 const actualUrl=(!isImgUrl(urlVal)&&urlVal.startsWith('http'))?urlVal:((!isImgUrl(imgVal)&&imgVal.startsWith('http'))?imgVal:'')
+if (actualId === '12716') {
+  const directUrl = cols[ui] || ''
+  const directImg = cols[ii] || ''
+  if (!directUrl) continue
+  prods.push({
+    id: cols[idi] || String(lc),
+    title: w + '/' + p + ' R' + rimNum + ' — ' + (cols[ni] || ''),
+    price: currency + rawPrice.toFixed(2),
+    image: directImg,
+    url: directUrl,
+    brand: cols[bi] || '',
+    shipping: 'Free delivery',
+    advertiserId: '12716',
+    currency,
+  })
+  if (prods.length >= 24) break loop
+  continue
+}
 if(!actualUrl)continue
 const del=cols[di]||''
     const product:any={
