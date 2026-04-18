@@ -8,18 +8,50 @@ const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255
 const PROFILES = ['30','35','40','45','50','55','60','65','70','75'];
 const RIMS = ['13','14','15','16','17','18','19','20','21','22'];
 
-const FEEDS: Record<string, { name: string; flag: string; country: string; isGlobal: boolean }> = {
-  '4118':  { name: 'mytyres.co.uk',        flag: '🇬🇧', country: 'United Kingdom', isGlobal: true  },
-  '10499': { name: 'neumaticos-online.es', flag: '🇪🇸', country: 'Spain',          isGlobal: false },
-  '12716': { name: 'Pneumatici IT',        flag: '🇮🇹', country: 'Italy',          isGlobal: false },
-  '10747': { name: 'ReifenDirekt',         flag: '🇪🇪', country: 'Estonia & Baltics', isGlobal: false },
+const TYRE_SUPPLIERS: Record<string, { name: string; flag: string; country: string; ships: string; fitting: string }> = {
+  '4118':  { 
+    name: 'mytyres.co.uk', 
+    flag: '🇬🇧', 
+    country: 'United Kingdom', 
+    ships: '🇬🇧 UK + 35 countries worldwide',
+    fitting: '34,000+ fitting centres',
+  },
+  '12715': {
+    name: 'Tyres UK (Tyres.net)',
+    flag: '🌍',
+    country: 'Global',
+    ships: '🌍 Ships to 64 countries',
+    fitting: 'International marketplace',
+  },
+  '10499': { 
+    name: 'neumaticos-online.es', 
+    flag: '🇪🇸', 
+    country: 'Spain', 
+    ships: '🇪🇸 Spain only (mainland + Balearics)',
+    fitting: '2,600+ fitting centres in Spain',
+  },
+  '12716': { 
+    name: 'Pneumatici IT', 
+    flag: '🇮🇹', 
+    country: 'Italy', 
+    ships: '🇮🇹 Italy only',
+    fitting: 'Italy fitting centres',
+  },
+  '10747': { 
+    name: 'ReifenDirekt EE', 
+    flag: '🇪🇪', 
+    country: 'Estonia & Baltics', 
+    ships: '🇪🇪 Estonia 🇱🇻 Latvia 🇱🇹 Lithuania',
+    fitting: 'Baltic fitting centres',
+  },
 };
 
 type SupplierMeta = {
   name: string;
   flag: string;
   country: string;
-  isGlobal: boolean;
+  ships: string;
+  fitting: string;
   advertiserId: string;
 };
 
@@ -55,7 +87,7 @@ const Tyres = () => {
 
     try {
       const results = await Promise.allSettled(
-        Object.keys(FEEDS).map(id =>
+        Object.keys(TYRE_SUPPLIERS).map(id =>
           supabase.functions.invoke('awin-tyre-feed', {
             body: {
               width: selectedWidth,
@@ -82,13 +114,13 @@ const Tyres = () => {
   };
 
   const availableCountries = useMemo(() => {
-    const map = new Map<string, { flag: string; country: string; count: number }>();
+    const map = new Map<string, { flag: string; country: string; count: number; ships: string }>();
     for (const p of tyreProducts) {
       const meta = p.supplierMeta;
       if (!meta) continue;
       const existing = map.get(meta.country);
       if (existing) existing.count++;
-      else map.set(meta.country, { flag: meta.flag, country: meta.country, count: 1 });
+      else map.set(meta.country, { flag: meta.flag, country: meta.country, count: 1, ships: meta.ships });
     }
     return Array.from(map.values());
   }, [tyreProducts]);
@@ -330,8 +362,8 @@ const Tyres = () => {
                     <div className="flex items-end justify-between mb-2">
                       <p className="text-xl font-black text-white">{product.price}</p>
                     </div>
-                    <p className="text-[10px] text-zinc-600 mb-3">🚚 {product.shipping}</p>
-                    <p className="text-[10px] text-zinc-500">{product.supplierName}</p>
+                    <p className="text-[10px] text-zinc-400 mb-1">{product.supplierMeta?.ships || product.shipping}</p>
+                    <p className="text-[10px] text-zinc-500 mb-3">{product.supplierMeta?.fitting || product.supplierName}</p>
                     <div className="mt-2 w-full text-center py-2 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-xl transition-colors">
                       View →
                     </div>
