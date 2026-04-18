@@ -8,6 +8,18 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 
+const getSupplierEmoji = (id: string): string => {
+  const map: Record<string, string> = {
+    '4118': '\uD83C\uDDEC\uD83C\uDDE7',
+    '12715': '\uD83C\uDF0D',
+    '10499': '\uD83C\uDDEA\uD83C\uDDF8',
+    '12716': '\uD83C\uDDEE\uD83C\uDDF9',
+    '10747': '\uD83C\uDDEA\uD83C\uDDEA',
+    'all': '\uD83C\uDF0D',
+  }
+  return map[id] || '\uD83C\uDF0D'
+}
+
 const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305'];
 const PROFILES = ['30','35','40','45','50','55','60','65','70','75'];
 const RIMS = ['13','14','15','16','17','18','19','20','21','22'];
@@ -17,37 +29,31 @@ const ITEMS_PER_PAGE = 20;
 const SUPPLIERS = [
   {
     id: 'all',
-    flagEmoji: '🌍',
     siteName: 'All Results',
     shipsTo: 'All suppliers',
   },
   {
     id: '12715',
-    flagEmoji: '🌍',
     siteName: 'Tyres UK (Tyres.net)',
     shipsTo: 'Ships to 64 countries',
   },
   {
     id: '4118',
-    flagEmoji: '🇬🇧',
     siteName: 'mytyres.co.uk',
     shipsTo: 'Ships to UK + 35 countries',
   },
   {
     id: '10499',
-    flagEmoji: '🇪🇸',
     siteName: 'neumaticos-online.es',
     shipsTo: 'Ships within Spain',
   },
   {
     id: '12716',
-    flagEmoji: '🇮🇹',
     siteName: 'Pneumatici IT',
     shipsTo: 'Ships within Italy',
   },
   {
     id: '10747',
-    flagEmoji: '🇪🇪',
     siteName: 'ReifenDirekt EE',
     shipsTo: 'Ships to Estonia, Latvia, Lithuania',
   },
@@ -55,7 +61,6 @@ const SUPPLIERS = [
 
 type SupplierMeta = {
   id: string;
-  flagEmoji: string;
   siteName: string;
   shipsTo: string;
 };
@@ -306,7 +311,7 @@ const Tyres = () => {
                   }`}
                   title={s.shipsTo}
                 >
-                  <span>{s.flagEmoji}</span>
+                  <span>{getSupplierEmoji(s.id)}</span>
                   <span>{s.siteName}</span>
                 </button>
               ))}
@@ -356,7 +361,7 @@ const Tyres = () => {
                           <span className="text-5xl opacity-20">○</span>
                         )}
                         <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
-                          <span className="text-xs">{product.supplierMeta?.flagEmoji || '🇬🇧'}</span>
+                          <span className="text-xs">{getSupplierEmoji(product.supplierMeta?.id || product.advertiserId || 'all')}</span>
                         </div>
                       </div>
                     </a>
@@ -378,7 +383,7 @@ const Tyres = () => {
 
                       {/* Supplier info */}
                       <div className="flex items-center gap-1 mt-1">
-                        <span className="text-sm">{product.supplierMeta?.flagEmoji || '🇬🇧'}</span>
+                        <span className="text-sm">{getSupplierEmoji(product.supplierMeta?.id || product.advertiserId || 'all')}</span>
                         <span className="text-[10px] text-zinc-500 truncate">
                           {product.supplierMeta?.siteName || product.supplierName}
                         </span>
