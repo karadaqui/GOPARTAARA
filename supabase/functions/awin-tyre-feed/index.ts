@@ -5,10 +5,11 @@ const FEEDLIST_URL = 'https://ui.awin.com/productdata-darwin-download/publisher/
 
 const HARDCODED: Record<string,{cur:string,url:string}> = {
   '4118':  { cur:'£', url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12641/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost' },
-  '12715': { cur:'£', url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93988/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost' },
+  '12715': { cur:'£', url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93988/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription' },
+  '12716': { cur:'€', url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93986/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription' },
 }
 const CURRENCIES: Record<string,string> = {
-  '10499': '€', '10747': '€', '12716': '€'
+  '10499': '€', '10747': '€'
 }
 
 function csv(line:string){const r:string[]=[];let c='',q=false;for(const ch of line){if(ch==='"')q=!q;else if(ch===','&&!q){r.push(c.trim());c=''}else c+=ch}r.push(c.trim());return r}
@@ -19,7 +20,7 @@ try{
 const{width,profile,rim,advertiserId}=await req.json()
 const isDebug = String(advertiserId).startsWith('debug_')
 const actualId = isDebug ? String(advertiserId).replace('debug_', '') : String(advertiserId)
-const skipWidthFilter = ['12716','12715'].includes(String(advertiserId))
+const useDescFilter = ['12715','12716'].includes(String(advertiserId))
 const applyRimFilter = ['4118','10499','10747'].includes(String(advertiserId))
 const w = String(width||'')
 const p = String(profile||'')
@@ -68,7 +69,7 @@ const reader=res.body.getReader()
 const dec=new TextDecoder()
 let buf='',hdrs:string[]=[],lc=0
 const prods:any[]=[]
-let ni=-1,pi=-1,ii=-1,ui=-1,bi=-1,di=-1,idi=-1
+let ni=-1,pi=-1,ii=-1,ui=-1,bi=-1,di=-1,idi=-1,descIdx=-1
 
 // DEBUG MODE: collect first 3 raw lines
 if(isDebug){
@@ -109,14 +110,18 @@ ui=hdrs.findIndex(h=>h==='awdeeplink'||h==='aw_deep_link'||h==='url'||h==='link'
 bi=hdrs.findIndex(h=>h==='brandname'||h==='brand_name'||h==='brand'||h==='manufacturer'||norm(h).includes('brandname'))
 di=hdrs.findIndex(h=>h==='deliverycost'||h==='delivery_cost'||norm(h).includes('delivery')||norm(h).includes('shipping'))
 idi=hdrs.findIndex(h=>h==='awproductid'||h==='aw_product_id'||h==='id'||h==='sku'||norm(h).includes('productid'))
-console.log('ADV:',actualId,'ni:',ni,'pi:',pi,'ii:',ii,'ui:',ui,'bi:',bi,'di:',di,'idi:',idi,'hdrs:',hdrs.slice(0,15))
+descIdx=hdrs.findIndex(h=>h.includes('desc'))
+console.log('ADV:',actualId,'ni:',ni,'pi:',pi,'ii:',ii,'ui:',ui,'bi:',bi,'di:',di,'idi:',idi,'descIdx:',descIdx,'hdrs:',hdrs.slice(0,15))
 continue
 }
 if(ni<0||pi<0)continue
 const w = String(width)
 const p = String(profile)
 const nameL = (cols[ni]||'').toLowerCase()
-if (!skipWidthFilter && !nameL.includes(w+'/'+p)) continue
+if (useDescFilter) {
+  const nameAndDesc = (nameL + ' ' + (cols[descIdx]||'').toLowerCase())
+  if (!nameAndDesc.includes(w+'/'+p)) continue
+} else if (!nameL.includes(w+'/'+p)) continue
 if (applyRimFilter) {
   const rimNum = String(rim).replace(/^R/i,'')
   if (!nameL.includes('r'+rimNum+' ') && 
