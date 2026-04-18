@@ -112,7 +112,7 @@ serve(async (req) => {
     let lineCount = 0
     let skipped = 0
 
-    while (products.length < 100) {
+    while (products.length < 50) {
       const { done, value } = await reader.read()
       if (done) break
 
@@ -137,8 +137,25 @@ serve(async (req) => {
         }
 
         const name = get('product_name')
-        const lowerName = name.toLowerCase()
-        if (!lowerName.includes(String(width).toLowerCase())) continue
+        const nameL = name.toLowerCase()
+
+        const sizePatterns = [
+          `${width}/${profile}`,
+          `${width} ${profile}`,
+          `${width}-${profile}`,
+        ]
+        const rimPatterns = [
+          `r${cleanRim}`,
+          `r ${cleanRim}`,
+          ` ${cleanRim} `,
+          `r${cleanRim} `,
+          `/${cleanRim}`,
+        ]
+        const hasSize = sizePatterns.some(p => nameL.includes(p.toLowerCase()))
+        const hasRim = rimPatterns.some(p => nameL.includes(p.toLowerCase()))
+        if (!hasSize || !hasRim) continue
+
+        const lowerName = nameL
 
         // Tyre type filter
         const isWheel = lowerName.includes('wheel') || lowerName.includes('rim') || lowerName.includes('jant') || lowerName.includes('felge') || lowerName.includes('cerchio') || lowerName.includes('llanta')
@@ -165,7 +182,7 @@ serve(async (req) => {
           },
         })
 
-        if (products.length >= 100) break
+        if (products.length >= 50) break
       }
 
       if (lineCount > 100000) break
