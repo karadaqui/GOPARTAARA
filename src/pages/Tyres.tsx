@@ -65,7 +65,26 @@ type TyreProduct = {
   shipping: string;
   supplierName: string;
   supplierMeta?: SupplierMeta;
+  advertiserId?: string;
 };
+
+const getCurrency = (supplierId: string) => {
+  if (supplierId === '4118') return { symbol: '£', code: 'GBP' };
+  if (supplierId === '12715') return { symbol: '£', code: 'GBP' };
+  if (supplierId === '10499') return { symbol: '€', code: 'EUR' };
+  if (supplierId === '12716') return { symbol: '€', code: 'EUR' };
+  if (supplierId === '10747') return { symbol: '€', code: 'EUR' };
+  return { symbol: '£', code: 'GBP' };
+};
+
+const COMPLETE_WHEEL_KEYWORDS = [
+  'complete wheel', 'komplettradsatz', 'kompletträder',
+  'complete set', 'with rim', 'on rim', 'mounted',
+  'alloy wheel', 'steel wheel', 'felge', 'felgen',
+  'komplett', 'cerchio', 'cerchi', 'llanta', 'llantas',
+  'janta', 'jant', 'rim set', 'wheel set',
+  '+ rim', '+ felge', 'incl rim', 'incl. rim',
+];
 
 const Tyres = () => {
   const [selectedWidth, setSelectedWidth] = useState('205');
