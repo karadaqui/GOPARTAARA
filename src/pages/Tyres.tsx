@@ -1,47 +1,62 @@
 import { useState, useMemo } from "react";
+import { Heart, Bell, ChevronLeft, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
 
 const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305'];
 const PROFILES = ['30','35','40','45','50','55','60','65','70','75'];
 const RIMS = ['13','14','15','16','17','18','19','20','21','22'];
 
+const ITEMS_PER_PAGE = 20;
+
+const COUNTRY_OPTIONS = [
+  { id: 'all', label: 'All', flag: '🌍', ships: 'All suppliers' },
+  { id: '4118', label: 'UK', flag: '🇬🇧', ships: 'UK + 35 countries' },
+  { id: '12715', label: 'Global', flag: '🌍', ships: '64 countries' },
+  { id: '10499', label: 'Spain', flag: '🇪🇸', ships: 'Spain only' },
+  { id: '12716', label: 'Italy', flag: '🇮🇹', ships: 'Italy only' },
+  { id: '10747', label: 'Baltics', flag: '🇪🇪', ships: 'Estonia, Latvia, Lithuania' },
+];
+
 const TYRE_SUPPLIERS: Record<string, { name: string; flag: string; country: string; ships: string; fitting: string }> = {
-  '4118':  { 
-    name: 'mytyres.co.uk', 
-    flag: '🇬🇧', 
-    country: 'United Kingdom', 
-    ships: '🇬🇧 UK + 35 countries worldwide',
+  '4118':  {
+    name: 'mytyres.co.uk',
+    flag: '🇬🇧',
+    country: 'United Kingdom',
+    ships: 'UK + 35 countries',
     fitting: '34,000+ fitting centres',
   },
   '12715': {
     name: 'Tyres UK (Tyres.net)',
     flag: '🌍',
     country: 'Global',
-    ships: '🌍 Ships to 64 countries',
+    ships: 'Ships to 64 countries',
     fitting: 'International marketplace',
   },
-  '10499': { 
-    name: 'neumaticos-online.es', 
-    flag: '🇪🇸', 
-    country: 'Spain', 
-    ships: '🇪🇸 Spain only (mainland + Balearics)',
+  '10499': {
+    name: 'neumaticos-online.es',
+    flag: '🇪🇸',
+    country: 'Spain',
+    ships: 'Spain only',
     fitting: '2,600+ fitting centres in Spain',
   },
-  '12716': { 
-    name: 'Pneumatici IT', 
-    flag: '🇮🇹', 
-    country: 'Italy', 
-    ships: '🇮🇹 Italy only',
+  '12716': {
+    name: 'Pneumatici IT',
+    flag: '🇮🇹',
+    country: 'Italy',
+    ships: 'Italy only',
     fitting: 'Italy fitting centres',
   },
-  '10747': { 
-    name: 'ReifenDirekt EE', 
-    flag: '🇪🇪', 
-    country: 'Estonia & Baltics', 
-    ships: '🇪🇪 Estonia 🇱🇻 Latvia 🇱🇹 Lithuania',
+  '10747': {
+    name: 'ReifenDirekt EE',
+    flag: '🇪🇪',
+    country: 'Estonia & Baltics',
+    ships: 'Estonia, Latvia, Lithuania',
     fitting: 'Baltic fitting centres',
   },
 };
@@ -53,6 +68,7 @@ type SupplierMeta = {
   ships: string;
   fitting: string;
   advertiserId: string;
+  id?: string;
 };
 
 type TyreProduct = {
@@ -69,58 +85,46 @@ type TyreProduct = {
 };
 
 const getCurrency = (supplierId: string) => {
-  if (supplierId === '4118') return { symbol: '£', code: 'GBP' };
-  if (supplierId === '12715') return { symbol: '£', code: 'GBP' };
-  if (supplierId === '10499') return { symbol: '€', code: 'EUR' };
-  if (supplierId === '12716') return { symbol: '€', code: 'EUR' };
-  if (supplierId === '10747') return { symbol: '€', code: 'EUR' };
-  return { symbol: '£', code: 'GBP' };
+  if (supplierId === '4118' || supplierId === '12715') return { symbol: '£', code: 'GBP' };
+  return { symbol: '€', code: 'EUR' };
 };
 
-// Strict wheel-set keywords only — "with rim protection (MFS)" is a tyre feature, NOT a complete wheel.
-const COMPLETE_WHEEL_KEYWORDS = [
-  'wheel', 'rim set', 'wheel set', 'komplettradsatz', 'kompletträder',
-];
-
 const Tyres = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [selectedWidth, setSelectedWidth] = useState('205');
   const [selectedProfile, setSelectedProfile] = useState('55');
   const [selectedRim, setSelectedRim] = useState('16');
   const [tyreProducts, setTyreProducts] = useState<TyreProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
-  const [countryFilter, setCountryFilter] = useState<string | null>(null);
-  const [tyreType, setTyreType] = useState<'all'|'tyre'>('all');
+  const [countryFilter, setCountryFilter] = useState('all');
+  const [brandFilter, setBrandFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const searchTyres = async (typeOverride?: 'all' | 'tyre') => {
-    const activeType = typeOverride ?? tyreType;
+  const searchTyres = async () => {
     setLoading(true);
     setSearched(true);
     setTyreProducts([]);
-    setCountryFilter(null);
-    setTyreType('all');
+    setCountryFilter('all');
+    setBrandFilter('all');
+    setCurrentPage(1);
 
     try {
-      const results = await Promise.allSettled(
-        Object.keys(TYRE_SUPPLIERS).map(id =>
-          supabase.functions.invoke('awin-tyre-feed', {
-            body: {
-              width: selectedWidth,
-              profile: selectedProfile,
-              rim: selectedRim,
-              advertiserId: id,
-              offset: 0,
-              tyreType: activeType,
-            },
-          }).then(({ data }) => (data?.products as TyreProduct[]) || [])
-        )
-      );
-
-      const all = results
-        .filter(r => r.status === 'fulfilled')
-        .flatMap(r => (r as PromiseFulfilledResult<TyreProduct[]>).value);
-
-      setTyreProducts(all);
+      // Only call mytyres (4118) — fastest working feed
+      const { data } = await supabase.functions.invoke('awin-tyre-feed', {
+        body: {
+          width: selectedWidth,
+          profile: selectedProfile,
+          rim: selectedRim,
+          advertiserId: '4118',
+          offset: 0,
+          tyreType: 'all',
+        },
+      });
+      const products = (data?.products as TyreProduct[]) || [];
+      setTyreProducts(products);
     } catch (e) {
       console.error(e);
     } finally {
@@ -128,38 +132,68 @@ const Tyres = () => {
     }
   };
 
-  const availableCountries = useMemo(() => {
-    const map = new Map<string, { flag: string; country: string; count: number; ships: string }>();
-    for (const p of tyreProducts) {
-      const meta = p.supplierMeta;
-      if (!meta) continue;
-      const existing = map.get(meta.country);
-      if (existing) existing.count++;
-      else map.set(meta.country, { flag: meta.flag, country: meta.country, count: 1, ships: meta.ships });
+  const handleSavePart = async (item: { title: string; price: string; image: string; url: string; supplier: string }) => {
+    if (!user) { navigate("/auth"); return; }
+    try {
+      const priceNum = parseFloat(item.price.replace(/[^0-9.]/g, '')) || null;
+      await supabase.from("saved_parts").insert({
+        user_id: user.id,
+        part_name: item.title,
+        price: priceNum,
+        supplier: item.supplier,
+        url: item.url,
+        image_url: item.image,
+      });
+      toast({ title: "Tyre saved!" });
+    } catch (e) {
+      console.error(e);
+      toast({ title: "Could not save", variant: "destructive" });
     }
-    return Array.from(map.values());
+  };
+
+  const handleSetAlert = async (item: { title: string; price: string; url: string }) => {
+    if (!user) { navigate("/auth"); return; }
+    try {
+      const priceNum = parseFloat(item.price.replace(/[^0-9.]/g, ''));
+      if (!priceNum) { toast({ title: "Invalid price", variant: "destructive" }); return; }
+      await supabase.from("price_alerts").insert({
+        user_id: user.id,
+        email: user.email || '',
+        part_name: item.title,
+        target_price: priceNum * 0.9,
+        current_price: priceNum,
+        url: item.url,
+        supplier: 'mytyres',
+      });
+      toast({ title: "Alert set!", description: "We'll email you when the price drops 10%." });
+    } catch (e) {
+      console.error(e);
+      toast({ title: "Could not set alert", variant: "destructive" });
+    }
+  };
+
+  const brands = useMemo(() => {
+    const set = new Set(tyreProducts.map(p => p.brand).filter(Boolean));
+    return ['all', ...Array.from(set).sort()];
   }, [tyreProducts]);
 
   const filteredProducts = useMemo(() => {
-    if (!countryFilter) return tyreProducts;
-    return tyreProducts.filter(p => p.supplierMeta?.country === countryFilter);
-  }, [tyreProducts, countryFilter]);
+    return tyreProducts.filter(p => {
+      const matchCountry = countryFilter === 'all' ||
+        p.advertiserId === countryFilter ||
+        p.supplierMeta?.advertiserId === countryFilter ||
+        p.supplierMeta?.id === countryFilter;
+      const matchBrand = brandFilter === 'all' ||
+        p.brand?.toLowerCase() === brandFilter.toLowerCase();
+      return matchCountry && matchBrand;
+    });
+  }, [tyreProducts, countryFilter, brandFilter]);
 
-  const typeFilteredProducts = useMemo(() => {
-    if (tyreType === 'all') return filteredProducts;
-
-    if (tyreType === 'tyre') {
-      return filteredProducts.filter(p => {
-        const name = (p.title || '').toLowerCase();
-        const hasCompleteWheel = COMPLETE_WHEEL_KEYWORDS.some(kw =>
-          name.includes(kw.toLowerCase())
-        );
-        return !hasCompleteWheel;
-      });
-    }
-
-    return filteredProducts;
-  }, [filteredProducts, tyreType]);
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / ITEMS_PER_PAGE));
+  const pagedProducts = filteredProducts.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -199,45 +233,33 @@ const Tyres = () => {
 
             <div className="grid grid-cols-3 gap-2 mb-2">
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-zinc-600 text-center uppercase tracking-widest">
-                  Width
-                </label>
+                <label className="text-[10px] text-zinc-600 text-center uppercase tracking-widest">Width</label>
                 <select
                   value={selectedWidth}
                   onChange={(e) => setSelectedWidth(e.target.value)}
                   className="bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded-xl px-2 py-3 text-white text-sm font-mono text-center focus:border-red-500 focus:ring-1 focus:ring-red-500/30 outline-none transition-colors cursor-pointer"
                 >
-                  {WIDTHS.map((w) => (
-                    <option key={w}>{w}</option>
-                  ))}
+                  {WIDTHS.map((w) => <option key={w}>{w}</option>)}
                 </select>
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-zinc-600 text-center uppercase tracking-widest">
-                  Profile
-                </label>
+                <label className="text-[10px] text-zinc-600 text-center uppercase tracking-widest">Profile</label>
                 <select
                   value={selectedProfile}
                   onChange={(e) => setSelectedProfile(e.target.value)}
                   className="bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded-xl px-2 py-3 text-white text-sm font-mono text-center focus:border-red-500 focus:ring-1 focus:ring-red-500/30 outline-none transition-colors cursor-pointer"
                 >
-                  {PROFILES.map((p) => (
-                    <option key={p}>{p}</option>
-                  ))}
+                  {PROFILES.map((p) => <option key={p}>{p}</option>)}
                 </select>
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-zinc-600 text-center uppercase tracking-widest">
-                  Rim
-                </label>
+                <label className="text-[10px] text-zinc-600 text-center uppercase tracking-widest">Rim</label>
                 <select
                   value={selectedRim}
                   onChange={(e) => setSelectedRim(e.target.value)}
                   className="bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded-xl px-2 py-3 text-white text-sm font-mono text-center focus:border-red-500 focus:ring-1 focus:ring-red-500/30 outline-none transition-colors cursor-pointer"
                 >
-                  {RIMS.map((r) => (
-                    <option key={r} value={r}>R{r}</option>
-                  ))}
+                  {RIMS.map((r) => <option key={r} value={r}>R{r}</option>)}
                 </select>
               </div>
             </div>
@@ -250,14 +272,14 @@ const Tyres = () => {
             </div>
 
             <button
-              onClick={() => searchTyres()}
+              onClick={searchTyres}
               disabled={loading}
               className="w-full py-4 bg-red-600 hover:bg-red-500 active:scale-[0.98] disabled:opacity-50 text-white font-black rounded-2xl transition-all text-sm tracking-wide shadow-lg shadow-red-900/30"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Searching across suppliers...
+                  Searching...
                 </span>
               ) : (
                 `Search ${selectedWidth}/${selectedProfile} R${selectedRim} →`
@@ -270,72 +292,172 @@ const Tyres = () => {
           </div>
         </div>
 
-        {/* Results grid */}
+        {/* Filters + Results */}
         {tyreProducts.length > 0 && (
-          <div className="max-w-6xl mx-auto px-4 mb-16">
-            <p className="text-zinc-600 text-xs mb-4">
-              Showing {filteredProducts.length} tyres from {availableCountries.length} {availableCountries.length === 1 ? 'supplier' : 'suppliers'}
-            </p>
-
-            <p className="text-zinc-600 text-xs mb-4">
-              Showing {typeFilteredProducts.length} tyres from {availableCountries.length} {availableCountries.length === 1 ? 'supplier' : 'suppliers'}
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {filteredProducts.map((product, i) => (
-                <a
-                  key={`${product.supplierMeta?.advertiserId || ''}-${product.id || i}`}
-                  href={product.url}
-                  target="_blank"
-                  rel="noopener noreferrer sponsored"
-                  className="bg-zinc-900 border border-zinc-800/80 hover:border-zinc-600 rounded-2xl overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50 group block"
+          <div className="max-w-6xl mx-auto mb-16">
+            {/* Country pills */}
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide mb-4 px-4">
+              {COUNTRY_OPTIONS.map(opt => (
+                <button
+                  key={opt.id}
+                  onClick={() => { setCountryFilter(opt.id); setCurrentPage(1); }}
+                  className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                    countryFilter === opt.id
+                      ? 'bg-red-600 border-red-500 text-white'
+                      : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
+                  }`}
+                  title={opt.ships}
                 >
-                  <div className="aspect-square bg-zinc-800/50 relative overflow-hidden flex items-center justify-center p-4">
-                    {product.image ? (
-                      <img
-                        src={product.image}
-                        alt={product.title}
-                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    ) : (
-                      <span className="text-5xl opacity-20">○</span>
-                    )}
-                    <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
-                      <span className="text-xs">{product.supplierMeta?.flag || '🌍'}</span>
-                    </div>
-                  </div>
-
-                  <div className="p-3">
-                    <p className="text-xs font-semibold text-white line-clamp-2 mb-1 leading-snug group-hover:text-red-400 transition-colors">
-                      {product.title}
-                    </p>
-                    {product.brand && (
-                      <p className="text-[10px] text-zinc-600 mb-2">{product.brand}</p>
-                    )}
-                    <div className="flex items-end justify-between mb-1">
-                      {(() => {
-                        const currency = getCurrency(product.advertiserId || product.supplierMeta?.advertiserId || '');
-                        const displayPrice = product.price.replace(/[£€]/, currency.symbol);
-                        return (
-                          <>
-                            <p className="text-xl font-black text-white">{displayPrice}</p>
-                            <span className="text-xs text-zinc-600">{currency.code}</span>
-                          </>
-                        );
-                      })()}
-                    </div>
-                    <p className="text-[10px] text-zinc-700 mb-2">Tyre only · Rim not included</p>
-                    <p className="text-[10px] text-zinc-400 mb-1">{product.supplierMeta?.ships || product.shipping}</p>
-                    <p className="text-[10px] text-zinc-500 mb-3">{product.supplierMeta?.fitting || product.supplierName}</p>
-                    <div className="mt-2 w-full text-center py-2 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-xl transition-colors">
-                      View →
-                    </div>
-                  </div>
-                </a>
+                  <span>{opt.flag}</span>
+                  <span>{opt.label}</span>
+                </button>
               ))}
             </div>
+
+            {/* Brand dropdown */}
+            <div className="flex items-center gap-3 px-4 mb-4">
+              <select
+                value={brandFilter}
+                onChange={e => { setBrandFilter(e.target.value); setCurrentPage(1); }}
+                className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none hover:border-zinc-600 focus:border-red-500"
+              >
+                {brands.map(b => (
+                  <option key={b} value={b}>
+                    {b === 'all' ? '🏷️ All Brands' : b}
+                  </option>
+                ))}
+              </select>
+              <p className="text-zinc-600 text-xs">{filteredProducts.length} tyres found</p>
+            </div>
+
+            {/* Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 px-4">
+              {pagedProducts.map((product, i) => {
+                const currency = getCurrency(product.advertiserId || product.supplierMeta?.advertiserId || '4118');
+                const displayPrice = product.price.replace(/[£€]/, currency.symbol);
+                return (
+                  <div
+                    key={`${product.supplierMeta?.advertiserId || ''}-${product.id || i}`}
+                    className="bg-zinc-900 border border-zinc-800/80 hover:border-zinc-600 rounded-2xl overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50 group flex flex-col"
+                  >
+                    <a
+                      href={product.url}
+                      target="_blank"
+                      rel="noopener noreferrer sponsored"
+                      className="block"
+                    >
+                      <div className="aspect-square bg-zinc-800/50 relative overflow-hidden flex items-center justify-center p-4">
+                        {product.image ? (
+                          <img
+                            src={product.image}
+                            alt={product.title}
+                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                          />
+                        ) : (
+                          <span className="text-5xl opacity-20">○</span>
+                        )}
+                        <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
+                          <span className="text-xs">{product.supplierMeta?.flag || '🇬🇧'}</span>
+                        </div>
+                      </div>
+                    </a>
+
+                    <div className="p-3 flex flex-col flex-1">
+                      <a href={product.url} target="_blank" rel="noopener noreferrer sponsored">
+                        <p className="text-xs font-semibold text-white line-clamp-2 mb-1 leading-snug group-hover:text-red-400 transition-colors">
+                          {product.title}
+                        </p>
+                      </a>
+                      {product.brand && (
+                        <p className="text-[10px] text-zinc-600 mb-2">{product.brand}</p>
+                      )}
+                      <div className="flex items-end justify-between mb-1">
+                        <p className="text-xl font-black text-white">{displayPrice}</p>
+                        <span className="text-xs text-zinc-600">{currency.code}</span>
+                      </div>
+                      <p className="text-[10px] text-zinc-700">Tyre only · Rim not included</p>
+
+                      {/* Supplier info */}
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-[10px] text-zinc-600 flex items-center gap-1">
+                          <span>{product.supplierMeta?.flag || '🇬🇧'}</span>
+                          <span>{product.supplierName}</span>
+                        </span>
+                        <span className="text-[10px] text-zinc-700 truncate ml-1">
+                          {product.supplierMeta?.ships || 'UK + 35 countries'}
+                        </span>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex gap-1 mt-2">
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSavePart({
+                              title: product.title,
+                              price: displayPrice,
+                              image: product.image,
+                              url: product.url,
+                              supplier: product.supplierName,
+                            });
+                          }}
+                          className="p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
+                          title="Save"
+                        >
+                          <Heart className="w-3.5 h-3.5 text-zinc-500 hover:text-red-400" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSetAlert({
+                              title: product.title,
+                              price: displayPrice,
+                              url: product.url,
+                            });
+                          }}
+                          className="p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
+                          title="Price alert"
+                        >
+                          <Bell className="w-3.5 h-3.5 text-zinc-500 hover:text-yellow-400" />
+                        </button>
+                        <a
+                          href={product.url}
+                          target="_blank"
+                          rel="noopener noreferrer sponsored"
+                          className="ml-auto px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-lg transition-colors"
+                        >
+                          View →
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-8 px-4">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:border-zinc-600 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <span className="text-zinc-500 text-sm font-mono px-3">
+                  {currentPage} / {totalPages}
+                </span>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:border-zinc-600 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
         )}
 
