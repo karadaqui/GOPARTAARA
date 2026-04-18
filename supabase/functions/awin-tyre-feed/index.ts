@@ -69,6 +69,19 @@ if (!feedUrl) {
 
 const res=await fetch(feedUrl)
 if(!res.body)throw new Error('nobody')
+
+// DEBUG: For 12716 only, check if response is HTML instead of CSV
+if (String(advertiserId) === '12716') {
+  const firstChunk = await res.clone().text().then(t => t.substring(0, 50))
+  console.log('12716 response start:', firstChunk)
+  if (firstChunk.trim().startsWith('<')) {
+    return new Response(
+      JSON.stringify({ products: [], error: 'Feed returned HTML: ' + firstChunk }),
+      { headers: { ...cors, 'Content-Type': 'application/json' } }
+    )
+  }
+}
+
 const reader = res.body.getReader()
 const dec=new TextDecoder()
 let buf='',hdrs:string[]=[],lc=0
