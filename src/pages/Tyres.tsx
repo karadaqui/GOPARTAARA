@@ -27,14 +27,12 @@ const Tyres = () => {
   const [tyreProducts, setTyreProducts] = useState<TyreProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 24;
 
-  const searchTyres = async () => {
+  const fetchTyres = async (pageNum: number) => {
     setLoading(true);
-    setSearched(true);
     setTyreProducts([]);
-    setCurrentPage(1);
 
     try {
       const { data } = await supabase.functions.invoke('awin-tyre-feed', {
@@ -42,6 +40,7 @@ const Tyres = () => {
           width: selectedWidth,
           profile: selectedProfile,
           rim: selectedRim,
+          offset: (pageNum - 1) * ITEMS_PER_PAGE,
         },
       });
       setTyreProducts((data?.products as TyreProduct[]) || []);
@@ -52,11 +51,20 @@ const Tyres = () => {
     }
   };
 
-  const totalPages = Math.ceil(tyreProducts.length / ITEMS_PER_PAGE);
-  const paginatedProducts = tyreProducts.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
-  );
+  const searchTyres = async () => {
+    setSearched(true);
+    setPage(1);
+    await fetchTyres(1);
+  };
+
+  const goToPage = async (newPage: number) => {
+    setPage(newPage);
+    await fetchTyres(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const paginatedProducts = tyreProducts.slice(0, ITEMS_PER_PAGE);
+  const hasNextPage = tyreProducts.length >= ITEMS_PER_PAGE;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -166,9 +174,7 @@ const Tyres = () => {
         {tyreProducts.length > 0 && (
           <div className="max-w-6xl mx-auto px-4 mb-16">
             <p className="text-zinc-600 text-xs mb-4">
-              Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}–
-              {Math.min(currentPage * ITEMS_PER_PAGE, tyreProducts.length)} of{' '}
-              {tyreProducts.length} tyres
+              Showing {tyreProducts.length} tyres · Page {page}
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {paginatedProducts.map((product, i) => (
@@ -217,47 +223,20 @@ const Tyres = () => {
               ))}
             </div>
 
-            {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-8 mb-4 flex-wrap">
+            {(page > 1 || hasNextPage) && (
+              <div className="flex gap-2 justify-center mt-6">
                 <button
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="px-4 py-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 disabled:opacity-30 disabled:cursor-not-allowed text-white text-sm rounded-xl transition-all"
+                  onClick={() => goToPage(page - 1)}
+                  disabled={page === 1 || loading}
+                  className="px-4 py-2 bg-zinc-800 rounded-xl text-white disabled:opacity-30"
                 >
                   ← Prev
                 </button>
-                {Array.from({ length: totalPages }, (_, i) => i + 1)
-                  .filter(
-                    (p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1,
-                  )
-                  .reduce((acc, p, i, arr) => {
-                    if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push('...');
-                    acc.push(p);
-                    return acc;
-                  }, [] as (number | string)[])
-                  .map((p, i) =>
-                    p === '...' ? (
-                      <span key={`e-${i}`} className="text-zinc-600 px-1">
-                        ...
-                      </span>
-                    ) : (
-                      <button
-                        key={p}
-                        onClick={() => setCurrentPage(p as number)}
-                        className={`w-9 h-9 rounded-xl text-sm font-semibold transition-all ${
-                          currentPage === p
-                            ? 'bg-red-600 text-white'
-                            : 'bg-zinc-900 border border-zinc-800 hover:border-zinc-600 text-zinc-400'
-                        }`}
-                      >
-                        {p}
-                      </button>
-                    ),
-                  )}
+                <span className="px-4 py-2 text-zinc-400">Page {page}</span>
                 <button
-                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                  className="px-4 py-2 bg-zinc-900 border border-zinc-800 hover:border-zinc-600 disabled:opacity-30 disabled:cursor-not-allowed text-white text-sm rounded-xl transition-all"
+                  onClick={() => goToPage(page + 1)}
+                  disabled={!hasNextPage || loading}
+                  className="px-4 py-2 bg-zinc-800 rounded-xl text-white disabled:opacity-30"
                 >
                   Next →
                 </button>

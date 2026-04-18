@@ -11,7 +11,7 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
 
   try {
-    const { width } = await req.json()
+    const { width, offset = 0 } = await req.json()
 
     const res = await fetch(FEED_URL)
     if (!res.body) throw new Error('no body')
@@ -23,8 +23,9 @@ serve(async (req) => {
     let headers: string[] = []
     const products: any[] = []
     let lineCount = 0
+    let skipped = 0
 
-    while (products.length < 24) {
+    while (products.length < 100) {
       const { done, value } = await reader.read()
       if (done) break
 
@@ -51,6 +52,8 @@ serve(async (req) => {
         const name = get('product_name')
         if (!name.toLowerCase().includes(width.toLowerCase())) continue
 
+        if (skipped < offset) { skipped++; continue; }
+
         products.push({
           id: get('aw_product_id') || String(lineCount),
           title: name,
@@ -62,7 +65,7 @@ serve(async (req) => {
           supplierName: 'mytyres.co.uk',
         })
 
-        if (products.length >= 24) break
+        if (products.length >= 100) break
       }
 
       if (lineCount > 100000) break
