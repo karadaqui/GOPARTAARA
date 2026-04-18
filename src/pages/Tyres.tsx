@@ -180,13 +180,10 @@ const Tyres = () => {
 
   const filteredProducts = useMemo(() => {
     return tyreProducts.filter(p => {
-      const matchCountry = countryFilter === 'all' ||
-        p.advertiserId === countryFilter ||
-        p.supplierMeta?.advertiserId === countryFilter ||
-        p.supplierMeta?.id === countryFilter;
+      const matchSupplier = countryFilter === 'all' || p.advertiserId === countryFilter;
       const matchBrand = brandFilter === 'all' ||
-        p.brand?.toLowerCase() === brandFilter.toLowerCase();
-      return matchCountry && matchBrand;
+        (p.brand || '').toLowerCase() === brandFilter.toLowerCase();
+      return matchSupplier && matchBrand;
     });
   }, [tyreProducts, countryFilter, brandFilter]);
 
@@ -307,10 +304,10 @@ const Tyres = () => {
                       ? 'bg-red-600 border-red-500 text-white'
                       : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
                   }`}
-                  title={s.ships}
+                  title={s.shipsTo}
                 >
-                  <span>{s.flag}</span>
-                  <span>{s.label}</span>
+                  <span>{s.flagEmoji}</span>
+                  <span>{s.siteName}</span>
                 </button>
               ))}
             </div>
@@ -334,11 +331,11 @@ const Tyres = () => {
             {/* Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 px-4">
               {pagedProducts.map((product, i) => {
-                const currency = getCurrency(product.advertiserId || product.supplierMeta?.advertiserId || '4118');
+                const currency = getCurrency(product.advertiserId || product.supplierMeta?.id || '4118');
                 const displayPrice = product.price.replace(/[£€]/, currency.symbol);
                 return (
                   <div
-                    key={`${product.supplierMeta?.advertiserId || ''}-${product.id || i}`}
+                    key={`${product.supplierMeta?.id || ''}-${product.id || i}`}
                     className="bg-zinc-900 border border-zinc-800/80 hover:border-zinc-600 rounded-2xl overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50 group flex flex-col"
                   >
                     <a
@@ -359,7 +356,7 @@ const Tyres = () => {
                           <span className="text-5xl opacity-20">○</span>
                         )}
                         <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
-                          <span className="text-xs">{product.supplierMeta?.flag || '🇬🇧'}</span>
+                          <span className="text-xs">{product.supplierMeta?.flagEmoji || '🇬🇧'}</span>
                         </div>
                       </div>
                     </a>
@@ -381,13 +378,13 @@ const Tyres = () => {
 
                       {/* Supplier info */}
                       <div className="flex items-center gap-1 mt-1">
-                        <span className="text-sm">{product.supplierMeta?.flag || '🇬🇧'}</span>
+                        <span className="text-sm">{product.supplierMeta?.flagEmoji || '🇬🇧'}</span>
                         <span className="text-[10px] text-zinc-500 truncate">
-                          {product.supplierMeta?.name || product.supplierName}
+                          {product.supplierMeta?.siteName || product.supplierName}
                         </span>
                       </div>
                       <p className="text-[10px] text-zinc-700">
-                        {product.supplierMeta?.ships || 'UK + 35 countries'}
+                        {product.supplierMeta?.shipsTo || 'Ships to UK + 35 countries'}
                       </p>
 
                       {/* Actions */}
