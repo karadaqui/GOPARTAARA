@@ -96,6 +96,7 @@ if (String(advertiserId) === '12716') {
       const ui12 = headers12.findIndex(h => h.includes('deeplink') || h.includes('awdeep'))
       const bi12 = headers12.findIndex(h => h.includes('brand'))
       const idi12 = headers12.findIndex(h => h.includes('productid') || h.includes('awproduct'))
+      const descIdx12 = headers12.findIndex(h => h.includes('desc'))
 
       const price = parseFloat(cols[pi12] || '0')
       if (price <= 0) continue
@@ -104,10 +105,16 @@ if (String(advertiserId) === '12716') {
       const url = cols[ui12] || ''
       if (!url || !url.startsWith('http')) continue
 
-      const title = cols[ni12] || ''
+      const desc = (cols[descIdx12] || '').replace(/"/g, '').toLowerCase()
+      const rimNum12 = String(rim).replace(/^R/i, '')
+      if (!desc.includes(String(width) + '/' + String(profile))) continue
+      if (!desc.includes('r' + rimNum12)) continue
+
+      const descText = (cols[descIdx12] || '').replace(/"/g, '').trim()
+      const title = descText || cols[ni12] || ''
       prods12.push({
         id: cols[idi12] || String(lc12),
-        title: `${width}/${profile} R${String(rim).replace(/^R/i,'')} — ${title}`,
+        title: title,
         price: `€${price.toFixed(2)}`,
         image: img,
         url: url,
