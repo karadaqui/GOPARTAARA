@@ -119,9 +119,18 @@ di=hdrs.findIndex(h=>h==='deliverycost'||h==='delivery_cost'||norm(h).includes('
 idi=hdrs.findIndex(h=>h==='awproductid'||h==='aw_product_id'||h==='id'||h==='sku'||norm(h).includes('productid'))
 descIdx=hdrs.findIndex(h=>h.includes('desc'))
 console.log('ADV:',actualId,'ni:',ni,'pi:',pi,'ii:',ii,'ui:',ui,'bi:',bi,'di:',di,'idi:',idi,'descIdx:',descIdx,'hdrs:',hdrs.slice(0,15))
+if (String(advertiserId) === '12716') {
+  console.log('12716 ni:', ni, 'pi:', pi, 'ii:', ii, 'ui:', ui)
+}
 continue
 }
 if(ni<0||pi<0)continue
+if (String(advertiserId) === '12716' && lc < 5) {
+  const _price = parseFloat(cols[pi]||'0')
+  const _url = cols[ui]||''
+  const _img = cols[ii]||''
+  console.log('12716 row', lc, 'price:', _price, 'url:', _url.substring(0,30), 'img:', _img.substring(0,30))
+}
 const w = String(width)
 const p = String(profile)
 const nameL = (cols[ni]||'').toLowerCase()
