@@ -372,7 +372,7 @@ const Tyres = () => {
                       <div className="flex items-center gap-1 mt-1">
                         <span className="text-sm">{product.supplierMeta?.flag || '🇬🇧'}</span>
                         <span className="text-[10px] text-zinc-500 truncate">
-                          {product.supplierMeta?.label || product.supplierMeta?.name || product.supplierName}
+                          {product.supplierMeta?.name || product.supplierName}
                         </span>
                       </div>
                       <p className="text-[10px] text-zinc-700">
