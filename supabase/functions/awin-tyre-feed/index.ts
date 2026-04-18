@@ -19,8 +19,8 @@ try{
 const{width,profile,rim,advertiserId}=await req.json()
 const isDebug = String(advertiserId).startsWith('debug_')
 const actualId = isDebug ? String(advertiserId).replace('debug_', '') : String(advertiserId)
-const skipWidthFilter = ['12716','12715'].includes(actualId)
-const strictSizeFilter = ['4118'].includes(actualId)
+const skipWidthFilter = ['12716','12715'].includes(String(advertiserId))
+const applyRimFilter = ['4118','10499','10747'].includes(String(advertiserId))
 const w = String(width||'')
 const p = String(profile||'')
 const rimNum = String(rim||'').replace(/^R/i,'')
@@ -117,8 +117,11 @@ const w = String(width)
 const p = String(profile)
 const nameL = (cols[ni]||'').toLowerCase()
 if (!skipWidthFilter && !nameL.includes(w+'/'+p)) continue
-if (['4118','10747'].includes(actualId)) {
-  if (!nameL.includes('r'+rimNum) && !nameL.includes(' '+rimNum+' ') && !nameL.includes('/'+rimNum)) continue
+if (applyRimFilter) {
+  const rimNum = String(rim).replace(/^R/i,'')
+  if (!nameL.includes('r'+rimNum+' ') && 
+      !nameL.includes('r'+rimNum+')') && 
+      !nameL.includes('r'+rimNum+',')) continue
 }
 const rawPrice=parseFloat(cols[pi]||'0')
 if(rawPrice<=0)continue
