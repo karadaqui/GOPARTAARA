@@ -26,15 +26,6 @@ const p = String(profile||'')
 const rimNum = String(rim||'').replace(/^R/i,'')
 const sizeStr = `${w}/${p} R${rimNum}`
 
-// Return empty for suppliers without size info in product names
-if (['12715','12716'].includes(String(advertiserId))) {
-  return new Response(
-    JSON.stringify({ products: [] }),
-    { headers: { ...cors, 'Content-Type': 'application/json' } }
-  )
-}
-
-
 let feedUrl = HARDCODED[actualId]?.url || ''
 const currency = HARDCODED[actualId]?.cur || CURRENCIES[actualId] || '£'
 
