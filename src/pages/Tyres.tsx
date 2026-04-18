@@ -15,49 +15,19 @@ const RIMS = ['13','14','15','16','17','18','19','20','21','22'];
 const ITEMS_PER_PAGE = 20;
 
 const SUPPLIERS = [
-  {
-    id: 'all',
-    flagEmoji: '🌍',
-    siteName: 'All Results',
-    shipsTo: 'All suppliers',
-  },
-  {
-    id: '12715',
-    flagEmoji: '🌍',
-    siteName: 'Tyres UK (Tyres.net)',
-    shipsTo: 'Ships to 64 countries',
-  },
-  {
-    id: '4118',
-    flagEmoji: '🇬🇧',
-    siteName: 'mytyres.co.uk',
-    shipsTo: 'Ships to UK + 35 countries',
-  },
-  {
-    id: '10499',
-    flagEmoji: '🇪🇸',
-    siteName: 'neumaticos-online.es',
-    shipsTo: 'Ships within Spain',
-  },
-  {
-    id: '12716',
-    flagEmoji: '🇮🇹',
-    siteName: 'Pneumatici IT',
-    shipsTo: 'Ships within Italy',
-  },
-  {
-    id: '10747',
-    flagEmoji: '🇪🇪',
-    siteName: 'ReifenDirekt EE',
-    shipsTo: 'Ships to Estonia, Latvia, Lithuania',
-  },
+  { id: 'all', emoji: '🌍', name: 'All Results', ships: '' },
+  { id: '12715', emoji: '🌍', name: 'Tyres UK', ships: 'Ships to 64 countries' },
+  { id: '4118', emoji: '🇬🇧', name: 'mytyres.co.uk', ships: 'UK + 35 countries' },
+  { id: '10499', emoji: '🇪🇸', name: 'neumaticos-online.es', ships: 'Spain only' },
+  { id: '12716', emoji: '🇮🇹', name: 'Pneumatici IT', ships: 'Italy only' },
+  { id: '10747', emoji: '🇪🇪', name: 'ReifenDirekt EE', ships: 'Estonia, Latvia, Lithuania' },
 ];
 
 type SupplierMeta = {
   id: string;
-  flagEmoji: string;
-  siteName: string;
-  shipsTo: string;
+  emoji: string;
+  name: string;
+  ships: string;
 };
 
 type TyreProduct = {
