@@ -69,11 +69,7 @@ if (!feedUrl) {
 
 const res=await fetch(feedUrl)
 if(!res.body)throw new Error('nobody')
-const isGzip = feedUrl.includes('compression/gzip')
-const bodyStream = isGzip 
-  ? res.body.pipeThrough(new DecompressionStream('gzip'))
-  : res.body
-const reader = bodyStream.getReader()
+const reader = res.body.getReader()
 const dec=new TextDecoder()
 let buf='',hdrs:string[]=[],lc=0
 const prods:any[]=[]
