@@ -19,7 +19,7 @@ try{
 const{width,advertiserId}=await req.json()
 const isDebug = String(advertiserId).startsWith('debug_')
 const actualId = isDebug ? String(advertiserId).replace('debug_', '') : String(advertiserId)
-const skipWidthFilter = actualId === '12715'
+const skipWidthFilter = ['12715','10499','10747','12716'].includes(actualId)
 
 let feedUrl = HARDCODED[actualId]?.url || ''
 const currency = HARDCODED[actualId]?.cur || CURRENCIES[actualId] || '£'
@@ -94,15 +94,17 @@ for(const line of lines){
 if(!line.trim())continue;lc++
 const cols=csv(line)
 if(lc===1){
-hdrs=cols.map(h=>h.toLowerCase().replace(/[^a-z0-9]/g,''))
-ni=hdrs.indexOf('productname');if(ni<0)ni=hdrs.findIndex(h=>h.includes('productname'))
-pi=hdrs.indexOf('searchprice');if(pi<0)pi=hdrs.findIndex(h=>h.includes('searchprice')||h.includes('price'))
-ii=hdrs.indexOf('merchantimageurl');if(ii<0)ii=hdrs.findIndex(h=>h.includes('imageurl')||h.includes('image'))
-ui=hdrs.indexOf('awdeeplink');if(ui<0)ui=hdrs.findIndex(h=>h.includes('deeplink')||h.includes('awdeep'))
-bi=hdrs.indexOf('brandname');if(bi<0)bi=hdrs.findIndex(h=>h.includes('brand'))
-di=hdrs.indexOf('deliverycost');if(di<0)di=hdrs.findIndex(h=>h.includes('delivery'))
-idi=hdrs.indexOf('awproductid');if(idi<0)idi=hdrs.findIndex(h=>h.includes('productid')||h.includes('awproduct'))
-console.log('ADV:',actualId,'ni:',ni,'pi:',pi,'ii:',ii,'ui:',ui,'hdrs:',hdrs.slice(0,8))
+// Keep raw headers (with underscores) so we can match both formats
+hdrs=cols.map(h=>h.toLowerCase().trim())
+const norm=(h:string)=>h.replace(/[^a-z0-9]/g,'')
+ni=hdrs.findIndex(h=>h==='productname'||h==='awproductname'||h==='product_name'||h==='name'||norm(h).includes('productname'))
+pi=hdrs.findIndex(h=>h==='searchprice'||h==='search_price'||h==='cost'||norm(h).includes('searchprice')||norm(h).includes('price'))
+ii=hdrs.findIndex(h=>h==='merchantimageurl'||h==='awimageurl'||h==='merchant_image_url'||h==='aw_image_url'||h==='image'||norm(h).includes('imageurl')||norm(h).includes('awimage'))
+ui=hdrs.findIndex(h=>h==='awdeeplink'||h==='aw_deep_link'||h==='url'||h==='link'||norm(h).includes('deeplink'))
+bi=hdrs.findIndex(h=>h==='brandname'||h==='brand_name'||h==='brand'||h==='manufacturer'||norm(h).includes('brandname'))
+di=hdrs.findIndex(h=>h==='deliverycost'||h==='delivery_cost'||norm(h).includes('delivery')||norm(h).includes('shipping'))
+idi=hdrs.findIndex(h=>h==='awproductid'||h==='aw_product_id'||h==='id'||h==='sku'||norm(h).includes('productid'))
+console.log('ADV:',actualId,'ni:',ni,'pi:',pi,'ii:',ii,'ui:',ui,'bi:',bi,'di:',di,'idi:',idi,'hdrs:',hdrs.slice(0,15))
 continue
 }
 if(ni<0||pi<0)continue
