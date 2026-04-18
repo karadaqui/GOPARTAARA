@@ -95,6 +95,7 @@ const Tyres = () => {
     setSearched(true);
     setTyreProducts([]);
     setCountryFilter('all');
+    setCurrentPage(1);
 
     try {
       const results = await Promise.allSettled(
