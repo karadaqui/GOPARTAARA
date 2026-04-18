@@ -8,17 +8,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 
-const getSupplierEmoji = (id: string): string => {
-  const map: Record<string, string> = {
-    '4118': '\uD83C\uDDEC\uD83C\uDDE7',
-    '12715': '\uD83C\uDF0D',
-    '10499': '\uD83C\uDDEA\uD83C\uDDF8',
-    '12716': '\uD83C\uDDEE\uD83C\uDDF9',
-    '10747': '\uD83C\uDDEA\uD83C\uDDEA',
-    'all': '\uD83C\uDF0D',
-  }
-  return map[id] || '\uD83C\uDF0D'
-}
+const flag = (id: string): string =>
+  ({ '4118': '🇬🇧', '12715': '🌍', '10499': '🇪🇸', '12716': '🇮🇹', '10747': '🇪🇪' } as Record<string, string>)[id] ?? '🌍';
 
 const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305'];
 const PROFILES = ['30','35','40','45','50','55','60','65','70','75'];
