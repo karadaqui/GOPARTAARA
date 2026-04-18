@@ -6,7 +6,7 @@ const FEEDLIST_URL = 'https://ui.awin.com/productdata-darwin-download/publisher/
 const HARDCODED: Record<string,{cur:string,url:string,skipFilter?:boolean}> = {
   '4118':  { cur:'£', url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12641/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost' },
   '12715': { cur:'£', url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93988/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription' },
-  '12716': { cur: '€', skipFilter: true, url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93986/format/csv/language/it/delimiter/%2C/compression/gzip/columns/data_feed_id%2Cmerchant_id%2Cmerchant_name%2Caw_product_id%2Caw_deep_link%2Caw_image_url%2Caw_thumb_url%2Ccategory_id%2Ccategory_name%2Cbrand_id%2Cbrand_name%2Cmerchant_product_id%2Cmerchant_category_id%2Cmerchant_image_url%2Csearch_price%2Csearch_price_currency%2Cstore_price%2Cdelivery_cost%2Ccurrency%2Cdescription%2Cproduct_name' },
+  '12716': { cur: '€', skipFilter: true, url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93986/format/csv/language/it/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost' },
 
 }
 const CURRENCIES: Record<string,string> = {
@@ -80,11 +80,7 @@ if (!feedUrl) {
 
 const res=await fetch(feedUrl)
 if(!res.body)throw new Error('nobody')
-let body: ReadableStream<Uint8Array> = res.body
-if (feedUrl.includes('compression/gzip')) {
-  body = res.body.pipeThrough(new DecompressionStream('gzip'))
-}
-const reader=body.getReader()
+const reader=res.body.getReader()
 const dec=new TextDecoder()
 let buf='',hdrs:string[]=[],lc=0
 const prods:any[]=[]
