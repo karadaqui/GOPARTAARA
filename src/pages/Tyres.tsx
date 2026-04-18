@@ -321,9 +321,13 @@ const Tyres = () => {
 
             {/* Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 px-4">
-              {pagedProducts.map((product, i) => {
+            {pagedProducts.map((product, i) => {
                 const currency = getCurrency(product.advertiserId || product.supplierMeta?.id || '4118');
                 const displayPrice = product.price.replace(/[£€]/, currency.symbol);
+                const searchedSize = `${selectedWidth}/${selectedProfile} R${selectedRim.replace('R', '')}`;
+                const displayTitle = product.title.includes(selectedWidth)
+                  ? product.title
+                  : `${searchedSize} — ${product.title}`;
                 return (
                   <div
                     key={`${product.supplierMeta?.id || ''}-${product.id || i}`}
@@ -355,7 +359,7 @@ const Tyres = () => {
                     <div className="p-3 flex flex-col flex-1">
                       <a href={product.url} target="_blank" rel="noopener noreferrer sponsored">
                         <p className="text-xs font-semibold text-white line-clamp-2 mb-1 leading-snug group-hover:text-red-400 transition-colors">
-                          {product.title}
+                          {displayTitle}
                         </p>
                       </a>
                       {product.brand && (
