@@ -274,10 +274,10 @@ const Tyres = () => {
                       ? 'bg-red-600 border-red-500 text-white'
                       : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
                   }`}
-                  title={s.shipsTo}
+                  title={s.ships}
                 >
-                  <span>{s.flagEmoji}</span>
-                  <span>{s.siteName}</span>
+                  <span>{s.emoji}</span>
+                  <span>{s.name}</span>
                 </button>
               ))}
             </div>
@@ -326,7 +326,7 @@ const Tyres = () => {
                           <span className="text-5xl opacity-20">○</span>
                         )}
                         <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
-                          <span className="text-xs">{product.supplierMeta?.flagEmoji || '🇬🇧'}</span>
+                          <span className="text-xs">{product.supplierMeta?.emoji || '🇬🇧'}</span>
                         </div>
                       </div>
                     </a>
@@ -348,13 +348,13 @@ const Tyres = () => {
 
                       {/* Supplier info */}
                       <div className="flex items-center gap-1 mt-1">
-                        <span className="text-sm">{product.supplierMeta?.flagEmoji || '🇬🇧'}</span>
+                        <span className="text-sm">{product.supplierMeta?.emoji || '🇬🇧'}</span>
                         <span className="text-[10px] text-zinc-500 truncate">
-                          {product.supplierMeta?.siteName || product.supplierName}
+                          {product.supplierMeta?.name || product.supplierName}
                         </span>
                       </div>
                       <p className="text-[10px] text-zinc-700">
-                        {product.supplierMeta?.shipsTo || 'Ships to UK + 35 countries'}
+                        {product.supplierMeta?.ships || 'Ships to UK + 35 countries'}
                       </p>
 
                       {/* Actions */}
