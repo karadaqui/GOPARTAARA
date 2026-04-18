@@ -80,11 +80,7 @@ if (!feedUrl) {
 
 const res=await fetch(feedUrl)
 if(!res.body)throw new Error('nobody')
-let body: ReadableStream<Uint8Array> = res.body
-if (feedUrl.includes('compression/gzip')) {
-  body = res.body.pipeThrough(new DecompressionStream('gzip'))
-}
-const reader=body.getReader()
+const reader=res.body.getReader()
 const dec=new TextDecoder()
 let buf='',hdrs:string[]=[],lc=0
 const prods:any[]=[]
