@@ -143,6 +143,17 @@ const Tyres = () => {
         ? tyreProducts.filter((p) => p.supplierMeta?.isGlobal)
         : tyreProducts.filter((p) => p.supplierMeta?.id === countryFilter);
 
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE,
+  );
+
+  const handleCountryFilter = (id: string) => {
+    setCountryFilter(id);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
