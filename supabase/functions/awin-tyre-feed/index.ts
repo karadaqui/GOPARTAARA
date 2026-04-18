@@ -19,7 +19,7 @@ try{
 const{width,profile,rim,advertiserId}=await req.json()
 const isDebug = String(advertiserId).startsWith('debug_')
 const actualId = isDebug ? String(advertiserId).replace('debug_', '') : String(advertiserId)
-const skipWidthFilter = false
+const skipWidthFilter = ['12716','12715'].includes(actualId)
 const strictSizeFilter = ['4118'].includes(actualId)
 const w = String(width||'')
 const p = String(profile||'')
@@ -113,14 +113,10 @@ console.log('ADV:',actualId,'ni:',ni,'pi:',pi,'ii:',ii,'ui:',ui,'bi:',bi,'di:',d
 continue
 }
 if(ni<0||pi<0)continue
-const nameL = (cols[ni]||'').toLowerCase()
 const w = String(width)
 const p = String(profile)
-if (strictSizeFilter) {
-  if (!nameL.includes(w+'/'+p) && !nameL.includes(w+'%2F'+p)) continue
-} else if (!skipWidthFilter) {
-  if (!nameL.includes(w.toLowerCase())) continue
-}
+const nameL = (cols[ni]||'').toLowerCase()
+if (!skipWidthFilter && !nameL.includes(w+'/'+p)) continue
 const rawPrice=parseFloat(cols[pi]||'0')
 if(rawPrice<=0)continue
 const imgVal=cols[ii]||''
