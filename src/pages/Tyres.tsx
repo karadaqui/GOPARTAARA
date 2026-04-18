@@ -43,8 +43,10 @@ const Tyres = () => {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [countryFilter, setCountryFilter] = useState<string | null>(null);
+  const [tyreType, setTyreType] = useState<'all' | 'tyre' | 'wheel'>('all');
 
-  const searchTyres = async () => {
+  const searchTyres = async (typeOverride?: 'all' | 'tyre' | 'wheel') => {
+    const activeType = typeOverride ?? tyreType;
     setLoading(true);
     setSearched(true);
     setTyreProducts([]);
@@ -60,6 +62,7 @@ const Tyres = () => {
               rim: selectedRim,
               advertiserId: id,
               offset: 0,
+              tyreType: activeType,
             },
           }).then(({ data }) => (data?.products as TyreProduct[]) || [])
         )
