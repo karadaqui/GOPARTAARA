@@ -15,22 +15,49 @@ const RIMS = ['13','14','15','16','17','18','19','20','21','22'];
 const ITEMS_PER_PAGE = 20;
 
 const SUPPLIERS = [
-  { id: 'all', flag: '🌍', label: 'All Results', ships: 'All suppliers' },
-  { id: '12715', flag: '🌍', label: 'Tyres UK', ships: 'Ships to 64 countries' },
-  { id: '4118', flag: '🇬🇧', label: 'mytyres.co.uk', ships: 'UK + 35 countries' },
-  { id: '10499', flag: '🇪🇸', label: 'neumaticos-online.es', ships: 'Spain only' },
-  { id: '12716', flag: '🇮🇹', label: 'Pneumatici IT', ships: 'Italy only' },
-  { id: '10747', flag: '🇪🇪', label: 'ReifenDirekt EE', ships: 'Estonia, Latvia, Lithuania' },
+  {
+    id: 'all',
+    flagEmoji: '🌍',
+    siteName: 'All Results',
+    shipsTo: 'All suppliers',
+  },
+  {
+    id: '12715',
+    flagEmoji: '🌍',
+    siteName: 'Tyres UK (Tyres.net)',
+    shipsTo: 'Ships to 64 countries',
+  },
+  {
+    id: '4118',
+    flagEmoji: '🇬🇧',
+    siteName: 'mytyres.co.uk',
+    shipsTo: 'Ships to UK + 35 countries',
+  },
+  {
+    id: '10499',
+    flagEmoji: '🇪🇸',
+    siteName: 'neumaticos-online.es',
+    shipsTo: 'Ships within Spain',
+  },
+  {
+    id: '12716',
+    flagEmoji: '🇮🇹',
+    siteName: 'Pneumatici IT',
+    shipsTo: 'Ships within Italy',
+  },
+  {
+    id: '10747',
+    flagEmoji: '🇪🇪',
+    siteName: 'ReifenDirekt EE',
+    shipsTo: 'Ships to Estonia, Latvia, Lithuania',
+  },
 ];
 
 type SupplierMeta = {
-  name: string;
-  flag: string;
-  country: string;
-  ships: string;
-  fitting: string;
-  advertiserId: string;
-  id?: string;
+  id: string;
+  flagEmoji: string;
+  siteName: string;
+  shipsTo: string;
 };
 
 type TyreProduct = {
@@ -75,51 +102,35 @@ const Tyres = () => {
 
     const supplierIds = ['4118', '12715', '10499', '12716', '10747'];
 
-    try {
-      const results = await Promise.allSettled(
-        supplierIds.map((advertiserId) =>
-          supabase.functions.invoke('awin-tyre-feed', {
+    const results = await Promise.allSettled(
+      supplierIds.map(async (id) => {
+        const supplier = SUPPLIERS.find((s) => s.id === id);
+        try {
+          const { data } = await supabase.functions.invoke('awin-tyre-feed', {
             body: {
               width: selectedWidth,
               profile: selectedProfile,
               rim: selectedRim,
-              advertiserId,
-              offset: 0,
-              tyreType: 'all',
+              advertiserId: id,
             },
-          }).then((res) => ({ advertiserId, products: (res.data?.products as TyreProduct[]) || [] }))
-        )
-      );
-
-      const all: TyreProduct[] = [];
-      for (const r of results) {
-        if (r.status === 'fulfilled') {
-          const meta = SUPPLIERS.find((s) => s.id === r.value.advertiserId);
-          for (const p of r.value.products) {
-            all.push({
-              ...p,
-              advertiserId: r.value.advertiserId,
-              supplierMeta: meta
-                ? {
-                    name: meta.label,
-                    flag: meta.flag,
-                    country: meta.label,
-                    ships: meta.ships,
-                    fitting: '',
-                    advertiserId: r.value.advertiserId,
-                    id: r.value.advertiserId,
-                  }
-                : p.supplierMeta,
-            });
-          }
+          });
+          return ((data?.products as TyreProduct[]) || []).map((p) => ({
+            ...p,
+            supplierMeta: supplier as SupplierMeta | undefined,
+            advertiserId: id,
+          }));
+        } catch {
+          return [];
         }
-      }
-      setTyreProducts(all);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
+      })
+    );
+
+    const all = results
+      .filter((r) => r.status === 'fulfilled')
+      .flatMap((r) => (r as PromiseFulfilledResult<TyreProduct[]>).value);
+
+    setTyreProducts(all);
+    setLoading(false);
   };
 
   const handleSavePart = async (item: { title: string; price: string; image: string; url: string; supplier: string }) => {
