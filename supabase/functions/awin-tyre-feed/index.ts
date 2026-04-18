@@ -143,7 +143,12 @@ shipping:!del||del==='0'?'Free delivery':`${currency}${parseFloat(del).toFixed(2
 advertiserId:actualId,
 currency,
 }
-if(['12716','12715'].includes(actualId)){
+if(actualId==='12715'){
+product.url=`https://www.awin1.com/cread.php?awinmid=12715&awinaffid=2845282&clickref=partara&p=${encodeURIComponent('https://www.tyres.net/tyres/?width='+w+'&height='+p+'&diameter='+rimNum)}`
+product.title=`${w}/${p} R${rimNum} — ${product.title}`
+}
+if(actualId==='12716'){
+product.url=`https://www.awin1.com/cread.php?awinmid=12716&awinaffid=2845282&clickref=partara&p=${encodeURIComponent('https://www.pneumatici.it/ricerca/?width='+w+'&height='+p+'&rim='+rimNum)}`
 product.title=`${w}/${p} R${rimNum} — ${product.title}`
 }
 prods.push(product)
