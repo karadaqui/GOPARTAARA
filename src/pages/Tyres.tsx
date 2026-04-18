@@ -77,13 +77,9 @@ const getCurrency = (supplierId: string) => {
   return { symbol: '£', code: 'GBP' };
 };
 
+// Strict wheel-set keywords only — "with rim protection (MFS)" is a tyre feature, NOT a complete wheel.
 const COMPLETE_WHEEL_KEYWORDS = [
-  'complete wheel', 'komplettradsatz', 'kompletträder',
-  'complete set', 'with rim', 'on rim', 'mounted',
-  'alloy wheel', 'steel wheel', 'felge', 'felgen',
-  'komplett', 'cerchio', 'cerchi', 'llanta', 'llantas',
-  'janta', 'jant', 'rim set', 'wheel set',
-  '+ rim', '+ felge', 'incl rim', 'incl. rim',
+  'wheel', 'rim set', 'wheel set', 'komplettradsatz', 'kompletträder',
 ];
 
 const Tyres = () => {
@@ -94,9 +90,9 @@ const Tyres = () => {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [countryFilter, setCountryFilter] = useState<string | null>(null);
-  const [tyreType, setTyreType] = useState<'all'|'tyre'|'complete'>('all');
+  const [tyreType, setTyreType] = useState<'all'|'tyre'>('all');
 
-  const searchTyres = async (typeOverride?: 'all' | 'tyre' | 'complete') => {
+  const searchTyres = async (typeOverride?: 'all' | 'tyre') => {
     const activeType = typeOverride ?? tyreType;
     setLoading(true);
     setSearched(true);
@@ -155,19 +151,10 @@ const Tyres = () => {
     if (tyreType === 'tyre') {
       return filteredProducts.filter(p => {
         const name = (p.title || '').toLowerCase();
-        const hasCompleteWheel = COMPLETE_WHEEL_KEYWORDS.some(kw => 
+        const hasCompleteWheel = COMPLETE_WHEEL_KEYWORDS.some(kw =>
           name.includes(kw.toLowerCase())
         );
         return !hasCompleteWheel;
-      });
-    }
-
-    if (tyreType === 'complete') {
-      return filteredProducts.filter(p => {
-        const name = (p.title || '').toLowerCase();
-        return COMPLETE_WHEEL_KEYWORDS.some(kw => 
-          name.includes(kw.toLowerCase())
-        );
       });
     }
 
@@ -283,9 +270,8 @@ const Tyres = () => {
           <div className="max-w-6xl mx-auto px-4 mb-4">
             <div className="flex flex-wrap gap-2 justify-center mb-6">
               {[
-                { id: 'all', label: '🔍 All' },
+                { id: 'all', label: '🔍 All Products' },
                 { id: 'tyre', label: '⭕ Tyres Only' },
-                { id: 'complete', label: '🔩 Complete Wheels' },
               ].map((f) => (
                 <button
                   key={f.id}
@@ -371,6 +357,14 @@ const Tyres = () => {
                     <p className="text-xs font-semibold text-white line-clamp-2 mb-1 leading-snug group-hover:text-red-400 transition-colors">
                       {product.title}
                     </p>
+                    {/rim protection|\bMFS\b/i.test(product.title) && (
+                      <span
+                        className="inline-flex items-center gap-1 text-[9px] text-amber-400/90 mb-1 cursor-help"
+                        title="Rim protection (MFS) is a tyre sidewall feature — rim/wheel is NOT included in this price"
+                      >
+                        ℹ️ Tyre only — no rim included
+                      </span>
+                    )}
                     {product.brand && (
                       <p className="text-[10px] text-zinc-600 mb-2">{product.brand}</p>
                     )}
