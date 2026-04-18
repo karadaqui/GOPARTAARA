@@ -5,57 +5,73 @@ const cors = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const FEED_URL = 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12641/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost'
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
 
   try {
-    const { width, profile, rim } = await req.json()
-    const cleanRim = rim.toString().replace(/^R/i, '')
-    const sizeSlug = `${width}-${profile}-R${cleanRim}`
+    const { width } = await req.json()
 
-    const url = `https://www.mytyres.co.uk/rshop/Tyres/${sizeSlug}`
-    
-    const res = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml',
-        'Accept-Language': 'en-GB,en;q=0.9',
-      }
-    })
+    const res = await fetch(FEED_URL)
+    if (!res.body) throw new Error('no body')
 
-    const html = await res.text()
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
 
-    // Extract JSON-LD product data
+    let buffer = ''
+    let headers: string[] = []
     const products: any[] = []
-    const scriptRegex = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g
-    let match
-    while ((match = scriptRegex.exec(html)) !== null) {
-      try {
-        const json = JSON.parse(match[1])
-        const items = Array.isArray(json) ? json : [json]
-        for (const item of items) {
-          if (item['@type'] !== 'Product') continue
-          const offer = Array.isArray(item.offers) ? item.offers[0] : item.offers
-          const price = offer?.price || offer?.lowPrice
-          const productUrl = offer?.url || item.url || url
-          products.push({
-            id: item.sku || item.mpn || String(products.length),
-            title: item.name || '',
-            price: price ? `£${parseFloat(price).toFixed(2)}` : 'See site',
-            image: Array.isArray(item.image) ? item.image[0] : (item.image || ''),
-            url: `https://www.awin1.com/cread.php?awinmid=4118&awinaffid=2845282&clickref=partara&p=${encodeURIComponent(productUrl)}`,
-            brand: item.brand?.name || item.brand || '',
-            shipping: 'Free UK delivery',
-            supplierName: 'mytyres.co.uk',
-          })
-          if (products.length >= 24) break
+    let lineCount = 0
+
+    while (products.length < 24) {
+      const { done, value } = await reader.read()
+      if (done) break
+
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() || ''
+
+      for (const line of lines) {
+        if (!line.trim()) continue
+        lineCount++
+
+        const cols = parseCsvLine(line)
+
+        if (lineCount === 1) {
+          headers = cols
+          continue
         }
-      } catch { /* skip */ }
-      if (products.length >= 24) break
+
+        const get = (n: string) => {
+          const i = headers.findIndex(h => h.toLowerCase().includes(n.toLowerCase()))
+          return i >= 0 ? (cols[i] || '') : ''
+        }
+
+        const name = get('product_name')
+        if (!name.toLowerCase().includes(width.toLowerCase())) continue
+
+        products.push({
+          id: get('aw_product_id') || String(lineCount),
+          title: name,
+          price: `£${parseFloat(get('search_price') || '0').toFixed(2)}`,
+          image: get('merchant_image_url'),
+          url: get('aw_deep_link'),
+          brand: get('brand_name'),
+          shipping: get('delivery_cost') === '0' || !get('delivery_cost') ? 'Free delivery' : `£${get('delivery_cost')} delivery`,
+          supplierName: 'mytyres.co.uk',
+        })
+
+        if (products.length >= 24) break
+      }
+
+      if (lineCount > 100000) break
     }
 
+    reader.cancel()
+
     return new Response(
-      JSON.stringify({ products, total: products.length }),
+      JSON.stringify({ products }),
       { headers: { ...cors, 'Content-Type': 'application/json' } }
     )
 
@@ -66,3 +82,15 @@ serve(async (req) => {
     )
   }
 })
+
+function parseCsvLine(line: string): string[] {
+  const cols: string[] = []
+  let cur = '', inQ = false
+  for (const ch of line) {
+    if (ch === '"') inQ = !inQ
+    else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = '' }
+    else cur += ch
+  }
+  cols.push(cur.trim())
+  return cols
+}
