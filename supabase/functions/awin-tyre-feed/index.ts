@@ -26,35 +26,6 @@ const p = String(profile||'')
 const rimNum = String(rim||'').replace(/^R/i,'')
 const sizeStr = `${w}/${p} R${rimNum}`
 
-if (['12715','12716'].includes(String(advertiserId))) {
-  const searchUrls: Record<string,string> = {
-    '12715': `https://www.awin1.com/cread.php?awinmid=12715&awinaffid=2845282&clickref=partara&p=${encodeURIComponent(`https://www.tyres.net/tyres/?width=${w}&height=${p}&diameter=${rimNum}`)}`,
-    '12716': `https://www.awin1.com/cread.php?awinmid=12716&awinaffid=2845282&clickref=partara&p=${encodeURIComponent(`https://www.pneumatici.it/ricerca-pneumatici/?width=${w}&height=${p}&diameter=${rimNum}`)}`,
-  }
-  const names: Record<string,string> = {
-    '12715': 'Tyres UK — Search Results',
-    '12716': 'Pneumatici IT — Search Results',
-  }
-  const cur = HARDCODED[actualId]?.cur || CURRENCIES[actualId] || '£'
-  return new Response(
-    JSON.stringify({
-      products: [{
-        id: `${advertiserId}-search`,
-        title: `${w}/${p} R${rimNum} — View all results on ${names[String(advertiserId)]}`,
-        price: 'See site',
-        image: '',
-        url: searchUrls[String(advertiserId)],
-        brand: '',
-        shipping: 'See site for delivery',
-        advertiserId: String(advertiserId),
-        currency: cur,
-        isSearchLink: true,
-      }]
-    }),
-    { headers: { ...cors, 'Content-Type': 'application/json' } }
-  )
-}
-
 let feedUrl = HARDCODED[actualId]?.url || ''
 const currency = HARDCODED[actualId]?.cur || CURRENCIES[actualId] || '£'
 
