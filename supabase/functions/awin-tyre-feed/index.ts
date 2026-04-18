@@ -23,8 +23,8 @@ const skipWidthFilter = ['10499','10747','12716'].includes(actualId)
 const strictSizeFilter = ['4118','12715'].includes(actualId)
 const w = String(width||'')
 const p = String(profile||'')
-const r = String(rim||'').replace(/^R/i,'')
-const sizeStr = `${w}/${p} R${r}`
+const rimNum = String(rim||'').replace(/^R/i,'')
+const sizeStr = `${w}/${p} R${rimNum}`
 
 let feedUrl = HARDCODED[actualId]?.url || ''
 const currency = HARDCODED[actualId]?.cur || CURRENCIES[actualId] || '£'
@@ -115,13 +115,10 @@ continue
 if(ni<0||pi<0)continue
 const nameL = (cols[ni]||'').toLowerCase()
 if (strictSizeFilter) {
-  const matchSize = nameL.includes(w) &&
-                    nameL.includes('/'+p) &&
-                    (nameL.includes('r'+r+' ') ||
-                     nameL.includes('r'+r+')') ||
-                     nameL.includes(' '+r+' ') ||
-                     nameL.endsWith('r'+r))
-  if (!matchSize) continue
+  const sizeMatch = nameL.includes(w+'/'+p) || 
+                    nameL.includes(w+' '+p) ||
+                    (nameL.includes(w) && nameL.includes('/'+p))
+  if (!sizeMatch) continue
 } else if (!skipWidthFilter) {
   if (!nameL.includes(w.toLowerCase())) continue
 }
