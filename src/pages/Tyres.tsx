@@ -285,21 +285,21 @@ const Tyres = () => {
         {/* Filters + Results */}
         {tyreProducts.length > 0 && (
           <div className="max-w-6xl mx-auto mb-16">
-            {/* Country pills */}
+            {/* Supplier pills */}
             <div className="flex gap-2 overflow-x-auto scrollbar-hide mb-4 px-4">
-              {COUNTRY_OPTIONS.map(opt => (
+              {SUPPLIERS.map((s) => (
                 <button
-                  key={opt.id}
-                  onClick={() => { setCountryFilter(opt.id); setCurrentPage(1); }}
+                  key={s.id}
+                  onClick={() => { setCountryFilter(s.id); setCurrentPage(1); }}
                   className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                    countryFilter === opt.id
+                    countryFilter === s.id
                       ? 'bg-red-600 border-red-500 text-white'
                       : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
                   }`}
-                  title={opt.ships}
+                  title={s.ships}
                 >
-                  <span>{opt.flag}</span>
-                  <span>{opt.label}</span>
+                  <span>{s.flag}</span>
+                  <span>{s.label}</span>
                 </button>
               ))}
             </div>
