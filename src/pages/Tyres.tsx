@@ -174,9 +174,7 @@ const Tyres = () => {
         {tyreProducts.length > 0 && (
           <div className="max-w-6xl mx-auto px-4 mb-16">
             <p className="text-zinc-600 text-xs mb-4">
-              Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}–
-              {Math.min(currentPage * ITEMS_PER_PAGE, tyreProducts.length)} of{' '}
-              {tyreProducts.length} tyres
+              Showing {tyreProducts.length} tyres · Page {page}
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
               {paginatedProducts.map((product, i) => (
