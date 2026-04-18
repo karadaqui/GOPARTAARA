@@ -27,14 +27,12 @@ const Tyres = () => {
   const [tyreProducts, setTyreProducts] = useState<TyreProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [page, setPage] = useState(1);
   const ITEMS_PER_PAGE = 24;
 
-  const searchTyres = async () => {
+  const fetchTyres = async (pageNum: number) => {
     setLoading(true);
-    setSearched(true);
     setTyreProducts([]);
-    setCurrentPage(1);
 
     try {
       const { data } = await supabase.functions.invoke('awin-tyre-feed', {
@@ -42,6 +40,7 @@ const Tyres = () => {
           width: selectedWidth,
           profile: selectedProfile,
           rim: selectedRim,
+          offset: (pageNum - 1) * ITEMS_PER_PAGE,
         },
       });
       setTyreProducts((data?.products as TyreProduct[]) || []);
@@ -52,11 +51,20 @@ const Tyres = () => {
     }
   };
 
-  const totalPages = Math.ceil(tyreProducts.length / ITEMS_PER_PAGE);
-  const paginatedProducts = tyreProducts.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE,
-  );
+  const searchTyres = async () => {
+    setSearched(true);
+    setPage(1);
+    await fetchTyres(1);
+  };
+
+  const goToPage = async (newPage: number) => {
+    setPage(newPage);
+    await fetchTyres(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const paginatedProducts = tyreProducts.slice(0, ITEMS_PER_PAGE);
+  const hasNextPage = tyreProducts.length >= ITEMS_PER_PAGE;
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
