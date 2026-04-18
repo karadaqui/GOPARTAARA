@@ -73,20 +73,48 @@ const Tyres = () => {
     setBrandFilter('all');
     setCurrentPage(1);
 
+    const supplierIds = ['4118', '12715', '10499', '12716', '10747'];
+
     try {
-      // Only call mytyres (4118) — fastest working feed
-      const { data } = await supabase.functions.invoke('awin-tyre-feed', {
-        body: {
-          width: selectedWidth,
-          profile: selectedProfile,
-          rim: selectedRim,
-          advertiserId: '4118',
-          offset: 0,
-          tyreType: 'all',
-        },
-      });
-      const products = (data?.products as TyreProduct[]) || [];
-      setTyreProducts(products);
+      const results = await Promise.allSettled(
+        supplierIds.map((advertiserId) =>
+          supabase.functions.invoke('awin-tyre-feed', {
+            body: {
+              width: selectedWidth,
+              profile: selectedProfile,
+              rim: selectedRim,
+              advertiserId,
+              offset: 0,
+              tyreType: 'all',
+            },
+          }).then((res) => ({ advertiserId, products: (res.data?.products as TyreProduct[]) || [] }))
+        )
+      );
+
+      const all: TyreProduct[] = [];
+      for (const r of results) {
+        if (r.status === 'fulfilled') {
+          const meta = SUPPLIERS.find((s) => s.id === r.value.advertiserId);
+          for (const p of r.value.products) {
+            all.push({
+              ...p,
+              advertiserId: r.value.advertiserId,
+              supplierMeta: meta
+                ? {
+                    name: meta.label,
+                    flag: meta.flag,
+                    country: meta.label,
+                    ships: meta.ships,
+                    fitting: '',
+                    advertiserId: r.value.advertiserId,
+                    id: r.value.advertiserId,
+                  }
+                : p.supplierMeta,
+            });
+          }
+        }
+      }
+      setTyreProducts(all);
     } catch (e) {
       console.error(e);
     } finally {
