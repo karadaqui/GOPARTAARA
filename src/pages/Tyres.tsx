@@ -369,15 +369,15 @@ const Tyres = () => {
                       <p className="text-[10px] text-zinc-700">Tyre only · Rim not included</p>
 
                       {/* Supplier info */}
-                      <div className="flex items-center justify-between mt-1">
-                        <span className="text-[10px] text-zinc-600 flex items-center gap-1">
-                          <span>{product.supplierMeta?.flag || '🇬🇧'}</span>
-                          <span>{product.supplierName}</span>
-                        </span>
-                        <span className="text-[10px] text-zinc-700 truncate ml-1">
-                          {product.supplierMeta?.ships || 'UK + 35 countries'}
+                      <div className="flex items-center gap-1 mt-1">
+                        <span className="text-sm">{product.supplierMeta?.flag || '🇬🇧'}</span>
+                        <span className="text-[10px] text-zinc-500 truncate">
+                          {product.supplierMeta?.label || product.supplierMeta?.name || product.supplierName}
                         </span>
                       </div>
+                      <p className="text-[10px] text-zinc-700">
+                        {product.supplierMeta?.ships || 'UK + 35 countries'}
+                      </p>
 
                       {/* Actions */}
                       <div className="flex gap-1 mt-2">
