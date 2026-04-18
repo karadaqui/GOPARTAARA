@@ -96,29 +96,24 @@ const Tyres = () => {
     setBrandFilter('all');
     setCurrentPage(1);
 
-    const supplierIds = ['4118', '12715', '10499', '12716', '10747'];
+    const SUPPLIER_IDS = ['4118', '10499', '10747', '12716', '12715'];
 
     const results = await Promise.allSettled(
-      supplierIds.map(async (id) => {
-        const supplier = SUPPLIERS.find((s) => s.id === id);
-        try {
-          const { data } = await supabase.functions.invoke('awin-tyre-feed', {
-            body: {
-              width: selectedWidth,
-              profile: selectedProfile,
-              rim: selectedRim,
+      SUPPLIER_IDS.map((id) =>
+        supabase.functions
+          .invoke('awin-tyre-feed', {
+            body: { width: selectedWidth, profile: selectedProfile, rim: selectedRim, advertiserId: id },
+          })
+          .then(({ data }) => {
+            const supplier = SUPPLIERS.find((s) => s.id === id);
+            return ((data?.products as TyreProduct[]) || []).map((p) => ({
+              ...p,
+              supplierMeta: supplier as SupplierMeta | undefined,
               advertiserId: id,
-            },
-          });
-          return ((data?.products as TyreProduct[]) || []).map((p) => ({
-            ...p,
-            supplierMeta: supplier as SupplierMeta | undefined,
-            advertiserId: id,
-          }));
-        } catch {
-          return [];
-        }
-      })
+            }));
+          })
+          .catch(() => [] as TyreProduct[])
+      )
     );
 
     const all = results
