@@ -12,7 +12,7 @@ const FEEDS: Record<string, { name: string; flag: string; country: string; isGlo
   '4118':  { name: 'mytyres.co.uk',        flag: '🇬🇧', country: 'United Kingdom', isGlobal: true  },
   '10499': { name: 'neumaticos-online.es', flag: '🇪🇸', country: 'Spain',          isGlobal: false },
   '12716': { name: 'Pneumatici IT',        flag: '🇮🇹', country: 'Italy',          isGlobal: false },
-  '10747': { name: 'ReifenDirekt',         flag: '🇩🇪', country: 'Germany',        isGlobal: false },
+  '10747': { name: 'ReifenDirekt',         flag: '🇪🇪', country: 'Estonia & Baltics', isGlobal: false },
 };
 
 type SupplierMeta = {
@@ -43,14 +43,15 @@ const Tyres = () => {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [countryFilter, setCountryFilter] = useState<string | null>(null);
-  const [tyreType, setTyreType] = useState<'all' | 'tyre' | 'wheel'>('all');
+  const [tyreType, setTyreType] = useState<'all'|'tyre'|'complete'>('all');
 
-  const searchTyres = async (typeOverride?: 'all' | 'tyre' | 'wheel') => {
+  const searchTyres = async (typeOverride?: 'all' | 'tyre' | 'complete') => {
     const activeType = typeOverride ?? tyreType;
     setLoading(true);
     setSearched(true);
     setTyreProducts([]);
     setCountryFilter(null);
+    setTyreType('all');
 
     try {
       const results = await Promise.allSettled(
@@ -96,6 +97,35 @@ const Tyres = () => {
     if (!countryFilter) return tyreProducts;
     return tyreProducts.filter(p => p.supplierMeta?.country === countryFilter);
   }, [tyreProducts, countryFilter]);
+
+  const typeFilteredProducts = useMemo(() => {
+    if (tyreType === 'all') return filteredProducts;
+    if (tyreType === 'tyre') {
+      return filteredProducts.filter(p => {
+        const name = (p.title || '').toLowerCase();
+        return !name.includes('complete') && 
+               !name.includes('felge') && 
+               !name.includes('felgen') &&
+               !name.includes('rim') &&
+               !name.includes('wheel') &&
+               !name.includes('jant') &&
+               !name.includes('komplett');
+      });
+    }
+    if (tyreType === 'complete') {
+      return filteredProducts.filter(p => {
+        const name = (p.title || '').toLowerCase();
+        return name.includes('complete') || 
+               name.includes('felge') ||
+               name.includes('felgen') ||
+               name.includes('komplett') ||
+               name.includes('wheel') ||
+               name.includes('rim') ||
+               name.includes('with rim');
+      });
+    }
+    return filteredProducts;
+  }, [filteredProducts, tyreType]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -202,24 +232,25 @@ const Tyres = () => {
         </div>
 
         {/* Tyre type filter */}
-        {searched && (
+        {tyreProducts.length > 0 && (
           <div className="max-w-6xl mx-auto px-4 mb-4">
-            <div className="flex flex-wrap gap-2">
-              {(['all', 'tyre', 'wheel'] as const).map((type) => (
+            <div className="flex flex-wrap gap-2 justify-center mb-6">
+              {[
+                { id: 'all', label: '🔍 All Products' },
+                { id: 'tyre', label: '⭕ Tyres Only' },
+                { id: 'complete', label: '⚙️ Complete Wheels' },
+              ].map((f) => (
                 <button
-                  key={type}
-                  onClick={() => {
-                    setTyreType(type);
-                    searchTyres(type);
-                  }}
+                  key={f.id}
+                  onClick={() => { setTyreType(f.id as any); }}
                   disabled={loading}
-                  className={`px-4 py-2 rounded-xl text-xs font-semibold capitalize transition-colors disabled:opacity-50 ${
-                    tyreType === type
-                      ? 'bg-red-600 text-white'
-                      : 'bg-zinc-900 border border-zinc-800 text-zinc-400 hover:bg-zinc-800'
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all border ${
+                    tyreType === f.id
+                      ? 'bg-red-600 border-red-500 text-white'
+                      : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
                   }`}
                 >
-                  {type === 'all' ? '🔍 All' : type === 'tyre' ? '⭕ Tyres Only' : '⚙️ Wheels Only'}
+                  {f.label}
                 </button>
               ))}
             </div>
@@ -260,10 +291,10 @@ const Tyres = () => {
             )}
 
             <p className="text-zinc-600 text-xs mb-4">
-              Showing {filteredProducts.length} tyres from {availableCountries.length} {availableCountries.length === 1 ? 'supplier' : 'suppliers'}
+              Showing {typeFilteredProducts.length} tyres from {availableCountries.length} {availableCountries.length === 1 ? 'supplier' : 'suppliers'}
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {filteredProducts.map((product, i) => (
+              {typeFilteredProducts.map((product, i) => (
                 <a
                   key={`${product.supplierMeta?.advertiserId || ''}-${product.id || i}`}
                   href={product.url}
