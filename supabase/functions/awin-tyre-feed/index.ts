@@ -70,6 +70,61 @@ if (!feedUrl) {
 const res=await fetch(feedUrl)
 if(!res.body)throw new Error('nobody')
 
+if (String(advertiserId) === '12716') {
+  const r12 = await fetch(feedUrl)
+  const reader12 = r12.body!.getReader()
+  const dec12 = new TextDecoder()
+  let buf12 = '', lc12 = 0
+  const prods12: any[] = []
+  let headers12: string[] = []
+
+  outer12: while (lc12 < 500000) {
+    const { done, value } = await reader12.read()
+    if (done) break
+    buf12 += dec12.decode(value, { stream: true })
+    const lines12 = buf12.split('\n'); buf12 = lines12.pop() || ''
+    for (const line of lines12) {
+      if (!line.trim()) continue; lc12++
+      const cols = csv(line)
+      if (lc12 === 1) {
+        headers12 = cols.map(h => h.toLowerCase().replace(/[^a-z0-9]/g,''))
+        continue
+      }
+      const ni12 = headers12.findIndex(h => h.includes('productname'))
+      const pi12 = headers12.findIndex(h => h.includes('searchprice') || h.includes('price'))
+      const ii12 = headers12.findIndex(h => h.includes('imageurl') || h.includes('image'))
+      const ui12 = headers12.findIndex(h => h.includes('deeplink') || h.includes('awdeep'))
+      const bi12 = headers12.findIndex(h => h.includes('brand'))
+      const idi12 = headers12.findIndex(h => h.includes('productid') || h.includes('awproduct'))
+
+      const price = parseFloat(cols[pi12] || '0')
+      if (price <= 0) continue
+
+      const img = cols[ii12] || ''
+      const url = cols[ui12] || ''
+      if (!url || !url.startsWith('http')) continue
+
+      const title = cols[ni12] || ''
+      prods12.push({
+        id: cols[idi12] || String(lc12),
+        title: `${width}/${profile} R${String(rim).replace(/^R/i,'')} — ${title}`,
+        price: `€${price.toFixed(2)}`,
+        image: img,
+        url: url,
+        brand: cols[bi12] || '',
+        shipping: 'Free delivery',
+        advertiserId: '12716',
+        currency: '€',
+      })
+      if (prods12.length >= 24) break outer12
+    }
+  }
+  reader12.cancel().catch(() => {})
+  return new Response(
+    JSON.stringify({ products: prods12 }),
+    { headers: { ...cors, 'Content-Type': 'application/json' } }
+  )
+}
 
 const reader = res.body.getReader()
 const dec=new TextDecoder()
