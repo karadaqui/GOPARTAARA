@@ -52,6 +52,8 @@ serve(async (req) => {
         const name = get('product_name')
         if (!name.toLowerCase().includes(width.toLowerCase())) continue
 
+        if (skipped < offset) { skipped++; continue; }
+
         products.push({
           id: get('aw_product_id') || String(lineCount),
           title: name,
@@ -63,7 +65,7 @@ serve(async (req) => {
           supplierName: 'mytyres.co.uk',
         })
 
-        if (products.length >= 24) break
+        if (products.length >= 100) break
       }
 
       if (lineCount > 100000) break
