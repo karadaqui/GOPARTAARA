@@ -77,13 +77,9 @@ const getCurrency = (supplierId: string) => {
   return { symbol: '£', code: 'GBP' };
 };
 
+// Strict wheel-set keywords only — "with rim protection (MFS)" is a tyre feature, NOT a complete wheel.
 const COMPLETE_WHEEL_KEYWORDS = [
-  'complete wheel', 'komplettradsatz', 'kompletträder',
-  'complete set', 'with rim', 'on rim', 'mounted',
-  'alloy wheel', 'steel wheel', 'felge', 'felgen',
-  'komplett', 'cerchio', 'cerchi', 'llanta', 'llantas',
-  'janta', 'jant', 'rim set', 'wheel set',
-  '+ rim', '+ felge', 'incl rim', 'incl. rim',
+  'wheel', 'rim set', 'wheel set', 'komplettradsatz', 'kompletträder',
 ];
 
 const Tyres = () => {
