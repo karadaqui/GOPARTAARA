@@ -181,7 +181,7 @@ const Tyres = () => {
               Find Your Perfect Tyres
             </h1>
             <p className="text-zinc-500 text-sm max-w-md mx-auto">
-              Compare prices from UK & European specialists. Free fitting available nationwide.
+              Compare prices from UK & European specialists. Free fitting at 34,000+ centres.
             </p>
           </div>
         </div>
@@ -268,9 +268,9 @@ const Tyres = () => {
           <div className="max-w-6xl mx-auto px-4 mb-4">
             <div className="flex flex-wrap gap-2 justify-center mb-6">
               {[
-                { id: 'all', label: '🔍 All Products' },
+                { id: 'all', label: '🔍 All' },
                 { id: 'tyre', label: '⭕ Tyres Only' },
-                { id: 'complete', label: '⚙️ Complete Wheels' },
+                { id: 'complete', label: '🔩 Complete Wheels' },
               ].map((f) => (
                 <button
                   key={f.id}
