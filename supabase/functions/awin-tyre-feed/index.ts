@@ -1,23 +1,63 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 const cors = {'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'authorization, x-client-info, apikey, content-type'}
-const FEEDS: Record<string,{url:string,cur:string}> = {
-'4118':{cur:'£',url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12641/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost'},
-'10499':{cur:'€',url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/23179/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/'},
-'10747':{cur:'€',url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/66605/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/'},
-'12716':{cur:'€',url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93986/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/'},
-'12715':{cur:'£',url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93988/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost'},
+
+const FEEDLIST_URL = 'https://ui.awin.com/productdata-darwin-download/publisher/2845282/f0b723c9643205a96aeb31377b805e02/1/feedList'
+
+const HARDCODED: Record<string,{cur:string,url:string}> = {
+  '4118':  { cur:'£', url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12641/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost' },
+  '12715': { cur:'£', url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93988/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost' },
 }
+const CURRENCIES: Record<string,string> = {
+  '10499': '€', '10747': '€', '12716': '€'
+}
+
 function csv(line:string){const r:string[]=[];let c='',q=false;for(const ch of line){if(ch==='"')q=!q;else if(ch===','&&!q){r.push(c.trim());c=''}else c+=ch}r.push(c.trim());return r}
+
 serve(async(req)=>{
 if(req.method==='OPTIONS')return new Response('ok',{headers:cors})
 try{
 const{width,advertiserId}=await req.json()
 const isDebug = String(advertiserId).startsWith('debug_')
 const actualId = isDebug ? String(advertiserId).replace('debug_', '') : String(advertiserId)
-const skipWidthFilter = String(actualId) === '12715'
-const feed=FEEDS[actualId]
-if(!feed)return new Response(JSON.stringify({products:[],error:'unknown'}),{headers:{...cors,'Content-Type':'application/json'}})
-const res=await fetch(feed.url)
+const skipWidthFilter = actualId === '12715'
+
+let feedUrl = HARDCODED[actualId]?.url || ''
+const currency = HARDCODED[actualId]?.cur || CURRENCIES[actualId] || '£'
+
+// For non-hardcoded advertisers, fetch URL dynamically from feedList
+if (!feedUrl) {
+  console.log('Fetching feedList for advertiser:', actualId)
+  const listRes = await fetch(FEEDLIST_URL)
+  const listText = await listRes.text()
+  const lines = listText.split('\n').filter(l => l.trim())
+  
+  if (lines.length > 0) {
+    const headers = csv(lines[0])
+    const advIdx = headers.findIndex(h => h.toLowerCase().includes('advertiser id'))
+    const urlIdx = headers.findIndex(h => h.toLowerCase() === 'url')
+    console.log('feedList headers:', headers, 'advIdx:', advIdx, 'urlIdx:', urlIdx)
+    
+    for (const line of lines.slice(1)) {
+      const cols = csv(line)
+      const id = cols[advIdx]?.replace(/"/g,'').trim()
+      if (id === actualId) {
+        feedUrl = cols[urlIdx]?.replace(/"/g,'').trim() || ''
+        feedUrl = feedUrl.replace('compression/gzip','compression/none')
+        console.log('Found feed URL for', actualId, ':', feedUrl)
+        break
+      }
+    }
+  }
+}
+
+if (!feedUrl) {
+  return new Response(
+    JSON.stringify({ products: [], error: 'No feed URL found for ' + actualId }),
+    { headers: { ...cors, 'Content-Type': 'application/json' } }
+  )
+}
+
+const res=await fetch(feedUrl)
 if(!res.body)throw new Error('nobody')
 const reader=res.body.getReader()
 const dec=new TextDecoder()
@@ -41,7 +81,7 @@ if(rawLines.length>=3)break
 }
 }
 reader.cancel().catch(()=>{})
-return new Response(JSON.stringify({rawLines,products:[]}),{headers:{...cors,'Content-Type':'application/json'}})
+return new Response(JSON.stringify({rawLines,products:[],feedUrl}),{headers:{...cors,'Content-Type':'application/json'}})
 }
 
 // NORMAL MODE: process products
@@ -80,13 +120,13 @@ const del=cols[di]||''
 prods.push({
 id:cols[idi]||String(lc),
 title:cols[ni]||'',
-price:`${feed.cur}${rawPrice.toFixed(2)}`,
+price:`${currency}${rawPrice.toFixed(2)}`,
 image:actualImg,
 url:actualUrl,
 brand:cols[bi]||'',
-shipping:!del||del==='0'?'Free delivery':`${feed.cur}${parseFloat(del).toFixed(2)} delivery`,
+shipping:!del||del==='0'?'Free delivery':`${currency}${parseFloat(del).toFixed(2)} delivery`,
 advertiserId:actualId,
-currency:feed.cur,
+currency,
 })
 if(prods.length>=24)break loop
 }}
