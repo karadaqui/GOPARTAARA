@@ -19,8 +19,8 @@ try{
 const{width,profile,rim,advertiserId}=await req.json()
 const isDebug = String(advertiserId).startsWith('debug_')
 const actualId = isDebug ? String(advertiserId).replace('debug_', '') : String(advertiserId)
-const skipWidthFilter = ['10499','10747','12716'].includes(actualId)
-const strictSizeFilter = ['4118','12715'].includes(actualId)
+const skipWidthFilter = ['10499','10747','12716','12715'].includes(actualId)
+const strictSizeFilter = ['4118'].includes(actualId)
 const w = String(width||'')
 const p = String(profile||'')
 const rimNum = String(rim||'').replace(/^R/i,'')
@@ -114,11 +114,10 @@ continue
 }
 if(ni<0||pi<0)continue
 const nameL = (cols[ni]||'').toLowerCase()
+const w = String(width)
+const p = String(profile)
 if (strictSizeFilter) {
-  const sizeMatch = nameL.includes(w+'/'+p) || 
-                    nameL.includes(w+' '+p) ||
-                    (nameL.includes(w) && nameL.includes('/'+p))
-  if (!sizeMatch) continue
+  if (!nameL.includes(w+'/'+p) && !nameL.includes(w+'%2F'+p)) continue
 } else if (!skipWidthFilter) {
   if (!nameL.includes(w.toLowerCase())) continue
 }
@@ -131,11 +130,9 @@ const actualImg=isImgUrl(imgVal)?imgVal:(isImgUrl(urlVal)?urlVal:'')
 const actualUrl=(!isImgUrl(urlVal)&&urlVal.startsWith('http'))?urlVal:((!isImgUrl(imgVal)&&imgVal.startsWith('http'))?imgVal:'')
 if(!actualUrl)continue
 const del=cols[di]||''
-const rawTitle=cols[ni]||''
-const finalTitle=rawTitle.includes(w) ? rawTitle : `${sizeStr} — ${rawTitle}`
 prods.push({
 id:cols[idi]||String(lc),
-title:finalTitle,
+title:cols[ni]||'',
 price:`${currency}${rawPrice.toFixed(2)}`,
 image:actualImg,
 url:actualUrl,
