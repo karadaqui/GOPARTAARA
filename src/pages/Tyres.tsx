@@ -86,6 +86,8 @@ const Tyres = () => {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [countryFilter, setCountryFilter] = useState<string>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 24;
 
   const searchTyres = async () => {
     console.log('searchTyres called', { selectedWidth, selectedProfile, selectedRim });
