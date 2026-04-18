@@ -8,17 +8,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 
-const getSupplierEmoji = (id: string): string => {
-  const map: Record<string, string> = {
-    '4118': '\uD83C\uDDEC\uD83C\uDDE7',
-    '12715': '\uD83C\uDF0D',
-    '10499': '\uD83C\uDDEA\uD83C\uDDF8',
-    '12716': '\uD83C\uDDEE\uD83C\uDDF9',
-    '10747': '\uD83C\uDDEA\uD83C\uDDEA',
-    'all': '\uD83C\uDF0D',
-  }
-  return map[id] || '\uD83C\uDF0D'
-}
+const flag = (id: string): string =>
+  ({ '4118': '🇬🇧', '12715': '🌍', '10499': '🇪🇸', '12716': '🇮🇹', '10747': '🇪🇪' } as Record<string, string>)[id] ?? '🌍';
 
 const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305'];
 const PROFILES = ['30','35','40','45','50','55','60','65','70','75'];
@@ -105,29 +96,24 @@ const Tyres = () => {
     setBrandFilter('all');
     setCurrentPage(1);
 
-    const supplierIds = ['4118', '12715', '10499', '12716', '10747'];
+    const SUPPLIER_IDS = ['4118', '10499', '10747', '12716', '12715'];
 
     const results = await Promise.allSettled(
-      supplierIds.map(async (id) => {
-        const supplier = SUPPLIERS.find((s) => s.id === id);
-        try {
-          const { data } = await supabase.functions.invoke('awin-tyre-feed', {
-            body: {
-              width: selectedWidth,
-              profile: selectedProfile,
-              rim: selectedRim,
+      SUPPLIER_IDS.map((id) =>
+        supabase.functions
+          .invoke('awin-tyre-feed', {
+            body: { width: selectedWidth, profile: selectedProfile, rim: selectedRim, advertiserId: id },
+          })
+          .then(({ data }) => {
+            const supplier = SUPPLIERS.find((s) => s.id === id);
+            return ((data?.products as TyreProduct[]) || []).map((p) => ({
+              ...p,
+              supplierMeta: supplier as SupplierMeta | undefined,
               advertiserId: id,
-            },
-          });
-          return ((data?.products as TyreProduct[]) || []).map((p) => ({
-            ...p,
-            supplierMeta: supplier as SupplierMeta | undefined,
-            advertiserId: id,
-          }));
-        } catch {
-          return [];
-        }
-      })
+            }));
+          })
+          .catch(() => [] as TyreProduct[])
+      )
     );
 
     const all = results
@@ -311,7 +297,7 @@ const Tyres = () => {
                   }`}
                   title={s.shipsTo}
                 >
-                  <span>{getSupplierEmoji(s.id)}</span>
+                  <span>{flag(s.id)}</span>
                   <span>{s.siteName}</span>
                 </button>
               ))}
@@ -361,7 +347,7 @@ const Tyres = () => {
                           <span className="text-5xl opacity-20">○</span>
                         )}
                         <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
-                          <span className="text-xs">{getSupplierEmoji(product.supplierMeta?.id || product.advertiserId || 'all')}</span>
+                          <span className="text-xs">{flag(product.supplierMeta?.id || product.advertiserId || 'all')}</span>
                         </div>
                       </div>
                     </a>
@@ -383,7 +369,7 @@ const Tyres = () => {
 
                       {/* Supplier info */}
                       <div className="flex items-center gap-1 mt-1">
-                        <span className="text-sm">{getSupplierEmoji(product.supplierMeta?.id || product.advertiserId || 'all')}</span>
+                        <span className="text-sm">{flag(product.supplierMeta?.id || product.advertiserId || 'all')}</span>
                         <span className="text-[10px] text-zinc-500 truncate">
                           {product.supplierMeta?.siteName || product.supplierName}
                         </span>
