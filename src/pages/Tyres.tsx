@@ -61,7 +61,6 @@ const SUPPLIERS = [
 
 type SupplierMeta = {
   id: string;
-  flagEmoji: string;
   siteName: string;
   shipsTo: string;
 };
@@ -312,7 +311,7 @@ const Tyres = () => {
                   }`}
                   title={s.shipsTo}
                 >
-                  <span>{s.flagEmoji}</span>
+                  <span>{getSupplierEmoji(s.id)}</span>
                   <span>{s.siteName}</span>
                 </button>
               ))}
@@ -362,7 +361,7 @@ const Tyres = () => {
                           <span className="text-5xl opacity-20">○</span>
                         )}
                         <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
-                          <span className="text-xs">{product.supplierMeta?.flagEmoji || '🇬🇧'}</span>
+                          <span className="text-xs">{getSupplierEmoji(product.supplierMeta?.id || product.advertiserId || 'all')}</span>
                         </div>
                       </div>
                     </a>
@@ -384,7 +383,7 @@ const Tyres = () => {
 
                       {/* Supplier info */}
                       <div className="flex items-center gap-1 mt-1">
-                        <span className="text-sm">{product.supplierMeta?.flagEmoji || '🇬🇧'}</span>
+                        <span className="text-sm">{getSupplierEmoji(product.supplierMeta?.id || product.advertiserId || 'all')}</span>
                         <span className="text-[10px] text-zinc-500 truncate">
                           {product.supplierMeta?.siteName || product.supplierName}
                         </span>
