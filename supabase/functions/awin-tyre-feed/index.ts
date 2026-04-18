@@ -110,14 +110,18 @@ ui=hdrs.findIndex(h=>h==='awdeeplink'||h==='aw_deep_link'||h==='url'||h==='link'
 bi=hdrs.findIndex(h=>h==='brandname'||h==='brand_name'||h==='brand'||h==='manufacturer'||norm(h).includes('brandname'))
 di=hdrs.findIndex(h=>h==='deliverycost'||h==='delivery_cost'||norm(h).includes('delivery')||norm(h).includes('shipping'))
 idi=hdrs.findIndex(h=>h==='awproductid'||h==='aw_product_id'||h==='id'||h==='sku'||norm(h).includes('productid'))
-console.log('ADV:',actualId,'ni:',ni,'pi:',pi,'ii:',ii,'ui:',ui,'bi:',bi,'di:',di,'idi:',idi,'hdrs:',hdrs.slice(0,15))
+descIdx=hdrs.findIndex(h=>h.includes('desc'))
+console.log('ADV:',actualId,'ni:',ni,'pi:',pi,'ii:',ii,'ui:',ui,'bi:',bi,'di:',di,'idi:',idi,'descIdx:',descIdx,'hdrs:',hdrs.slice(0,15))
 continue
 }
 if(ni<0||pi<0)continue
 const w = String(width)
 const p = String(profile)
 const nameL = (cols[ni]||'').toLowerCase()
-if (!skipWidthFilter && !nameL.includes(w+'/'+p)) continue
+if (useDescFilter) {
+  const nameAndDesc = (nameL + ' ' + (cols[descIdx]||'').toLowerCase())
+  if (!nameAndDesc.includes(w+'/'+p)) continue
+} else if (!nameL.includes(w+'/'+p)) continue
 if (applyRimFilter) {
   const rimNum = String(rim).replace(/^R/i,'')
   if (!nameL.includes('r'+rimNum+' ') && 
