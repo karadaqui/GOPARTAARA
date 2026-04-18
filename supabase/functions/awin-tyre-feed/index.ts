@@ -82,7 +82,8 @@ serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
 
   try {
-    const { width, offset = 0, advertiserId = '4118', tyreType = 'all' } = await req.json()
+    const { width, profile, rim, offset = 0, advertiserId = '4118', tyreType = 'all' } = await req.json()
+    const cleanRim = String(rim || '').replace(/^R/i, '').trim()
 
     const allFeeds = await getFeedList()
     const dynamicFeed = allFeeds?.find(f => f.advertiserId === String(advertiserId))
