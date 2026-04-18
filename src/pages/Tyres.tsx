@@ -183,7 +183,8 @@ const Tyres = () => {
               Find Your Perfect Tyres
             </h1>
             <p className="text-zinc-500 text-sm max-w-md mx-auto">
-              Compare prices from UK & European specialists. Free fitting at 34,000+ centres.
+              Compare tyre prices from UK & European specialists.
+              Rim not included — tyres only.
             </p>
           </div>
         </div>
@@ -262,50 +263,25 @@ const Tyres = () => {
                 `Search ${selectedWidth}/${selectedProfile} R${selectedRim} →`
               )}
             </button>
+            <p className="text-xs text-zinc-600 text-center mt-2">
+              All prices are for tyres only · Rim/wheel not included ·
+              "Rim protection" is a tyre sidewall safety feature
+            </p>
           </div>
         </div>
-
-        {/* Filter pills removed — all feed products are tyres only */}
-
 
         {/* Results grid */}
         {tyreProducts.length > 0 && (
           <div className="max-w-6xl mx-auto px-4 mb-16">
-            {/* Country filter pills */}
-            {availableCountries.length > 1 && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                <button
-                  onClick={() => setCountryFilter(null)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-                    countryFilter === null
-                      ? 'bg-red-600 text-white'
-                      : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 border border-zinc-800'
-                  }`}
-                >
-                  All ({tyreProducts.length})
-                </button>
-                {availableCountries.map((c) => (
-                  <button
-                    key={c.country}
-                    onClick={() => setCountryFilter(c.country)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors flex items-center gap-1.5 ${
-                      countryFilter === c.country
-                        ? 'bg-red-600 text-white'
-                        : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800 border border-zinc-800'
-                    }`}
-                  >
-                    <span>{c.flag}</span>
-                    <span>{c.country} ({c.count})</span>
-                  </button>
-                ))}
-              </div>
-            )}
+            <p className="text-zinc-600 text-xs mb-4">
+              Showing {filteredProducts.length} tyres from {availableCountries.length} {availableCountries.length === 1 ? 'supplier' : 'suppliers'}
+            </p>
 
             <p className="text-zinc-600 text-xs mb-4">
               Showing {typeFilteredProducts.length} tyres from {availableCountries.length} {availableCountries.length === 1 ? 'supplier' : 'suppliers'}
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {typeFilteredProducts.map((product, i) => (
+              {filteredProducts.map((product, i) => (
                 <a
                   key={`${product.supplierMeta?.advertiserId || ''}-${product.id || i}`}
                   href={product.url}
