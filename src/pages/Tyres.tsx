@@ -265,30 +265,8 @@ const Tyres = () => {
           </div>
         </div>
 
-        {/* Tyre type filter */}
-        {tyreProducts.length > 0 && (
-          <div className="max-w-6xl mx-auto px-4 mb-4">
-            <div className="flex flex-wrap gap-2 justify-center mb-6">
-              {[
-                { id: 'all', label: '🔍 All Products' },
-                { id: 'tyre', label: '⭕ Tyres Only' },
-              ].map((f) => (
-                <button
-                  key={f.id}
-                  onClick={() => { setTyreType(f.id as any); }}
-                  disabled={loading}
-                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all border ${
-                    tyreType === f.id
-                      ? 'bg-red-600 border-red-500 text-white'
-                      : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Filter pills removed — all feed products are tyres only */}
+
 
         {/* Results grid */}
         {tyreProducts.length > 0 && (
@@ -357,18 +335,10 @@ const Tyres = () => {
                     <p className="text-xs font-semibold text-white line-clamp-2 mb-1 leading-snug group-hover:text-red-400 transition-colors">
                       {product.title}
                     </p>
-                    {/rim protection|\bMFS\b/i.test(product.title) && (
-                      <span
-                        className="inline-flex items-center gap-1 text-[9px] text-amber-400/90 mb-1 cursor-help"
-                        title="Rim protection (MFS) is a tyre sidewall feature — rim/wheel is NOT included in this price"
-                      >
-                        ℹ️ Tyre only — no rim included
-                      </span>
-                    )}
                     {product.brand && (
                       <p className="text-[10px] text-zinc-600 mb-2">{product.brand}</p>
                     )}
-                    <div className="flex items-end justify-between mb-2">
+                    <div className="flex items-end justify-between mb-1">
                       {(() => {
                         const currency = getCurrency(product.advertiserId || product.supplierMeta?.advertiserId || '');
                         const displayPrice = product.price.replace(/[£€]/, currency.symbol);
@@ -380,6 +350,7 @@ const Tyres = () => {
                         );
                       })()}
                     </div>
+                    <p className="text-[10px] text-zinc-700 mb-2">Tyre only · Rim not included</p>
                     <p className="text-[10px] text-zinc-400 mb-1">{product.supplierMeta?.ships || product.shipping}</p>
                     <p className="text-[10px] text-zinc-500 mb-3">{product.supplierMeta?.fitting || product.supplierName}</p>
                     <div className="mt-2 w-full text-center py-2 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-xl transition-colors">
