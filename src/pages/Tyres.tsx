@@ -69,12 +69,14 @@ const TYRE_SUPPLIERS: TyreSupplier[] = [
 type TyreProduct = {
   id: string;
   title: string;
+  subtitle?: string;
   price: string;
   image: string;
   url: string;
   brand: string;
   shipping: string;
   supplierName: string;
+  isSearchLink?: boolean;
   supplierMeta?: TyreSupplier;
 };
 
