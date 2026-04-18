@@ -6,7 +6,7 @@ const FEEDLIST_URL = 'https://ui.awin.com/productdata-darwin-download/publisher/
 const HARDCODED: Record<string,{cur:string,url:string,skipFilter?:boolean}> = {
   '4118':  { cur:'£', url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12641/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost' },
   '12715': { cur:'£', url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93988/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription' },
-  '12716': { cur: '€', skipFilter: true, url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93986/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost' },
+  '12716': { cur: '€', skipFilter: true, url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93986/format/csv/language/it/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost' },
 
 }
 const CURRENCIES: Record<string,string> = {
@@ -70,17 +70,6 @@ if (!feedUrl) {
 const res=await fetch(feedUrl)
 if(!res.body)throw new Error('nobody')
 
-// DEBUG: For 12716 only, check if response is HTML instead of CSV
-if (String(advertiserId) === '12716') {
-  const firstChunk = await res.clone().text().then(t => t.substring(0, 50))
-  console.log('12716 response start:', firstChunk)
-  if (firstChunk.trim().startsWith('<')) {
-    return new Response(
-      JSON.stringify({ products: [], error: 'Feed returned HTML: ' + firstChunk }),
-      { headers: { ...cors, 'Content-Type': 'application/json' } }
-    )
-  }
-}
 
 const reader = res.body.getReader()
 const dec=new TextDecoder()
