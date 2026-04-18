@@ -23,44 +23,6 @@ const COUNTRY_OPTIONS = [
   { id: '10747', label: 'Baltics', flag: '🇪🇪', ships: 'Estonia, Latvia, Lithuania' },
 ];
 
-const TYRE_SUPPLIERS: Record<string, { name: string; flag: string; country: string; ships: string; fitting: string }> = {
-  '4118':  {
-    name: 'mytyres.co.uk',
-    flag: '🇬🇧',
-    country: 'United Kingdom',
-    ships: 'UK + 35 countries',
-    fitting: '34,000+ fitting centres',
-  },
-  '12715': {
-    name: 'Tyres UK (Tyres.net)',
-    flag: '🌍',
-    country: 'Global',
-    ships: 'Ships to 64 countries',
-    fitting: 'International marketplace',
-  },
-  '10499': {
-    name: 'neumaticos-online.es',
-    flag: '🇪🇸',
-    country: 'Spain',
-    ships: 'Spain only',
-    fitting: '2,600+ fitting centres in Spain',
-  },
-  '12716': {
-    name: 'Pneumatici IT',
-    flag: '🇮🇹',
-    country: 'Italy',
-    ships: 'Italy only',
-    fitting: 'Italy fitting centres',
-  },
-  '10747': {
-    name: 'ReifenDirekt EE',
-    flag: '🇪🇪',
-    country: 'Estonia & Baltics',
-    ships: 'Estonia, Latvia, Lithuania',
-    fitting: 'Baltic fitting centres',
-  },
-};
-
 type SupplierMeta = {
   name: string;
   flag: string;
