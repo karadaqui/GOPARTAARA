@@ -86,9 +86,14 @@ const Deals = () => {
         <section className="px-4 pb-16 max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center">
-                <span className="text-black font-black text-xs">e</span>
-              </div>
+              <img
+                src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4b0.png"
+                width={32}
+                height={32}
+                loading="lazy"
+                alt="deals"
+                className="rounded-xl"
+              />
               <div>
                 <h2 className="text-foreground font-bold text-lg">eBay UK</h2>
                 <p className="text-muted-foreground text-xs">Affiliate deals · Updated daily</p>
@@ -142,9 +147,14 @@ const Deals = () => {
         <section className="px-4 pb-24 max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-orange-500/20 border border-orange-500/30 rounded-lg flex items-center justify-center">
-                <span className="text-orange-400 font-black text-sm">a</span>
-              </div>
+              <img
+                src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4b0.png"
+                width={32}
+                height={32}
+                loading="lazy"
+                alt="deals"
+                className="rounded-xl"
+              />
               <div>
                 <h2 className="text-foreground font-bold text-lg">Amazon UK</h2>
                 <p className="text-muted-foreground text-xs">Affiliate deals · tag: gopartara-21</p>
