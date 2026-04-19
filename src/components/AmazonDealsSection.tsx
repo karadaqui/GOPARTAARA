@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { isUKUser } from "@/data/ebayDeals";
 
 interface AmazonDeal {
@@ -51,75 +52,65 @@ const AMAZON_UK_DEALS: AmazonDeal[] = [
 
 const AMAZON_ALL_DEALS_URL = withAmazonTag("https://www.amazon.co.uk/b?_encoding=UTF8&node=248877031");
 
+const PREVIEW_COUNT = 2;
+
+const DealCard = ({ deal }: { deal: AmazonDeal }) => (
+  <a
+    href={deal.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label={`${deal.label} Amazon UK deal`}
+    className="group flex items-center gap-3 px-4 py-3 bg-card/60 border border-border/60 rounded-xl hover:border-border transition-all min-w-0"
+  >
+    <span className="text-xl flex-shrink-0">{deal.icon}</span>
+    <div className="flex-1 min-w-0">
+      <p className="text-foreground text-sm font-semibold truncate">{deal.label}</p>
+      <p className="text-muted-foreground text-xs truncate">{deal.discount}</p>
+    </div>
+    <span className="text-muted-foreground/60 group-hover:text-muted-foreground text-xs flex-shrink-0">→</span>
+  </a>
+);
+
 const AmazonDealsSection = () => {
+  const [expanded, setExpanded] = useState(false);
+
   if (!isUKUser()) return null;
 
-  return (
-    <section className="px-4 pb-10">
-      <div className="mx-auto max-w-7xl rounded-[28px] border border-border/70 bg-card/30 p-4 backdrop-blur-xl md:p-6">
-        <div className="mb-5 flex flex-col gap-4 md:mb-6 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-secondary/70 px-3 py-1 text-[11px] font-semibold text-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              Amazon UK affiliate deals
-            </div>
-            <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-              Amazon Automotive Deals
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Accessories, fluids, tools and electronics.
-            </p>
-          </div>
+  const visibleDeals = expanded ? AMAZON_UK_DEALS : AMAZON_UK_DEALS.slice(0, PREVIEW_COUNT);
+  const hiddenCount = AMAZON_UK_DEALS.length - PREVIEW_COUNT;
 
+  return (
+    <section className="px-4 py-6">
+      <div className="mx-auto max-w-4xl">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-foreground/80">Amazon UK</span>
+            <span className="text-muted-foreground text-xs">Affiliate deals</span>
+          </div>
           <a
             href={AMAZON_ALL_DEALS_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex w-full items-center justify-center rounded-xl border border-border/70 bg-secondary/70 px-4 py-3 text-sm font-semibold text-foreground transition-colors hover:border-primary/35 hover:text-primary lg:w-auto"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
-            All Amazon Automotive Deals →
+            View all →
           </a>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 xl:grid-cols-4 xl:gap-4">
-          {AMAZON_UK_DEALS.map((deal) => (
-            <a
-              key={deal.id}
-              href={deal.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${deal.label} Amazon UK deal`}
-              className="group flex h-full min-h-[176px] min-w-0 flex-col rounded-2xl border border-border/70 bg-card/85 p-4 transition-all duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg"
-            >
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-2xl border border-border/70 bg-background/80 text-lg">
-                {deal.icon}
-              </div>
-
-              <div className="flex flex-1 flex-col">
-                <p className="mb-1 text-sm font-bold leading-snug text-foreground transition-colors group-hover:text-primary line-clamp-2">
-                  {deal.label}
-                </p>
-                <p className="mb-4 text-[11px] leading-5 text-muted-foreground line-clamp-2">
-                  {deal.description}
-                </p>
-
-                <div className="mt-auto flex items-end justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-[11px] font-semibold text-primary">{deal.discount}</p>
-                    <p className="text-[10px] text-muted-foreground">Amazon UK affiliate</p>
-                  </div>
-                  <span className="shrink-0 text-xs font-semibold text-primary transition-transform group-hover:translate-x-0.5">
-                    Shop →
-                  </span>
-                </div>
-              </div>
-            </a>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {visibleDeals.map((deal) => (
+            <DealCard key={deal.id} deal={deal} />
           ))}
         </div>
 
-        <p className="mt-4 text-center text-[11px] text-muted-foreground">
-          Amazon UK affiliate links — we earn a small commission at no extra cost to you. tag: {AMAZON_TAG}
-        </p>
+        {hiddenCount > 0 && (
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            className="mt-3 w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-2"
+          >
+            {expanded ? "Show less ↑" : `Show all ${AMAZON_UK_DEALS.length} deals →`}
+          </button>
+        )}
       </div>
     </section>
   );
