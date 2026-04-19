@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { isUKUser } from "@/data/ebayDeals";
 
 interface AmazonDeal {
@@ -52,65 +51,44 @@ const AMAZON_UK_DEALS: AmazonDeal[] = [
 
 const AMAZON_ALL_DEALS_URL = withAmazonTag("https://www.amazon.co.uk/b?_encoding=UTF8&node=248877031");
 
-const PREVIEW_COUNT = 2;
-
-const DealCard = ({ deal }: { deal: AmazonDeal }) => (
-  <a
-    href={deal.url}
-    target="_blank"
-    rel="noopener noreferrer"
-    aria-label={`${deal.label} Amazon UK deal`}
-    className="group flex items-center gap-3 px-4 py-3 bg-card/60 border border-border/60 rounded-xl hover:border-border transition-all min-w-0"
-  >
-    <span className="text-xl flex-shrink-0">{deal.icon}</span>
-    <div className="flex-1 min-w-0">
-      <p className="text-foreground text-sm font-semibold truncate">{deal.label}</p>
-      <p className="text-muted-foreground text-xs truncate">{deal.discount}</p>
-    </div>
-    <span className="text-muted-foreground/60 group-hover:text-muted-foreground text-xs flex-shrink-0">→</span>
-  </a>
-);
-
 const AmazonDealsSection = () => {
-  const [expanded, setExpanded] = useState(false);
-
   if (!isUKUser()) return null;
 
-  const visibleDeals = expanded ? AMAZON_UK_DEALS : AMAZON_UK_DEALS.slice(0, PREVIEW_COUNT);
-  const hiddenCount = AMAZON_UK_DEALS.length - PREVIEW_COUNT;
-
   return (
-    <section className="px-4 py-6">
-      <div className="mx-auto max-w-4xl">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-bold text-foreground/80">Amazon UK</span>
-            <span className="text-muted-foreground text-xs">Affiliate deals</span>
-          </div>
+    <section className="py-6 px-4 max-w-5xl mx-auto">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">Amazon UK</span>
+          <span className="text-muted-foreground/60 text-xs">·</span>
+          <span className="text-muted-foreground/60 text-xs">Affiliate deals</span>
+        </div>
+        <a
+          href={AMAZON_ALL_DEALS_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          View all →
+        </a>
+      </div>
+
+      <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+        {AMAZON_UK_DEALS.map((deal) => (
           <a
-            href={AMAZON_ALL_DEALS_URL}
+            key={deal.id}
+            href={deal.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            aria-label={`${deal.label} Amazon UK deal`}
+            className="flex-shrink-0 flex items-center gap-2.5 px-3 py-2.5 bg-card/60 border border-border/50 rounded-xl hover:border-border hover:bg-card transition-all group min-w-[160px]"
           >
-            View all →
+            <span className="text-base">{deal.icon}</span>
+            <div className="min-w-0">
+              <p className="text-foreground text-xs font-semibold truncate">{deal.label}</p>
+              <p className="text-muted-foreground text-[10px] truncate">{deal.discount}</p>
+            </div>
           </a>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {visibleDeals.map((deal) => (
-            <DealCard key={deal.id} deal={deal} />
-          ))}
-        </div>
-
-        {hiddenCount > 0 && (
-          <button
-            onClick={() => setExpanded((v) => !v)}
-            className="mt-3 w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-2"
-          >
-            {expanded ? "Show less ↑" : `Show all ${AMAZON_UK_DEALS.length} deals →`}
-          </button>
-        )}
+        ))}
       </div>
     </section>
   );

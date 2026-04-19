@@ -8,125 +8,51 @@ const buildLink = (path: string) =>
 
 const HOME_LINK = buildLink("/");
 
-const CATEGORIES = [
-  {
-    icon: "🔌",
-    label: "Spark Plugs",
-    desc: "NGK, Bosch, Champion & more",
-    badge: "5,000+ products",
-    url: buildLink("/spark-plugs"),
-  },
-  {
-    icon: "🔋",
-    label: "Batteries",
-    desc: "Classic & vintage batteries",
-    badge: "Ships worldwide · UK, EU, USA, Australia & more",
-    url: buildLink("/battery"),
-  },
-  {
-    icon: "⚡",
-    label: "Ignition & Wiring",
-    desc: "Coils, distributors & leads",
-    badge: "Est. 1980",
-    url: buildLink("/wiring"),
-  },
-  {
-    icon: "🛢️",
-    label: "Oil & Fuel",
-    desc: "Classic engine oils & fuel",
-    badge: "30 day returns",
-    url: buildLink("/oil"),
-  },
-  {
-    icon: "🔧",
-    label: "All Parts",
-    desc: "Browse 25,000+ classic parts",
-    badge: "25,000 products",
-    url: buildLink("/"),
-  },
-];
-
-const BRANDS = ["NGK", "Bosch", "Denso", "Champion", "Beru", "Sealey", "Lucas", "Draper"];
+const QUICK_CATS = ["Spark Plugs", "Batteries", "Ignition", "Oil & Fuel"];
 
 const GreenSparkSection = () => {
-
   return (
-    <section className="px-4 py-6 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="flex items-end justify-between mb-5 gap-4 flex-wrap">
-        <div>
-          <p className="text-[11px] font-semibold tracking-widest uppercase text-amber-500/60 mb-1">
-            CLASSIC & VINTAGE · WORLDWIDE SHIPPING
-          </p>
-          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-            🔩 Classic & Vintage Car Parts
-          </h2>
-          <p className="text-muted-foreground text-xs mt-1">
-            Worldwide shipping · Classic & vintage parts since 1980
+    <section className="py-4 px-4 max-w-5xl mx-auto">
+      <a
+        href={HOME_LINK}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Classic & Vintage Car Parts — Green Spark Plug Co."
+        className="flex items-center gap-4 p-4 bg-gradient-to-r from-amber-950/30 to-card/60 border border-amber-900/30 hover:border-amber-800/50 rounded-2xl transition-all group"
+      >
+        <div className="w-10 h-10 rounded-xl bg-amber-950/50 border border-amber-900/30 flex items-center justify-center flex-shrink-0 text-xl">
+          🔩
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-0.5">
+            <p className="text-foreground font-bold text-sm">Classic & Vintage Car Parts</p>
+            <span className="text-[9px] bg-amber-500/20 border border-amber-500/30 text-amber-400 rounded-full px-1.5 py-0.5 font-bold">
+              EST. 1980
+            </span>
+          </div>
+          <p className="text-muted-foreground text-xs truncate">
+            NGK · Bosch · Denso · Champion — Ships worldwide · 25,000+ parts
           </p>
         </div>
 
-        <a
-          href={HOME_LINK}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-600/20 to-amber-500/10 border border-amber-500/30 hover:border-amber-500/60 rounded-xl text-sm font-semibold text-amber-400 hover:text-amber-300 transition-all duration-200"
-        >
-          Visit Store →
-        </a>
-      </div>
+        <div className="hidden sm:flex gap-1.5 flex-shrink-0">
+          {QUICK_CATS.map((cat) => (
+            <span
+              key={cat}
+              className="text-[10px] bg-secondary/60 border border-border text-muted-foreground rounded-lg px-2 py-1"
+            >
+              {cat}
+            </span>
+          ))}
+        </div>
 
-      {/* Category cards */}
-      <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide snap-x -mx-4 px-4">
-        {CATEGORIES.map((cat) => (
-          <a
-            key={cat.label}
-            href={cat.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${cat.label} — Green Spark Plug Co. affiliate`}
-            className="flex-shrink-0 w-44 snap-start rounded-2xl p-4 border border-amber-900/30 bg-amber-950/10 hover:border-amber-700/40 hover:bg-amber-950/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/30 transition-all duration-200 group cursor-pointer"
-          >
-            <div className="text-2xl mb-3">{cat.icon}</div>
-
-            <p className="font-bold text-foreground text-sm leading-snug mb-1 group-hover:text-amber-400 transition-colors">
-              {cat.label}
-            </p>
-
-            <p className="text-[10px] text-muted-foreground mb-2 line-clamp-1">
-              {cat.desc}
-            </p>
-
-            <div className="inline-flex items-center gap-1 mb-2">
-              <span className="text-[10px] text-amber-500/70 bg-amber-950/40 border border-amber-800/30 rounded-full px-2 py-0.5">
-                {cat.badge}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-1 text-muted-foreground group-hover:text-foreground transition-colors">
-              <span className="text-[10px]">Shop now</span>
-              <span className="text-[10px] group-hover:translate-x-0.5 transition-transform">→</span>
-            </div>
-          </a>
-        ))}
-      </div>
-
-      {/* Brands */}
-      <div className="flex items-center gap-2 mt-4 flex-wrap">
-        <span className="text-[10px] text-muted-foreground">Brands:</span>
-        {BRANDS.map((brand) => (
-          <span
-            key={brand}
-            className="text-[10px] text-muted-foreground bg-secondary/60 border border-border/60 rounded-full px-2 py-0.5"
-          >
-            {brand}
-          </span>
-        ))}
-      </div>
-
-      {/* Disclaimer */}
-      <p className="text-[10px] text-muted-foreground mt-3">
-        Powered by The Green Spark Plug Co. · Ships to UK, EU, USA, Australia & beyond · Affiliate link — we may earn a small commission at no extra cost to you.
+        <span className="text-muted-foreground group-hover:text-foreground flex-shrink-0 transition-all group-hover:translate-x-0.5">
+          →
+        </span>
+      </a>
+      <p className="text-muted-foreground/60 text-[10px] text-center mt-2">
+        Powered by The Green Spark Plug Co. · Affiliate link
       </p>
     </section>
   );
