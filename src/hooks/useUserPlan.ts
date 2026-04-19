@@ -25,7 +25,7 @@ export interface PlanFeatures {
 
 const PLAN_FEATURES: Record<string, PlanFeatures> = {
   free: {
-    searchesPerMonth: 5,
+    searchesPerMonth: 10,
     marketplaceListings: 5,
     savedParts: 5,
     garageVehicles: 1,

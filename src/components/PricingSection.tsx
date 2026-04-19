@@ -37,7 +37,7 @@ const individualPlans = [
     annualPrice: "£0",
     annualBilled: "",
     period: "/mo",
-    features: ["5 searches per month", "5 active marketplace listings", "Save up to 5 parts & alerts", "1 garage vehicle", "Referral bonuses"],
+    features: ["10 searches per month", "5 active marketplace listings", "Save up to 5 parts & alerts", "1 garage vehicle", "Referral bonuses"],
     cta: "Start Free",
     popular: false,
     priceId: null as string | null,
@@ -98,7 +98,7 @@ const faqItems = [
     a: "Yes, absolutely. Cancel anytime from your dashboard. No contracts, no cancellation fees. Your plan stays active until the end of the billing period.",
   },
   {
-    q: "What happens when I hit my 5 search limit on Free?",
+    q: "What happens when I hit my 10 search limit on Free?",
     a: "You'll see a prompt to upgrade. You can still browse the site, but new searches will be paused until the next month or you upgrade to Pro.",
   },
   {

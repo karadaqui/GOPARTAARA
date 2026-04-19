@@ -87,7 +87,7 @@ const Terms = () => (
               <PlanCard
                 name="Free"
                 price="£0"
-                features={["5 searches per month", "5 active marketplace listings", "Save up to 5 parts & alerts", "1 garage vehicle"]}
+                features={["10 searches per month", "5 active marketplace listings", "Save up to 5 parts & alerts", "1 garage vehicle"]}
               />
               <PlanCard
                 name="Pro"

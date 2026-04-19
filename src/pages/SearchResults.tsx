@@ -1412,7 +1412,7 @@ const SearchResults = () => {
               ) : (
                 <>
                   <h3 className="text-xl font-bold text-white mb-2">Search limit reached</h3>
-                  <p className="text-zinc-400 text-sm mb-6">Create a free account for 5 searches/month, or go Pro for unlimited.</p>
+                  <p className="text-zinc-400 text-sm mb-6">Create a free account for 10 searches/month, or go Pro for unlimited.</p>
                   <div className="flex flex-col gap-2">
                     <button onClick={() => { setSearchLimitModalOpen(false); navigate("/auth"); }} className="w-full h-12 rounded-xl bg-white text-black font-semibold text-sm transition-colors hover:bg-zinc-200">
                       Sign Up Free
