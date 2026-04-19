@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Heart, Bell, ChevronLeft, ChevronRight } from "lucide-react";
+import { Heart, Bell, ChevronLeft, ChevronRight, Scale } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
