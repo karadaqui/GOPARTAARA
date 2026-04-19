@@ -393,9 +393,7 @@ const Tyres = () => {
                   }`}
                   title={s.shipsTo}
                 >
-                  <span style={{ fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif', fontSize: '1.2em' }}>
-                    {getFlag(s.id)}
-                  </span>
+                  <FlagImg advertiserId={s.id} />
                   <span>{s.siteName}</span>
                 </button>
               ))}
@@ -480,9 +478,7 @@ const Tyres = () => {
                           <span className="text-5xl opacity-20">○</span>
                         )}
                         <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
-                          <span style={{ fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif', fontSize: '1.2em' }}>
-                            {getFlag(product.advertiserId || product.supplierMeta?.id || 'all')}
-                          </span>
+                          <FlagImg advertiserId={product.advertiserId || product.supplierMeta?.id || 'all'} />
                         </div>
                       </div>
                     </a>
@@ -504,9 +500,7 @@ const Tyres = () => {
 
                       {/* Supplier info */}
                       <div className="flex items-center gap-1 mt-1">
-                        <span style={{ fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif', fontSize: '1.2em' }}>
-                          {getFlag(product.advertiserId || product.supplierMeta?.id || 'all')}
-                        </span>
+                        <FlagImg advertiserId={product.advertiserId || product.supplierMeta?.id || 'all'} />
                         <span className="text-[10px] text-zinc-500 truncate">
                           {product.supplierMeta?.siteName || product.supplierName}
                         </span>
