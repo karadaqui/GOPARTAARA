@@ -738,119 +738,88 @@ const HeroSection = () => {
 
         {/* Suppliers Section */}
         <div className={`transition-all duration-700 ease-out delay-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <section className="py-12 px-4 max-w-5xl mx-auto">
+          <section className="py-12 px-4 max-w-3xl mx-auto">
             {/* Header */}
-            <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 mb-3">
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-[11px] uppercase tracking-[0.2em] text-green-400 font-bold">
-                  Live Suppliers
-                </span>
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <div className="inline-flex items-center gap-2 mb-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-green-400 font-bold">
+                    Live Suppliers
+                  </span>
+                </div>
+                <h2 className="text-xl font-bold text-white tracking-tight">
+                  Active Integrations
+                </h2>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-2">
-                Active Integrations
-              </h2>
-              <p className="text-zinc-500 text-sm">
-                Real product feeds · Updated daily · Affiliate links
-              </p>
+              <div className="inline-flex items-center gap-1.5 text-[10px] bg-green-500/10 border border-green-500/20 text-green-400 rounded-full px-2.5 py-1 font-bold">
+                <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse" />
+                7 Live
+              </div>
             </div>
 
-            {(() => {
-              const LIVE_SUPPLIERS = [
-                { name: 'eBay Global', twemoji: '1f30d', category: 'All Car Parts', coverage: 'Worldwide · 1M+ parts', url: null, isGlobal: true },
-                { name: 'mytyres.co.uk', twemoji: '1f1ec-1f1e7', category: 'Tyres', coverage: 'UK + 35 countries', url: 'https://www.awin1.com/cread.php?awinmid=4118&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.mytyres.co.uk', isGlobal: true },
-                { name: 'Tyres UK', twemoji: '1f30d', category: 'Tyres', coverage: '64 countries', url: 'https://www.awin1.com/cread.php?awinmid=12715&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.tyres.net', isGlobal: true },
-                { name: 'Green Spark Plug Co.', twemoji: '1f1ec-1f1e7', category: 'Classic Car Parts', coverage: 'Worldwide shipping', url: 'https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.greenspark.co.uk', isGlobal: true },
-                { name: 'neumaticos-online.es', twemoji: '1f1ea-1f1f8', category: 'Tyres', coverage: 'Spain only', url: 'https://www.awin1.com/cread.php?awinmid=10499&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.neumaticos-online.es', isGlobal: false },
-                { name: 'Pneumatici IT', twemoji: '1f1ee-1f1f9', category: 'Tyres', coverage: 'Italy only', url: 'https://www.awin1.com/cread.php?awinmid=12716&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.pneumatici.it', isGlobal: false },
-                { name: 'ReifenDirekt EE', twemoji: '1f1ea-1f1ea', category: 'Tyres', coverage: 'Estonia, Latvia, Lithuania', url: 'https://www.awin1.com/cread.php?awinmid=10747&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.reifendirekt.co.ee', isGlobal: false },
-              ];
-
-              const SupplierCard = ({ s }: { s: typeof LIVE_SUPPLIERS[number] }) => {
-                const cardClass = "flex items-center gap-4 p-4 bg-zinc-900/80 border border-zinc-800 rounded-2xl hover:border-zinc-600 hover:bg-zinc-900 transition-all group";
+            {/* Single compact list */}
+            <div className="divide-y divide-zinc-800/60 border border-zinc-800/60 rounded-2xl overflow-hidden bg-zinc-900/40">
+              {[
+                { id: '4118',  name: 'mytyres.co.uk',          cat: 'Tyres',           coverage: 'UK + 35 countries',              twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=4118&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.mytyres.co.uk' },
+                { id: '12715', name: 'Tyres UK',                cat: 'Tyres',           coverage: '64 countries',                   twemoji: '1f30d',       url: 'https://www.awin1.com/cread.php?awinmid=12715&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.tyres.net' },
+                { id: 'ebay',  name: 'eBay Global',             cat: 'All Car Parts',   coverage: 'Worldwide · 1M+ parts',          twemoji: '1f30d',       url: null as string | null },
+                { id: '16976', name: 'Green Spark Plug Co.',    cat: 'Classic Parts',   coverage: 'Worldwide shipping',             twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.greenspark.co.uk' },
+                { id: '10499', name: 'neumaticos-online.es',    cat: 'Tyres',           coverage: 'Spain only',                     twemoji: '1f1ea-1f1f8', url: 'https://www.awin1.com/cread.php?awinmid=10499&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.neumaticos-online.es' },
+                { id: '12716', name: 'Pneumatici IT',           cat: 'Tyres',           coverage: 'Italy only',                     twemoji: '1f1ee-1f1f9', url: 'https://www.awin1.com/cread.php?awinmid=12716&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.pneumatici.it' },
+                { id: '10747', name: 'ReifenDirekt EE',         cat: 'Tyres',           coverage: 'Estonia, Latvia, Lithuania',     twemoji: '1f1ea-1f1ea', url: 'https://www.awin1.com/cread.php?awinmid=10747&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.reifendirekt.co.ee' },
+              ].map(s => {
+                const rowClass = "flex items-center gap-3 px-4 py-3 hover:bg-zinc-900/80 transition-colors group";
                 const inner = (
                   <>
-                    <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center flex-shrink-0">
-                      <img
-                        src={`https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${s.twemoji}.png`}
-                        width={28}
-                        height={28}
-                        loading="lazy"
-                        alt=""
-                      />
+                    {/* Flag */}
+                    <img
+                      src={`https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${s.twemoji}.png`}
+                      width={20}
+                      height={20}
+                      loading="lazy"
+                      alt=""
+                      className="flex-shrink-0"
+                    />
+
+                    {/* Name + category */}
+                    <div className="flex-1 min-w-0 flex items-center gap-2">
+                      <span className="text-white text-sm font-semibold truncate">{s.name}</span>
+                      <span className="text-zinc-500 text-xs truncate hidden sm:inline">· {s.cat}</span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <p className="text-white font-bold text-sm truncate">{s.name}</p>
-                        <span className="flex-shrink-0 inline-flex items-center gap-1 text-[9px] bg-green-500/20 border border-green-500/30 text-green-400 rounded-full px-1.5 py-0.5 font-bold">
-                          <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse" />
-                          LIVE
-                        </span>
-                      </div>
-                      <p className="text-zinc-400 text-xs">{s.category}</p>
-                      <p className="text-zinc-600 text-[11px] mt-0.5">{s.coverage}</p>
-                    </div>
-                    {s.url && (
-                      <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center flex-shrink-0 group-hover:bg-red-600 transition-colors">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-500 group-hover:text-white">
-                          <path d="M7 17L17 7M17 7H8M17 7V16" />
-                        </svg>
-                      </div>
-                    )}
+
+                    {/* Coverage */}
+                    <span className="text-zinc-500 text-xs hidden md:inline truncate">
+                      {s.coverage}
+                    </span>
+
+                    {/* LIVE badge */}
+                    <span className="flex-shrink-0 inline-flex items-center gap-1 text-[9px] bg-green-500/15 border border-green-500/25 text-green-400 rounded-full px-1.5 py-0.5 font-bold">
+                      <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse" />
+                      LIVE
+                    </span>
                   </>
                 );
                 return s.url ? (
-                  <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer sponsored" className={cardClass}>
+                  <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer sponsored" className={rowClass}>
                     {inner}
                   </a>
                 ) : (
-                  <div key={s.name} className={cardClass}>{inner}</div>
+                  <div key={s.id} className={rowClass}>{inner}</div>
                 );
-              };
+              })}
+            </div>
 
-              const globalSuppliers = LIVE_SUPPLIERS.filter(s => s.isGlobal);
-              const localSuppliers = LIVE_SUPPLIERS.filter(s => !s.isGlobal);
-
-              return (
-                <>
-                  {/* Global suppliers */}
-                  <div className="mb-8">
-                    <p className="text-zinc-500 text-xs font-semibold uppercase tracking-wider mb-4 flex items-center gap-2">
-                      <span>🌍</span> Global &amp; Multi-Country
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {globalSuppliers.map(s => <SupplierCard key={s.name} s={s} />)}
-                    </div>
-                  </div>
-
-                  {/* Divider */}
-                  <div className="h-px bg-gradient-to-r from-transparent via-zinc-800 to-transparent my-8" />
-
-                  {/* Local suppliers */}
-                  <div className="mb-8">
-                    <p className="text-zinc-500 text-xs font-semibold uppercase tracking-wider mb-4 flex items-center gap-2">
-                      <span>🗺️</span> Regional Specialists
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {localSuppliers.map(s => <SupplierCard key={s.name} s={s} />)}
-                    </div>
-                  </div>
-                </>
-              );
-            })()}
-
-            {/* Coming soon */}
-            <div className="border border-zinc-800/50 rounded-2xl p-5 mt-8">
-              <p className="text-zinc-600 text-xs font-semibold uppercase tracking-wider mb-3">
-                Coming Soon
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {['Amazon', 'Euro Car Parts', 'GSF Car Parts', 'Autodoc', 'Halfords', 'Black Circles', 'Conrad Electronic'].map(name => (
-                  <span key={name} className="text-xs bg-zinc-900 border border-zinc-800 text-zinc-600 rounded-full px-3 py-1">
-                    {name}
-                  </span>
-                ))}
-              </div>
+            {/* Coming soon — single line */}
+            <div className="mt-6 flex flex-wrap items-center gap-2">
+              <span className="text-zinc-600 text-xs font-semibold uppercase tracking-wider">
+                Coming soon:
+              </span>
+              {['Amazon','Euro Car Parts','GSF Car Parts','Autodoc','Halfords','Black Circles'].map(name => (
+                <span key={name} className="text-xs bg-zinc-900/60 border border-zinc-800 text-zinc-500 rounded-full px-2.5 py-0.5">
+                  {name}
+                </span>
+              ))}
             </div>
           </section>
 
