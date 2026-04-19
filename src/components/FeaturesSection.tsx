@@ -36,15 +36,6 @@ const features = [
     link: "/marketplace",
   },
   {
-    icon: ShoppingBag,
-    title: "Autodoc — Coming Soon",
-    desc: "We're partnering with Autodoc, Europe's largest auto parts store. Price comparison coming very soon.",
-    link: "/search",
-    badge: "Coming Soon",
-    badgeColor: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-    dimmed: true,
-  },
-  {
     icon: BarChart3,
     title: "Price Comparison",
     desc: "Compare prices from trusted UK &amp; global suppliers side by side in a single search.",

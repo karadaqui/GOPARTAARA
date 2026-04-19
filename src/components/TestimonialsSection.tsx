@@ -40,8 +40,7 @@ const TestimonialCard = ({ t }: { t: typeof testimonials[0] }) => (
   </div>
 );
 
-const row1 = testimonials.slice(0, 6);
-const row2 = testimonials.slice(6);
+const uniqueTestimonials = testimonials.slice(0, 6);
 
 const TestimonialsSection = () => (
   <section className="py-24 md:py-32 relative overflow-hidden">
@@ -59,27 +58,13 @@ const TestimonialsSection = () => (
       </p>
     </ScrollReveal>
 
-    <div className="relative">
-      {/* Fade edges */}
-      <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
-
-      {/* Row 1 — scroll left */}
-      <div className="overflow-hidden mb-4">
-        <div className="animate-scroll-left flex hover:[animation-play-state:paused]" style={{ width: "max-content" }}>
-          {[...row1, ...row1].map((t, i) => (
-            <TestimonialCard key={`r1-${i}`} t={t} />
-          ))}
-        </div>
-      </div>
-
-      {/* Row 2 — scroll right */}
-      <div className="overflow-hidden">
-        <div className="animate-scroll-right flex hover:[animation-play-state:paused]" style={{ width: "max-content" }}>
-          {[...row2, ...row2].map((t, i) => (
-            <TestimonialCard key={`r2-${i}`} t={t} />
-          ))}
-        </div>
+    <div className="container px-4 mx-auto max-w-6xl">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {uniqueTestimonials.map((t, i) => (
+          <div key={`t-${i}`} className="w-full">
+            <TestimonialCard t={t} />
+          </div>
+        ))}
       </div>
     </div>
   </section>

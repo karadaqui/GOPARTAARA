@@ -3,10 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import FeaturesSection from "@/components/FeaturesSection";
-import CommunityBanner from "@/components/CommunityBanner";
 import HowItWorksSection from "@/components/HowItWorksSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
-import SuppliersSection from "@/components/SuppliersSection";
 
 import PricingSection from "@/components/PricingSection";
 
@@ -15,7 +13,6 @@ import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
 import WelcomeModal from "@/components/WelcomeModal";
 import LocationBanner from "@/components/LocationBanner";
-import RecentlyViewed from "@/components/RecentlyViewed";
 
 const Index = () => {
   const location = useLocation();
@@ -53,7 +50,6 @@ const Index = () => {
       />
       <Navbar />
       <HeroSection />
-      <CommunityBanner />
 
       <Link
         to="/deals"
@@ -73,10 +69,8 @@ const Index = () => {
         </span>
       </Link>
 
-      <RecentlyViewed />
       <HowItWorksSection />
       <TestimonialsSection />
-      <SuppliersSection />
       <FeaturesSection />
       <PricingSection />
       
