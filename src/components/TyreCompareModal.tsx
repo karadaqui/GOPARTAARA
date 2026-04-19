@@ -35,12 +35,12 @@ export interface TyreCompareItem {
   season: "summer" | "winter" | "allseason" | "unknown";
 }
 
-const SHIPS_TO: Record<string, string> = {
-  "4118": "🇬🇧 UK + 35 countries",
-  "12715": "🌍 64 countries",
-  "10499": "🇪🇸 Spain only",
-  "12716": "🇮🇹 Italy only",
-  "10747": "🇪🇪 Estonia, Latvia, Lithuania",
+const SHIPS_TO: Record<string, { flag: string; text: string }> = {
+  "4118": { flag: "4118", text: "UK + 35 countries" },
+  "12715": { flag: "12715", text: "64 countries" },
+  "10499": { flag: "10499", text: "Spain only" },
+  "12716": { flag: "12716", text: "Italy only" },
+  "10747": { flag: "10747", text: "Estonia, Latvia, Lithuania" },
 };
 
 const seasonLabel = (s: TyreCompareItem["season"]) => {
