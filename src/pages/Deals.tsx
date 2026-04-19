@@ -10,21 +10,6 @@ const getEbayIcon = (deal: EbayDeal): string => {
   return deal.brand?.slice(0, 1).toUpperCase() ?? "⭐";
 };
 
-// ───────── Green Spark (Classic & Vintage) ─────────
-const GS_AFFILIATE_BASE =
-  "https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara&p=";
-const buildGsLink = (path: string) =>
-  `${GS_AFFILIATE_BASE}${encodeURIComponent(`https://www.greenspark.co.uk${path}`)}`;
-const GS_HOME = buildGsLink("/");
-
-const GS_CATEGORIES = [
-  { icon: "🔌", title: "Spark Plugs", subtitle: "5,000+ products", url: buildGsLink("/spark-plugs") },
-  { icon: "🔋", title: "Batteries", subtitle: "Classic & vintage", url: buildGsLink("/battery") },
-  { icon: "⚡", title: "Ignition", subtitle: "Coils & leads", url: buildGsLink("/wiring") },
-  { icon: "🛢️", title: "Oil & Fuel", subtitle: "Engine oils & fuel", url: buildGsLink("/oil") },
-  { icon: "🔧", title: "All Parts", subtitle: "Browse 25,000+", url: buildGsLink("/") },
-];
-
 // ───────── Amazon ─────────
 const AMAZON_TAG = "gopartara-21";
 const withAmazonTag = (baseUrl: string) =>
