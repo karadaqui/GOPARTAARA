@@ -6,7 +6,7 @@ const FEEDLIST_URL = 'https://ui.awin.com/productdata-darwin-download/publisher/
 const HARDCODED: Record<string,{cur:string,url:string,skipFilter?:boolean}> = {
   '4118':  { cur:'£', url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12641/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost' },
   '12715': { cur:'£', url:'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93988/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription' },
-  '12716': { cur: '€', skipFilter: true, url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93986/format/csv/language/it/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost' },
+  '12716': { cur: '€', skipFilter: true, url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93986/format/csv/language/it/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription' },
 
 }
 const CURRENCIES: Record<string,string> = {
@@ -96,7 +96,7 @@ if (String(advertiserId) === '12716') {
       const ui12 = headers12.findIndex(h => h.includes('deeplink') || h.includes('awdeep'))
       const bi12 = headers12.findIndex(h => h.includes('brand'))
       const idi12 = headers12.findIndex(h => h.includes('productid') || h.includes('awproduct'))
-      const descIdx12 = headers12.findIndex(h => h.includes('desc'))
+      const descIdx12 = headers12.indexOf('description')
 
       const price = parseFloat(cols[pi12] || '0')
       if (price <= 0) continue
@@ -106,15 +106,15 @@ if (String(advertiserId) === '12716') {
       if (!url || !url.startsWith('http')) continue
 
       if (descIdx12 >= 0) {
-        const desc = (cols[descIdx12] || '').toLowerCase().replace(/"/g, '')
-        const rimNum12 = String(rim).replace(/^R/i, '')
-        if (!desc.includes(String(width) + '/' + String(profile))) continue
-        if (!desc.includes('r' + rimNum12)) continue
-        const descText = cols[descIdx12].replace(/"/g, '').trim()
+        const desc = (cols[descIdx12] || '').replace(/"/g,'').toLowerCase()
+        const rimNum12 = String(rim).replace(/^R/i,'')
+        if (!desc.includes(width + '/' + profile) || !desc.includes('r' + rimNum12)) continue
+        // Use description as title
+        const titleFromDesc = cols[descIdx12].replace(/"/g,'').trim()
         prods12.push({
           id: cols[idi12] || String(lc12),
-          title: descText,
-          price: `€${price.toFixed(2)}`,
+          title: titleFromDesc,
+          price: '€' + price.toFixed(2),
           image: img,
           url: url,
           brand: cols[bi12] || '',
@@ -125,7 +125,7 @@ if (String(advertiserId) === '12716') {
         if (prods12.length >= 24) break outer12
         continue
       }
-      // If no description column, skip product entirely (can't verify size)
+      // No description — skip, can't verify size
       continue
     }
   }
