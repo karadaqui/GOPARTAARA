@@ -53,10 +53,13 @@ const parseTwemoji = () => {
 
 // ── Supplier configs ──
 const SUPPLIERS = [
-  { id: 'ebay', label: 'eBay', status: 'live' },
+  { id: 'ebay', label: 'eBay Global', status: 'live' },
   { id: 'greensparkplug', label: 'Green Spark Plug Co.', status: 'live' },
-  { id: 'mytyres', label: 'mytyres.co.uk', status: 'coming' },
-  { id: 'tyresuk', label: 'Tyres UK', status: 'coming' },
+  { id: 'mytyres', label: 'mytyres.co.uk', status: 'live' },
+  { id: 'tyresuk', label: 'Tyres UK', status: 'live' },
+  { id: 'neumaticos', label: 'neumaticos-online.es', status: 'live' },
+  { id: 'pneumatici', label: 'Pneumatici IT', status: 'live' },
+  { id: 'reifendirekt', label: 'ReifenDirekt EE', status: 'live' },
   { id: 'eurocarparts', label: 'Euro Car Parts', status: 'coming' },
   { id: 'gsf', label: 'GSF Car Parts', status: 'coming' },
   { id: 'autodoc', label: 'Autodoc', status: 'coming' },
