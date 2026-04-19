@@ -1,10 +1,7 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import EbayDealsSection from "@/components/EbayDealsSection";
-import GreenSparkSection from "@/components/GreenSparkSection";
-import AmazonDealsSection from "@/components/AmazonDealsSection";
 import FeaturesSection from "@/components/FeaturesSection";
 import CommunityBanner from "@/components/CommunityBanner";
 import HowItWorksSection from "@/components/HowItWorksSection";
@@ -57,9 +54,25 @@ const Index = () => {
       <Navbar />
       <HeroSection />
       <CommunityBanner />
-      <EbayDealsSection />
-      <GreenSparkSection />
-      <AmazonDealsSection />
+
+      <Link
+        to="/deals"
+        className="flex items-center justify-between px-5 py-3 mx-4 mb-6 max-w-4xl md:mx-auto bg-gradient-to-r from-card to-card/50 border border-border/60 rounded-2xl hover:border-border transition-all group"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-xl">🔥</span>
+          <div>
+            <p className="text-foreground text-sm font-bold">Deals &amp; Savings</p>
+            <p className="text-muted-foreground text-xs">
+              eBay · Amazon · Classic Parts — Updated daily
+            </p>
+          </div>
+        </div>
+        <span className="text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all text-sm">
+          View deals →
+        </span>
+      </Link>
+
       <RecentlyViewed />
       <HowItWorksSection />
       <TestimonialsSection />
