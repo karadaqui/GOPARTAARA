@@ -264,14 +264,7 @@ const HeroSection = () => {
     }
   };
 
-  const activeSupplier = { name: "eBay", description: "Global — works in all countries" };
-  const comingSoonSuppliers = [
-    { name: "Amazon" },
-    { name: "Euro Car Parts" },
-    { name: "GSF Car Parts" },
-    { name: "Car Parts 4 Less" },
-    { name: "Autodoc" },
-  ];
+
 
   const handleShare = async () => {
     const shareText = "gopartara.com";
