@@ -19,6 +19,7 @@ const moreLinks = [
   { label: "My Market", href: "/my-market" },
   { label: "Saved Parts", href: "/saved" },
   { label: "Tyres", href: "/tyres" },
+  { label: "Deals", href: "/deals" },
   { label: "Blog", href: "/blog" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
