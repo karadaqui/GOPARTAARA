@@ -551,7 +551,7 @@ const Dashboard = () => {
                 </div>
                 <div>
                   <p className="font-display font-bold text-lg">Free Plan</p>
-                  <p className="text-xs text-muted-foreground">£0/mo · 5 searches per month</p>
+                  <p className="text-xs text-muted-foreground">£0/mo · 10 searches per month</p>
                 </div>
               </div>
               <Button size="sm" className="rounded-xl gap-2" onClick={() => navigate("/pricing")}>

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-const FREE_LIMIT = 5;
+const FREE_LIMIT = 10;
 // Only these plans grant unlimited searches - seller plans do NOT
 const UNLIMITED_SEARCH_PLANS = ["pro", "elite", "admin"];
 

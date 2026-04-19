@@ -22,7 +22,7 @@ const SubscriptionPolicy = () => {
           <section>
             <h2 className="font-display text-xl font-semibold mb-3">Plans &amp; Pricing</h2>
             <ul className="space-y-2 text-muted-foreground text-sm list-disc pl-5">
-              <li><strong className="text-foreground">Free (£0/month)</strong> — 5 searches per month, up to 5 marketplace listings, save parts, 1 garage vehicle.</li>
+              <li><strong className="text-foreground">Free (£0/month)</strong> — 10 searches per month, up to 5 marketplace listings, save parts, 1 garage vehicle.</li>
               <li><strong className="text-foreground">Pro (£9.99/month)</strong> — Unlimited searches, photo search, unlimited marketplace listings, price alerts, unlimited garage vehicles, full search history.</li>
               <li><strong className="text-foreground">Elite (£19.99/month)</strong> — Everything in Pro plus CSV export, 30-day price tracking, vehicle notes, priority support, and early access to new features.</li>
             </ul>
