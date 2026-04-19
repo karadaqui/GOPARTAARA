@@ -10,21 +10,6 @@ const getEbayIcon = (deal: EbayDeal): string => {
   return deal.brand?.slice(0, 1).toUpperCase() ?? "⭐";
 };
 
-// ───────── Green Spark (Classic & Vintage) ─────────
-const GS_AFFILIATE_BASE =
-  "https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara&p=";
-const buildGsLink = (path: string) =>
-  `${GS_AFFILIATE_BASE}${encodeURIComponent(`https://www.greenspark.co.uk${path}`)}`;
-const GS_HOME = buildGsLink("/");
-
-const GS_CATEGORIES = [
-  { icon: "🔌", title: "Spark Plugs", subtitle: "5,000+ products", url: buildGsLink("/spark-plugs") },
-  { icon: "🔋", title: "Batteries", subtitle: "Classic & vintage", url: buildGsLink("/battery") },
-  { icon: "⚡", title: "Ignition", subtitle: "Coils & leads", url: buildGsLink("/wiring") },
-  { icon: "🛢️", title: "Oil & Fuel", subtitle: "Engine oils & fuel", url: buildGsLink("/oil") },
-  { icon: "🔧", title: "All Parts", subtitle: "Browse 25,000+", url: buildGsLink("/") },
-];
-
 // ───────── Amazon ─────────
 const AMAZON_TAG = "gopartara-21";
 const withAmazonTag = (baseUrl: string) =>
@@ -153,88 +138,7 @@ const Deals = () => {
           </p>
         </section>
 
-        {/* SECTION 2 — Classic & Vintage */}
-        <section className="px-4 pb-16 max-w-5xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-amber-500/20 border border-amber-500/30 rounded-lg flex items-center justify-center">
-                <span className="text-amber-400">🔩</span>
-              </div>
-              <div>
-                <h2 className="text-foreground font-bold text-lg">Classic &amp; Vintage Parts</h2>
-                <p className="text-muted-foreground text-xs">
-                  The Green Spark Plug Co. · Est. 1980 · Ships worldwide
-                </p>
-              </div>
-            </div>
-            <a
-              href={GS_HOME}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 group"
-            >
-              Visit store
-              <span className="group-hover:translate-x-0.5 transition-transform">→</span>
-            </a>
-          </div>
-
-          {/* Hero banner */}
-          <a
-            href={GS_HOME}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-center gap-6 p-6 mb-4 bg-gradient-to-r from-amber-950/40 via-card to-card/50 border border-amber-900/40 hover:border-amber-700/50 rounded-2xl transition-all"
-          >
-            <div className="flex-1">
-              <p className="text-amber-400 text-xs font-bold uppercase tracking-wider mb-1">
-                Specialist UK Retailer
-              </p>
-              <h3 className="text-foreground font-black text-xl mb-2">
-                25,000+ Classic Car Parts
-              </h3>
-              <p className="text-muted-foreground text-sm">
-                NGK · Bosch · Denso · Champion · Beru · Sealey · Lucas · Draper
-              </p>
-              <div className="flex flex-wrap gap-2 mt-3">
-                <span className="text-xs bg-secondary border border-border text-muted-foreground rounded-lg px-2 py-1">
-                  🌍 Ships worldwide
-                </span>
-                <span className="text-xs bg-secondary border border-border text-muted-foreground rounded-lg px-2 py-1">
-                  30 day returns
-                </span>
-                <span className="text-xs bg-secondary border border-border text-muted-foreground rounded-lg px-2 py-1">
-                  Free UK delivery £100+
-                </span>
-              </div>
-            </div>
-            <div className="flex-shrink-0 text-muted-foreground group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all text-2xl">
-              →
-            </div>
-          </a>
-
-          {/* Category cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            {GS_CATEGORIES.map((cat) => (
-              <a
-                key={cat.title}
-                href={cat.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col items-center text-center p-4 bg-card border border-border hover:border-amber-900/50 hover:bg-amber-950/20 rounded-2xl transition-all hover:-translate-y-0.5"
-              >
-                <span className="text-2xl mb-2">{cat.icon}</span>
-                <p className="text-foreground font-semibold text-sm mb-1">{cat.title}</p>
-                <p className="text-muted-foreground text-xs">{cat.subtitle}</p>
-              </a>
-            ))}
-          </div>
-
-          <p className="text-muted-foreground/60 text-xs text-center mt-4">
-            Powered by The Green Spark Plug Co. · Affiliate link
-          </p>
-        </section>
-
-        {/* SECTION 3 — Amazon UK */}
+        {/* SECTION 2 — Amazon UK */}
         <section className="px-4 pb-24 max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
