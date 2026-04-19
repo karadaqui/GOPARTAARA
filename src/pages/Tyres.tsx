@@ -202,13 +202,27 @@ const Tyres = () => {
   }, [tyreProducts]);
 
   const filteredProducts = useMemo(() => {
-    return tyreProducts.filter(p => {
-      const matchSupplier = countryFilter === 'all' || p.advertiserId === countryFilter;
-      const matchBrand = brandFilter === 'all' ||
-        (p.brand || '').toLowerCase() === brandFilter.toLowerCase();
-      return matchSupplier && matchBrand;
-    });
-  }, [tyreProducts, countryFilter, brandFilter]);
+    return tyreProducts
+      .filter(p => countryFilter === 'all' || p.advertiserId === countryFilter)
+      .filter(p => brandFilter === 'all' || (p.brand || '').toLowerCase() === brandFilter.toLowerCase())
+      .filter(p => {
+        if (seasonFilter === 'all') return true;
+        return detectSeason(p.title) === seasonFilter;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'price_asc') {
+          const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
+          const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
+          return pa - pb;
+        }
+        if (sortBy === 'price_desc') {
+          const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
+          const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
+          return pb - pa;
+        }
+        return 0;
+      });
+  }, [tyreProducts, countryFilter, brandFilter, seasonFilter, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / ITEMS_PER_PAGE));
   const pagedProducts = filteredProducts.slice(
