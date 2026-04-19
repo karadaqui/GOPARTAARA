@@ -177,9 +177,7 @@ const Deals = () => {
                     {deal.badge}
                   </span>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-secondary border border-border flex items-center justify-center text-xl mb-3 group-hover:border-border/80 transition-colors">
-                  {deal.icon}
-                </div>
+                <div className="text-2xl mb-3">{deal.icon}</div>
                 <p className="text-foreground font-bold text-sm mb-1 pr-12">{deal.title}</p>
                 <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
                 <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
@@ -238,9 +236,7 @@ const Deals = () => {
                     {deal.badge}
                   </span>
                 </div>
-                <div className="w-10 h-10 rounded-xl bg-secondary border border-border flex items-center justify-center text-xl mb-3 group-hover:border-border/80 transition-colors">
-                  {deal.icon}
-                </div>
+                <div className="text-2xl mb-3">{deal.icon}</div>
                 <p className="text-foreground font-bold text-sm mb-1 pr-12">{deal.title}</p>
                 <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
                 <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
