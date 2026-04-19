@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Camera, Car, Bookmark, Bell, Store, ShoppingBag, BarChart3, Gift } from "lucide-react";
+import { Camera, Car, Bookmark, Bell, Store, BarChart3, Gift } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const features = [
@@ -34,15 +34,6 @@ const features = [
     title: "Marketplace",
     desc: "Browse and buy from verified UK sellers with moderated listings you can trust.",
     link: "/marketplace",
-  },
-  {
-    icon: ShoppingBag,
-    title: "Autodoc — Coming Soon",
-    desc: "We're partnering with Autodoc, Europe's largest auto parts store. Price comparison coming very soon.",
-    link: "/search",
-    badge: "Coming Soon",
-    badgeColor: "bg-amber-500/20 text-amber-400 border-amber-500/30",
-    dimmed: true,
   },
   {
     icon: BarChart3,

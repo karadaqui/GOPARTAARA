@@ -266,15 +266,6 @@ const HeroSection = () => {
 
 
 
-  const handleShare = async () => {
-    const shareText = "gopartara.com";
-    try {
-      await navigator.clipboard.writeText(shareText);
-      toast({ title: "Link copied! Thanks for sharing 💙", duration: 2000 });
-    } catch {
-      toast({ title: "Couldn't copy link", variant: "destructive" });
-    }
-  };
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden animated-gradient-bg">
@@ -822,36 +813,6 @@ const HeroSection = () => {
               ))}
             </div>
           </section>
-
-          <div className="space-y-6">
-
-            {/* Community Support Banner */}
-            <div className="py-12 text-center max-w-xl mx-auto">
-              <div className="text-4xl mb-4" aria-hidden="true">🤝</div>
-              <h3 className="community-banner-title">Help us add more suppliers</h3>
-              <p className="community-banner-copy">
-                We're a small independent team. Every search, share and subscription helps us partner with more suppliers and build a better product for UK & global car owners.
-              </p>
-              <div className="community-banner-divider" aria-hidden="true" />
-              <div className="community-banner-actions">
-                <button
-                  type="button"
-                  onClick={handleShare}
-                  className="community-banner-button community-banner-button-ghost"
-                >
-                  Share PARTARA 🔗
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate("/pricing")}
-                  className="community-banner-button community-banner-button-accent"
-                >
-                  Support Us → Pro
-                </button>
-              </div>
-              <p className="community-banner-footnote">Currently live: eBay (global)</p>
-            </div>
-          </div>
         </div>
       </div>
 
