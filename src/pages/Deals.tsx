@@ -85,21 +85,18 @@ const EBAY_DEALS = [
 const EBAY_ALL_URL = ebayAff("https://www.ebay.co.uk/deals/automotive");
 
 // ───────── Amazon ─────────
-const amazonAff = (node: string) =>
-  `https://www.amazon.co.uk/b?node=${node}&tag=gopartara-21`;
-
 const AMAZON_DEALS = [
-  { icon: "🏍️", title: "Motorbike Accessories & Parts", subtitle: "Helmets, gear & bike parts", url: amazonAff("251938031"), badge: "Bikers" },
-  { icon: "🚗", title: "Car Accessories", subtitle: "Mounts, covers, organizers & more", url: amazonAff("13677531"), badge: "Top picks" },
-  { icon: "🔧", title: "Car Parts", subtitle: "Brakes, filters, exhausts & more", url: amazonAff("340836031"), badge: "Essentials" },
-  { icon: "✨", title: "Car & Motorbike Care", subtitle: "Cleaning, wax, polish & detailing", url: amazonAff("11052681"), badge: "Detailing" },
-  { icon: "🛢️", title: "Oils & Fluids", subtitle: "Engine oil, coolant, brake fluid", url: amazonAff("11052651"), badge: "Essentials" },
-  { icon: "🔩", title: "Tools & Equipment", subtitle: "Garage tools, jacks, diagnostic kits", url: amazonAff("11052661"), badge: "Workshop" },
-  { icon: "👶", title: "Baby Car Seats", subtitle: "Group 0, 1, 2 & 3 seats", url: amazonAff("11052711"), badge: "Family" },
-  { icon: "🛞", title: "Tyres & Rims", subtitle: "All-season, winter & summer tyres", url: amazonAff("11052671"), badge: "Big savings" },
-  { icon: "🎁", title: "Gifts & Merchandise", subtitle: "Car-themed gifts & accessories", url: amazonAff("11052741"), badge: "Gift ideas" },
-  { icon: "📱", title: "Vehicle Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: amazonAff("11052691"), badge: "Hot deals" },
-  { icon: "🏕️", title: "Motorhome", subtitle: "Caravan & motorhome accessories", url: amazonAff("11052731"), badge: "Adventure" },
+  { icon: "🏍️", title: "Motorbike Accessories & Parts", subtitle: "Helmets, gear & bike parts", url: "https://www.amazon.co.uk/b?node=301311031&tag=gopartara-21", badge: "Bikers" },
+  { icon: "🚗", title: "Car Accessories", subtitle: "Mounts, covers, organizers & more", url: "https://www.amazon.co.uk/b?node=301308031&tag=gopartara-21", badge: "Top picks" },
+  { icon: "🔧", title: "Car Parts", subtitle: "Brakes, filters, exhausts & more", url: "https://www.amazon.co.uk/b?node=301309031&tag=gopartara-21", badge: "Essentials" },
+  { icon: "✨", title: "Car & Motorbike Care", subtitle: "Cleaning, wax, polish & detailing", url: "https://www.amazon.co.uk/b?node=303891031&tag=gopartara-21", badge: "Detailing" },
+  { icon: "🛢️", title: "Oils & Fluids", subtitle: "Engine oil, coolant, brake fluid", url: "https://www.amazon.co.uk/b?node=301315031&tag=gopartara-21", badge: "Essentials" },
+  { icon: "🔩", title: "Tools & Equipment", subtitle: "Garage tools, jacks, diagnostic kits", url: "https://www.amazon.co.uk/b?node=301312031&tag=gopartara-21", badge: "Workshop" },
+  { icon: "👶", title: "Baby Car Seats", subtitle: "Group 0, 1, 2 & 3 seats", url: "https://www.amazon.co.uk/b?node=60036031&tag=gopartara-21", badge: "Family" },
+  { icon: "🛞", title: "Tyres & Rims", subtitle: "All-season, winter & summer tyres", url: "https://www.amazon.co.uk/b?node=307675031&tag=gopartara-21", badge: "Big savings" },
+  { icon: "🎁", title: "Gifts & Merchandise", subtitle: "Car-themed gifts & accessories", url: "https://www.amazon.co.uk/b?node=301310031&tag=gopartara-21", badge: "Gift ideas" },
+  { icon: "📱", title: "Vehicle Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: "https://www.amazon.co.uk/b?node=3013843031&tag=gopartara-21", badge: "Hot deals" },
+  { icon: "🏕️", title: "Motorhome", subtitle: "Caravan & motorhome accessories", url: "https://www.amazon.co.uk/b?node=301314031&tag=gopartara-21", badge: "Adventure" },
 ];
 const AMAZON_ALL_URL = "https://www.amazon.co.uk/b?node=248877031&tag=gopartara-21";
 
