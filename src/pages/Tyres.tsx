@@ -10,8 +10,23 @@ import { toast } from "@/hooks/use-toast";
 import { CompareBar, type CompareItem } from "@/components/PartsComparison";
 import { TyreCompareModal, type TyreCompareItem } from "@/components/TyreCompareModal";
 
-const flag = (id: string): string =>
-  ({ '4118': '🇬🇧', '12715': '🌍', '10499': '🇪🇸', '12716': '🇮🇹', '10747': '🇪🇪' } as Record<string, string>)[id] ?? '🌍';
+const getFlag = (id: string): string => {
+  const flags: Record<string, string> = {
+    '4118': '🇬🇧',
+    '12715': '🌍',
+    '10499': '🇪🇸',
+    '12716': '🇮🇹',
+    '10747': '🇪🇪',
+    'all': '🌍',
+    'GB': '🇬🇧',
+    'UK': '🇬🇧',
+    'ES': '🇪🇸',
+    'IT': '🇮🇹',
+    'EE': '🇪🇪',
+    'Global': '🌍',
+  }
+  return flags[id] || '🌍'
+}
 
 const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305'];
 const PROFILES = ['30','35','40','45','50','55','60','65','70','75'];
@@ -374,7 +389,9 @@ const Tyres = () => {
                   }`}
                   title={s.shipsTo}
                 >
-                  <span>{flag(s.id)}</span>
+                  <span style={{ fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif', fontSize: '1.2em' }}>
+                    {getFlag(s.id)}
+                  </span>
                   <span>{s.siteName}</span>
                 </button>
               ))}
@@ -459,7 +476,9 @@ const Tyres = () => {
                           <span className="text-5xl opacity-20">○</span>
                         )}
                         <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
-                          <span className="text-xs">{flag(product.supplierMeta?.id || product.advertiserId || 'all')}</span>
+                          <span style={{ fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif', fontSize: '1.2em' }}>
+                            {getFlag(product.advertiserId || product.supplierMeta?.id || 'all')}
+                          </span>
                         </div>
                       </div>
                     </a>
@@ -481,7 +500,9 @@ const Tyres = () => {
 
                       {/* Supplier info */}
                       <div className="flex items-center gap-1 mt-1">
-                        <span className="text-sm">{flag(product.supplierMeta?.id || product.advertiserId || 'all')}</span>
+                        <span style={{ fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif', fontSize: '1.2em' }}>
+                          {getFlag(product.advertiserId || product.supplierMeta?.id || 'all')}
+                        </span>
                         <span className="text-[10px] text-zinc-500 truncate">
                           {product.supplierMeta?.siteName || product.supplierName}
                         </span>
