@@ -56,6 +56,7 @@ const Footer = () => {
               <li><button onClick={() => handleLink("/privacy")} className="hover:text-foreground transition-colors">Privacy Policy</button></li>
               <li><button onClick={() => handleLink("/privacy")} className="hover:text-foreground transition-colors">Cookie Policy</button></li>
               <li><button onClick={() => handleLink("/terms")} className="hover:text-foreground transition-colors">Terms of Service</button></li>
+              <li><button onClick={() => handleLink("/affiliate-disclosure")} className="hover:text-foreground transition-colors">Affiliate Disclosure</button></li>
               <li><button onClick={() => handleLink("/subscription-policy")} className="hover:text-foreground transition-colors">Subscription Policy</button></li>
             </ul>
           </div>
