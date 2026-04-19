@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { Heart, Bell, ChevronLeft, ChevronRight } from "lucide-react";
+import { Heart, Bell, ChevronLeft, ChevronRight, Scale } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsComparison";
 
 const flag = (id: string): string =>
   ({ '4118': '🇬🇧', '12715': '🌍', '10499': '🇪🇸', '12716': '🇮🇹', '10747': '🇪🇪' } as Record<string, string>)[id] ?? '🌍';
@@ -100,15 +101,28 @@ const Tyres = () => {
   const [seasonFilter, setSeasonFilter] = useState<'all'|'summer'|'winter'|'allseason'>('all');
   const [sortBy, setSortBy] = useState<'default'|'price_asc'|'price_desc'>('default');
   const [compareList, setCompareList] = useState<TyreProduct[]>([]);
+  const [showCompareModal, setShowCompareModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   const toggleCompare = (product: TyreProduct) => {
     setCompareList(prev =>
       prev.find(p => p.id === product.id)
         ? prev.filter(p => p.id !== product.id)
-        : prev.length < 4 ? [...prev, product] : prev
+        : prev.length < 3 ? [...prev, product] : prev
     );
   };
+
+  const compareItems: CompareItem[] = compareList.map(p => ({
+    id: p.id,
+    title: p.title,
+    price: parseFloat((p.price || '0').replace(/[^0-9.]/g, '')) || null,
+    sellerName: p.supplierName,
+    shipping: p.shipping,
+    freeShipping: /free/i.test(p.shipping || ''),
+    url: p.url,
+    imageUrl: p.image,
+    source: 'ebay',
+  }));
 
   const searchTyres = async () => {
     console.log('searchTyres called', { selectedWidth, selectedProfile, selectedRim })
@@ -494,14 +508,14 @@ const Tyres = () => {
                         </button>
                         <button
                           onClick={(e) => { e.preventDefault(); toggleCompare(product); }}
-                          className={`text-xs px-2 py-1 rounded-lg border transition-all ${
-                            compareList.find(p => p.id === product.id)
-                              ? 'bg-red-600 border-red-500 text-white'
-                              : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500'
-                          }`}
                           title="Compare"
+                          className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-150 ${
+                            compareList.find(p => p.id === product.id)
+                              ? 'border-red-500 bg-red-600/20 text-red-400'
+                              : 'border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] text-zinc-400 hover:text-white'
+                          }`}
                         >
-                          {compareList.find(p => p.id === product.id) ? '✓' : '+'}
+                          <Scale size={14} />
                         </button>
                         <a
                           href={product.url}
@@ -557,27 +571,17 @@ const Tyres = () => {
         )}
       </main>
 
-      {compareList.length >= 2 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-700 p-4 z-50 flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex gap-2 flex-wrap">
-            {compareList.map(p => (
-              <div key={p.id} className="text-xs text-white bg-zinc-800 px-3 py-2 rounded-lg">
-                {p.brand || p.title.substring(0, 20)} — {p.price}
-              </div>
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setCompareList([])}
-              className="text-xs text-zinc-400 px-3 py-2 rounded-lg border border-zinc-700 hover:border-zinc-500"
-            >
-              Clear
-            </button>
-            <button className="text-xs text-white px-4 py-2 rounded-lg bg-red-600 font-bold hover:bg-red-500">
-              Compare {compareList.length} Tyres →
-            </button>
-          </div>
-        </div>
+      <CompareBar
+        items={compareItems}
+        onOpen={() => setShowCompareModal(true)}
+        onClear={() => setCompareList([])}
+      />
+      {showCompareModal && (
+        <CompareModal
+          items={compareItems}
+          onRemove={(id) => setCompareList(prev => prev.filter(p => p.id !== id))}
+          onClose={() => setShowCompareModal(false)}
+        />
       )}
 
       <Footer />
