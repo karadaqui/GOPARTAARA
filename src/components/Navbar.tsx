@@ -21,6 +21,7 @@ const moreLinks = [
   { label: "Tyres", href: "/tyres" },
   { label: "Deals", href: "/deals" },
   { label: "Blog", href: "/blog" },
+  { label: "For Business", href: "/business" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];

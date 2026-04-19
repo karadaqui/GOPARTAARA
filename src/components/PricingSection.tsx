@@ -281,7 +281,7 @@ const PricingSection = () => {
             Custom plans for garages, dealerships and trade accounts. Bulk search, team access, and dedicated support.
           </p>
           <Button variant="outline" className="rounded-xl" asChild>
-            <Link to="/contact">Contact Us for a Quote</Link>
+            <Link to="/business">Contact Us for a Quote</Link>
           </Button>
         </div>
 
