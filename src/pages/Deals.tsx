@@ -226,7 +226,7 @@ const Deals = () => {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {AMAZON_DEALS.map((deal) => (
               <a
-                key={deal.id}
+                key={deal.title}
                 href={deal.url}
                 target="_blank"
                 rel="noopener noreferrer"
