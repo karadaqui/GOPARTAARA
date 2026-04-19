@@ -2,13 +2,85 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
-import { getActiveDeals, EBAY_ALL_DEALS_URL, type EbayDeal } from "@/data/ebayDeals";
 
-const getEbayIcon = (deal: EbayDeal): string => {
-  if (deal.type === "all") return "🔥";
-  if (deal.type === "tools") return "🧰";
-  return deal.brand?.slice(0, 1).toUpperCase() ?? "⭐";
-};
+// ───────── eBay (Awin affiliate) ─────────
+const affUrl = (url: string) =>
+  `https://www.awin1.com/cread.php?awinmid=6220&awinaffid=2845282&clickref=partara-deals&p=${encodeURIComponent(url)}`;
+
+const EBAY_DEALS = [
+  {
+    icon: "🔧",
+    title: "Car Parts & Accessories",
+    subtitle: "Brakes, filters, exhausts & more",
+    url: affUrl("https://www.ebay.co.uk/deals/automotive/car-parts-accessories"),
+    badge: "Top category",
+  },
+  {
+    icon: "🏎️",
+    title: "Garage Equipment & Tools",
+    subtitle: "Jacks, compressors, testers",
+    url: affUrl("https://www.ebay.co.uk/deals/automotive/garage-equipment-tools"),
+    badge: "Up to 50% off",
+  },
+  {
+    icon: "📡",
+    title: "Car Electronics",
+    subtitle: "Dash cams, GPS, stereos & CarPlay",
+    url: affUrl("https://www.ebay.co.uk/deals/automotive/car-electronics"),
+    badge: "Hot deals",
+  },
+  {
+    icon: "🛞",
+    title: "Wheels & Tyres",
+    subtitle: "Alloys, winter tyres & more",
+    url: affUrl("https://www.ebay.co.uk/deals/automotive/wheels-tyres"),
+    badge: "Big savings",
+  },
+  {
+    icon: "🛢️",
+    title: "Oils & Fluids",
+    subtitle: "Engine oil, coolant, brake fluid",
+    url: affUrl("https://www.ebay.co.uk/deals/automotive/oils-fluids"),
+    badge: "Essentials",
+  },
+  {
+    icon: "🚗",
+    title: "Car Care, Utility & Trailers",
+    subtitle: "Cleaning, covers, towing & more",
+    url: affUrl("https://www.ebay.co.uk/deals/automotive/car-care-utility-trailers"),
+    badge: "New deals",
+  },
+  {
+    icon: "⚡",
+    title: "Tuning & Styling",
+    subtitle: "Performance parts & styling kits",
+    url: affUrl("https://www.ebay.co.uk/deals/automotive/tuning-styling"),
+    badge: "Performance",
+  },
+  {
+    icon: "👕",
+    title: "Apparel & Accessories",
+    subtitle: "Driving gear, helmets & clothing",
+    url: affUrl("https://www.ebay.co.uk/deals/automotive/apparel-accessories"),
+    badge: "Style",
+  },
+  {
+    icon: "🏍️",
+    title: "Motorcycle Parts",
+    subtitle: "Bike parts, helmets & gear",
+    url: affUrl("https://www.ebay.co.uk/deals/automotive/motorcycle-parts"),
+    badge: "Bikers",
+  },
+  {
+    icon: "⛺",
+    title: "Camping & Caravan Parts",
+    subtitle: "Awnings, accessories & spares",
+    url: affUrl("https://www.ebay.co.uk/deals/automotive/camping-caravan-parts"),
+    badge: "Adventure",
+  },
+];
+
+const EBAY_ALL_URL = affUrl("https://www.ebay.co.uk/deals/automotive");
 
 // ───────── Amazon ─────────
 const AMAZON_TAG = "gopartara-21";
@@ -50,8 +122,6 @@ const AMAZON_ALL_URL = withAmazonTag(
 );
 
 const Deals = () => {
-  const ebayDeals = getActiveDeals();
-
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
@@ -100,7 +170,7 @@ const Deals = () => {
               </div>
             </div>
             <a
-              href={EBAY_ALL_DEALS_URL}
+              href={EBAY_ALL_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 group"
@@ -111,25 +181,25 @@ const Deals = () => {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {ebayDeals.map((deal) => (
+            {EBAY_DEALS.map((deal) => (
               <a
-                key={deal.id}
+                key={deal.title}
                 href={deal.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`${deal.label} — eBay UK deal`}
+                aria-label={`${deal.title} — eBay UK deal`}
                 className="group relative flex flex-col p-4 bg-card border border-border hover:border-border/80 hover:bg-card/80 rounded-2xl transition-all duration-200 hover:shadow-xl hover:shadow-background/40 hover:-translate-y-0.5"
               >
                 <div className="absolute top-3 right-3">
                   <span className="text-[10px] bg-primary/15 border border-primary/30 text-primary rounded-full px-2 py-0.5 font-bold">
-                    {deal.discount}
+                    {deal.badge}
                   </span>
                 </div>
                 <div className="w-10 h-10 rounded-xl bg-secondary border border-border flex items-center justify-center text-xl mb-3 group-hover:border-border/80 transition-colors">
-                  {getEbayIcon(deal)}
+                  {deal.icon}
                 </div>
-                <p className="text-foreground font-bold text-sm mb-1 pr-12">{deal.label}</p>
-                <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.description}</p>
+                <p className="text-foreground font-bold text-sm mb-1 pr-12">{deal.title}</p>
+                <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
                 <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
                   <span className="text-xs font-semibold">View deal</span>
                   <span className="text-xs group-hover:translate-x-0.5 transition-transform">→</span>
