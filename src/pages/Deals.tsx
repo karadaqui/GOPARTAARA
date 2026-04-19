@@ -96,7 +96,7 @@ const Deals = () => {
               />
               <div>
                 <h2 className="text-foreground font-bold text-lg">eBay UK</h2>
-                <p className="text-muted-foreground text-xs">Affiliate deals · Updated daily</p>
+                <p className="text-muted-foreground text-xs">Deals & Savings · Updated daily</p>
               </div>
             </div>
             <a
@@ -157,7 +157,7 @@ const Deals = () => {
               />
               <div>
                 <h2 className="text-foreground font-bold text-lg">Amazon UK</h2>
-                <p className="text-muted-foreground text-xs">Affiliate deals · tag: gopartara-21</p>
+                <p className="text-muted-foreground text-xs">Deals · Updated daily</p>
               </div>
             </div>
             <a
