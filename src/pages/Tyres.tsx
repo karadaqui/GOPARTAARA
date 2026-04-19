@@ -74,6 +74,17 @@ const getCurrency = (supplierId: string) => {
   return { symbol: '€', code: 'EUR' };
 };
 
+const detectSeason = (title: string): 'summer' | 'winter' | 'allseason' | 'unknown' => {
+  const t = title.toLowerCase()
+  const winterKeywords = ['winter', 'blizzak', 'winguard', 'ice', 'nordic', 'spike', 'polaris', 'wintercraft', 'alpin', 'snowproof', 'snow', 'frigo', 'arctiva', 'north', 'hiver', 'inverno', 'xice', 'pilot alpin']
+  const summerKeywords = ['summer', 'sport', 'potenza', 'pilot sport', 'eagle', 'cinturato', 'primacy', 'energy', 'efficientgrip', 'turanza', 'ultracontact', 'contisport', 'n blue', 'n fera', 'ventus', 'roadhawk', 'bluresponse', 'ziex']
+  const allSeasonKeywords = ['all season', 'allseason', 'all-season', '4season', '4 season', 'seasonproof', 'crossclimate', 'vector', 'allroad', 'a/s', 'as ', 'contact', 'weathermaster', 'winguard sport suv', 'kinergy 4s', 'nautilus']
+  if (allSeasonKeywords.some(k => t.includes(k))) return 'allseason'
+  if (winterKeywords.some(k => t.includes(k))) return 'winter'
+  if (summerKeywords.some(k => t.includes(k))) return 'summer'
+  return 'unknown'
+}
+
 const Tyres = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
