@@ -7,7 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
-import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsComparison";
+import { CompareBar, type CompareItem } from "@/components/PartsComparison";
+import { TyreCompareModal, type TyreCompareItem } from "@/components/TyreCompareModal";
 
 const flag = (id: string): string =>
   ({ '4118': '🇬🇧', '12715': '🌍', '10499': '🇪🇸', '12716': '🇮🇹', '10747': '🇪🇪' } as Record<string, string>)[id] ?? '🌍';
