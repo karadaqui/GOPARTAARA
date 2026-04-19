@@ -2,37 +2,286 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
-import EbayDealsSection from "@/components/EbayDealsSection";
-import GreenSparkSection from "@/components/GreenSparkSection";
-import AmazonDealsSection from "@/components/AmazonDealsSection";
+import { getActiveDeals, EBAY_ALL_DEALS_URL, type EbayDeal } from "@/data/ebayDeals";
+
+const getEbayIcon = (deal: EbayDeal): string => {
+  if (deal.type === "all") return "🔥";
+  if (deal.type === "tools") return "🧰";
+  return deal.brand?.slice(0, 1).toUpperCase() ?? "⭐";
+};
+
+// ───────── Green Spark (Classic & Vintage) ─────────
+const GS_AFFILIATE_BASE =
+  "https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara&p=";
+const buildGsLink = (path: string) =>
+  `${GS_AFFILIATE_BASE}${encodeURIComponent(`https://www.greenspark.co.uk${path}`)}`;
+const GS_HOME = buildGsLink("/");
+
+const GS_CATEGORIES = [
+  { icon: "🔌", title: "Spark Plugs", subtitle: "5,000+ products", url: buildGsLink("/spark-plugs") },
+  { icon: "🔋", title: "Batteries", subtitle: "Classic & vintage", url: buildGsLink("/battery") },
+  { icon: "⚡", title: "Ignition", subtitle: "Coils & leads", url: buildGsLink("/wiring") },
+  { icon: "🛢️", title: "Oil & Fuel", subtitle: "Engine oils & fuel", url: buildGsLink("/oil") },
+  { icon: "🔧", title: "All Parts", subtitle: "Browse 25,000+", url: buildGsLink("/") },
+];
+
+// ───────── Amazon ─────────
+const AMAZON_TAG = "gopartara-21";
+const withAmazonTag = (baseUrl: string) =>
+  `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}tag=${AMAZON_TAG}`;
+
+const AMAZON_DEALS = [
+  {
+    id: "amazon-accessories",
+    title: "Car Accessories",
+    subtitle: "Mounts, organizers, seat covers & more",
+    icon: "🚗",
+    url: withAmazonTag("https://www.amazon.co.uk/b?_encoding=UTF8&node=301308031"),
+  },
+  {
+    id: "amazon-oils-fluids",
+    title: "Oils & Fluids",
+    subtitle: "Engine oil, coolant, brake fluid & more",
+    icon: "🛢️",
+    url: withAmazonTag("https://www.amazon.co.uk/b?_encoding=UTF8&node=301315031"),
+  },
+  {
+    id: "amazon-tools",
+    title: "Tools & Equipment",
+    subtitle: "Garage tools, jacks, diagnostic kits",
+    icon: "🔧",
+    url: withAmazonTag("https://www.amazon.co.uk/b?_encoding=UTF8&node=2486235031"),
+  },
+  {
+    id: "amazon-electronics",
+    title: "Vehicle Electronics",
+    subtitle: "Dash cams, GPS, CarPlay adapters & more",
+    icon: "📱",
+    url: withAmazonTag("https://www.amazon.co.uk/b?_encoding=UTF8&node=3013843031"),
+  },
+];
+const AMAZON_ALL_URL = withAmazonTag(
+  "https://www.amazon.co.uk/b?_encoding=UTF8&node=248877031",
+);
 
 const Deals = () => {
+  const ebayDeals = getActiveDeals();
+
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
         title="Deals & Savings — Curated UK Car Parts Deals | GOPARTARA"
-        description="Browse curated affiliate deals from trusted UK automotive retailers — eBay UK, Amazon UK and classic car part specialists. Updated daily."
+        description="Curated affiliate deals from the UK's most trusted automotive retailers — eBay UK, Amazon UK and classic car part specialists. Updated daily."
         path="/deals"
       />
       <Navbar />
 
-      <main className="pt-20">
-        <div className="text-center py-16 px-4">
-          <p className="text-primary text-xs font-bold uppercase tracking-widest mb-3">
-            Updated Daily
-          </p>
-          <h1 className="text-4xl font-black text-foreground mb-3">
-            Deals &amp; Savings
-          </h1>
-          <p className="text-muted-foreground text-sm max-w-md mx-auto">
-            Curated affiliate deals from trusted UK automotive retailers.
-            New deals added regularly.
-          </p>
-        </div>
+      <main className="pt-16">
+        {/* HERO */}
+        <section className="relative overflow-hidden pt-24 pb-16 px-4">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative text-center max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              <span className="text-primary text-xs font-semibold tracking-wider uppercase">
+                Updated Daily
+              </span>
+            </div>
+            <h1 className="text-5xl sm:text-6xl font-black text-foreground mb-4 tracking-tight">
+              Deals &amp; Savings
+            </h1>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              Curated affiliate deals from the UK's most trusted automotive retailers.
+              Handpicked daily.
+            </p>
+          </div>
+        </section>
 
-        <EbayDealsSection />
-        <GreenSparkSection />
-        <AmazonDealsSection />
+        {/* SECTION 1 — eBay UK */}
+        <section className="px-4 pb-16 max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-yellow-400 rounded-lg flex items-center justify-center">
+                <span className="text-black font-black text-xs">e</span>
+              </div>
+              <div>
+                <h2 className="text-foreground font-bold text-lg">eBay UK</h2>
+                <p className="text-muted-foreground text-xs">Affiliate deals · Updated daily</p>
+              </div>
+            </div>
+            <a
+              href={EBAY_ALL_DEALS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 group"
+            >
+              View all
+              <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+            </a>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            {ebayDeals.map((deal) => (
+              <a
+                key={deal.id}
+                href={deal.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${deal.label} — eBay UK deal`}
+                className="group relative flex flex-col p-4 bg-card border border-border hover:border-border/80 hover:bg-card/80 rounded-2xl transition-all duration-200 hover:shadow-xl hover:shadow-background/40 hover:-translate-y-0.5"
+              >
+                <div className="absolute top-3 right-3">
+                  <span className="text-[10px] bg-primary/15 border border-primary/30 text-primary rounded-full px-2 py-0.5 font-bold">
+                    {deal.discount}
+                  </span>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-secondary border border-border flex items-center justify-center text-xl mb-3 group-hover:border-border/80 transition-colors">
+                  {getEbayIcon(deal)}
+                </div>
+                <p className="text-foreground font-bold text-sm mb-1 pr-12">{deal.label}</p>
+                <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.description}</p>
+                <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
+                  <span className="text-xs font-semibold">View deal</span>
+                  <span className="text-xs group-hover:translate-x-0.5 transition-transform">→</span>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          <p className="text-muted-foreground/60 text-xs text-center mt-4">
+            Affiliate links — we may earn a small commission at no extra cost to you
+          </p>
+        </section>
+
+        {/* SECTION 2 — Classic & Vintage */}
+        <section className="px-4 pb-16 max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-amber-500/20 border border-amber-500/30 rounded-lg flex items-center justify-center">
+                <span className="text-amber-400">🔩</span>
+              </div>
+              <div>
+                <h2 className="text-foreground font-bold text-lg">Classic &amp; Vintage Parts</h2>
+                <p className="text-muted-foreground text-xs">
+                  The Green Spark Plug Co. · Est. 1980 · Ships worldwide
+                </p>
+              </div>
+            </div>
+            <a
+              href={GS_HOME}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 group"
+            >
+              Visit store
+              <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+            </a>
+          </div>
+
+          {/* Hero banner */}
+          <a
+            href={GS_HOME}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-6 p-6 mb-4 bg-gradient-to-r from-amber-950/40 via-card to-card/50 border border-amber-900/40 hover:border-amber-700/50 rounded-2xl transition-all"
+          >
+            <div className="flex-1">
+              <p className="text-amber-400 text-xs font-bold uppercase tracking-wider mb-1">
+                Specialist UK Retailer
+              </p>
+              <h3 className="text-foreground font-black text-xl mb-2">
+                25,000+ Classic Car Parts
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                NGK · Bosch · Denso · Champion · Beru · Sealey · Lucas · Draper
+              </p>
+              <div className="flex flex-wrap gap-2 mt-3">
+                <span className="text-xs bg-secondary border border-border text-muted-foreground rounded-lg px-2 py-1">
+                  🌍 Ships worldwide
+                </span>
+                <span className="text-xs bg-secondary border border-border text-muted-foreground rounded-lg px-2 py-1">
+                  30 day returns
+                </span>
+                <span className="text-xs bg-secondary border border-border text-muted-foreground rounded-lg px-2 py-1">
+                  Free UK delivery £100+
+                </span>
+              </div>
+            </div>
+            <div className="flex-shrink-0 text-muted-foreground group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all text-2xl">
+              →
+            </div>
+          </a>
+
+          {/* Category cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {GS_CATEGORIES.map((cat) => (
+              <a
+                key={cat.title}
+                href={cat.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col items-center text-center p-4 bg-card border border-border hover:border-amber-900/50 hover:bg-amber-950/20 rounded-2xl transition-all hover:-translate-y-0.5"
+              >
+                <span className="text-2xl mb-2">{cat.icon}</span>
+                <p className="text-foreground font-semibold text-sm mb-1">{cat.title}</p>
+                <p className="text-muted-foreground text-xs">{cat.subtitle}</p>
+              </a>
+            ))}
+          </div>
+
+          <p className="text-muted-foreground/60 text-xs text-center mt-4">
+            Powered by The Green Spark Plug Co. · Affiliate link
+          </p>
+        </section>
+
+        {/* SECTION 3 — Amazon UK */}
+        <section className="px-4 pb-24 max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-orange-500/20 border border-orange-500/30 rounded-lg flex items-center justify-center">
+                <span className="text-orange-400 font-black text-sm">a</span>
+              </div>
+              <div>
+                <h2 className="text-foreground font-bold text-lg">Amazon UK</h2>
+                <p className="text-muted-foreground text-xs">Affiliate deals · tag: gopartara-21</p>
+              </div>
+            </div>
+            <a
+              href={AMAZON_ALL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 group"
+            >
+              View all
+              <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+            </a>
+          </div>
+
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {AMAZON_DEALS.map((deal) => (
+              <a
+                key={deal.id}
+                href={deal.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${deal.title} — Amazon UK`}
+                className="group flex flex-col p-4 bg-card border border-border hover:border-orange-900/50 hover:bg-orange-950/10 rounded-2xl transition-all hover:-translate-y-0.5"
+              >
+                <span className="text-2xl mb-3">{deal.icon}</span>
+                <p className="text-foreground font-bold text-sm mb-1">{deal.title}</p>
+                <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
+                <div className="flex items-center gap-1 text-muted-foreground group-hover:text-orange-400 transition-colors">
+                  <span className="text-xs font-semibold">Shop now</span>
+                  <span className="text-xs group-hover:translate-x-0.5 transition-transform">→</span>
+                </div>
+              </a>
+            ))}
+          </div>
+
+          <p className="text-muted-foreground/60 text-xs text-center mt-4">
+            Amazon UK affiliate links — tag: gopartara-21
+          </p>
+        </section>
       </main>
 
       <Footer />
