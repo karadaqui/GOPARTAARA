@@ -12,7 +12,7 @@ import CookieConsent from "./components/CookieConsent.tsx";
 import DevToolsGuard from "./components/DevToolsGuard.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
 import MotTaxReminderRunner from "./components/garage/MotTaxReminderRunner.tsx";
-import WhatsAppButton from "./components/WhatsAppButton.tsx";
+
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
@@ -106,7 +106,7 @@ const App = () => (
           </ErrorBoundary>
           <CookieConsent />
           <DevToolsGuard />
-          <WhatsAppButton />
+          
           </LocaleProvider>
           </CountryProvider>
         </AuthProvider>
