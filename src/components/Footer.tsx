@@ -33,6 +33,7 @@ const Footer = () => {
               <li><button onClick={() => handleLink("/garage")} className="hover:text-foreground transition-colors">My Garage</button></li>
               <li><button onClick={() => handleLink("/blog")} className="hover:text-foreground transition-colors">Blog</button></li>
               <li><button onClick={() => handleLink("/pricing")} className="hover:text-foreground transition-colors">Pricing</button></li>
+              <li><button onClick={() => handleLink("/business")} className="hover:text-foreground transition-colors">For Business</button></li>
             </ul>
           </div>
           <div>
