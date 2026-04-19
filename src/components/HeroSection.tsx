@@ -729,87 +729,71 @@ const HeroSection = () => {
 
         {/* Suppliers Section */}
         <div className={`transition-all duration-700 ease-out delay-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <section className="py-12 px-4 max-w-3xl mx-auto">
+          <section className="py-12 px-4 max-w-2xl mx-auto">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4">
               <div>
-                <div className="inline-flex items-center gap-2 mb-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-green-400 font-bold">
-                    Live Suppliers
-                  </span>
-                </div>
-                <h2 className="text-xl font-bold text-white tracking-tight">
+                <span className="text-[10px] uppercase tracking-[0.2em] text-green-400 font-bold">
+                  Live Suppliers
+                </span>
+                <h2 className="text-base font-bold text-white tracking-tight">
                   Active Integrations
                 </h2>
               </div>
-              <div className="inline-flex items-center gap-1.5 text-[10px] bg-green-500/10 border border-green-500/20 text-green-400 rounded-full px-2.5 py-1 font-bold">
+              <div className="inline-flex items-center gap-1.5 text-[10px] bg-green-500/10 border border-green-500/20 text-green-400 rounded-full px-2 py-0.5 font-bold">
                 <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse" />
                 7 Live
               </div>
             </div>
 
-            {/* Single compact list */}
-            <div className="divide-y divide-zinc-800/60 border border-zinc-800/60 rounded-2xl overflow-hidden bg-zinc-900/40">
+            {/* Compact inline list */}
+            <div className="divide-y divide-zinc-800/40">
               {[
-                { id: '4118',  name: 'mytyres.co.uk',          cat: 'Tyres',           coverage: 'UK + 35 countries',              twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=4118&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.mytyres.co.uk' },
-                { id: '12715', name: 'Tyres UK',                cat: 'Tyres',           coverage: '64 countries',                   twemoji: '1f30d',       url: 'https://www.awin1.com/cread.php?awinmid=12715&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.tyres.net' },
-                { id: 'ebay',  name: 'eBay Global',             cat: 'All Car Parts',   coverage: 'Worldwide · 1M+ parts',          twemoji: '1f30d',       url: null as string | null },
-                { id: '16976', name: 'Green Spark Plug Co.',    cat: 'Classic Parts',   coverage: 'Worldwide shipping',             twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.greenspark.co.uk' },
-                { id: '10499', name: 'neumaticos-online.es',    cat: 'Tyres',           coverage: 'Spain only',                     twemoji: '1f1ea-1f1f8', url: 'https://www.awin1.com/cread.php?awinmid=10499&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.neumaticos-online.es' },
-                { id: '12716', name: 'Pneumatici IT',           cat: 'Tyres',           coverage: 'Italy only',                     twemoji: '1f1ee-1f1f9', url: 'https://www.awin1.com/cread.php?awinmid=12716&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.pneumatici.it' },
-                { id: '10747', name: 'ReifenDirekt EE',         cat: 'Tyres',           coverage: 'Estonia, Latvia, Lithuania',     twemoji: '1f1ea-1f1ea', url: 'https://www.awin1.com/cread.php?awinmid=10747&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.reifendirekt.co.ee' },
+                { name: 'eBay Global', cat: 'All Car Parts', coverage: 'Worldwide · 1M+ parts', twemoji: '1f30d', url: null as string | null },
+                { name: 'mytyres.co.uk', cat: 'Tyres', coverage: 'UK + 35 countries', twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=4118&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.mytyres.co.uk' },
+                { name: 'Tyres UK', cat: 'Tyres', coverage: '64 countries', twemoji: '1f30d', url: 'https://www.awin1.com/cread.php?awinmid=12715&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.tyres.net' },
+                { name: 'Green Spark Plug Co.', cat: 'Classic Parts', coverage: 'Worldwide shipping', twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.greenspark.co.uk' },
+                { name: 'neumaticos-online.es', cat: 'Tyres', coverage: 'Spain only', twemoji: '1f1ea-1f1f8', url: 'https://www.awin1.com/cread.php?awinmid=10499&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.neumaticos-online.es' },
+                { name: 'Pneumatici IT', cat: 'Tyres', coverage: 'Italy only', twemoji: '1f1ee-1f1f9', url: 'https://www.awin1.com/cread.php?awinmid=12716&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.pneumatici.it' },
+                { name: 'ReifenDirekt EE', cat: 'Tyres', coverage: 'Estonia, Latvia, Lithuania', twemoji: '1f1ea-1f1ea', url: 'https://www.awin1.com/cread.php?awinmid=10747&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.reifendirekt.co.ee' },
               ].map(s => {
-                const rowClass = "flex items-center gap-3 px-4 py-3 hover:bg-zinc-900/80 transition-colors group";
+                const rowClass = "flex items-center gap-3 py-2.5 hover:bg-zinc-900/40 -mx-2 px-2 rounded-lg transition-colors group";
                 const inner = (
                   <>
-                    {/* Flag */}
                     <img
                       src={`https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${s.twemoji}.png`}
-                      width={20}
-                      height={20}
+                      width={18}
+                      height={18}
                       loading="lazy"
                       alt=""
-                      className="flex-shrink-0"
+                      className="flex-shrink-0 opacity-90"
                     />
-
-                    {/* Name + category */}
-                    <div className="flex-1 min-w-0 flex items-center gap-2">
-                      <span className="text-white text-sm font-semibold truncate">{s.name}</span>
-                      <span className="text-zinc-500 text-xs truncate hidden sm:inline">· {s.cat}</span>
-                    </div>
-
-                    {/* Coverage */}
-                    <span className="text-zinc-500 text-xs hidden md:inline truncate">
-                      {s.coverage}
-                    </span>
-
-                    {/* LIVE badge */}
-                    <span className="flex-shrink-0 inline-flex items-center gap-1 text-[9px] bg-green-500/15 border border-green-500/25 text-green-400 rounded-full px-1.5 py-0.5 font-bold">
-                      <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse" />
+                    <span className="text-white text-sm font-medium truncate">{s.name}</span>
+                    <span className="text-zinc-600 text-xs hidden sm:inline">·</span>
+                    <span className="text-zinc-500 text-xs hidden sm:inline truncate">{s.cat}</span>
+                    <span className="text-zinc-600 text-xs hidden md:inline truncate ml-auto">{s.coverage}</span>
+                    <span className="flex-shrink-0 text-[9px] text-green-400 font-bold tracking-wider sm:ml-0 ml-auto">
                       LIVE
                     </span>
                   </>
                 );
                 return s.url ? (
-                  <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer sponsored" className={rowClass}>
+                  <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer sponsored" className={rowClass}>
                     {inner}
                   </a>
                 ) : (
-                  <div key={s.id} className={rowClass}>{inner}</div>
+                  <div key={s.name} className={rowClass}>{inner}</div>
                 );
               })}
             </div>
 
-            {/* Coming soon — single line */}
-            <div className="mt-6 flex flex-wrap items-center gap-2">
-              <span className="text-zinc-600 text-xs font-semibold uppercase tracking-wider">
+            {/* Coming soon */}
+            <div className="mt-5 flex flex-wrap items-center gap-1.5">
+              <span className="text-zinc-600 text-[10px] font-semibold uppercase tracking-wider mr-1">
                 Coming soon:
               </span>
-              {['Amazon','Euro Car Parts','GSF Car Parts','Autodoc','Halfords','Black Circles'].map(name => (
-                <span key={name} className="text-xs bg-zinc-900/60 border border-zinc-800 text-zinc-500 rounded-full px-2.5 py-0.5">
-                  {name}
-                </span>
+              {['Amazon','Euro Car Parts','GSF Car Parts','Autodoc','Halfords','Black Circles'].map(n => (
+                <span key={n} className="text-[10px] text-zinc-500">{n}</span>
               ))}
             </div>
           </section>
