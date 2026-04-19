@@ -494,14 +494,14 @@ const Tyres = () => {
                         </button>
                         <button
                           onClick={(e) => { e.preventDefault(); toggleCompare(product); }}
-                          className={`text-xs px-2 py-1 rounded-lg border transition-all ${
-                            compareList.find(p => p.id === product.id)
-                              ? 'bg-red-600 border-red-500 text-white'
-                              : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500'
-                          }`}
                           title="Compare"
+                          className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-150 ${
+                            compareList.find(p => p.id === product.id)
+                              ? 'border-red-500 bg-red-600/20 text-red-400'
+                              : 'border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] text-zinc-400 hover:text-white'
+                          }`}
                         >
-                          {compareList.find(p => p.id === product.id) ? '✓' : '+'}
+                          <Scale size={14} />
                         </button>
                         <a
                           href={product.url}
