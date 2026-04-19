@@ -350,8 +350,30 @@ const Tyres = () => {
               ))}
             </div>
 
-            {/* Brand dropdown */}
-            <div className="flex items-center gap-3 px-4 mb-4">
+            {/* Season pills */}
+            <div className="flex gap-2 overflow-x-auto px-4 pb-2">
+              {[
+                { id: 'all', label: '🔍 All Seasons' },
+                { id: 'summer', label: '☀️ Summer' },
+                { id: 'winter', label: '❄️ Winter' },
+                { id: 'allseason', label: '🌦️ All Season' },
+              ].map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => { setSeasonFilter(s.id as 'all'|'summer'|'winter'|'allseason'); setCurrentPage(1); }}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                    seasonFilter === s.id
+                      ? 'bg-red-600 border-red-500 text-white'
+                      : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Brand + Sort dropdowns */}
+            <div className="flex items-center gap-3 px-4 mb-4 flex-wrap">
               <select
                 value={brandFilter}
                 onChange={e => { setBrandFilter(e.target.value); setCurrentPage(1); }}
@@ -362,6 +384,15 @@ const Tyres = () => {
                     {b === 'all' ? '🏷️ All Brands' : b}
                   </option>
                 ))}
+              </select>
+              <select
+                value={sortBy}
+                onChange={e => { setSortBy(e.target.value as 'default'|'price_asc'|'price_desc'); setCurrentPage(1); }}
+                className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none hover:border-zinc-600 focus:border-red-500"
+              >
+                <option value="default">Default</option>
+                <option value="price_asc">💰 Cheapest first</option>
+                <option value="price_desc">💎 Most expensive first</option>
               </select>
               <p className="text-zinc-600 text-xs">{filteredProducts.length} tyres found</p>
             </div>
