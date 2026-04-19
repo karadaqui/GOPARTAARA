@@ -353,10 +353,10 @@ const Tyres = () => {
             {/* Season pills */}
             <div className="flex gap-2 overflow-x-auto px-4 pb-2">
               {[
-                { id: 'all', label: '🔍 All Seasons' },
+                { id: 'all', label: '🔍 All' },
                 { id: 'summer', label: '☀️ Summer' },
                 { id: 'winter', label: '❄️ Winter' },
-                { id: 'allseason', label: '🌦️ All Season' },
+                { id: 'allseason', label: '🌦️ 4 Season' },
               ].map(s => (
                 <button
                   key={s.id}
