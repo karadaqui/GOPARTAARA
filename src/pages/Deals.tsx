@@ -139,7 +139,7 @@ const Deals = () => {
           </div>
 
           <p className="text-muted-foreground/60 text-xs text-center mt-4">
-            Affiliate links — we may earn a small commission at no extra cost to you
+            {" "}
           </p>
         </section>
 
