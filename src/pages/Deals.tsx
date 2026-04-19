@@ -89,17 +89,17 @@ const amazonAff = (node: string) =>
   `https://www.amazon.co.uk/b?node=${node}&tag=gopartara-21`;
 
 const AMAZON_DEALS = [
-  { icon: "🏍️", title: "Motorbike Accessories & Parts", subtitle: "Helmets, gear & bike parts", url: amazonAff("251938031") },
-  { icon: "🚗", title: "Car Accessories", subtitle: "Mounts, covers, organizers & more", url: amazonAff("13677531") },
-  { icon: "🔧", title: "Car Parts", subtitle: "Brakes, filters, exhausts & more", url: amazonAff("340836031") },
-  { icon: "✨", title: "Car & Motorbike Care", subtitle: "Cleaning, wax, polish & detailing", url: amazonAff("11052681") },
-  { icon: "🛢️", title: "Oils & Fluids", subtitle: "Engine oil, coolant, brake fluid", url: amazonAff("11052651") },
-  { icon: "🔩", title: "Tools & Equipment", subtitle: "Garage tools, jacks, diagnostic kits", url: amazonAff("11052661") },
-  { icon: "👶", title: "Baby Car Seats", subtitle: "Group 0, 1, 2 & 3 seats", url: amazonAff("11052711") },
-  { icon: "🛞", title: "Tyres & Rims", subtitle: "All-season, winter & summer tyres", url: amazonAff("11052671") },
-  { icon: "🎁", title: "Gifts & Merchandise", subtitle: "Car-themed gifts & accessories", url: amazonAff("11052741") },
-  { icon: "📱", title: "Vehicle Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: amazonAff("11052691") },
-  { icon: "🏕️", title: "Motorhome", subtitle: "Caravan & motorhome accessories", url: amazonAff("11052731") },
+  { icon: "🏍️", title: "Motorbike Accessories & Parts", subtitle: "Helmets, gear & bike parts", url: amazonAff("251938031"), badge: "Bikers" },
+  { icon: "🚗", title: "Car Accessories", subtitle: "Mounts, covers, organizers & more", url: amazonAff("13677531"), badge: "Top picks" },
+  { icon: "🔧", title: "Car Parts", subtitle: "Brakes, filters, exhausts & more", url: amazonAff("340836031"), badge: "Essentials" },
+  { icon: "✨", title: "Car & Motorbike Care", subtitle: "Cleaning, wax, polish & detailing", url: amazonAff("11052681"), badge: "Detailing" },
+  { icon: "🛢️", title: "Oils & Fluids", subtitle: "Engine oil, coolant, brake fluid", url: amazonAff("11052651"), badge: "Essentials" },
+  { icon: "🔩", title: "Tools & Equipment", subtitle: "Garage tools, jacks, diagnostic kits", url: amazonAff("11052661"), badge: "Workshop" },
+  { icon: "👶", title: "Baby Car Seats", subtitle: "Group 0, 1, 2 & 3 seats", url: amazonAff("11052711"), badge: "Family" },
+  { icon: "🛞", title: "Tyres & Rims", subtitle: "All-season, winter & summer tyres", url: amazonAff("11052671"), badge: "Big savings" },
+  { icon: "🎁", title: "Gifts & Merchandise", subtitle: "Car-themed gifts & accessories", url: amazonAff("11052741"), badge: "Gift ideas" },
+  { icon: "📱", title: "Vehicle Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: amazonAff("11052691"), badge: "Hot deals" },
+  { icon: "🏕️", title: "Motorhome", subtitle: "Caravan & motorhome accessories", url: amazonAff("11052731"), badge: "Adventure" },
 ];
 const AMAZON_ALL_URL = "https://www.amazon.co.uk/b?node=248877031&tag=gopartara-21";
 
