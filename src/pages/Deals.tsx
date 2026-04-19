@@ -14,75 +14,75 @@ const EBAY_DEALS = [
     icon: "🔧",
     title: "Car Parts & Accessories",
     subtitle: "Brakes, filters, exhausts & more",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/car-parts-accessories"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/car-parts-accessories"),
     badge: "Top category",
   },
   {
     icon: "🏎️",
     title: "Garage Equipment & Tools",
     subtitle: "Jacks, compressors, testers",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/garage-equipment-tools"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/garage-equipment-tools"),
     badge: "Up to 50% off",
   },
   {
     icon: "📡",
     title: "Car Electronics",
     subtitle: "Dash cams, GPS, stereos & CarPlay",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/car-electronics"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/car-electronics"),
     badge: "Hot deals",
   },
   {
     icon: "🛞",
     title: "Wheels & Tyres",
     subtitle: "Alloys, winter tyres & more",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/wheels-tyres"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/wheels-tyres"),
     badge: "Big savings",
   },
   {
     icon: "🛢️",
     title: "Oils & Fluids",
     subtitle: "Engine oil, coolant, brake fluid",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/oils-fluids"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/oils-fluids"),
     badge: "Essentials",
   },
   {
     icon: "🚗",
     title: "Car Care, Utility & Trailers",
     subtitle: "Cleaning, covers, towing & more",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/car-care-utility-trailers"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/car-care-utility-trailers"),
     badge: "New deals",
   },
   {
     icon: "⚡",
     title: "Tuning & Styling",
     subtitle: "Performance parts & styling kits",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/tuning-styling"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/tuning-styling"),
     badge: "Performance",
   },
   {
     icon: "👕",
     title: "Apparel & Accessories",
     subtitle: "Driving gear, helmets & clothing",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/apparel-accessories"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/apparel-accessories"),
     badge: "Style",
   },
   {
     icon: "🏍️",
     title: "Motorcycle Parts",
     subtitle: "Bike parts, helmets & gear",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/motorcycle-parts"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/motorcycle-parts"),
     badge: "Bikers",
   },
   {
     icon: "⛺",
     title: "Camping & Caravan Parts",
     subtitle: "Awnings, accessories & spares",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/camping-caravan-parts"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/camping-caravan-parts"),
     badge: "Adventure",
   },
 ];
 
-const EBAY_ALL_URL = affUrl("https://www.ebay.co.uk/deals/automotive");
+const EBAY_ALL_URL = ebayAff("https://www.ebay.co.uk/deals/automotive");
 
 // ───────── Amazon ─────────
 const AMAZON_TAG = "gopartara-21";
