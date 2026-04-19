@@ -74,6 +74,17 @@ const getCurrency = (supplierId: string) => {
   return { symbol: '€', code: 'EUR' };
 };
 
+const detectSeason = (title: string): 'summer' | 'winter' | 'allseason' | 'unknown' => {
+  const t = title.toLowerCase()
+  const winterKeywords = ['winter', 'blizzak', 'winguard', 'ice', 'nordic', 'spike', 'polaris', 'wintercraft', 'alpin', 'snowproof', 'snow', 'frigo', 'arctiva', 'north', 'hiver', 'inverno', 'xice', 'pilot alpin']
+  const summerKeywords = ['summer', 'sport', 'potenza', 'pilot sport', 'eagle', 'cinturato', 'primacy', 'energy', 'efficientgrip', 'turanza', 'ultracontact', 'contisport', 'n blue', 'n fera', 'ventus', 'roadhawk', 'bluresponse', 'ziex']
+  const allSeasonKeywords = ['all season', 'allseason', 'all-season', '4season', '4 season', 'seasonproof', 'crossclimate', 'vector', 'allroad', 'a/s', 'as ', 'contact', 'weathermaster', 'winguard sport suv', 'kinergy 4s', 'nautilus']
+  if (allSeasonKeywords.some(k => t.includes(k))) return 'allseason'
+  if (winterKeywords.some(k => t.includes(k))) return 'winter'
+  if (summerKeywords.some(k => t.includes(k))) return 'summer'
+  return 'unknown'
+}
+
 const Tyres = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -86,7 +97,18 @@ const Tyres = () => {
   const [searched, setSearched] = useState(false);
   const [countryFilter, setCountryFilter] = useState('all');
   const [brandFilter, setBrandFilter] = useState('all');
+  const [seasonFilter, setSeasonFilter] = useState<'all'|'summer'|'winter'|'allseason'>('all');
+  const [sortBy, setSortBy] = useState<'default'|'price_asc'|'price_desc'>('default');
+  const [compareList, setCompareList] = useState<TyreProduct[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+
+  const toggleCompare = (product: TyreProduct) => {
+    setCompareList(prev =>
+      prev.find(p => p.id === product.id)
+        ? prev.filter(p => p.id !== product.id)
+        : prev.length < 4 ? [...prev, product] : prev
+    );
+  };
 
   const searchTyres = async () => {
     console.log('searchTyres called', { selectedWidth, selectedProfile, selectedRim })
@@ -94,6 +116,8 @@ const Tyres = () => {
     setSearched(true)
     setTyreProducts([])
     setCurrentPage(1)
+    setSeasonFilter('all')
+    setSortBy('default')
     const ids = ['4118', '10499', '10747', '12716', '12715']
 
     try {
@@ -178,13 +202,27 @@ const Tyres = () => {
   }, [tyreProducts]);
 
   const filteredProducts = useMemo(() => {
-    return tyreProducts.filter(p => {
-      const matchSupplier = countryFilter === 'all' || p.advertiserId === countryFilter;
-      const matchBrand = brandFilter === 'all' ||
-        (p.brand || '').toLowerCase() === brandFilter.toLowerCase();
-      return matchSupplier && matchBrand;
-    });
-  }, [tyreProducts, countryFilter, brandFilter]);
+    return tyreProducts
+      .filter(p => countryFilter === 'all' || p.advertiserId === countryFilter)
+      .filter(p => brandFilter === 'all' || (p.brand || '').toLowerCase() === brandFilter.toLowerCase())
+      .filter(p => {
+        if (seasonFilter === 'all') return true;
+        return detectSeason(p.title) === seasonFilter;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'price_asc') {
+          const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
+          const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
+          return pa - pb;
+        }
+        if (sortBy === 'price_desc') {
+          const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
+          const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
+          return pb - pa;
+        }
+        return 0;
+      });
+  }, [tyreProducts, countryFilter, brandFilter, seasonFilter, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / ITEMS_PER_PAGE));
   const pagedProducts = filteredProducts.slice(
@@ -312,8 +350,30 @@ const Tyres = () => {
               ))}
             </div>
 
-            {/* Brand dropdown */}
-            <div className="flex items-center gap-3 px-4 mb-4">
+            {/* Season pills */}
+            <div className="flex gap-2 overflow-x-auto px-4 pb-2">
+              {[
+                { id: 'all', label: '🔍 All Seasons' },
+                { id: 'summer', label: '☀️ Summer' },
+                { id: 'winter', label: '❄️ Winter' },
+                { id: 'allseason', label: '🌦️ All Season' },
+              ].map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => { setSeasonFilter(s.id as 'all'|'summer'|'winter'|'allseason'); setCurrentPage(1); }}
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                    seasonFilter === s.id
+                      ? 'bg-red-600 border-red-500 text-white'
+                      : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Brand + Sort dropdowns */}
+            <div className="flex items-center gap-3 px-4 mb-4 flex-wrap">
               <select
                 value={brandFilter}
                 onChange={e => { setBrandFilter(e.target.value); setCurrentPage(1); }}
@@ -324,6 +384,15 @@ const Tyres = () => {
                     {b === 'all' ? '🏷️ All Brands' : b}
                   </option>
                 ))}
+              </select>
+              <select
+                value={sortBy}
+                onChange={e => { setSortBy(e.target.value as 'default'|'price_asc'|'price_desc'); setCurrentPage(1); }}
+                className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none hover:border-zinc-600 focus:border-red-500"
+              >
+                <option value="default">Default</option>
+                <option value="price_asc">💰 Cheapest first</option>
+                <option value="price_desc">💎 Most expensive first</option>
               </select>
               <p className="text-zinc-600 text-xs">{filteredProducts.length} tyres found</p>
             </div>
@@ -423,6 +492,17 @@ const Tyres = () => {
                         >
                           <Bell className="w-3.5 h-3.5 text-zinc-500 hover:text-yellow-400" />
                         </button>
+                        <button
+                          onClick={(e) => { e.preventDefault(); toggleCompare(product); }}
+                          className={`text-xs px-2 py-1 rounded-lg border transition-all ${
+                            compareList.find(p => p.id === product.id)
+                              ? 'bg-red-600 border-red-500 text-white'
+                              : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500'
+                          }`}
+                          title="Compare"
+                        >
+                          {compareList.find(p => p.id === product.id) ? '✓' : '+'}
+                        </button>
                         <a
                           href={product.url}
                           target="_blank"
@@ -476,6 +556,29 @@ const Tyres = () => {
           </div>
         )}
       </main>
+
+      {compareList.length >= 2 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-700 p-4 z-50 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex gap-2 flex-wrap">
+            {compareList.map(p => (
+              <div key={p.id} className="text-xs text-white bg-zinc-800 px-3 py-2 rounded-lg">
+                {p.brand || p.title.substring(0, 20)} — {p.price}
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCompareList([])}
+              className="text-xs text-zinc-400 px-3 py-2 rounded-lg border border-zinc-700 hover:border-zinc-500"
+            >
+              Clear
+            </button>
+            <button className="text-xs text-white px-4 py-2 rounded-lg bg-red-600 font-bold hover:bg-red-500">
+              Compare {compareList.length} Tyres →
+            </button>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>
