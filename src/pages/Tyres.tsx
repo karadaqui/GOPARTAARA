@@ -113,6 +113,7 @@ const Tyres = () => {
     );
   };
 
+  // Items for the floating CompareBar (uses shared CompareItem shape)
   const compareItems: CompareItem[] = compareList.map(p => ({
     id: p.id,
     title: p.title,
@@ -123,6 +124,20 @@ const Tyres = () => {
     url: p.url,
     imageUrl: p.image,
     source: 'ebay',
+  }));
+
+  // Items for the tyre-specific compare modal (real data only)
+  const tyreCompareItems: TyreCompareItem[] = compareList.map(p => ({
+    id: p.id,
+    title: p.title,
+    price: p.price, // already includes £ or € symbol
+    image: p.image,
+    url: p.url,
+    brand: p.brand,
+    shipping: p.shipping,
+    supplierName: p.supplierMeta?.siteName || p.supplierName,
+    advertiserId: p.advertiserId,
+    season: detectSeason(p.title),
   }));
 
   const searchTyres = async () => {
