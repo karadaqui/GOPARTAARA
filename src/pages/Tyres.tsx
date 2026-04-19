@@ -10,22 +10,26 @@ import { toast } from "@/hooks/use-toast";
 import { CompareBar, type CompareItem } from "@/components/PartsComparison";
 import { TyreCompareModal, type TyreCompareItem } from "@/components/TyreCompareModal";
 
-const getFlag = (id: string): string => {
-  const flags: Record<string, string> = {
-    '4118': '🇬🇧',
-    '12715': '🌍',
-    '10499': '🇪🇸',
-    '12716': '🇮🇹',
-    '10747': '🇪🇪',
-    'all': '🌍',
-    'GB': '🇬🇧',
-    'UK': '🇬🇧',
-    'ES': '🇪🇸',
-    'IT': '🇮🇹',
-    'EE': '🇪🇪',
-    'Global': '🌍',
+const FlagImg = ({ advertiserId }: { advertiserId: string }) => {
+  const flagMap: Record<string, string> = {
+    '4118':  '1f1ec-1f1e7', // 🇬🇧 GB
+    '12715': '1f30d',       // 🌍 Globe
+    '10499': '1f1ea-1f1f8', // 🇪🇸 ES
+    '12716': '1f1ee-1f1f9', // 🇮🇹 IT
+    '10747': '1f1ea-1f1ea', // 🇪🇪 EE
+    'all':   '1f30d',       // 🌍 Globe
   }
-  return flags[id] || '🌍'
+  const code = flagMap[advertiserId] || '1f30d'
+  return (
+    <img 
+      src={`https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${code}.png`}
+      alt="flag"
+      width={20}
+      height={20}
+      className="inline-block"
+      loading="lazy"
+    />
+  )
 }
 
 const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305'];
@@ -389,9 +393,7 @@ const Tyres = () => {
                   }`}
                   title={s.shipsTo}
                 >
-                  <span style={{ fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif', fontSize: '1.2em' }}>
-                    {getFlag(s.id)}
-                  </span>
+                  <FlagImg advertiserId={s.id} />
                   <span>{s.siteName}</span>
                 </button>
               ))}
@@ -476,9 +478,7 @@ const Tyres = () => {
                           <span className="text-5xl opacity-20">○</span>
                         )}
                         <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
-                          <span style={{ fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif', fontSize: '1.2em' }}>
-                            {getFlag(product.advertiserId || product.supplierMeta?.id || 'all')}
-                          </span>
+                          <FlagImg advertiserId={product.advertiserId || product.supplierMeta?.id || 'all'} />
                         </div>
                       </div>
                     </a>
@@ -500,9 +500,7 @@ const Tyres = () => {
 
                       {/* Supplier info */}
                       <div className="flex items-center gap-1 mt-1">
-                        <span style={{ fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif', fontSize: '1.2em' }}>
-                          {getFlag(product.advertiserId || product.supplierMeta?.id || 'all')}
-                        </span>
+                        <FlagImg advertiserId={product.advertiserId || product.supplierMeta?.id || 'all'} />
                         <span className="text-[10px] text-zinc-500 truncate">
                           {product.supplierMeta?.siteName || product.supplierName}
                         </span>

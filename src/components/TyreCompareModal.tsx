@@ -1,6 +1,27 @@
 import { X, Scale, Package, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const FlagImg = ({ advertiserId }: { advertiserId?: string }) => {
+  const flagMap: Record<string, string> = {
+    '4118':  '1f1ec-1f1e7', // 🇬🇧 GB
+    '12715': '1f30d',       // 🌍 Globe
+    '10499': '1f1ea-1f1f8', // 🇪🇸 ES
+    '12716': '1f1ee-1f1f9', // 🇮🇹 IT
+    '10747': '1f1ea-1f1ea', // 🇪🇪 EE
+  }
+  const code = flagMap[advertiserId || ''] || '1f30d'
+  return (
+    <img 
+      src={`https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${code}.png`}
+      alt="flag"
+      width={16}
+      height={16}
+      className="inline-block"
+      loading="lazy"
+    />
+  )
+}
+
 export interface TyreCompareItem {
   id: string;
   title: string;
@@ -14,12 +35,12 @@ export interface TyreCompareItem {
   season: "summer" | "winter" | "allseason" | "unknown";
 }
 
-const SHIPS_TO: Record<string, string> = {
-  "4118": "🇬🇧 UK + 35 countries",
-  "12715": "🌍 64 countries",
-  "10499": "🇪🇸 Spain only",
-  "12716": "🇮🇹 Italy only",
-  "10747": "🇪🇪 Estonia, Latvia, Lithuania",
+const SHIPS_TO: Record<string, { flag: string; text: string }> = {
+  "4118": { flag: "4118", text: "UK + 35 countries" },
+  "12715": { flag: "12715", text: "64 countries" },
+  "10499": { flag: "10499", text: "Spain only" },
+  "12716": { flag: "12716", text: "Italy only" },
+  "10747": { flag: "10747", text: "Estonia, Latvia, Lithuania" },
 };
 
 const seasonLabel = (s: TyreCompareItem["season"]) => {
@@ -95,9 +116,12 @@ export const TyreCompareModal = ({ items, onRemove, onClose }: TyreCompareModalP
       key: "ships",
       label: "Ships to",
       render: (item) => {
-        const text = item.advertiserId ? SHIPS_TO[item.advertiserId] : null;
-        return text ? (
-          <span className="text-xs">{text}</span>
+        const info = item.advertiserId ? SHIPS_TO[item.advertiserId] : null;
+        return info ? (
+          <span className="text-xs flex items-center gap-1 justify-center">
+            <FlagImg advertiserId={item.advertiserId} />
+            {info.text}
+          </span>
         ) : (
           <span className="text-muted-foreground text-xs">—</span>
         );
