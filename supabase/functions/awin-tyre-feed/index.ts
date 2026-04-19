@@ -96,6 +96,7 @@ if (String(advertiserId) === '12716') {
       const ui12 = headers12.findIndex(h => h.includes('deeplink') || h.includes('awdeep'))
       const bi12 = headers12.findIndex(h => h.includes('brand'))
       const idi12 = headers12.findIndex(h => h.includes('productid') || h.includes('awproduct'))
+      const descIdx12 = headers12.findIndex(h => h.includes('desc'))
 
       const price = parseFloat(cols[pi12] || '0')
       if (price <= 0) continue
@@ -104,20 +105,28 @@ if (String(advertiserId) === '12716') {
       const url = cols[ui12] || ''
       if (!url || !url.startsWith('http')) continue
 
-      const rimNum12 = String(rim).replace(/^R/i, '')
-      const title = `${width}/${profile} R${rimNum12} — ${cols[ni12] || ''}`
-      prods12.push({
-        id: cols[idi12] || String(lc12),
-        title: title,
-        price: `€${price.toFixed(2)}`,
-        image: img,
-        url: url,
-        brand: cols[bi12] || '',
-        shipping: 'Free delivery',
-        advertiserId: '12716',
-        currency: '€',
-      })
-      if (prods12.length >= 24) break outer12
+      if (descIdx12 >= 0) {
+        const desc = (cols[descIdx12] || '').toLowerCase().replace(/"/g, '')
+        const rimNum12 = String(rim).replace(/^R/i, '')
+        if (!desc.includes(String(width) + '/' + String(profile))) continue
+        if (!desc.includes('r' + rimNum12)) continue
+        const descText = cols[descIdx12].replace(/"/g, '').trim()
+        prods12.push({
+          id: cols[idi12] || String(lc12),
+          title: descText,
+          price: `€${price.toFixed(2)}`,
+          image: img,
+          url: url,
+          brand: cols[bi12] || '',
+          shipping: 'Free delivery',
+          advertiserId: '12716',
+          currency: '€',
+        })
+        if (prods12.length >= 24) break outer12
+        continue
+      }
+      // If no description column, skip product entirely (can't verify size)
+      continue
     }
   }
   reader12.cancel().catch(() => {})
