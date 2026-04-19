@@ -89,17 +89,17 @@ const amazonAff = (node: string) =>
   `https://www.amazon.co.uk/b?node=${node}&tag=gopartara-21`;
 
 const AMAZON_DEALS = [
-  { icon: "🏍️", title: "Motorbike Accessories & Parts", subtitle: "Helmets, gear & bike parts", url: amazonAff("251938031") },
-  { icon: "🚗", title: "Car Accessories", subtitle: "Mounts, covers, organizers & more", url: amazonAff("13677531") },
-  { icon: "🔧", title: "Car Parts", subtitle: "Brakes, filters, exhausts & more", url: amazonAff("340836031") },
-  { icon: "✨", title: "Car & Motorbike Care", subtitle: "Cleaning, wax, polish & detailing", url: amazonAff("11052681") },
-  { icon: "🛢️", title: "Oils & Fluids", subtitle: "Engine oil, coolant, brake fluid", url: amazonAff("11052651") },
-  { icon: "🔩", title: "Tools & Equipment", subtitle: "Garage tools, jacks, diagnostic kits", url: amazonAff("11052661") },
-  { icon: "👶", title: "Baby Car Seats", subtitle: "Group 0, 1, 2 & 3 seats", url: amazonAff("11052711") },
-  { icon: "🛞", title: "Tyres & Rims", subtitle: "All-season, winter & summer tyres", url: amazonAff("11052671") },
-  { icon: "🎁", title: "Gifts & Merchandise", subtitle: "Car-themed gifts & accessories", url: amazonAff("11052741") },
-  { icon: "📱", title: "Vehicle Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: amazonAff("11052691") },
-  { icon: "🏕️", title: "Motorhome", subtitle: "Caravan & motorhome accessories", url: amazonAff("11052731") },
+  { icon: "🏍️", title: "Motorbike Accessories & Parts", subtitle: "Helmets, gear & bike parts", url: amazonAff("251938031"), badge: "Bikers" },
+  { icon: "🚗", title: "Car Accessories", subtitle: "Mounts, covers, organizers & more", url: amazonAff("13677531"), badge: "Top picks" },
+  { icon: "🔧", title: "Car Parts", subtitle: "Brakes, filters, exhausts & more", url: amazonAff("340836031"), badge: "Essentials" },
+  { icon: "✨", title: "Car & Motorbike Care", subtitle: "Cleaning, wax, polish & detailing", url: amazonAff("11052681"), badge: "Detailing" },
+  { icon: "🛢️", title: "Oils & Fluids", subtitle: "Engine oil, coolant, brake fluid", url: amazonAff("11052651"), badge: "Essentials" },
+  { icon: "🔩", title: "Tools & Equipment", subtitle: "Garage tools, jacks, diagnostic kits", url: amazonAff("11052661"), badge: "Workshop" },
+  { icon: "👶", title: "Baby Car Seats", subtitle: "Group 0, 1, 2 & 3 seats", url: amazonAff("11052711"), badge: "Family" },
+  { icon: "🛞", title: "Tyres & Rims", subtitle: "All-season, winter & summer tyres", url: amazonAff("11052671"), badge: "Big savings" },
+  { icon: "🎁", title: "Gifts & Merchandise", subtitle: "Car-themed gifts & accessories", url: amazonAff("11052741"), badge: "Gift ideas" },
+  { icon: "📱", title: "Vehicle Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: amazonAff("11052691"), badge: "Hot deals" },
+  { icon: "🏕️", title: "Motorhome", subtitle: "Caravan & motorhome accessories", url: amazonAff("11052731"), badge: "Adventure" },
 ];
 const AMAZON_ALL_URL = "https://www.amazon.co.uk/b?node=248877031&tag=gopartara-21";
 
@@ -223,21 +223,28 @@ const Deals = () => {
             </a>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {AMAZON_DEALS.map((deal) => (
               <a
                 key={deal.title}
                 href={deal.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`${deal.title} — Amazon UK`}
-                className="group flex flex-col p-4 bg-card border border-border hover:border-orange-900/50 hover:bg-orange-950/10 rounded-2xl transition-all hover:-translate-y-0.5"
+                aria-label={`${deal.title} — Amazon UK deal`}
+                className="group relative flex flex-col p-4 bg-card border border-border hover:border-border/80 hover:bg-card/80 rounded-2xl transition-all duration-200 hover:shadow-xl hover:shadow-background/40 hover:-translate-y-0.5"
               >
-                <span className="text-2xl mb-3">{deal.icon}</span>
-                <p className="text-foreground font-bold text-sm mb-1">{deal.title}</p>
+                <div className="absolute top-3 right-3">
+                  <span className="text-[10px] bg-primary/15 border border-primary/30 text-primary rounded-full px-2 py-0.5 font-bold">
+                    {deal.badge}
+                  </span>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-secondary border border-border flex items-center justify-center text-xl mb-3 group-hover:border-border/80 transition-colors">
+                  {deal.icon}
+                </div>
+                <p className="text-foreground font-bold text-sm mb-1 pr-12">{deal.title}</p>
                 <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
-                <div className="flex items-center gap-1 text-muted-foreground group-hover:text-orange-400 transition-colors">
-                  <span className="text-xs font-semibold">Shop now</span>
+                <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
+                  <span className="text-xs font-semibold">View deal</span>
                   <span className="text-xs group-hover:translate-x-0.5 transition-transform">→</span>
                 </div>
               </a>
