@@ -85,9 +85,10 @@ const EBAY_DEALS = [
 const EBAY_ALL_URL = ebayAff("https://www.ebay.co.uk/deals/automotive");
 
 // ───────── Amazon ─────────
-const AMAZON_TAG = "gopartara-21";
-const withAmazonTag = (baseUrl: string) =>
-  `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}tag=${AMAZON_TAG}`;
+const amazonAff = (url: string) => {
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}tag=gopartara-21`;
+};
 
 const AMAZON_DEALS = [
   {
@@ -95,33 +96,31 @@ const AMAZON_DEALS = [
     title: "Car Accessories",
     subtitle: "Mounts, organizers, seat covers & more",
     icon: "🚗",
-    url: withAmazonTag("https://www.amazon.co.uk/b?_encoding=UTF8&node=301308031"),
+    url: amazonAff("https://www.amazon.co.uk/s?k=car+accessories&i=automotive"),
   },
   {
     id: "amazon-oils-fluids",
     title: "Oils & Fluids",
     subtitle: "Engine oil, coolant, brake fluid & more",
     icon: "🛢️",
-    url: withAmazonTag("https://www.amazon.co.uk/b?_encoding=UTF8&node=301315031"),
+    url: amazonAff("https://www.amazon.co.uk/s?k=engine+oil&i=automotive"),
   },
   {
     id: "amazon-tools",
     title: "Tools & Equipment",
     subtitle: "Garage tools, jacks, diagnostic kits",
     icon: "🔧",
-    url: withAmazonTag("https://www.amazon.co.uk/b?_encoding=UTF8&node=2486235031"),
+    url: amazonAff("https://www.amazon.co.uk/s?k=garage+tools&i=automotive"),
   },
   {
     id: "amazon-electronics",
     title: "Vehicle Electronics",
     subtitle: "Dash cams, GPS, CarPlay adapters & more",
     icon: "📱",
-    url: withAmazonTag("https://www.amazon.co.uk/b?_encoding=UTF8&node=3013843031"),
+    url: amazonAff("https://www.amazon.co.uk/s?k=dash+cam&i=automotive"),
   },
 ];
-const AMAZON_ALL_URL = withAmazonTag(
-  "https://www.amazon.co.uk/b?_encoding=UTF8&node=248877031",
-);
+const AMAZON_ALL_URL = amazonAff("https://www.amazon.co.uk/deals");
 
 const Deals = () => {
   return (
