@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Camera, Car, Bookmark, Bell, Store, ShoppingBag, BarChart3, Gift } from "lucide-react";
+import { Camera, Car, Bookmark, Bell, Store, BarChart3, Gift } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const features = [
