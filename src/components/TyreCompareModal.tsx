@@ -1,6 +1,27 @@
 import { X, Scale, Package, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const FlagImg = ({ advertiserId }: { advertiserId?: string }) => {
+  const flagMap: Record<string, string> = {
+    '4118':  '1f1ec-1f1e7', // 🇬🇧 GB
+    '12715': '1f30d',       // 🌍 Globe
+    '10499': '1f1ea-1f1f8', // 🇪🇸 ES
+    '12716': '1f1ee-1f1f9', // 🇮🇹 IT
+    '10747': '1f1ea-1f1ea', // 🇪🇪 EE
+  }
+  const code = flagMap[advertiserId || ''] || '1f30d'
+  return (
+    <img 
+      src={`https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${code}.png`}
+      alt="flag"
+      width={16}
+      height={16}
+      className="inline-block"
+      loading="lazy"
+    />
+  )
+}
+
 export interface TyreCompareItem {
   id: string;
   title: string;
