@@ -3,9 +3,11 @@ import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
 
-// ───────── eBay (Awin affiliate) ─────────
-const affUrl = (url: string) =>
-  `https://www.awin1.com/cread.php?awinmid=6220&awinaffid=2845282&clickref=partara-deals&p=${encodeURIComponent(url)}`;
+// ───────── eBay (eBay Partner Network) ─────────
+const ebayAff = (url: string) => {
+  const base = "https://rover.ebay.com/rover/1/710-53481-19255-0/1";
+  return `${base}?mpre=${encodeURIComponent(url)}&campid=5339148333&customid=partara&toolid=10049`;
+};
 
 const EBAY_DEALS = [
   {
