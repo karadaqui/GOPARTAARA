@@ -10,22 +10,26 @@ import { toast } from "@/hooks/use-toast";
 import { CompareBar, type CompareItem } from "@/components/PartsComparison";
 import { TyreCompareModal, type TyreCompareItem } from "@/components/TyreCompareModal";
 
-const getFlag = (id: string): string => {
-  const flags: Record<string, string> = {
-    '4118': '🇬🇧',
-    '12715': '🌍',
-    '10499': '🇪🇸',
-    '12716': '🇮🇹',
-    '10747': '🇪🇪',
-    'all': '🌍',
-    'GB': '🇬🇧',
-    'UK': '🇬🇧',
-    'ES': '🇪🇸',
-    'IT': '🇮🇹',
-    'EE': '🇪🇪',
-    'Global': '🌍',
+const FlagImg = ({ advertiserId }: { advertiserId: string }) => {
+  const flagMap: Record<string, string> = {
+    '4118':  '1f1ec-1f1e7', // 🇬🇧 GB
+    '12715': '1f30d',       // 🌍 Globe
+    '10499': '1f1ea-1f1f8', // 🇪🇸 ES
+    '12716': '1f1ee-1f1f9', // 🇮🇹 IT
+    '10747': '1f1ea-1f1ea', // 🇪🇪 EE
+    'all':   '1f30d',       // 🌍 Globe
   }
-  return flags[id] || '🌍'
+  const code = flagMap[advertiserId] || '1f30d'
+  return (
+    <img 
+      src={`https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${code}.png`}
+      alt="flag"
+      width={20}
+      height={20}
+      className="inline-block"
+      loading="lazy"
+    />
+  )
 }
 
 const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305'];
