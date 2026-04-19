@@ -3,89 +3,92 @@ import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
 
-// ───────── eBay (Awin affiliate) ─────────
-const affUrl = (url: string) =>
-  `https://www.awin1.com/cread.php?awinmid=6220&awinaffid=2845282&clickref=partara-deals&p=${encodeURIComponent(url)}`;
+// ───────── eBay (eBay Partner Network) ─────────
+const ebayAff = (url: string) => {
+  const base = "https://rover.ebay.com/rover/1/710-53481-19255-0/1";
+  return `${base}?mpre=${encodeURIComponent(url)}&campid=5339148333&customid=partara&toolid=10049`;
+};
 
 const EBAY_DEALS = [
   {
     icon: "🔧",
     title: "Car Parts & Accessories",
     subtitle: "Brakes, filters, exhausts & more",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/car-parts-accessories"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/car-parts-accessories"),
     badge: "Top category",
   },
   {
     icon: "🏎️",
     title: "Garage Equipment & Tools",
     subtitle: "Jacks, compressors, testers",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/garage-equipment-tools"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/garage-equipment-tools"),
     badge: "Up to 50% off",
   },
   {
     icon: "📡",
     title: "Car Electronics",
     subtitle: "Dash cams, GPS, stereos & CarPlay",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/car-electronics"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/car-electronics"),
     badge: "Hot deals",
   },
   {
     icon: "🛞",
     title: "Wheels & Tyres",
     subtitle: "Alloys, winter tyres & more",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/wheels-tyres"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/wheels-tyres"),
     badge: "Big savings",
   },
   {
     icon: "🛢️",
     title: "Oils & Fluids",
     subtitle: "Engine oil, coolant, brake fluid",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/oils-fluids"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/oils-fluids"),
     badge: "Essentials",
   },
   {
     icon: "🚗",
     title: "Car Care, Utility & Trailers",
     subtitle: "Cleaning, covers, towing & more",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/car-care-utility-trailers"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/car-care-utility-trailers"),
     badge: "New deals",
   },
   {
     icon: "⚡",
     title: "Tuning & Styling",
     subtitle: "Performance parts & styling kits",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/tuning-styling"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/tuning-styling"),
     badge: "Performance",
   },
   {
     icon: "👕",
     title: "Apparel & Accessories",
     subtitle: "Driving gear, helmets & clothing",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/apparel-accessories"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/apparel-accessories"),
     badge: "Style",
   },
   {
     icon: "🏍️",
     title: "Motorcycle Parts",
     subtitle: "Bike parts, helmets & gear",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/motorcycle-parts"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/motorcycle-parts"),
     badge: "Bikers",
   },
   {
     icon: "⛺",
     title: "Camping & Caravan Parts",
     subtitle: "Awnings, accessories & spares",
-    url: affUrl("https://www.ebay.co.uk/deals/automotive/camping-caravan-parts"),
+    url: ebayAff("https://www.ebay.co.uk/deals/automotive/camping-caravan-parts"),
     badge: "Adventure",
   },
 ];
 
-const EBAY_ALL_URL = affUrl("https://www.ebay.co.uk/deals/automotive");
+const EBAY_ALL_URL = ebayAff("https://www.ebay.co.uk/deals/automotive");
 
 // ───────── Amazon ─────────
-const AMAZON_TAG = "gopartara-21";
-const withAmazonTag = (baseUrl: string) =>
-  `${baseUrl}${baseUrl.includes("?") ? "&" : "?"}tag=${AMAZON_TAG}`;
+const amazonAff = (url: string) => {
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}tag=gopartara-21`;
+};
 
 const AMAZON_DEALS = [
   {
@@ -93,33 +96,31 @@ const AMAZON_DEALS = [
     title: "Car Accessories",
     subtitle: "Mounts, organizers, seat covers & more",
     icon: "🚗",
-    url: withAmazonTag("https://www.amazon.co.uk/b?_encoding=UTF8&node=301308031"),
+    url: amazonAff("https://www.amazon.co.uk/s?k=car+accessories&i=automotive"),
   },
   {
     id: "amazon-oils-fluids",
     title: "Oils & Fluids",
     subtitle: "Engine oil, coolant, brake fluid & more",
     icon: "🛢️",
-    url: withAmazonTag("https://www.amazon.co.uk/b?_encoding=UTF8&node=301315031"),
+    url: amazonAff("https://www.amazon.co.uk/s?k=engine+oil&i=automotive"),
   },
   {
     id: "amazon-tools",
     title: "Tools & Equipment",
     subtitle: "Garage tools, jacks, diagnostic kits",
     icon: "🔧",
-    url: withAmazonTag("https://www.amazon.co.uk/b?_encoding=UTF8&node=2486235031"),
+    url: amazonAff("https://www.amazon.co.uk/s?k=garage+tools&i=automotive"),
   },
   {
     id: "amazon-electronics",
     title: "Vehicle Electronics",
     subtitle: "Dash cams, GPS, CarPlay adapters & more",
     icon: "📱",
-    url: withAmazonTag("https://www.amazon.co.uk/b?_encoding=UTF8&node=3013843031"),
+    url: amazonAff("https://www.amazon.co.uk/s?k=dash+cam&i=automotive"),
   },
 ];
-const AMAZON_ALL_URL = withAmazonTag(
-  "https://www.amazon.co.uk/b?_encoding=UTF8&node=248877031",
-);
+const AMAZON_ALL_URL = amazonAff("https://www.amazon.co.uk/deals");
 
 const Deals = () => {
   return (
