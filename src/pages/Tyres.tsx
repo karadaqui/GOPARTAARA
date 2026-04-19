@@ -7,7 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
-import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsComparison";
+import { CompareBar, type CompareItem } from "@/components/PartsComparison";
+import { TyreCompareModal, type TyreCompareItem } from "@/components/TyreCompareModal";
 
 const flag = (id: string): string =>
   ({ '4118': '🇬🇧', '12715': '🌍', '10499': '🇪🇸', '12716': '🇮🇹', '10747': '🇪🇪' } as Record<string, string>)[id] ?? '🌍';
@@ -112,6 +113,7 @@ const Tyres = () => {
     );
   };
 
+  // Items for the floating CompareBar (uses shared CompareItem shape)
   const compareItems: CompareItem[] = compareList.map(p => ({
     id: p.id,
     title: p.title,
@@ -122,6 +124,20 @@ const Tyres = () => {
     url: p.url,
     imageUrl: p.image,
     source: 'ebay',
+  }));
+
+  // Items for the tyre-specific compare modal (real data only)
+  const tyreCompareItems: TyreCompareItem[] = compareList.map(p => ({
+    id: p.id,
+    title: p.title,
+    price: p.price, // already includes £ or € symbol
+    image: p.image,
+    url: p.url,
+    brand: p.brand,
+    shipping: p.shipping,
+    supplierName: p.supplierMeta?.siteName || p.supplierName,
+    advertiserId: p.advertiserId,
+    season: detectSeason(p.title),
   }));
 
   const searchTyres = async () => {
@@ -577,8 +593,8 @@ const Tyres = () => {
         onClear={() => setCompareList([])}
       />
       {showCompareModal && (
-        <CompareModal
-          items={compareItems}
+        <TyreCompareModal
+          items={tyreCompareItems}
           onRemove={(id) => setCompareList(prev => prev.filter(p => p.id !== id))}
           onClose={() => setShowCompareModal(false)}
         />
