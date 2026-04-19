@@ -356,6 +356,13 @@ const HeroSection = () => {
                   <Search size={14} />
                   VIN 🌍
                 </button>
+                <button
+                  onClick={() => navigate('/tyres')}
+                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 text-muted-foreground hover:text-foreground"
+                >
+                  <span>⭕</span>
+                  Tyre Search
+                </button>
               </div>
             </div>
 
