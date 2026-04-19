@@ -492,6 +492,17 @@ const Tyres = () => {
                         >
                           <Bell className="w-3.5 h-3.5 text-zinc-500 hover:text-yellow-400" />
                         </button>
+                        <button
+                          onClick={(e) => { e.preventDefault(); toggleCompare(product); }}
+                          className={`text-xs px-2 py-1 rounded-lg border transition-all ${
+                            compareList.find(p => p.id === product.id)
+                              ? 'bg-red-600 border-red-500 text-white'
+                              : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:border-zinc-500'
+                          }`}
+                          title="Compare"
+                        >
+                          {compareList.find(p => p.id === product.id) ? '✓' : '+'}
+                        </button>
                         <a
                           href={product.url}
                           target="_blank"
