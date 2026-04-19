@@ -294,7 +294,7 @@ const Tyres = () => {
           <div className="text-center pt-16 pb-10 px-4 relative">
             <div className="inline-flex items-center gap-2 bg-red-600/10 border border-red-600/20 rounded-full px-4 py-1.5 mb-6">
               <span className="text-red-400 text-xs font-semibold tracking-widest uppercase">
-                Tyres & Wheels
+                Tyres
               </span>
             </div>
             <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight mb-3">
