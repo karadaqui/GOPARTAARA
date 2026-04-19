@@ -557,6 +557,29 @@ const Tyres = () => {
         )}
       </main>
 
+      {compareList.length >= 2 && (
+        <div className="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-zinc-700 p-4 z-50 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex gap-2 flex-wrap">
+            {compareList.map(p => (
+              <div key={p.id} className="text-xs text-white bg-zinc-800 px-3 py-2 rounded-lg">
+                {p.brand || p.title.substring(0, 20)} — {p.price}
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCompareList([])}
+              className="text-xs text-zinc-400 px-3 py-2 rounded-lg border border-zinc-700 hover:border-zinc-500"
+            >
+              Clear
+            </button>
+            <button className="text-xs text-white px-4 py-2 rounded-lg bg-red-600 font-bold hover:bg-red-500">
+              Compare {compareList.length} Tyres →
+            </button>
+          </div>
+        </div>
+      )}
+
       <Footer />
     </div>
   );
