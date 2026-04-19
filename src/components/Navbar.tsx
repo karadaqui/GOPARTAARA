@@ -20,6 +20,7 @@ const moreLinks = [
   { label: "Saved Parts", href: "/saved" },
   { label: "Tyres", href: "/tyres" },
   { label: "Deals", href: "/deals" },
+  { label: "Compare", href: "/compare" },
   { label: "Blog", href: "/blog" },
   { label: "For Business", href: "/business" },
   { label: "About", href: "/about" },
