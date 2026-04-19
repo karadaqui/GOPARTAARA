@@ -134,67 +134,107 @@ const Blog = () => {
       />
       <Navbar />
 
-      <div className="container max-w-4xl py-20 px-4">
-        <div className="text-center mb-12">
-          <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">
+      <div className="container max-w-5xl px-4 pb-20">
+        {/* Header */}
+        <div className="text-center py-16 px-4 max-w-2xl mx-auto">
+          <h1 className="font-display text-4xl font-black text-foreground mb-3">
             <span className="text-primary">PART</span>ARA Blog
           </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Expert advice on car parts, maintenance tips, and industry insights — by our expert automotive team.
+          <p className="text-muted-foreground text-sm">
+            Expert guides, maintenance tips & industry insights
           </p>
+        </div>
+
+        {/* Category filter */}
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-4 max-w-5xl mx-auto">
+          {CATS.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                activeCategory === cat
+                  ? 'bg-primary border-primary text-primary-foreground'
+                  : 'bg-card border-border text-muted-foreground hover:border-muted-foreground/50'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Search */}
+        <div className="mb-8 mt-2">
+          <input
+            type="text"
+            placeholder="Search articles..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-muted-foreground/50 transition-colors"
+          />
         </div>
 
         {loading ? (
           <div className="flex justify-center py-20">
             <Loader2 className="animate-spin text-primary" size={32} />
           </div>
-        ) : posts.length === 0 ? (
-          <div className="text-center py-20">
-            <BookOpen size={48} className="text-muted-foreground/30 mx-auto mb-4" />
-            <h2 className="font-display text-xl font-bold mb-2">No posts yet</h2>
-            <p className="text-muted-foreground text-sm">New articles are published daily. Check back soon!</p>
-          </div>
-        ) : (
-          <div className="space-y-5">
-            {posts.map((post) => (
-              <div key={post.id} className="relative group">
+        ) : (() => {
+          const filteredPosts = posts
+            .filter((p) => activeCategory === 'All' || p.category === activeCategory)
+            .filter(
+              (p) =>
+                !searchQuery ||
+                p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                p.preview?.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+
+          if (filteredPosts.length === 0) {
+            return (
+              <div className="text-center py-20">
+                <BookOpen size={48} className="text-muted-foreground/30 mx-auto mb-4" />
+                <h2 className="font-display text-xl font-bold mb-2">No posts found</h2>
+                <p className="text-muted-foreground text-sm">
+                  Try a different category or search term.
+                </p>
+              </div>
+            );
+          }
+
+          const featured = filteredPosts[0];
+          const rest = filteredPosts.slice(1);
+
+          const formatDate = (d: string) =>
+            new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+          return (
+            <>
+              {/* Featured post */}
+              <div className="relative group mb-8">
                 <Link
-                  to={`/blog/${post.slug}`}
-                  className="block glass rounded-2xl p-6 md:p-8 hover:border-primary/30 transition-all"
+                  to={`/blog/${featured.slug}`}
+                  className="block p-6 bg-card border border-border rounded-2xl hover:border-muted-foreground/40 transition-all"
                 >
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3 flex-wrap">
-                    {post.category && (
-                      <span className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full ${categoryColor(post.category)}`}>
-                        {post.category}
+                  <div className="flex items-center gap-2 mb-3 flex-wrap">
+                    {featured.category && (
+                      <span className={`text-xs rounded-full px-2 py-0.5 font-semibold ${categoryColor(featured.category)}`}>
+                        {featured.category}
                       </span>
                     )}
-                    <span className="flex items-center gap-1.5">
-                      <Calendar size={12} />
-                      {new Date(post.published_at).toLocaleDateString("en-GB", {
-                        day: "numeric", month: "long", year: "numeric",
-                      })}
+                    <span className="text-muted-foreground text-xs">
+                      {formatDate(featured.published_at)}
+                      {featured.read_time && <> · {featured.read_time}</>}
                     </span>
-                    {post.read_time && (
-                      <>
-                        <span>·</span>
-                        <span className="flex items-center gap-1">
-                          <Clock size={12} />
-                          {post.read_time}
-                        </span>
-                      </>
-                    )}
                   </div>
-                  <h2 className="font-display text-xl md:text-2xl font-bold mb-3 group-hover:text-primary transition-colors">
-                    {post.title}
+                  <h2 className="font-display text-2xl font-black text-foreground mb-2 group-hover:text-primary transition-colors">
+                    {featured.title}
                   </h2>
-                  <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{post.preview}</p>
-                  <span className="text-primary text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
-                    Read More <ArrowRight size={14} />
-                  </span>
+                  <p className="text-muted-foreground text-sm leading-relaxed mb-4 max-w-2xl">
+                    {featured.preview}
+                  </p>
+                  <span className="text-primary text-sm font-semibold">Read article →</span>
                 </Link>
                 {isAdmin && (
                   <button
-                    onClick={(e) => { e.preventDefault(); setDeleteId(post.id); }}
+                    onClick={(e) => { e.preventDefault(); setDeleteId(featured.id); }}
                     className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center text-destructive hover:bg-destructive/20 transition-colors opacity-0 group-hover:opacity-100"
                     title="Delete post"
                   >
@@ -202,9 +242,53 @@ const Blog = () => {
                   </button>
                 )}
               </div>
-            ))}
-          </div>
-        )}
+
+              {/* Grid of remaining posts */}
+              {rest.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {rest.map((post) => (
+                    <div key={post.id} className="relative group">
+                      <Link
+                        to={`/blog/${post.slug}`}
+                        className="flex flex-col h-full p-5 bg-card border border-border rounded-2xl hover:border-muted-foreground/40 hover:-translate-y-0.5 transition-all duration-200"
+                      >
+                        <div className="flex items-center gap-2 mb-3">
+                          {post.category && (
+                            <span className="text-[10px] bg-secondary border border-border text-muted-foreground rounded-full px-2 py-0.5">
+                              {post.category}
+                            </span>
+                          )}
+                          {post.read_time && (
+                            <span className="text-muted-foreground text-[10px] ml-auto">{post.read_time}</span>
+                          )}
+                        </div>
+                        <h3 className="text-foreground font-bold text-sm mb-2 leading-snug group-hover:text-primary transition-colors line-clamp-2">
+                          {post.title}
+                        </h3>
+                        <p className="text-muted-foreground text-xs leading-relaxed flex-1 line-clamp-3 mb-3">
+                          {post.preview}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground text-[10px]">{formatDate(post.published_at)}</span>
+                          <span className="text-muted-foreground group-hover:text-primary text-xs transition-colors">→</span>
+                        </div>
+                      </Link>
+                      {isAdmin && (
+                        <button
+                          onClick={(e) => { e.preventDefault(); setDeleteId(post.id); }}
+                          className="absolute top-3 right-3 w-7 h-7 rounded-lg bg-destructive/10 flex items-center justify-center text-destructive hover:bg-destructive/20 transition-colors opacity-0 group-hover:opacity-100"
+                          title="Delete post"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
+          );
+        })()}
 
         {/* Newsletter */}
         <div className="mt-16 rounded-2xl border border-border bg-card/40 p-6 sm:p-8 text-center">
