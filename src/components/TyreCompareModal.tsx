@@ -116,9 +116,12 @@ export const TyreCompareModal = ({ items, onRemove, onClose }: TyreCompareModalP
       key: "ships",
       label: "Ships to",
       render: (item) => {
-        const text = item.advertiserId ? SHIPS_TO[item.advertiserId] : null;
-        return text ? (
-          <span className="text-xs">{text}</span>
+        const info = item.advertiserId ? SHIPS_TO[item.advertiserId] : null;
+        return info ? (
+          <span className="text-xs flex items-center gap-1 justify-center">
+            <FlagImg advertiserId={item.advertiserId} />
+            {info.text}
+          </span>
         ) : (
           <span className="text-muted-foreground text-xs">—</span>
         );
