@@ -716,6 +716,11 @@ const SearchResults = () => {
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${searchMode === "vin" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
               <Search size={14} /> VIN 🌍
             </button>
+            <button onClick={() => navigate('/tyres')}
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-white border border-zinc-700/50 transition-all">
+              <span>⭕</span>
+              <span>Tyre Search</span>
+            </button>
           </div>
 
           {searchMode === "text" ? (
