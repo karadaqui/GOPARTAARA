@@ -52,6 +52,7 @@ const Tyres = lazy(() => import("./pages/Tyres.tsx"));
 const Deals = lazy(() => import("./pages/Deals.tsx"));
 const AffiliateDisclosure = lazy(() => import("./pages/AffiliateDisclosure.tsx"));
 const Business = lazy(() => import("./pages/Business.tsx"));
+const Compare = lazy(() => import("./pages/Compare.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -103,6 +104,7 @@ const App = () => (
               <Route path="/deals" element={<Deals />} />
               <Route path="/affiliate-disclosure" element={<AffiliateDisclosure />} />
               <Route path="/business" element={<Business />} />
+              <Route path="/compare" element={<Compare />} />
               <Route path="*" element={<NotFound />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
