@@ -157,7 +157,7 @@ const Deals = () => {
               />
               <div>
                 <h2 className="text-foreground font-bold text-lg">Amazon UK</h2>
-                <p className="text-muted-foreground text-xs">Deals & Savings · tag: {AMAZON_TAG}</p>
+                <p className="text-muted-foreground text-xs">Deals & Savings · Updated daily</p>
               </div>
             </div>
             <a
