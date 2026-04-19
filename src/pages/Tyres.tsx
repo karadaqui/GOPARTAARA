@@ -593,8 +593,8 @@ const Tyres = () => {
         onClear={() => setCompareList([])}
       />
       {showCompareModal && (
-        <CompareModal
-          items={compareItems}
+        <TyreCompareModal
+          items={tyreCompareItems}
           onRemove={(id) => setCompareList(prev => prev.filter(p => p.id !== id))}
           onClose={() => setShowCompareModal(false)}
         />
