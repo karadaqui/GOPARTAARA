@@ -264,14 +264,7 @@ const HeroSection = () => {
     }
   };
 
-  const activeSupplier = { name: "eBay", description: "Global — works in all countries" };
-  const comingSoonSuppliers = [
-    { name: "Amazon" },
-    { name: "Euro Car Parts" },
-    { name: "GSF Car Parts" },
-    { name: "Car Parts 4 Less" },
-    { name: "Autodoc" },
-  ];
+
 
   const handleShare = async () => {
     const shareText = "gopartara.com";
@@ -745,33 +738,65 @@ const HeroSection = () => {
 
         {/* Suppliers Section */}
         <div className={`transition-all duration-700 ease-out delay-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <div className="mt-12 sm:mt-16 space-y-6">
-            {/* Active Supplier */}
-            <div className="flex items-center justify-center gap-2">
-              <span className="text-xs text-muted-foreground uppercase tracking-wider">Active Supplier</span>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-xl border bg-[hsl(142,76%,36%,0.1)] border-[hsl(142,76%,36%,0.3)]">
-                <span className="w-2 h-2 rounded-full bg-[hsl(142,76%,45%)] animate-pulse" />
-                <span className="text-sm font-semibold text-[hsl(142,76%,45%)]">{activeSupplier.name}</span>
-                <span className="text-xs text-[hsl(142,76%,45%,0.7)]">— {activeSupplier.description}</span>
-                <span className="text-[hsl(142,76%,45%)]">✅</span>
-              </div>
+          <section className="py-12 px-4 max-w-4xl mx-auto">
+            <h2 className="text-2xl font-black text-white text-center mb-2">
+              Active Suppliers
+            </h2>
+            <p className="text-zinc-500 text-sm text-center mb-8">
+              Live product feeds — updated daily
+            </p>
+
+            {/* Active suppliers grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+              {[
+                { name: 'eBay Global', flag: '1f30d', category: 'All Car Parts', coverage: '1,000,000+ parts worldwide' },
+                { name: 'mytyres.co.uk', flag: '1f1ec-1f1e7', category: 'Tyres', coverage: 'UK + 35 countries' },
+                { name: 'Tyres UK (Tyres.net)', flag: '1f30d', category: 'Tyres', coverage: '64 countries' },
+                { name: 'neumaticos-online.es', flag: '1f1ea-1f1f8', category: 'Tyres', coverage: 'Spain only' },
+                { name: 'Pneumatici IT', flag: '1f1ee-1f1f9', category: 'Tyres', coverage: 'Italy only' },
+                { name: 'ReifenDirekt EE', flag: '1f1ea-1f1ea', category: 'Tyres', coverage: 'Estonia, Latvia, Lithuania' },
+                { name: 'Green Spark Plug Co.', flag: '1f1ec-1f1e7', category: 'Classic Car Parts', coverage: 'Worldwide shipping' },
+              ].map(s => (
+                <div key={s.name} className="flex items-center gap-4 p-4 bg-zinc-900/80 border border-zinc-800 rounded-2xl hover:border-zinc-700 transition-all group">
+                  <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center flex-shrink-0">
+                    <img
+                      src={`https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${s.flag}.png`}
+                      alt="flag"
+                      width={20}
+                      height={20}
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <p className="text-white font-bold text-sm truncate">{s.name}</p>
+                      <span className="flex-shrink-0 text-[9px] bg-green-500/20 border border-green-500/30 text-green-400 rounded-full px-1.5 py-0.5 font-bold">
+                        ● LIVE
+                      </span>
+                    </div>
+                    <p className="text-zinc-500 text-xs">{s.category}</p>
+                    <p className="text-zinc-600 text-xs">{s.coverage}</p>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            {/* Coming Soon */}
-            <div>
-              <p className="text-xs text-muted-foreground/60 uppercase tracking-wider mb-3">More suppliers coming soon</p>
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                {comingSoonSuppliers.map((s) => (
-                  <div
-                    key={s.name}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border/20 bg-card/10 opacity-40 grayscale cursor-default"
-                  >
-                    <span className="text-xs font-medium text-muted-foreground">{s.name}</span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-muted text-muted-foreground">Soon</span>
-                  </div>
+            {/* Coming soon */}
+            <div className="border border-zinc-800/50 rounded-2xl p-4">
+              <p className="text-zinc-600 text-xs font-semibold uppercase tracking-wider mb-3">
+                Coming Soon
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {['Amazon', 'Euro Car Parts', 'GSF Car Parts', 'Autodoc', 'Halfords', 'Black Circles', 'Conrad Electronic'].map(name => (
+                  <span key={name} className="text-xs bg-zinc-900 border border-zinc-800 text-zinc-600 rounded-full px-3 py-1">
+                    {name}
+                  </span>
                 ))}
               </div>
             </div>
+          </section>
+
+          <div className="space-y-6">
 
             {/* Community Support Banner */}
             <div className="py-12 text-center max-w-xl mx-auto">
