@@ -266,15 +266,6 @@ const HeroSection = () => {
 
 
 
-  const handleShare = async () => {
-    const shareText = "gopartara.com";
-    try {
-      await navigator.clipboard.writeText(shareText);
-      toast({ title: "Link copied! Thanks for sharing 💙", duration: 2000 });
-    } catch {
-      toast({ title: "Couldn't copy link", variant: "destructive" });
-    }
-  };
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden animated-gradient-bg">
