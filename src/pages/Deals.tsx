@@ -5,8 +5,8 @@ import BackToTop from "@/components/BackToTop";
 
 // ───────── eBay (eBay Partner Network) ─────────
 const ebayAff = (url: string) => {
-  const base = "https://rover.ebay.com/rover/1/710-53481-19255-0/1";
-  return `${base}?mpre=${encodeURIComponent(url)}&campid=5339148333&customid=partara&toolid=10049`;
+  const sep = url.includes("?") ? "&" : "?";
+  return `${url}${sep}mkcid=1&mkrid=710-53481-19255-0&siteid=3&campid=5339148333&toolid=20014&customid=partara&mkevt=1`;
 };
 
 const EBAY_DEALS = [
