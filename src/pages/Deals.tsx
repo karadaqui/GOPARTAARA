@@ -85,42 +85,23 @@ const EBAY_DEALS = [
 const EBAY_ALL_URL = ebayAff("https://www.ebay.co.uk/deals/automotive");
 
 // ───────── Amazon ─────────
-const amazonAff = (url: string) => {
-  const separator = url.includes("?") ? "&" : "?";
-  return `${url}${separator}tag=gopartara-21`;
-};
+const amazonAff = (node: string) =>
+  `https://www.amazon.co.uk/b?node=${node}&tag=gopartara-21`;
 
 const AMAZON_DEALS = [
-  {
-    id: "amazon-accessories",
-    title: "Car Accessories",
-    subtitle: "Mounts, organizers, seat covers & more",
-    icon: "🚗",
-    url: amazonAff("https://www.amazon.co.uk/s?k=car+accessories&i=automotive"),
-  },
-  {
-    id: "amazon-oils-fluids",
-    title: "Oils & Fluids",
-    subtitle: "Engine oil, coolant, brake fluid & more",
-    icon: "🛢️",
-    url: amazonAff("https://www.amazon.co.uk/s?k=engine+oil&i=automotive"),
-  },
-  {
-    id: "amazon-tools",
-    title: "Tools & Equipment",
-    subtitle: "Garage tools, jacks, diagnostic kits",
-    icon: "🔧",
-    url: amazonAff("https://www.amazon.co.uk/s?k=garage+tools&i=automotive"),
-  },
-  {
-    id: "amazon-electronics",
-    title: "Vehicle Electronics",
-    subtitle: "Dash cams, GPS, CarPlay adapters & more",
-    icon: "📱",
-    url: amazonAff("https://www.amazon.co.uk/s?k=dash+cam&i=automotive"),
-  },
+  { icon: "🏍️", title: "Motorbike Accessories & Parts", subtitle: "Helmets, gear & bike parts", url: amazonAff("251938031") },
+  { icon: "🚗", title: "Car Accessories", subtitle: "Mounts, covers, organizers & more", url: amazonAff("13677531") },
+  { icon: "🔧", title: "Car Parts", subtitle: "Brakes, filters, exhausts & more", url: amazonAff("340836031") },
+  { icon: "✨", title: "Car & Motorbike Care", subtitle: "Cleaning, wax, polish & detailing", url: amazonAff("11052681") },
+  { icon: "🛢️", title: "Oils & Fluids", subtitle: "Engine oil, coolant, brake fluid", url: amazonAff("11052651") },
+  { icon: "🔩", title: "Tools & Equipment", subtitle: "Garage tools, jacks, diagnostic kits", url: amazonAff("11052661") },
+  { icon: "👶", title: "Baby Car Seats", subtitle: "Group 0, 1, 2 & 3 seats", url: amazonAff("11052711") },
+  { icon: "🛞", title: "Tyres & Rims", subtitle: "All-season, winter & summer tyres", url: amazonAff("11052671") },
+  { icon: "🎁", title: "Gifts & Merchandise", subtitle: "Car-themed gifts & accessories", url: amazonAff("11052741") },
+  { icon: "📱", title: "Vehicle Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: amazonAff("11052691") },
+  { icon: "🏕️", title: "Motorhome", subtitle: "Caravan & motorhome accessories", url: amazonAff("11052731") },
 ];
-const AMAZON_ALL_URL = amazonAff("https://www.amazon.co.uk/deals");
+const AMAZON_ALL_URL = "https://www.amazon.co.uk/b?node=248877031&tag=gopartara-21";
 
 const Deals = () => {
   return (
