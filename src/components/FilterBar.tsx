@@ -146,13 +146,19 @@ const CONDITION_OPTIONS: FilterOption[] = [
 
 const BRAND_OPTIONS: FilterOption[] = [
   { label: "All Suppliers", value: "All" },
-  { label: "🛒 eBay", value: "eBay" },
+  { label: "🌍 eBay Global", value: "eBay" },
   { label: "🔩 Green Spark Plug Co. (Classic & Vintage)", value: "Green Spark Plug Co." },
-  { label: "Amazon", value: "Amazon" },
+  { label: "🇬🇧 mytyres.co.uk", value: "mytyres.co.uk" },
+  { label: "🌍 Tyres UK (Tyres.net)", value: "Tyres UK" },
+  { label: "🇪🇸 neumaticos-online.es", value: "neumaticos-online.es" },
+  { label: "🇮🇹 Pneumatici IT", value: "Pneumatici IT" },
+  { label: "🇪🇪 ReifenDirekt EE", value: "ReifenDirekt EE" },
+  { label: "Amazon · Coming soon", value: "Amazon", disabled: true },
   { label: "Euro Car Parts · Coming soon", value: "Euro Car Parts", disabled: true },
   { label: "GSF Car Parts · Coming soon", value: "GSF Car Parts", disabled: true },
   { label: "Autodoc · Coming soon", value: "Autodoc", disabled: true },
-  { label: "Car Parts 4 Less · Coming soon", value: "Car Parts 4 Less", disabled: true },
+  { label: "Halfords · Coming soon", value: "Halfords", disabled: true },
+  { label: "Black Circles · Coming soon", value: "Black Circles", disabled: true },
 ];
 
 const FilterBar = ({

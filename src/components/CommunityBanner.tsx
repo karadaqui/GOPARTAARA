@@ -82,7 +82,7 @@ const CommunityBanner = () => {
           {/* Coming soon suppliers */}
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-[11px] text-muted-foreground/50">Adding soon:</span>
-            {['Euro Car Parts', 'GSF Car Parts', 'Autodoc', 'Halfords'].map(s => (
+            {['Amazon', 'Euro Car Parts', 'GSF Car Parts', 'Autodoc', 'Halfords', 'Black Circles'].map(s => (
               <span key={s} className="text-[11px] text-muted-foreground/50 bg-secondary border border-border/50 rounded-full px-2.5 py-0.5">
                 {s}
               </span>
