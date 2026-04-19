@@ -193,7 +193,7 @@ const Deals = () => {
           </div>
 
           <p className="text-muted-foreground/60 text-xs text-center mt-4">
-            Amazon UK affiliate links — tag: gopartara-21
+            {" "}
           </p>
         </section>
       </main>
