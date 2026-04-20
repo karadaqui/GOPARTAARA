@@ -156,11 +156,18 @@ const Messages = () => {
     if (!user) return;
     setLoading(true);
 
-    const { data: convs } = await supabase
-      .from("conversations")
-      .select("*")
-      .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
-      .order("created_at", { ascending: false });
+    let convs: any[] | null = null;
+    try {
+      const res = await supabase
+        .from("conversations")
+        .select("*")
+        .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
+        .order("created_at", { ascending: false });
+      convs = res.data;
+    } catch (e) {
+      // Silently fall back to empty list on transient errors (503, network)
+      console.warn("loadConversations failed:", e);
+    }
 
     if (!convs || convs.length === 0) { setConversations([]); setLoading(false); return; }
 
