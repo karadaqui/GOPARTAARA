@@ -104,15 +104,23 @@ const Navbar = () => {
 
         <div className="flex items-center gap-3">
           <div className="hidden md:flex items-center gap-8">
-            {primaryLinks.map((l) => (
-              <button
-                key={l.label}
-                onClick={() => handleNavClick(l.href)}
-                className="nav-link text-sm text-muted-foreground hover:text-foreground transition-colors py-1"
-              >
-                {l.label}
-              </button>
-            ))}
+            {primaryLinks.map((l) => {
+              const isActive =
+                l.href === "/"
+                  ? location.pathname === "/" && l.label === "Home"
+                  : location.pathname === l.href || location.pathname.startsWith(l.href + "/");
+              return (
+                <button
+                  key={l.label}
+                  onClick={() => handleNavClick(l.href)}
+                  className={`nav-link text-sm transition-colors py-1 ${
+                    isActive ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {l.label}
+                </button>
+              );
+            })}
 
             <div
               className="relative"
