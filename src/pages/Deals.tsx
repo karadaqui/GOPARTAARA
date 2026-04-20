@@ -104,8 +104,8 @@ const Deals = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Deals & Savings — Curated UK Car Parts Deals | GOPARTARA"
-        description="Curated affiliate deals from the UK's most trusted automotive retailers — eBay UK, Amazon UK and classic car part specialists. Updated daily."
+        title="Car Parts Deals & Savings — eBay & Amazon UK | GOPARTARA"
+        description="Best automotive deals from eBay UK and Amazon UK. Car parts, tools, tyres, electronics and more. Updated daily. Affiliate links."
         path="/deals"
       />
       <Navbar />
