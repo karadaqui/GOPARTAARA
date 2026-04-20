@@ -278,7 +278,7 @@ const HeroSection = () => {
         <div className={`transition-all duration-700 ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            ⚡ 10,000+ searches completed this week
+            ⚡ 1,000,000+ parts searchable · Free to compare
           </div>
         </div>
 
@@ -359,7 +359,7 @@ const HeroSection = () => {
                     <Search className="text-muted-foreground shrink-0" size={20} />
                     <input
                       type="text"
-                      placeholder="Search parts... e.g. BMW E46 bumper"
+                      placeholder="e.g. BMW E46 brake pads, Ford Focus clutch..."
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm sm:text-base py-3.5"
@@ -423,7 +423,7 @@ const HeroSection = () => {
                       className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors group"
                     >
                       <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse flex-shrink-0" />
-                      New? Get your first month Pro free →
+                      ✨ New? Get your first month Pro free · No card needed →
                     </a>
                   </div>
                 </div>

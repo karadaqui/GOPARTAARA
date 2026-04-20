@@ -1,4 +1,4 @@
-import { Search, BarChart3, ShoppingCart } from "lucide-react";
+import { Search, BarChart3, ShoppingCart, Bell } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const steps = [
@@ -20,6 +20,12 @@ const steps = [
     title: "Save",
     desc: "Order directly from your chosen supplier. No middleman, no markup — just the best deal.",
   },
+  {
+    icon: Bell,
+    number: "4",
+    title: "Save More",
+    desc: "Set price alerts and get notified when parts drop to your target price. Never overpay again.",
+  },
 ];
 
 const HowItWorksSection = () => (
@@ -31,13 +37,13 @@ const HowItWorksSection = () => (
           How It Works
         </span>
         <h2 className="font-display text-3xl md:text-5xl font-bold mb-5 tracking-tight">
-          Three Simple Steps
+          Four Simple Steps
         </h2>
         <p className="text-muted-foreground max-w-xl mx-auto text-base md:text-lg leading-relaxed">
           Finding the right car part shouldn't take hours. With PARTARA, it takes seconds.
         </p>
       </ScrollReveal>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
         {steps.map((s, i) => (
           <ScrollReveal key={s.title} delay={i + 1}>
             <div className="relative text-center group">
