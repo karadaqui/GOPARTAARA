@@ -25,7 +25,7 @@ const Business = () => {
     <div className="min-h-screen bg-background">
       <SEOHead
         title="GOPARTARA for Business — Garages, Fleets & Trade"
-        description="Custom GOPARTARA plans for garages, dealerships, fleet managers and trade buyers. Unlimited searches, team access, analytics and priority support."
+        description="Custom plans for garages, dealerships and fleet managers. Unlimited searches, team access, analytics and priority support."
         path="/business"
       />
       <Navbar />

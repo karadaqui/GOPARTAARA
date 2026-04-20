@@ -690,8 +690,8 @@ const SearchResults = () => {
   return (
     <div className="min-h-screen flex flex-col" style={{ background: "#0a0a0a" }}>
       <SEOHead
-        title="Search Car Parts — GOPARTARA"
-        description="Search 1 million+ car parts by name, reg plate or photo. Compare live prices from eBay UK and global suppliers."
+        title="Search Car Parts — GOPARTARA | Compare UK Prices"
+        description="Search millions of car parts from eBay, Euro Car Parts, GSF and more. Compare prices side by side and find the best deal in seconds."
         path="/search"
       />
       <Navbar />
