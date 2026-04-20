@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import VehicleSelector from "@/components/VehicleSelector";
@@ -114,7 +115,7 @@ const MyMarket = () => {
   const [shopDeleteConfirm, setShopDeleteConfirm] = useState(false);
   const [shopDeleting, setShopDeleting] = useState(false);
   const [shopDeleteSent, setShopDeleteSent] = useState(false);
-  const [userPlan, setUserPlan] = useState<string>("free");
+  const { plan: userPlan } = useSubscription();
   const [disputedReviews, setDisputedReviews] = useState<DisputedReview[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [boostModalOpen, setBoostModalOpen] = useState(false);
@@ -163,16 +164,8 @@ const MyMarket = () => {
 
   useEffect(() => {
     if (!user) { navigate("/auth"); return; }
-    // Load user plan for listing limits, then load data
-    supabase
-      .from("profiles")
-      .select("subscription_plan")
-      .eq("user_id", user.id)
-      .single()
-      .then(({ data }) => {
-        if (data) setUserPlan(data.subscription_plan);
-        loadData();
-      });
+    // Plan now comes from SubscriptionContext — no extra DB query
+    loadData();
   }, [user]);
 
   const loadData = async () => {

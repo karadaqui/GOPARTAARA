@@ -13,6 +13,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle
@@ -136,25 +137,20 @@ const Admin = () => {
   const [shopDeleteConfirm, setShopDeleteConfirm] = useState(false);
   const [shopDeleting, setShopDeleting] = useState(false);
 
+  const { plan: subscriptionPlan, loading: subLoading } = useSubscription();
+
   useEffect(() => {
     if (!user) { navigate("/auth?redirect=/admin"); return; }
-    const checkAccess = async () => {
-      const { data: adminProfile } = await supabase
-        .from("profiles")
-        .select("subscription_plan")
-        .eq("user_id", user.id)
-        .single();
-      const ok = user.id === ADMIN_UUID || user.email === ADMIN_EMAIL || adminProfile?.subscription_plan === "admin";
-      if (!ok) {
-        toast({ title: "Access denied", variant: "destructive" });
-        navigate("/");
-        return;
-      }
-      setIsAdmin(true);
-      loadAll();
-    };
-    checkAccess();
-  }, [user]);
+    if (subLoading) return;
+    const ok = user.id === ADMIN_UUID || user.email === ADMIN_EMAIL || subscriptionPlan === "admin";
+    if (!ok) {
+      toast({ title: "Access denied", variant: "destructive" });
+      navigate("/");
+      return;
+    }
+    setIsAdmin(true);
+    loadAll();
+  }, [user, subLoading, subscriptionPlan]);
 
   const loadAll = useCallback(async () => {
     setLoading(true);

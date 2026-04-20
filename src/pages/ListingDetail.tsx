@@ -18,6 +18,7 @@ import VerifiedSellerBadge from "@/components/badges/VerifiedSellerBadge";
 import SafeImage from "@/components/SafeImage";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useToast } from "@/hooks/use-toast";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle
@@ -85,6 +86,7 @@ const ListingDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { plan: userPlan } = useSubscription();
   const { toast } = useToast();
 
   const [listing, setListing] = useState<ListingFull | null>(null);
@@ -92,7 +94,6 @@ const ListingDetail = () => {
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState(0);
-  const [userPlan, setUserPlan] = useState<string | null>(null);
 
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
@@ -118,12 +119,7 @@ const ListingDetail = () => {
     if (id) loadListing();
   }, [id, user]);
 
-  useEffect(() => {
-    if (user) {
-      supabase.from("profiles").select("subscription_plan").eq("user_id", user.id).single()
-        .then(({ data }) => setUserPlan(data?.subscription_plan || "free"));
-    }
-  }, [user]);
+  // userPlan now comes from SubscriptionContext (no extra DB query)
 
   const loadListing = async () => {
     setLoading(true);

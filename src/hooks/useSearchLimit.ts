@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 
 const FREE_LIMIT = 10;
 // Only these plans grant unlimited searches - seller plans do NOT
@@ -27,10 +28,12 @@ export const incrementGuestSearch = () => {
 
 export const useSearchLimit = () => {
   const { user } = useAuth();
+  const { plan } = useSubscription();
   const [searchCount, setSearchCount] = useState(0);
   const [bonusSearches, setBonusSearches] = useState(0);
-  const [isPro, setIsPro] = useState(false);
   const [loaded, setLoaded] = useState(false);
+
+  const isPro = UNLIMITED_SEARCH_PLANS.includes(plan);
 
   const refresh = useCallback(async () => {
     if (!user) return;
@@ -51,17 +54,16 @@ export const useSearchLimit = () => {
         count = historyRes.count || 0;
       } catch { /* silently ignore 503 */ }
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("bonus_searches, subscription_plan")
-        .eq("user_id", user.id)
-        .single();
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("bonus_searches")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        setBonusSearches(profile?.bonus_searches || 0);
+      } catch { /* silently ignore */ }
 
       setSearchCount(count || 0);
-      setBonusSearches(profile?.bonus_searches || 0);
-      const dbPlan = profile?.subscription_plan || "free";
-      const hasPaidPlan = UNLIMITED_SEARCH_PLANS.includes(dbPlan);
-      setIsPro(hasPaidPlan);
     } catch (e) {
       // Silently ignore - don't block search on DB errors
       console.warn("useSearchLimit refresh failed:", e);

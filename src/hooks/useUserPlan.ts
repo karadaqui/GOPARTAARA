@@ -1,6 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useCallback, useMemo } from "react";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 
 export type PlanType = "free" | "pro" | "elite" | "admin";
 
@@ -134,33 +133,8 @@ export const markUpgradeShown = (feature: string) => {
 };
 
 export const useUserPlan = (): UserPlan => {
-  const { user } = useAuth();
-  const [plan, setPlan] = useState<PlanType>("free");
-  const [loading, setLoading] = useState(true);
-
-  const refresh = useCallback(async () => {
-    if (!user) {
-      setPlan("free");
-      setLoading(false);
-      return;
-    }
-    try {
-      const { data } = await supabase
-        .from("profiles")
-        .select("subscription_plan")
-        .eq("user_id", user.id)
-        .single();
-      const dbPlan = data?.subscription_plan || "free";
-      setPlan(dbPlan as PlanType);
-    } catch {
-      setPlan("free");
-    }
-    setLoading(false);
-  }, [user]);
-
-  useEffect(() => {
-    refresh();
-  }, [refresh]);
+  const { plan: subPlan, loading, refresh } = useSubscription();
+  const plan = (subPlan as PlanType) || "free";
 
   const features = useMemo(() => PLAN_FEATURES[plan] || PLAN_FEATURES.free, [plan]);
   const isAdmin = ADMIN_LIKE.includes(plan);
