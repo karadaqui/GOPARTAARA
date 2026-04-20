@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useToast } from "@/hooks/use-toast";
 import { getMakes, getModels, getYears, getAllYears } from "@/data/vehicleDatabase";
 import VehicleExpiryBadges from "@/components/garage/VehicleExpiryBadges";
@@ -62,10 +63,10 @@ const Garage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const userPlan = useUserPlan();
+  const { plan: subscriptionPlan } = useSubscription();
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isPro, setIsPro] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -88,6 +89,7 @@ const Garage = () => {
   const [vinFound, setVinFound] = useState(false);
 
   const PAID_PLANS = ["pro","elite","admin"];
+  const isPro = PAID_PLANS.includes(subscriptionPlan || "free");
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }
@@ -96,12 +98,16 @@ const Garage = () => {
 
   const loadData = async () => {
     if (!user) return;
-    const [{ data: vehs }, { data: profile }] = await Promise.all([
-      supabase.from("user_vehicles").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
-      supabase.from("profiles").select("subscription_plan").eq("user_id", user.id).single(),
-    ]);
-    setVehicles((vehs as Vehicle[]) || []);
-    setIsPro(PAID_PLANS.includes(profile?.subscription_plan || "free"));
+    try {
+      const { data: vehs } = await supabase
+        .from("user_vehicles")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      setVehicles((vehs as Vehicle[]) || []);
+    } catch {
+      setVehicles([]);
+    }
     setLoading(false);
   };
 
