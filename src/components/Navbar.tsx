@@ -11,11 +11,11 @@ const primaryLinks = [
   { label: "Home", href: "/" },
   { label: "Search", href: "/" },
   { label: "Marketplace", href: "/marketplace" },
+  { label: "Deals", href: "/deals" },
   { label: "Pricing", href: "/pricing" },
 ];
 
 const moreLinks = [
-  { label: "Deals", href: "/deals" },
   { label: "Tyres", href: "/tyres" },
   { label: "For Business", href: "/business" },
   { label: "Compare", href: "/compare" },
