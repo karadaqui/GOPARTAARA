@@ -115,7 +115,7 @@ const MyMarket = () => {
   const [shopDeleteConfirm, setShopDeleteConfirm] = useState(false);
   const [shopDeleting, setShopDeleting] = useState(false);
   const [shopDeleteSent, setShopDeleteSent] = useState(false);
-  const [userPlan, setUserPlan] = useState<string>("free");
+  const { plan: userPlan } = useSubscription();
   const [disputedReviews, setDisputedReviews] = useState<DisputedReview[]>([]);
   const [offers, setOffers] = useState<Offer[]>([]);
   const [boostModalOpen, setBoostModalOpen] = useState(false);
