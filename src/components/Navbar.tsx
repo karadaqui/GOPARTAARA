@@ -104,15 +104,23 @@ const Navbar = () => {
 
         <div className="flex items-center gap-3">
           <div className="hidden md:flex items-center gap-8">
-            {primaryLinks.map((l) => (
-              <button
-                key={l.label}
-                onClick={() => handleNavClick(l.href)}
-                className="nav-link text-sm text-muted-foreground hover:text-foreground transition-colors py-1"
-              >
-                {l.label}
-              </button>
-            ))}
+            {primaryLinks.map((l) => {
+              const isActive =
+                l.href === "/"
+                  ? location.pathname === "/" && l.label === "Home"
+                  : location.pathname === l.href || location.pathname.startsWith(l.href + "/");
+              return (
+                <button
+                  key={l.label}
+                  onClick={() => handleNavClick(l.href)}
+                  className={`nav-link text-sm transition-colors py-1 ${
+                    isActive ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {l.label}
+                </button>
+              );
+            })}
 
             <div
               className="relative"
@@ -188,15 +196,23 @@ const Navbar = () => {
       {open && (
         <div className="md:hidden glass-strong border-t border-border/40 pb-4 safe-bottom">
           <div className="container flex flex-col gap-3 pt-3">
-            {primaryLinks.map((l) => (
-              <button
-                key={l.label}
-                onClick={() => handleNavClick(l.href)}
-                className="py-2.5 text-left text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {l.label}
-              </button>
-            ))}
+            {primaryLinks.map((l) => {
+              const isActive =
+                l.href === "/"
+                  ? location.pathname === "/" && l.label === "Home"
+                  : location.pathname === l.href || location.pathname.startsWith(l.href + "/");
+              return (
+                <button
+                  key={l.label}
+                  onClick={() => handleNavClick(l.href)}
+                  className={`py-2.5 text-left text-sm transition-colors ${
+                    isActive ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {l.label}
+                </button>
+              );
+            })}
 
             <div className="mt-1 border-t border-border/40 pt-2">
               <span className="block px-0 pb-1 text-xs uppercase tracking-wider text-muted-foreground">More</span>

@@ -300,8 +300,19 @@ const Marketplace = () => {
             ) : filtered.length === 0 ? (
               <div className="glass rounded-2xl p-12 text-center">
                 <Package size={48} className="text-muted-foreground mx-auto mb-4" />
-                <h3 className="font-display text-lg font-bold mb-2">No listings found</h3>
-                <p className="text-muted-foreground">Try adjusting your search or filters.</p>
+                <h3 className="font-display text-lg font-bold mb-2">
+                  {listings.length === 0 ? "No parts listed yet" : "No listings found"}
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  {listings.length === 0
+                    ? "Be the first to list! Reach thousands of UK car owners."
+                    : "Try adjusting your search or filters."}
+                </p>
+                {listings.length === 0 && (
+                  <Button onClick={() => navigate("/my-market")} className="rounded-xl gap-2 h-11">
+                    <Store size={16} /> List Your Parts
+                  </Button>
+                )}
               </div>
             ) : (
               <>
