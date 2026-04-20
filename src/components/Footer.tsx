@@ -29,18 +29,20 @@ const Footer = () => {
             <h4 className="font-semibold text-sm mb-4">Product</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><button onClick={() => handleLink("/")} className="hover:text-foreground transition-colors">Search</button></li>
+              <li><button onClick={() => handleLink("/tyres")} className="hover:text-foreground transition-colors">Tyres</button></li>
               <li><button onClick={() => handleLink("/marketplace")} className="hover:text-foreground transition-colors">Marketplace</button></li>
+              <li><button onClick={() => handleLink("/deals")} className="hover:text-foreground transition-colors">Deals</button></li>
               <li><button onClick={() => handleLink("/garage")} className="hover:text-foreground transition-colors">My Garage</button></li>
-              <li><button onClick={() => handleLink("/blog")} className="hover:text-foreground transition-colors">Blog</button></li>
               <li><button onClick={() => handleLink("/pricing")} className="hover:text-foreground transition-colors">Pricing</button></li>
-              <li><button onClick={() => handleLink("/business")} className="hover:text-foreground transition-colors">For Business</button></li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold text-sm mb-4">Company</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li><button onClick={() => handleLink("/about")} className="hover:text-foreground transition-colors">About</button></li>
+              <li><button onClick={() => handleLink("/blog")} className="hover:text-foreground transition-colors">Blog</button></li>
               <li><button onClick={() => handleLink("/contact")} className="hover:text-foreground transition-colors">Contact</button></li>
+              <li><button onClick={() => handleLink("/business")} className="hover:text-foreground transition-colors">For Business</button></li>
             </ul>
           </div>
           <div>
@@ -57,8 +59,8 @@ const Footer = () => {
               <li><button onClick={() => handleLink("/privacy")} className="hover:text-foreground transition-colors">Privacy Policy</button></li>
               <li><button onClick={() => handleLink("/privacy")} className="hover:text-foreground transition-colors">Cookie Policy</button></li>
               <li><button onClick={() => handleLink("/terms")} className="hover:text-foreground transition-colors">Terms of Service</button></li>
-              <li><button onClick={() => handleLink("/affiliate-disclosure")} className="hover:text-foreground transition-colors">Affiliate Disclosure</button></li>
               <li><button onClick={() => handleLink("/subscription-policy")} className="hover:text-foreground transition-colors">Subscription Policy</button></li>
+              <li><button onClick={() => handleLink("/affiliate-disclosure")} className="hover:text-foreground transition-colors">Affiliate Disclosure</button></li>
             </ul>
           </div>
         </div>
