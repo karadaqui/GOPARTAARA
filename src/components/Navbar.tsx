@@ -15,14 +15,11 @@ const primaryLinks = [
 ];
 
 const moreLinks = [
-  { label: "My Garage", href: "/garage" },
-  { label: "My Market", href: "/my-market" },
-  { label: "Saved Parts", href: "/saved" },
-  { label: "Tyres", href: "/tyres" },
   { label: "Deals", href: "/deals" },
+  { label: "Tyres", href: "/tyres" },
+  { label: "For Business", href: "/business" },
   { label: "Compare", href: "/compare" },
   { label: "Blog", href: "/blog" },
-  { label: "For Business", href: "/business" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
