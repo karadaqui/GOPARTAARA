@@ -409,3 +409,16 @@
   color: white;
   letter-spacing: -0.03em;
 }
+
+/* Mobile performance: drastically reduce animation/transition durations
+   so low-powered devices don't spend frames on decorative motion. Users
+   with prefers-reduced-motion already get this via shadcn defaults. */
+@media (max-width: 768px) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.1ms !important;
+  }
+}
+
