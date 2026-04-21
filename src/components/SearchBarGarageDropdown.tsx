@@ -26,9 +26,16 @@ const SearchBarGarageDropdown = ({ onSelect }: Props) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      fetchedRef.current = false;
+      setVehicles([]);
+      return;
+    }
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
     supabase
       .from("user_vehicles")
       .select("id, nickname, make, model, year")
@@ -36,7 +43,7 @@ const SearchBarGarageDropdown = ({ onSelect }: Props) => {
       .then(({ data }) => {
         if (data) setVehicles(data as Vehicle[]);
       });
-  }, [user]);
+  }, [user?.id]);
 
   if (!user) return null;
 

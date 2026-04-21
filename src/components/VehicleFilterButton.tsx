@@ -25,9 +25,16 @@ interface Props {
 const VehicleFilterButton = ({ onSelect }: Props) => {
   const { user } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const fetchedRef = useRef(false);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      fetchedRef.current = false;
+      setVehicles([]);
+      return;
+    }
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
     supabase
       .from("user_vehicles")
       .select("id, nickname, make, model, year, engine_size")
@@ -35,7 +42,7 @@ const VehicleFilterButton = ({ onSelect }: Props) => {
       .then(({ data }) => {
         if (data) setVehicles(data as Vehicle[]);
       });
-  }, [user]);
+  }, [user?.id]);
 
   if (!user || vehicles.length === 0) return null;
 

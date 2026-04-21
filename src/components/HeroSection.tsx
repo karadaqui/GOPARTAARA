@@ -95,9 +95,16 @@ const HeroSection = () => {
     return () => clearTimeout(t);
   }, []);
 
-  // Fetch user's first garage vehicle
+  // Fetch user's first garage vehicle (deduped per session)
+  const garageFetchedRef = useRef(false);
   useEffect(() => {
-    if (!user) { setGarageVehicle(null); return; }
+    if (!user) {
+      setGarageVehicle(null);
+      garageFetchedRef.current = false;
+      return;
+    }
+    if (garageFetchedRef.current) return;
+    garageFetchedRef.current = true;
     supabase
       .from("user_vehicles")
       .select("make, model, year")
@@ -107,7 +114,7 @@ const HeroSection = () => {
       .then(({ data }) => {
         if (data?.[0]) setGarageVehicle(data[0]);
       });
-  }, [user]);
+  }, [user?.id]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
