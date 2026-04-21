@@ -12,7 +12,7 @@ const steps = [
     icon: BarChart3,
     number: "2",
     title: "Compare",
-    desc: "See prices from trusted UK &amp; global suppliers side by side. Filter by price, rating, and availability.",
+    desc: "See prices from trusted UK & global suppliers side by side. Filter by price, rating, and availability.",
   },
   {
     icon: ShoppingCart,
@@ -54,7 +54,7 @@ const HowItWorksSection = () => (
                 {s.number}
               </span>
               <h3 className="font-display text-lg md:text-xl font-bold mb-3">{s.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto" dangerouslySetInnerHTML={{ __html: s.desc }} />
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{s.desc}</p>
             </div>
           </ScrollReveal>
         ))}
