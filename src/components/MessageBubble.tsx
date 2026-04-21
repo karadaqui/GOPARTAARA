@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,6 +8,7 @@ const MessageBubble = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
+  const fetchedRef = useRef(false);
 
   const fetchUnread = async () => {
     if (!user) return;
@@ -33,11 +34,19 @@ const MessageBubble = () => {
     }
   };
 
+  // Initial fetch — deduped per session. Realtime + 60s interval handle updates.
   useEffect(() => {
+    if (!user) {
+      fetchedRef.current = false;
+      setUnreadCount(0);
+      return;
+    }
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
     fetchUnread();
-    const interval = setInterval(fetchUnread, 30000);
+    const interval = setInterval(fetchUnread, 60000);
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user?.id]);
 
   // Realtime for new messages
   useEffect(() => {
@@ -54,7 +63,7 @@ const MessageBubble = () => {
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [user]);
+  }, [user?.id]);
 
   return (
     <button
