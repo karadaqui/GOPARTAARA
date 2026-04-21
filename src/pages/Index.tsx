@@ -29,7 +29,7 @@ const Index = () => {
   }, [location.state]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20 md:pb-0">
       <SEOHead
         title="GOPARTARA — Compare Car Parts Prices UK | 1M+ Parts"
         description="Find and compare car parts prices from trusted UK & global suppliers. Search 1,000,000+ parts, compare prices, and save money instantly. Free to use."
