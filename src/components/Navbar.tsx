@@ -187,87 +187,127 @@ const Navbar = () => {
           {!loading && user && <MessageBubble />}
           {!loading && user && <NotificationBell />}
 
-          <button className="md:hidden text-foreground" onClick={() => setOpen(!open)}>
+          <button
+            className="flex md:hidden items-center justify-center min-h-[44px] min-w-[44px] text-foreground rounded-xl"
+            onClick={() => setOpen(!open)}
+            aria-label={open ? "Close menu" : "Open menu"}
+          >
             {open ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
+      {/* Mobile full-screen slide-in menu */}
       {open && (
-        <div className="md:hidden glass-strong border-t border-border/40 pb-4 safe-bottom">
-          <div className="container flex flex-col gap-3 pt-3">
-            {primaryLinks.map((l) => {
-              const isActive =
-                l.href === "/"
-                  ? location.pathname === "/" && l.label === "Home"
-                  : location.pathname === l.href || location.pathname.startsWith(l.href + "/");
-              return (
-                <button
-                  key={l.label}
-                  onClick={() => handleNavClick(l.href)}
-                  className={`py-2.5 text-left text-sm transition-colors ${
-                    isActive ? "text-foreground font-medium" : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {l.label}
-                </button>
-              );
-            })}
-
-            <div className="mt-1 border-t border-border/40 pt-2">
-              <span className="block px-0 pb-1 text-xs uppercase tracking-wider text-muted-foreground">More</span>
-              {moreLinks.map((l) => (
-                <button
-                  key={l.href}
-                  onClick={() => handleNavClick(l.href)}
-                  className="w-full py-2.5 text-left text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {l.label}
-                </button>
-              ))}
+        <div
+          className="fixed inset-0 z-[60] md:hidden bg-background/80 backdrop-blur-sm"
+          onClick={() => setOpen(false)}
+        >
+          <div
+            className="absolute top-0 right-0 bottom-0 w-[85%] max-w-sm bg-background border-l border-border/40 shadow-2xl flex flex-col safe-bottom animate-in slide-in-from-right duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between h-16 px-4 border-b border-border/40 shrink-0">
+              <span className="logo-text text-xl">
+                <span className="logo-go">GO</span>
+                <span className="logo-part">PART</span>
+                <span className="logo-ara">ARA</span>
+              </span>
+              <button
+                onClick={() => setOpen(false)}
+                className="flex items-center justify-center min-h-[44px] min-w-[44px] text-foreground rounded-xl hover:bg-accent/10"
+                aria-label="Close menu"
+              >
+                <X size={24} />
+              </button>
             </div>
 
-            {!loading && (
-              user ? (
-                <div className="mt-1 flex flex-col gap-2 border-t border-border/40 pt-2">
-                  {user.email === ADMIN_EMAIL && (
+            <div className="flex-1 overflow-y-auto px-4 py-3">
+              {primaryLinks.map((l) => {
+                const isActive =
+                  l.href === "/"
+                    ? location.pathname === "/" && l.label === "Home"
+                    : location.pathname === l.href || location.pathname.startsWith(l.href + "/");
+                return (
+                  <button
+                    key={l.label}
+                    onClick={() => handleNavClick(l.href)}
+                    className={`flex items-center w-full min-h-[48px] px-3 text-left text-base transition-colors rounded-xl ${
+                      isActive ? "text-foreground font-medium bg-accent/10" : "text-muted-foreground hover:text-foreground hover:bg-accent/5"
+                    }`}
+                  >
+                    {l.label}
+                  </button>
+                );
+              })}
+
+              <div className="mt-3 border-t border-border/40 pt-3">
+                <span className="block px-3 pb-2 text-xs uppercase tracking-wider text-muted-foreground">More</span>
+                {moreLinks.map((l) => (
+                  <button
+                    key={l.href}
+                    onClick={() => handleNavClick(l.href)}
+                    className="flex items-center w-full min-h-[48px] px-3 text-left text-base text-muted-foreground hover:text-foreground hover:bg-accent/5 rounded-xl transition-colors"
+                  >
+                    {l.label}
+                  </button>
+                ))}
+              </div>
+
+              {!loading && (
+                user ? (
+                  <div className="mt-3 flex flex-col gap-1 border-t border-border/40 pt-3">
+                    {user.email === ADMIN_EMAIL && (
+                      <button
+                        onClick={() => {
+                          setOpen(false);
+                          navigate("/admin");
+                        }}
+                        className="flex items-center gap-2 min-h-[48px] px-3 text-base font-medium text-primary hover:bg-accent/5 rounded-xl transition-colors"
+                      >
+                        <Shield size={16} />
+                        Admin
+                      </button>
+                    )}
+
                     <button
                       onClick={() => {
                         setOpen(false);
-                        navigate("/admin");
+                        navigate("/dashboard");
                       }}
-                      className="flex items-center gap-1.5 py-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                      className="flex items-center gap-2 min-h-[48px] px-3 text-base text-muted-foreground hover:text-foreground hover:bg-accent/5 rounded-xl transition-colors"
                     >
-                      <Shield size={14} />
-                      Admin
+                      <User size={16} />
+                      Dashboard
                     </button>
-                  )}
 
-                  <button
-                    onClick={() => {
-                      setOpen(false);
-                      navigate("/dashboard");
-                    }}
-                    className="flex items-center gap-1.5 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <User size={14} />
-                    Dashboard
-                  </button>
-
-                  <Button size="sm" variant="outline" onClick={signOut} className="w-fit gap-1.5 rounded-xl">
-                    <LogOut size={14} />
-                    Sign Out
-                  </Button>
-                </div>
-              ) : (
-                <Button size="sm" onClick={() => {
-                  setOpen(false);
-                  navigate("/auth");
-                }} className="w-fit rounded-xl btn-glow">
-                  Get Started
-                </Button>
-              )
-            )}
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setOpen(false);
+                        signOut();
+                      }}
+                      className="mt-2 mx-3 gap-1.5 rounded-xl min-h-[44px]"
+                    >
+                      <LogOut size={14} />
+                      Sign Out
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="mt-3 px-3 pt-3 border-t border-border/40">
+                    <Button
+                      onClick={() => {
+                        setOpen(false);
+                        navigate("/auth");
+                      }}
+                      className="w-full rounded-xl btn-glow min-h-[44px]"
+                    >
+                      Get Started
+                    </Button>
+                  </div>
+                )
+              )}
+            </div>
           </div>
         </div>
       )}
