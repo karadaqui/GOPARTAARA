@@ -43,18 +43,18 @@ const HowItWorksSection = () => (
           Finding the right car part shouldn't take hours. With PARTARA, it takes seconds.
         </p>
       </ScrollReveal>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-5xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 max-w-5xl mx-auto px-4">
         {steps.map((s, i) => (
           <ScrollReveal key={s.title} delay={i + 1}>
             <div className="relative text-center group">
-              <div className="mx-auto mb-6 flex h-18 w-18 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
-                <s.icon size={30} />
+              <div className="mx-auto mb-6 flex h-16 w-16 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
+                <s.icon size={28} />
               </div>
-              <span className="absolute -top-2 -right-2 md:top-0 md:right-4 text-6xl font-black text-muted/15 select-none">
+              <span className="absolute -top-2 right-4 md:top-0 md:right-4 text-5xl md:text-6xl font-black text-muted/15 select-none pointer-events-none">
                 {s.number}
               </span>
-              <h3 className="font-display text-xl font-bold mb-3">{s.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{s.desc}</p>
+              <h3 className="font-display text-lg md:text-xl font-bold mb-3">{s.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto" dangerouslySetInnerHTML={{ __html: s.desc }} />
             </div>
           </ScrollReveal>
         ))}
