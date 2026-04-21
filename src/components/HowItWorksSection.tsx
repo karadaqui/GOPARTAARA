@@ -29,10 +29,10 @@ const steps = [
 ];
 
 const HowItWorksSection = () => (
-  <section className="py-16 md:py-32 relative overflow-hidden">
+  <section className="py-12 md:py-32 relative overflow-hidden">
     <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/[0.02] to-transparent pointer-events-none" />
     <div className="container px-4 md:px-6 lg:px-8 relative">
-      <ScrollReveal className="text-center mb-10 md:mb-16">
+      <ScrollReveal className="text-center mb-8 md:mb-16" threshold={0.05}>
         <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
           How It Works
         </span>
@@ -45,8 +45,8 @@ const HowItWorksSection = () => (
       </ScrollReveal>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 max-w-5xl mx-auto">
         {steps.map((s, i) => (
-          <ScrollReveal key={s.title} delay={i + 1} threshold={0.1}>
-            <div className="relative text-center group mb-2 md:mb-0">
+          <ScrollReveal key={s.title} delay={i + 1} threshold={0.05}>
+            <div className="relative text-center group mb-8 md:mb-0">
               <div className="mx-auto mb-4 md:mb-6 flex h-14 w-14 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
                 <s.icon size={26} />
               </div>

@@ -69,6 +69,11 @@
     max-width: 100vw;
   }
 
+  #root {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
@@ -371,6 +376,16 @@ nav a, nav button, button, a {
 @media (max-width: 428px) {
   html {
     font-size: 14px;
+  }
+
+  /* FIX: enforce minimum legible font size on mobile (raise tiny labels) */
+  .text-\[9px\] {
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+  }
+  .text-\[10px\] {
+    font-size: 11px !important;
+    line-height: 1.25 !important;
   }
 }
 
