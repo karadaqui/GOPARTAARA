@@ -352,7 +352,7 @@ const Dashboard = () => {
             <div className="relative group shrink-0">
               <div className="w-16 h-16 rounded-full bg-secondary border-2 border-border overflow-hidden flex items-center justify-center">
                 {avatarSignedUrl ? (
-                  <img src={avatarSignedUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  <img src={avatarSignedUrl} alt="Avatar" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 ) : (
                   <User size={28} className="text-muted-foreground" />
                 )}

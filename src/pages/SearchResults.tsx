@@ -1256,7 +1256,7 @@ const SearchResults = () => {
                 <a href={href} target="_blank" rel="noopener noreferrer"
                   className="mt-6 mb-4 bg-zinc-900/60 border border-white/[0.08] rounded-xl px-5 py-4 flex items-center gap-4 hover:border-red-500/30 hover:bg-zinc-900/80 transition-all group">
                   <div className="w-10 h-10 rounded-xl bg-[#E72B2B]/10 flex items-center justify-center shrink-0 border border-[#E72B2B]/20">
-                    <img src="https://www.autodoc.co.uk/favicon.ico" alt="Autodoc" className="w-5 h-5" />
+                    <img src="https://www.autodoc.co.uk/favicon.ico" alt="Autodoc" loading="lazy" decoding="async" className="w-5 h-5" />
                   </div>
                   <p className="text-sm text-zinc-300 flex-1">
                     Check prices on <span className="text-white font-medium">Autodoc</span> — <span className="text-zinc-400">Europe's largest auto parts store</span>

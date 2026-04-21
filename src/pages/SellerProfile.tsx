@@ -101,7 +101,7 @@ const SellerProfile = () => {
         <div className="glass rounded-2xl p-8 mb-8">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
             {seller.logo_url ? (
-              <img src={seller.logo_url} alt={seller.business_name} className="w-24 h-24 rounded-2xl object-cover border border-border" />
+              <img src={seller.logo_url} alt={seller.business_name} loading="lazy" decoding="async" className="w-24 h-24 rounded-2xl object-cover border border-border" />
             ) : (
               <div className="w-24 h-24 rounded-2xl bg-secondary flex items-center justify-center">
                 <Store size={36} className="text-muted-foreground" />
@@ -159,7 +159,7 @@ const SellerProfile = () => {
                 className="text-left glass rounded-xl overflow-hidden hover:scale-[1.02] transition-transform"
               >
                 {l.photos[0] ? (
-                  <img src={l.photos[0]} alt={l.title} className="w-full h-40 object-cover" />
+                  <img src={l.photos[0]} alt={l.title} loading="lazy" decoding="async" className="w-full h-40 object-cover" />
                 ) : (
                   <div className="w-full h-40 bg-secondary flex items-center justify-center">
                     <Package size={32} className="text-muted-foreground" />

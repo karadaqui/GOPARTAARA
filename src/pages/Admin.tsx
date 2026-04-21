@@ -599,7 +599,7 @@ const Admin = () => {
                 {filteredListings.map(listing => (
                   <div key={listing.id} className="glass rounded-xl p-4 flex gap-4">
                     {listing.photos[0] ? (
-                      <img src={listing.photos[0]} alt="" className="w-24 h-24 rounded-lg object-cover shrink-0" />
+                      <img src={listing.photos[0]} alt="" loading="lazy" decoding="async" className="w-24 h-24 rounded-lg object-cover shrink-0" />
                     ) : (
                       <div className="w-24 h-24 rounded-lg bg-secondary flex items-center justify-center shrink-0">
                         <Package size={24} className="text-muted-foreground" />

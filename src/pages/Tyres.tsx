@@ -471,6 +471,8 @@ const Tyres = () => {
                           <img
                             src={product.image}
                             alt={product.title}
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                             onError={(e) => { e.currentTarget.style.display = 'none'; }}
                           />
