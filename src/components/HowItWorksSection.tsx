@@ -29,31 +29,31 @@ const steps = [
 ];
 
 const HowItWorksSection = () => (
-  <section className="py-24 md:py-32 relative overflow-hidden">
+  <section className="py-16 md:py-32 relative overflow-hidden">
     <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/[0.02] to-transparent pointer-events-none" />
-    <div className="container px-4 relative">
-      <ScrollReveal className="text-center mb-16">
+    <div className="container px-4 md:px-6 lg:px-8 relative">
+      <ScrollReveal className="text-center mb-10 md:mb-16">
         <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
           How It Works
         </span>
-        <h2 className="font-display text-3xl md:text-5xl font-bold mb-5 tracking-tight">
+        <h2 className="font-display text-2xl md:text-5xl font-bold mb-5 tracking-tight">
           Four Simple Steps
         </h2>
         <p className="text-muted-foreground max-w-xl mx-auto text-base md:text-lg leading-relaxed">
           Finding the right car part shouldn't take hours. With PARTARA, it takes seconds.
         </p>
       </ScrollReveal>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 max-w-5xl mx-auto px-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-10 max-w-5xl mx-auto">
         {steps.map((s, i) => (
-          <ScrollReveal key={s.title} delay={i + 1}>
-            <div className="relative text-center group">
-              <div className="mx-auto mb-6 flex h-16 w-16 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
-                <s.icon size={28} />
+          <ScrollReveal key={s.title} delay={i + 1} threshold={0.1}>
+            <div className="relative text-center group mb-2 md:mb-0">
+              <div className="mx-auto mb-4 md:mb-6 flex h-14 w-14 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
+                <s.icon size={26} />
               </div>
               <span className="absolute -top-2 right-4 md:top-0 md:right-4 text-5xl md:text-6xl font-black text-muted/15 select-none pointer-events-none">
                 {s.number}
               </span>
-              <h3 className="font-display text-lg md:text-xl font-bold mb-3">{s.title}</h3>
+              <h3 className="font-display text-lg md:text-xl font-bold mb-2 md:mb-3">{s.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{s.desc}</p>
             </div>
           </ScrollReveal>

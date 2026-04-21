@@ -216,7 +216,7 @@ const getConditionMeta = (condition: string | undefined) => {
   return { label, classes: "bg-zinc-800/80 text-zinc-400 border-b border-white/10" };
 };
 
-const RESULT_ICON_BUTTON_CLASS = "w-8 h-8 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-200";
+const RESULT_ICON_BUTTON_CLASS = "min-w-[44px] min-h-[44px] md:w-8 md:h-8 md:min-w-0 md:min-h-0 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-200";
 
 const getPriceBadgeClasses = (variant: "great" | "good" | "high" | "top") => {
   if (variant === "great") return "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25";
@@ -718,7 +718,7 @@ const SearchResults = () => {
             </button>
             <button onClick={() => navigate('/tyres')}
               className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-white border border-zinc-700/50 transition-all">
-              <span>⭕</span>
+              <span>🛞</span>
               <span>Tyre Search</span>
             </button>
           </div>
