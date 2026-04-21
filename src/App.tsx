@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
+import { SearchLimitProvider } from "@/contexts/SearchLimitContext";
 import { CountryProvider } from "@/contexts/CountryContext";
 import { LocaleProvider } from "@/contexts/LocaleContext";
 import PageLoader from "@/components/PageLoader";
@@ -65,6 +66,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <SubscriptionProvider>
+          <SearchLimitProvider>
           <CountryProvider>
           <LocaleProvider>
           <ScrollToTop />
@@ -117,6 +119,7 @@ const App = () => (
           
           </LocaleProvider>
           </CountryProvider>
+          </SearchLimitProvider>
           </SubscriptionProvider>
         </AuthProvider>
       </BrowserRouter>

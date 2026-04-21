@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, ArrowUp } from "lucide-react";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
@@ -31,4 +32,4 @@ const SearchCounter = ({ limitData }: { limitData?: ReturnType<typeof import("@/
   );
 };
 
-export default SearchCounter;
+export default memo(SearchCounter);
