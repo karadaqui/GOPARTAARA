@@ -51,6 +51,7 @@ const NotificationBell = () => {
   const instanceIdRef = useRef<string>(typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Math.random().toString(36).slice(2));
   const prevUnreadRef = useRef<number>(0);
   const initialLoadDone = useRef(false);
+  const fetchedRef = useRef(false);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -72,9 +73,17 @@ const NotificationBell = () => {
     }
   }, [user]);
 
+  // Deduped initial load. Realtime INSERT subscription handles new notifications.
   useEffect(() => {
+    if (!user) {
+      fetchedRef.current = false;
+      setNotifications([]);
+      return;
+    }
+    if (fetchedRef.current) return;
+    fetchedRef.current = true;
     loadNotifications();
-  }, [loadNotifications]);
+  }, [user?.id, loadNotifications]);
 
   // Play sound when unread count increases
   useEffect(() => {
