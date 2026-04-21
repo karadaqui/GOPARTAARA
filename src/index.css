@@ -410,10 +410,9 @@
   letter-spacing: -0.03em;
 }
 
-/* Mobile performance: drastically reduce animation/transition durations
-   so low-powered devices don't spend frames on decorative motion. Users
-   with prefers-reduced-motion already get this via shadcn defaults. */
-@media (max-width: 768px) {
+/* Accessibility: only reduce motion for users who explicitly request it
+   via OS settings. Do NOT globally disable animations on mobile. */
+@media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
