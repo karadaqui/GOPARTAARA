@@ -364,6 +364,10 @@ const HeroSection = () => {
                       onChange={(e) => setQuery(e.target.value)}
                       className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm sm:text-base py-3.5"
                       disabled={identifying}
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      spellCheck={false}
                     />
                   </div>
                   <div className="flex items-center gap-2">
