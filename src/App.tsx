@@ -65,7 +65,6 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <AppDataProvider>
           <SubscriptionProvider>
           <SearchLimitProvider>
           <CountryProvider>
@@ -122,7 +121,6 @@ const App = () => (
           </CountryProvider>
           </SearchLimitProvider>
           </SubscriptionProvider>
-          </AppDataProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
