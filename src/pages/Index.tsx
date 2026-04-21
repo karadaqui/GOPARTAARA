@@ -1,12 +1,13 @@
-import { useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import FeaturesSection from "@/components/FeaturesSection";
-import HowItWorksSection from "@/components/HowItWorksSection";
-import TestimonialsSection from "@/components/TestimonialsSection";
 
-import PricingSection from "@/components/PricingSection";
+// Below-the-fold: lazy-load to keep initial JS small and defer their data fetches
+const FeaturesSection = lazy(() => import("@/components/FeaturesSection"));
+const HowItWorksSection = lazy(() => import("@/components/HowItWorksSection"));
+const TestimonialsSection = lazy(() => import("@/components/TestimonialsSection"));
+const PricingSection = lazy(() => import("@/components/PricingSection"));
 
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
