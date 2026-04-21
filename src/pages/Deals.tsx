@@ -167,15 +167,15 @@ const Deals = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${deal.title} — eBay UK deal`}
-                className="group relative flex flex-col p-4 bg-card border border-border hover:border-border/80 hover:bg-card/80 rounded-2xl transition-all duration-200 hover:shadow-xl hover:shadow-background/40 hover:-translate-y-0.5"
+                className="group relative flex flex-col p-4 bg-card border border-border hover:border-border/80 hover:bg-card/80 rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-xl hover:shadow-background/40 hover:-translate-y-0.5"
               >
-                <div className="absolute top-3 right-3">
-                  <span className="text-[10px] bg-primary/15 border border-primary/30 text-primary rounded-full px-2 py-0.5 font-bold">
+                <div className="absolute top-2 right-2 max-w-[55%]">
+                  <span className="block truncate text-[9px] md:text-[10px] bg-primary/15 border border-primary/30 text-primary rounded-full px-2 py-0.5 font-bold">
                     {deal.badge}
                   </span>
                 </div>
                 <div className="text-2xl mb-3">{deal.icon}</div>
-                <p className="text-foreground font-bold text-sm mb-1 pr-12">{deal.title}</p>
+                <p className="text-foreground font-bold text-sm mb-1 pr-2">{deal.title}</p>
                 <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
                 <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
                   <span className="text-xs font-semibold">View deal</span>
@@ -226,15 +226,15 @@ const Deals = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${deal.title} — Amazon UK deal`}
-                className="group relative flex flex-col p-4 bg-card border border-border hover:border-border/80 hover:bg-card/80 rounded-2xl transition-all duration-200 hover:shadow-xl hover:shadow-background/40 hover:-translate-y-0.5"
+                className="group relative flex flex-col p-4 bg-card border border-border hover:border-border/80 hover:bg-card/80 rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-xl hover:shadow-background/40 hover:-translate-y-0.5"
               >
-                <div className="absolute top-3 right-3">
-                  <span className="text-[10px] bg-primary/15 border border-primary/30 text-primary rounded-full px-2 py-0.5 font-bold">
+                <div className="absolute top-2 right-2 max-w-[55%]">
+                  <span className="block truncate text-[9px] md:text-[10px] bg-primary/15 border border-primary/30 text-primary rounded-full px-2 py-0.5 font-bold">
                     {deal.badge}
                   </span>
                 </div>
                 <div className="text-2xl mb-3">{deal.icon}</div>
-                <p className="text-foreground font-bold text-sm mb-1 pr-12">{deal.title}</p>
+                <p className="text-foreground font-bold text-sm mb-1 pr-2">{deal.title}</p>
                 <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
                 <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
                   <span className="text-xs font-semibold">View deal</span>
