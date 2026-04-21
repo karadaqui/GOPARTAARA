@@ -337,7 +337,7 @@
   }
 }
 
-/* Reduced motion */
+/* Reduced motion (accessibility) */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -347,6 +347,24 @@
   .reveal { opacity: 1; transform: none; }
   .animated-gradient-bg { animation: none; }
   .animate-float { animation: none; }
+}
+
+/* Specific animation timing — explicit per-element control */
+.animate-pulse {
+  animation-duration: 2s;
+}
+nav a, nav button, button, a {
+  transition-duration: 150ms;
+}
+.page-transition {
+  transition-duration: 200ms;
+}
+
+/* Mobile bottom padding to clear floating chat widget */
+@media (max-width: 768px) {
+  main {
+    padding-bottom: 80px;
+  }
 }
 
 /* Mobile typography scaling */
@@ -410,14 +428,4 @@
   letter-spacing: -0.03em;
 }
 
-/* Accessibility: only reduce motion for users who explicitly request it
-   via OS settings. Do NOT globally disable animations on mobile. */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.1ms !important;
-  }
-}
 
