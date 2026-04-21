@@ -69,11 +69,13 @@ const Index = () => {
         </span>
       </Link>
 
-      <HowItWorksSection />
-      <TestimonialsSection />
-      <FeaturesSection />
-      <PricingSection />
-      
+      <Suspense fallback={<div className="h-32" />}>
+        <HowItWorksSection />
+        <TestimonialsSection />
+        <FeaturesSection />
+        <PricingSection />
+      </Suspense>
+
       <Footer />
       <BackToTop />
       <WelcomeModal />
