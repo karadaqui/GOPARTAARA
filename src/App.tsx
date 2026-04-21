@@ -5,7 +5,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { AppDataProvider } from "@/contexts/AppDataContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { SearchLimitProvider } from "@/contexts/SearchLimitContext";
 import { CountryProvider } from "@/contexts/CountryContext";
@@ -66,7 +65,6 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <AppDataProvider>
           <SubscriptionProvider>
           <SearchLimitProvider>
           <CountryProvider>
@@ -123,7 +121,6 @@ const App = () => (
           </CountryProvider>
           </SearchLimitProvider>
           </SubscriptionProvider>
-          </AppDataProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

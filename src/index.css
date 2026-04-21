@@ -445,16 +445,11 @@ nav a, nav button, button, a {
 
 
 
-/* Mobile GPU performance: tame transition-all and long durations.
-   transition-all forces the compositor to watch every property which
-   thrashes layout on mobile. On <=768px we restrict it to cheap
-   color/opacity transitions and shorten long durations. */
-@media (max-width: 768px) {
+/* Mobile/tablet GPU performance: convert transition-all to only
+   GPU-friendly properties. Does not affect desktop (>1024px). */
+@media (max-width: 1024px) {
   .transition-all {
     transition-property: color, background-color, border-color, opacity, transform !important;
-    transition-duration: 150ms !important;
-  }
-  .duration-300, .duration-500, .duration-700 {
     transition-duration: 150ms !important;
   }
 }
