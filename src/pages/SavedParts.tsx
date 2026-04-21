@@ -273,6 +273,8 @@ const SavedParts = () => {
                     <img
                       src={part.image_url}
                       alt={part.part_name}
+                      loading="lazy"
+                      decoding="async"
                       onError={(e) => { e.currentTarget.src = "/placeholder.svg"; }}
                       className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
                     />

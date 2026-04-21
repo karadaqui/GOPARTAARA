@@ -159,6 +159,8 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
                     <img
                       src={alert.image_url}
                       alt={alert.part_name}
+                      loading="lazy"
+                      decoding="async"
                       onError={(e) => { e.currentTarget.style.display = "none"; }}
                       className="w-full h-full object-contain p-1"
                     />

@@ -41,7 +41,7 @@ export const CompareBar = ({ items, onOpen, onClear }: CompareBarProps) => {
           {items.map((item) => (
             <div key={item.id} className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-secondary overflow-hidden border border-border/50">
               {item.imageUrl ? (
-                <img src={item.imageUrl} alt="" className="w-full h-full object-cover" />
+                <img src={item.imageUrl} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center"><Package size={12} className="text-muted-foreground" /></div>
               )}
@@ -78,7 +78,7 @@ export const CompareModal = ({ items, onRemove, onClose }: CompareModalProps) =>
     {
       label: "Image",
       render: (item) => item.imageUrl ? (
-        <img src={item.imageUrl} alt="" className="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-lg bg-secondary/50 mx-auto" />
+        <img src={item.imageUrl} alt="" loading="lazy" decoding="async" className="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-lg bg-secondary/50 mx-auto" />
       ) : (
         <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg bg-secondary/50 flex items-center justify-center mx-auto">
           <Package size={24} className="text-muted-foreground" />

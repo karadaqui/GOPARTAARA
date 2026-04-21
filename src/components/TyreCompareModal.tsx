@@ -71,7 +71,7 @@ export const TyreCompareModal = ({ items, onRemove, onClose }: TyreCompareModalP
       label: "Image",
       render: (item) =>
         item.image ? (
-          <img src={item.image} alt="" className="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-lg bg-secondary/50 mx-auto" />
+          <img src={item.image} alt="" loading="lazy" decoding="async" className="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-lg bg-secondary/50 mx-auto" />
         ) : (
           <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg bg-secondary/50 flex items-center justify-center mx-auto">
             <Package size={24} className="text-muted-foreground" />

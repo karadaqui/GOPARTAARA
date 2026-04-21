@@ -720,7 +720,7 @@ const MyMarket = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div className="flex items-center gap-4">
             {profile.logo_url ? (
-              <img src={profile.logo_url} alt={profile.business_name} className="w-14 h-14 rounded-xl object-cover border border-border" />
+              <img src={profile.logo_url} alt={profile.business_name} loading="lazy" decoding="async" className="w-14 h-14 rounded-xl object-cover border border-border" />
             ) : (
               <div className="w-14 h-14 rounded-xl bg-secondary flex items-center justify-center">
                 <Store size={24} className="text-muted-foreground" />
@@ -957,7 +957,7 @@ const MyMarket = () => {
               <div key={listing.id} className={`glass rounded-xl overflow-hidden ${!listing.active ? 'opacity-60' : ''}`}>
                 {listing.photos[0] ? (
                   <div className="relative">
-                    <img src={listing.photos[0]} alt={listing.title} className="w-full h-40 object-cover" />
+                    <img src={listing.photos[0]} alt={listing.title} loading="lazy" decoding="async" className="w-full h-40 object-cover" />
                     {listing.featured && listing.featured_until && new Date(listing.featured_until) > new Date() && (
                       <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/90 text-black flex items-center gap-1">
                         ⭐ Featured until {new Date(listing.featured_until).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
@@ -1158,7 +1158,7 @@ const MyMarket = () => {
               <div className="flex flex-wrap gap-2 mb-2">
                 {listingForm.photos.map((url, i) => (
                   <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-border">
-                    <img src={url} alt="" className="w-full h-full object-cover" />
+                    <img src={url} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                     <button onClick={() => removePhoto(i)} className="absolute top-0.5 right-0.5 bg-background/80 rounded-full p-0.5">
                       <X size={12} />
                     </button>
