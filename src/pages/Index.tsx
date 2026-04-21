@@ -57,7 +57,7 @@ const Index = () => {
         className="flex items-center justify-between px-5 py-3 mx-4 mb-6 max-w-4xl md:mx-auto bg-gradient-to-r from-card to-card/50 border border-border/60 rounded-2xl hover:border-border transition-all group"
       >
         <div className="flex items-center gap-3">
-          <span className="text-xl animate-pulse">🔥</span>
+          <span className="text-xl">🔥</span>
           <div>
             <p className="text-foreground text-sm font-bold">Deals &amp; Savings</p>
             <p className="text-muted-foreground text-xs">
