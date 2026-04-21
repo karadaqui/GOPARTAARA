@@ -5,6 +5,7 @@ import { Switch } from "@/components/ui/switch";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useRef, useEffect } from "react";
@@ -126,21 +127,16 @@ const PricingSection = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { plan: subPlan, trialEndsAt } = useSubscription();
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [slowWarning, setSlowWarning] = useState(false);
   const [annual, setAnnual] = useState(false);
-  const [hadTrial, setHadTrial] = useState(true); // default true to avoid flash
 
-  useEffect(() => {
-    if (!user) { setHadTrial(false); return; }
-    (async () => {
-      try {
-        const { data } = await supabase.from("profiles").select("trial_ends_at, subscription_period, subscription_plan")
-          .eq("user_id", user.id).maybeSingle();
-        setHadTrial(!!(data?.trial_ends_at || (data?.subscription_plan && data.subscription_plan !== "free")));
-      } catch {}
-    })();
-  }, [user]);
+  // Derive trial state from cached subscription data — avoids a duplicate
+  // `profiles` query on every Pricing render (FIX 7: singleton cache).
+  const hadTrial = !user
+    ? false
+    : !!(trialEndsAt || (subPlan && subPlan !== "free"));
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => () => { if (timeoutRef.current) clearTimeout(timeoutRef.current); }, []);

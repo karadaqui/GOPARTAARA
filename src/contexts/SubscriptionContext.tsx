@@ -6,6 +6,8 @@ export type SubscriptionPlan = "free" | "pro" | "elite" | "admin" | string;
 
 interface SubscriptionContextType {
   plan: SubscriptionPlan;
+  trialEndsAt: string | null;
+  subscriptionPeriod: string | null;
   loading: boolean;
   refresh: () => Promise<void>;
 }
@@ -13,30 +15,40 @@ interface SubscriptionContextType {
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
 /**
- * Provides the user's subscription plan globally so we don't refetch
- * /profiles?select=subscription_plan on every page/component.
+ * Singleton-style cache: provides the current user's subscription details
+ * globally so we don't refetch /profiles?select=... on every page/component.
+ * Includes plan, trial_ends_at, and subscription_period to eliminate duplicate
+ * profile queries from PricingSection and similar consumers.
  */
 export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   const { user, loading: authLoading } = useAuth();
   const [plan, setPlan] = useState<SubscriptionPlan>("free");
+  const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null);
+  const [subscriptionPeriod, setSubscriptionPeriod] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
     if (!user) {
       setPlan("free");
+      setTrialEndsAt(null);
+      setSubscriptionPeriod(null);
       setLoading(false);
       return;
     }
     try {
       const { data } = await supabase
         .from("profiles")
-        .select("subscription_plan")
+        .select("subscription_plan, trial_ends_at, subscription_period")
         .eq("user_id", user.id)
         .maybeSingle();
       setPlan((data?.subscription_plan as SubscriptionPlan) || "free");
+      setTrialEndsAt(data?.trial_ends_at ?? null);
+      setSubscriptionPeriod(data?.subscription_period ?? null);
     } catch {
       // Silently fall back to free on transient errors (503, network, etc.)
       setPlan("free");
+      setTrialEndsAt(null);
+      setSubscriptionPeriod(null);
     } finally {
       setLoading(false);
     }
@@ -48,7 +60,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   }, [authLoading, refresh]);
 
   return (
-    <SubscriptionContext.Provider value={{ plan, loading, refresh }}>
+    <SubscriptionContext.Provider value={{ plan, trialEndsAt, subscriptionPeriod, loading, refresh }}>
       {children}
     </SubscriptionContext.Provider>
   );
