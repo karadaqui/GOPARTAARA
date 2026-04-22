@@ -188,9 +188,15 @@ const Navbar = () => {
           {!loading && user && <NotificationBell />}
 
           <button
-            className="flex md:hidden items-center justify-center min-h-[44px] min-w-[44px] text-foreground rounded-xl"
-            onClick={() => setOpen(!open)}
+            type="button"
+            className="flex md:hidden items-center justify-center min-h-[44px] min-w-[44px] text-foreground rounded-xl relative z-[70]"
+            style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen((prev) => !prev);
+            }}
             aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
           >
             {open ? <X size={24} /> : <Menu size={24} />}
           </button>
