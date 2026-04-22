@@ -445,6 +445,21 @@ nav a, nav button, button, a {
 
 
 
+/* iOS / mobile tap and input behavior */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input, textarea, select {
+  font-size: 16px !important;
+}
+
+/* iOS-specific: shorter transitions to feel snappier */
+@supports (-webkit-touch-callout: none) {
+  .transition-all { transition-duration: 100ms !important; }
+  .duration-300, .duration-500, .duration-700 { transition-duration: 100ms !important; }
+}
+
 /* Mobile/tablet GPU performance: convert transition-all to only
    GPU-friendly properties. Does not affect desktop (>1024px). */
 @media (max-width: 1024px) {
