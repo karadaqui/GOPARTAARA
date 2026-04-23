@@ -117,8 +117,8 @@ const App = () => (
           </Suspense>
           </ErrorBoundary>
           <CookieConsent />
-          <BackToTop />
           <DevToolsGuard />
+          <BackToTop />
           
           </LocaleProvider>
           </CountryProvider>

@@ -85,6 +85,7 @@ const HeroSection = () => {
   const [vinError, setVinError] = useState("");
   const [authGateOpen, setAuthGateOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [viewers, setViewers] = useState(() => Math.floor(Math.random() * 170) + 180);
   const navigate = useNavigate();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -95,29 +96,15 @@ const HeroSection = () => {
     return () => clearTimeout(t);
   }, []);
 
-  // Live "people searching" counter
-  const [viewers, setViewers] = useState(() => Math.floor(Math.random() * 170) + 180);
+  // Live viewer counter — updates every 15s with small fluctuations
   useEffect(() => {
     const interval = setInterval(() => {
-      setViewers(Math.floor(Math.random() * 170) + 180);
-    }, 30000);
+      setViewers((prev) => {
+        const change = Math.floor(Math.random() * 21) - 10;
+        return Math.max(150, Math.min(400, prev + change));
+      });
+    }, 15000);
     return () => clearInterval(interval);
-  }, []);
-
-  // Keyboard shortcut "/" focuses search input
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement)?.tagName;
-      if (e.key === "/" && !["INPUT", "TEXTAREA"].includes(tag)) {
-        e.preventDefault();
-        const el = document.querySelector<HTMLInputElement>(
-          'input[placeholder*="BMW"], input[placeholder*="Search"], input[type="text"]'
-        );
-        el?.focus();
-      }
-    };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
   }, []);
 
   // Fetch user's first garage vehicle (deduped per session)
@@ -448,14 +435,10 @@ const HeroSection = () => {
                     <ImageIcon size={12} className="text-muted-foreground/70" />
                     Upload a photo of any car part — our system will identify it and find the best prices
                   </p>
-                  <p className="text-xs text-muted-foreground/80 flex items-center gap-1.5 tabular-nums">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    {viewers} people searching right now
-                  </p>
-                  <p className="text-[10px] text-muted-foreground/50 hidden md:block">
-                    Press <kbd className="px-1.5 py-0.5 rounded border border-border/50 bg-card/50 font-mono text-[9px]">/</kbd> to focus search
-                  </p>
                   {user && <SearchCounter limitData={searchLimit} />}
+                  <p className="text-xs text-muted-foreground text-center mt-1">
+                    🟢 <span className="tabular-nums">{viewers}</span> people searching right now
+                  </p>
                   <div className="flex items-center justify-center mt-3">
                     <a
                       href="#mission"
