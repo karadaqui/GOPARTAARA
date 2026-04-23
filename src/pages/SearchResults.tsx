@@ -1233,6 +1233,22 @@ const SearchResults = () => {
                               {savingId === item.id ? <Loader2 size={14} className="animate-spin" /> : savedIds.has(item.partNumber) ? <BookmarkCheck size={14} className="text-red-500" /> : <Bookmark size={14} />}
                             </button>
                             <PriceAlertDialog supplierName="eBay Motors" partQuery={item.partName} supplierUrl={item.url} ebayItemId={item.id} currentPrice={item.price} />
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(item.url).then(() => {
+                                  toast({ title: "Link copied", description: "Product link copied to clipboard." });
+                                }).catch(() => {
+                                  toast({ title: "Copy failed", description: "Unable to copy link.", variant: "destructive" });
+                                });
+                              }}
+                              aria-label="Copy product link"
+                              title="Copy link"
+                              className="min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-xl border border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] flex items-center justify-center transition-all duration-150 text-zinc-400 hover:text-white"
+                            >
+                              <LinkIcon size={14} />
+                            </button>
                           </div>
                         </div>
                       </div>
