@@ -200,6 +200,7 @@ const Deals = () => {
                 width={32}
                 height={32}
                 loading="lazy"
+                decoding="async"
                 alt="deals"
                 className="rounded-xl"
               />
