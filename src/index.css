@@ -503,3 +503,5 @@ input, textarea, select {
     transition-duration: 150ms !important;
   }
 }
+
+@keyframes spin { to { transform: rotate(360deg); } }
