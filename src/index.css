@@ -4,6 +4,27 @@
 @tailwind components;
 @tailwind utilities;
 
+* { -webkit-tap-highlight-color: transparent; }
+
+input, textarea, select {
+  font-size: 16px !important;
+  -webkit-appearance: none;
+}
+
+html, body {
+  -webkit-overflow-scrolling: touch;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .transition-all {
+    transition-property: color, background-color, border-color, opacity, transform !important;
+    transition-duration: 100ms !important;
+  }
+  .duration-300, .duration-500, .duration-700 {
+    transition-duration: 100ms !important;
+  }
+}
+
 @layer base {
   :root {
     --background: 220 20% 6%;
