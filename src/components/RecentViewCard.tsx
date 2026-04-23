@@ -105,6 +105,7 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
             onError={(e) => { e.currentTarget.src = "/placeholder.svg"; }}
             className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
+            decoding="async"
           />
         </div>
         <div className="px-1">

@@ -22,6 +22,7 @@ const SafeImage = ({ fallbackClassName, className, alt, ...props }: SafeImagePro
       alt={alt || "Image"}
       className={className}
       loading="lazy"
+      decoding="async"
       onError={() => setError(true)}
     />
   );

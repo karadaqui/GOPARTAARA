@@ -18,6 +18,7 @@ const FlagImg = ({ advertiserId }: { advertiserId?: string }) => {
       height={16}
       className="inline-block"
       loading="lazy"
+      decoding="async"
     />
   )
 }

@@ -19,6 +19,7 @@ const CountryFlag = ({ countryCode, emoji, size = 20, className = "" }: CountryF
         height={size}
         className={`inline-block ${className}`}
         loading="lazy"
+        decoding="async"
       />
     );
   }
