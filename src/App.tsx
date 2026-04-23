@@ -18,8 +18,8 @@ import MotTaxReminderRunner from "./components/garage/MotTaxReminderRunner.tsx";
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
-// Eager load critical route
-import Index from "./pages/Index.tsx";
+// Lazy load all routes (including home) for the smallest initial bundle
+const Index = lazy(() => import("./pages/Index.tsx"));
 
 // Lazy load other routes
 const Auth = lazy(() => import("./pages/Auth.tsx"));
