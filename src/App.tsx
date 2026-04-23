@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,7 +13,6 @@ import PageLoader from "@/components/PageLoader";
 import CookieConsent from "./components/CookieConsent.tsx";
 import DevToolsGuard from "./components/DevToolsGuard.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
-import BackToTop from "./components/BackToTop.tsx";
 import MotTaxReminderRunner from "./components/garage/MotTaxReminderRunner.tsx";
 
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
@@ -59,75 +58,111 @@ const Compare = lazy(() => import("./pages/Compare.tsx"));
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <SubscriptionProvider>
-          <SearchLimitProvider>
-          <CountryProvider>
-          <LocaleProvider>
-          <ScrollToTop />
-          <MotTaxReminderRunner />
-          <ErrorBoundary>
-          <Suspense fallback={<PageLoader />}>
-            <div className="pb-20 md:pb-0">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
-              
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-              <Route path="/search" element={<SearchResults />} />
-              <Route path="/saved" element={<ProtectedRoute><SavedParts /></ProtectedRoute>} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/unsubscribe" element={<Unsubscribe />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogPostPage />} />
-              <Route path="/list-your-parts" element={<ListYourParts />} />
-              <Route path="/my-market" element={<ProtectedRoute><MyMarket /></ProtectedRoute>} />
-              <Route path="/marketplace" element={<Marketplace />} />
-              <Route path="/listing/:id" element={<ListingDetail />} />
-              <Route path="/marketplace/:id" element={<ListingDetail />} />
-              <Route path="/seller/:id" element={<SellerProfile />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/garage" element={<ProtectedRoute><Garage /></ProtectedRoute>} />
-              <Route path="/refund" element={<Refund />} />
-              <Route path="/verify-email" element={<VerifyEmail />} />
-              <Route path="/subscription-policy" element={<SubscriptionPolicy />} />
-              <Route path="/complete-profile" element={<ProtectedRoute><CompleteProfile /></ProtectedRoute>} />
-              <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
-              <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
-              <Route path="/confirm-shop-delete/:token" element={<ConfirmShopDelete />} />
-              <Route path="/recent" element={<RecentParts />} />
-              <Route path="/tyres" element={<Tyres />} />
-              <Route path="/deals" element={<Deals />} />
-              <Route path="/affiliate-disclosure" element={<AffiliateDisclosure />} />
-              <Route path="/business" element={<Business />} />
-              <Route path="/compare" element={<Compare />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            </div>
-          </Suspense>
-          </ErrorBoundary>
-          <CookieConsent />
-          <DevToolsGuard />
-          <BackToTop />
-          
-          </LocaleProvider>
-          </CountryProvider>
-          </SearchLimitProvider>
-          </SubscriptionProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const [showTop, setShowTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 400);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <SubscriptionProvider>
+            <SearchLimitProvider>
+            <CountryProvider>
+            <LocaleProvider>
+            <ScrollToTop />
+            <MotTaxReminderRunner />
+            <ErrorBoundary>
+            <Suspense fallback={<PageLoader />}>
+              <div className="pb-20 md:pb-0">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<Auth />} />
+                
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/search" element={<SearchResults />} />
+                <Route path="/saved" element={<ProtectedRoute><SavedParts /></ProtectedRoute>} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/unsubscribe" element={<Unsubscribe />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogPostPage />} />
+                <Route path="/list-your-parts" element={<ListYourParts />} />
+                <Route path="/my-market" element={<ProtectedRoute><MyMarket /></ProtectedRoute>} />
+                <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/listing/:id" element={<ListingDetail />} />
+                <Route path="/marketplace/:id" element={<ListingDetail />} />
+                <Route path="/seller/:id" element={<SellerProfile />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/garage" element={<ProtectedRoute><Garage /></ProtectedRoute>} />
+                <Route path="/refund" element={<Refund />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/subscription-policy" element={<SubscriptionPolicy />} />
+                <Route path="/complete-profile" element={<ProtectedRoute><CompleteProfile /></ProtectedRoute>} />
+                <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+                <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+                <Route path="/confirm-shop-delete/:token" element={<ConfirmShopDelete />} />
+                <Route path="/recent" element={<RecentParts />} />
+                <Route path="/tyres" element={<Tyres />} />
+                <Route path="/deals" element={<Deals />} />
+                <Route path="/affiliate-disclosure" element={<AffiliateDisclosure />} />
+                <Route path="/business" element={<Business />} />
+                <Route path="/compare" element={<Compare />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              </div>
+            </Suspense>
+            </ErrorBoundary>
+            <CookieConsent />
+            <DevToolsGuard />
+            
+            </LocaleProvider>
+            </CountryProvider>
+            </SearchLimitProvider>
+            </SubscriptionProvider>
+          </AuthProvider>
+          {showTop && (
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              aria-label="Back to top"
+              style={{
+                position: "fixed",
+                bottom: "80px",
+                right: "16px",
+                width: "44px",
+                height: "44px",
+                background: "#cc1111",
+                color: "white",
+                border: "none",
+                borderRadius: "50%",
+                cursor: "pointer",
+                zIndex: 998,
+                fontSize: "20px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 4px 16px rgba(204,17,17,0.5)",
+                fontWeight: "bold",
+              }}
+            >
+              ↑
+            </button>
+          )}
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
