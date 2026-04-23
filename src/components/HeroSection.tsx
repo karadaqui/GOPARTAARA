@@ -448,6 +448,13 @@ const HeroSection = () => {
                     <ImageIcon size={12} className="text-muted-foreground/70" />
                     Upload a photo of any car part — our system will identify it and find the best prices
                   </p>
+                  <p className="text-xs text-muted-foreground/80 flex items-center gap-1.5 tabular-nums">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    {viewers} people searching right now
+                  </p>
+                  <p className="text-[10px] text-muted-foreground/50 hidden md:block">
+                    Press <kbd className="px-1.5 py-0.5 rounded border border-border/50 bg-card/50 font-mono text-[9px]">/</kbd> to focus search
+                  </p>
                   {user && <SearchCounter limitData={searchLimit} />}
                   <div className="flex items-center justify-center mt-3">
                     <a
