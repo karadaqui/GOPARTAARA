@@ -4,7 +4,7 @@ const WhatsAppButton = () => (
     target="_blank"
     rel="noopener noreferrer"
     aria-label="Chat with us on WhatsApp"
-    className="fixed z-[9998] flex items-center justify-center w-[52px] h-[52px] rounded-full shadow-lg transition-all duration-200 hover:scale-110"
+    className="fixed z-[9998] flex items-center justify-center w-[52px] h-[52px] rounded-full shadow-lg transition-[colors,transform] hover:scale-110"
     style={{
       bottom: '90px',
       right: '24px',

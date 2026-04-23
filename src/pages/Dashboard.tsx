@@ -745,7 +745,7 @@ const StatCard = ({ icon, label, value }: { icon: React.ReactNode; label: string
 const QuickAction = ({ icon, label, onClick }: { icon: string; label: string; onClick: () => void }) => (
   <button
     onClick={onClick}
-    className="glass rounded-xl p-4 text-center hover:border-primary/30 transition-all duration-200 hover:-translate-y-0.5"
+    className="glass rounded-xl p-4 text-center hover:border-primary/30 transition-[colors,transform] hover:-translate-y-0.5"
   >
     <span className="text-xl mb-1 block">{icon}</span>
     <span className="text-xs font-medium text-foreground">{label}</span>

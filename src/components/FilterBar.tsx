@@ -61,7 +61,7 @@ const FilterDropdown = ({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className={`flex min-h-[44px] items-center gap-2 rounded-xl border px-4 py-2 text-sm whitespace-nowrap transition-all duration-200 ${
+        className={`flex min-h-[44px] items-center gap-2 rounded-xl border px-4 py-2 text-sm whitespace-nowrap transition-colors ${
           isActive
             ? "border-red-500/40 bg-red-500/10 text-red-400"
             : "border-white/[0.08] bg-zinc-900/60 text-zinc-300 hover:border-white/20 hover:text-white"
@@ -97,7 +97,7 @@ const FilterDropdown = ({
                 setOpen(false);
               }}
               disabled={opt.disabled}
-              className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-all min-h-[44px] flex items-center ${
+              className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-colors min-h-[44px] flex items-center ${
                 opt.disabled
                   ? "text-zinc-600 opacity-50 cursor-not-allowed"
                   :

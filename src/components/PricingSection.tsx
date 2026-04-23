@@ -388,7 +388,7 @@ const PlanCard = ({
 
   return (
     <div
-      className={`relative rounded-2xl p-8 flex flex-col transition-all duration-300 border ${
+      className={`relative rounded-2xl p-8 flex flex-col transition-[colors,transform] border ${
         popular
           ? "border-primary/60 shadow-[0_0_30px_-5px_hsl(var(--primary)/0.3)] scale-[1.02] z-10 bg-card"
           : "border-border/30 bg-card/50 hover:border-border/60 hover:-translate-y-1"

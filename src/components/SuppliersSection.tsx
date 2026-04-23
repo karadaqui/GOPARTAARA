@@ -53,7 +53,7 @@ const SuppliersSection = () => (
           {stats.map((s) => (
             <div
               key={s.label}
-              className="group rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-6 text-center transition-all duration-300 hover:border-primary/20 hover:bg-card/60 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1"
+              className="group rounded-2xl border border-border/30 bg-card/40 backdrop-blur-sm p-6 text-center transition-[colors,transform] hover:border-primary/20 hover:bg-card/60 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1"
             >
               <s.icon
                 size={20}

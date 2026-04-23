@@ -86,7 +86,7 @@ const GreenSparkResultsRow = ({ searchQuery, variant = "row" }: GreenSparkResult
           href={searchOnSiteUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-amber-700/40 bg-amber-950/20 text-amber-400 hover:text-amber-300 hover:border-amber-500/60 text-xs font-semibold transition-all"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-amber-700/40 bg-amber-950/20 text-amber-400 hover:text-amber-300 hover:border-amber-500/60 text-xs font-semibold transition-colors"
         >
           Search "{searchQuery}" on their site →
         </a>
@@ -107,7 +107,7 @@ const GreenSparkResultsRow = ({ searchQuery, variant = "row" }: GreenSparkResult
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`${product.title} — Green Spark Plug Co. affiliate`}
-            className="group rounded-2xl p-4 border border-amber-800/30 bg-amber-950/10 hover:border-amber-600/40 hover:bg-amber-950/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/30 transition-all flex flex-col"
+            className="group rounded-2xl p-4 border border-amber-800/30 bg-amber-950/10 hover:border-amber-600/40 hover:bg-amber-950/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/30 transition-[colors,transform] flex flex-col"
           >
             {/* Supplier tag */}
             <div className="flex items-center gap-1.5 mb-2">
@@ -136,7 +136,7 @@ const GreenSparkResultsRow = ({ searchQuery, variant = "row" }: GreenSparkResult
             <p className="text-[10px] text-muted-foreground mb-3">🌍 Ships worldwide</p>
 
             {/* CTA */}
-            <span className="mt-auto block w-full text-center py-2 bg-amber-600/20 group-hover:bg-amber-600/30 border border-amber-700/30 text-amber-400 text-xs font-semibold rounded-xl transition-all">
+            <span className="mt-auto block w-full text-center py-2 bg-amber-600/20 group-hover:bg-amber-600/30 border border-amber-700/30 text-amber-400 text-xs font-semibold rounded-xl transition-colors">
               View on Green Spark Plug Co. →
             </span>
           </a>

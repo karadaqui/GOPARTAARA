@@ -129,7 +129,7 @@ const Marketplace = () => {
 
     return (
       <ScrollReveal key={listing.id} delay={index * 50}>
-        <div className={`group relative rounded-2xl overflow-hidden border transition-all duration-200 bg-card ${
+        <div className={`group relative rounded-2xl overflow-hidden border transition-[colors,transform] bg-card ${
           isFeatured ? "border-yellow-500/30 ring-1 ring-yellow-500/20" : "border-border"
         } ${isComparing ? "ring-2 ring-primary/50" : ""} hover:border-muted-foreground/30 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20`}>
 
@@ -200,7 +200,7 @@ const Marketplace = () => {
           <button
             onClick={(e) => { e.stopPropagation(); toggleCompare(listing); }}
             disabled={!isComparing && compareParts.length >= 3}
-            className={`absolute top-2 right-2 h-8 w-8 rounded-lg flex items-center justify-center transition-all z-10 ${
+            className={`absolute top-2 right-2 h-8 w-8 rounded-lg flex items-center justify-center transition-colors z-10 ${
               isComparing ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30"
                 : "bg-background/80 backdrop-blur-sm text-muted-foreground hover:text-foreground border border-border/50"
             } ${!isComparing && compareParts.length >= 3 ? "opacity-40 cursor-not-allowed" : ""} ${isFeatured ? "!right-auto left-2 !top-auto bottom-2" : ""}`}

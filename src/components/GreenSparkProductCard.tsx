@@ -193,7 +193,7 @@ const GreenSparkProductCard = ({
   };
 
   return (
-    <div className="group rounded-3xl overflow-hidden border border-amber-800/40 bg-[#111]/60 backdrop-blur-sm hover:border-amber-600/60 hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-all duration-300 flex flex-col relative animate-fade-in">
+    <div className="group rounded-3xl overflow-hidden border border-amber-800/40 bg-[#111]/60 backdrop-blur-sm hover:border-amber-600/60 hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-[colors,transform] flex flex-col relative animate-fade-in">
       {/* Condition bar — same height/style as eBay "New" bar */}
       <div
         className="h-7 flex items-center justify-center text-xs font-semibold tracking-wide uppercase border-b border-white/10"
@@ -287,7 +287,7 @@ const GreenSparkProductCard = ({
               onClick={handleCompareClick}
               disabled={!isComparing && compareDisabled}
               aria-label="Compare this part"
-              className={`min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-2xl border flex items-center justify-center transition-all duration-150 ${
+              className={`min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-2xl border flex items-center justify-center transition-colors ${
                 isComparing
                   ? "border-amber-500 bg-amber-500/20 text-amber-400"
                   : "border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] text-zinc-400 hover:text-white"
@@ -302,7 +302,7 @@ const GreenSparkProductCard = ({
               onClick={handleSaveClick}
               disabled={isThisSaving}
               aria-label="Save this part"
-              className="min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-2xl border border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] flex items-center justify-center transition-all duration-150 text-zinc-400 hover:text-white"
+              className="min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-2xl border border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] flex items-center justify-center transition-colors text-zinc-400 hover:text-white"
               title={isSaved ? "Saved" : "Save part"}
             >
               {isThisSaving ? (

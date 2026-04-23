@@ -31,7 +31,7 @@ const CountrySelector = () => {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className={`flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-all py-1 px-2 rounded-lg hover:bg-accent/10 ${
+        className={`flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors py-1 px-2 rounded-lg hover:bg-accent/10 ${
           selectorHighlighted ? "ring-2 ring-primary/60 animate-pulse" : ""
         }`}
       >

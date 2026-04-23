@@ -69,14 +69,14 @@ const FeaturesSection = () => {
             <ScrollReveal key={f.title} delay={(i % 4) + 1}>
               <button
                 onClick={() => navigate(f.link)}
-                className={`group relative w-full rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm p-5 sm:p-7 text-center transition-all duration-300 hover:border-primary/30 hover:bg-card/70 card-hover cursor-pointer ${(f as any).dimmed ? "opacity-75" : ""}`}
+                className={`group relative w-full rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm p-5 sm:p-7 text-center transition-colors hover:border-primary/30 hover:bg-card/70 card-hover cursor-pointer ${(f as any).dimmed ? "opacity-75" : ""}`}
               >
                 {(f as any).badge && (
                   <span className={`absolute top-3 right-3 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${(f as any).badgeColor}`}>
                     {(f as any).badge}
                   </span>
                 )}
-                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-110 group-hover:rotate-3">
+                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-[colors,transform] group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-110 group-hover:rotate-3">
                   <f.icon size={26} />
                 </div>
                 <h3 className="font-semibold text-sm sm:text-base mb-2">{f.title}</h3>

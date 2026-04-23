@@ -176,14 +176,14 @@ const SavedParts = () => {
           <div className="flex gap-2">
             <button
               onClick={() => setShowNewFolder(true)}
-              className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:border-muted-foreground/50 hover:text-foreground transition-all"
+              className="flex items-center gap-2 px-4 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:border-muted-foreground/50 hover:text-foreground transition-colors"
             >
               <FolderPlus size={16} /> New Folder
             </button>
             {parts.length > 0 && (
               <button
                 onClick={() => setConfirmClearAll(true)}
-                className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:border-destructive/30 hover:text-destructive transition-all"
+                className="flex items-center gap-2 px-3 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:border-destructive/30 hover:text-destructive transition-colors"
               >
                 <Trash2 size={14} />
               </button>
@@ -196,7 +196,7 @@ const SavedParts = () => {
           {/* All Parts */}
           <button
             onClick={() => setActiveFolder(null)}
-            className={`p-4 rounded-xl border text-left transition-all ${
+            className={`p-4 rounded-xl border text-left transition-colors ${
               activeFolder === null
                 ? "border-destructive/50 bg-destructive/5"
                 : "border-border bg-secondary/50 hover:border-muted-foreground/30"
@@ -212,7 +212,7 @@ const SavedParts = () => {
             <button
               key={folder.id}
               onClick={() => setActiveFolder(folder.id)}
-              className={`p-4 rounded-xl border text-left transition-all relative group ${
+              className={`p-4 rounded-xl border text-left transition-colors relative group ${
                 activeFolder === folder.id
                   ? "border-destructive/50 bg-destructive/5"
                   : "border-border bg-secondary/50 hover:border-muted-foreground/30"
@@ -224,7 +224,7 @@ const SavedParts = () => {
               <p className="text-xs text-emerald-400 mt-1">£{folderValue(folder.id).toFixed(2)}</p>
               <button
                 onClick={(e) => { e.stopPropagation(); setDeleteFolderId(folder.id); }}
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-colors"
               >
                 <X size={14} />
               </button>
@@ -234,7 +234,7 @@ const SavedParts = () => {
           {/* Inline new folder */}
           <button
             onClick={() => setShowNewFolder(true)}
-            className="p-4 rounded-xl border border-dashed border-border hover:border-muted-foreground/40 text-left transition-all"
+            className="p-4 rounded-xl border border-dashed border-border hover:border-muted-foreground/40 text-left transition-colors"
           >
             <div className="text-2xl mb-2">➕</div>
             <p className="text-sm text-muted-foreground">New folder</p>
@@ -265,7 +265,7 @@ const SavedParts = () => {
             {filteredParts.map((part) => (
               <div
                 key={part.id}
-                className="group bg-secondary/50 border border-border/50 rounded-xl overflow-hidden hover:border-muted-foreground/30 transition-all"
+                className="group bg-secondary/50 border border-border/50 rounded-xl overflow-hidden hover:border-muted-foreground/30 transition-colors"
               >
                 {/* Image */}
                 <div className="aspect-square bg-background overflow-hidden relative">
@@ -285,7 +285,7 @@ const SavedParts = () => {
                   )}
                   <button
                     onClick={() => setMovePartId(part.id)}
-                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-background/60 backdrop-blur-sm p-1.5 rounded-lg transition-all"
+                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 bg-background/60 backdrop-blur-sm p-1.5 rounded-lg transition-colors"
                   >
                     <FolderInput size={12} className="text-muted-foreground" />
                   </button>
@@ -306,7 +306,7 @@ const SavedParts = () => {
                           href={part.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-1.5 rounded-lg border border-border hover:border-muted-foreground/40 text-muted-foreground hover:text-foreground transition-all"
+                          className="p-1.5 rounded-lg border border-border hover:border-muted-foreground/40 text-muted-foreground hover:text-foreground transition-colors"
                         >
                           <ExternalLink size={11} />
                         </a>
@@ -314,7 +314,7 @@ const SavedParts = () => {
                       <button
                         onClick={() => setConfirmDeleteId(part.id)}
                         disabled={deletingId === part.id}
-                        className="p-1.5 rounded-lg border border-border hover:border-destructive/30 text-muted-foreground hover:text-destructive transition-all"
+                        className="p-1.5 rounded-lg border border-border hover:border-destructive/30 text-muted-foreground hover:text-destructive transition-colors"
                       >
                         {deletingId === part.id ? <Loader2 size={11} className="animate-spin" /> : <Trash2 size={11} />}
                       </button>
@@ -367,7 +367,7 @@ const SavedParts = () => {
           <div className="space-y-1 pt-2">
             <button
               onClick={() => movePartId && movePart(movePartId, null)}
-              className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all ${
+              className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors ${
                 !(parts.find((p) => p.id === movePartId) as any)?.folder_id
                   ? "bg-destructive/10 text-foreground border border-destructive/30"
                   : "text-muted-foreground hover:bg-secondary border border-transparent"
@@ -379,7 +379,7 @@ const SavedParts = () => {
               <button
                 key={folder.id}
                 onClick={() => movePartId && movePart(movePartId, folder.id)}
-                className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all ${
+                className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors ${
                   (parts.find((p) => p.id === movePartId) as any)?.folder_id === folder.id
                     ? "bg-destructive/10 text-foreground border border-destructive/30"
                     : "text-muted-foreground hover:bg-secondary border border-transparent"

@@ -168,7 +168,7 @@ const Deals = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${deal.title} — eBay UK deal`}
-                className="group relative flex flex-col p-4 bg-card border border-border hover:border-border/80 hover:bg-card/80 rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-xl hover:shadow-background/40 hover:-translate-y-0.5"
+                className="group relative flex flex-col p-4 bg-card border border-border hover:border-border/80 hover:bg-card/80 rounded-2xl overflow-hidden transition-[colors,transform] hover:shadow-xl hover:shadow-background/40 hover:-translate-y-0.5"
               >
                 <div className="absolute top-2 right-2 max-w-[55%]">
                   <span className="block truncate text-[9px] md:text-[10px] bg-primary/15 border border-primary/30 text-primary rounded-full px-2 py-0.5 font-bold">
@@ -228,7 +228,7 @@ const Deals = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${deal.title} — Amazon UK deal`}
-                className="group relative flex flex-col p-4 bg-card border border-border hover:border-border/80 hover:bg-card/80 rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-xl hover:shadow-background/40 hover:-translate-y-0.5"
+                className="group relative flex flex-col p-4 bg-card border border-border hover:border-border/80 hover:bg-card/80 rounded-2xl overflow-hidden transition-[colors,transform] hover:shadow-xl hover:shadow-background/40 hover:-translate-y-0.5"
               >
                 <div className="absolute top-2 right-2 max-w-[55%]">
                   <span className="block truncate text-[9px] md:text-[10px] bg-primary/15 border border-primary/30 text-primary rounded-full px-2 py-0.5 font-bold">

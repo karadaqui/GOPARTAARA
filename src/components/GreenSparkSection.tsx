@@ -18,7 +18,7 @@ const GreenSparkSection = () => {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Classic & Vintage Car Parts — Green Spark Plug Co."
-        className="flex items-center gap-4 p-4 bg-gradient-to-r from-amber-950/30 to-card/60 border border-amber-900/30 hover:border-amber-800/50 rounded-2xl transition-all group"
+        className="flex items-center gap-4 p-4 bg-gradient-to-r from-amber-950/30 to-card/60 border border-amber-900/30 hover:border-amber-800/50 rounded-2xl transition-colors group"
       >
         <div className="w-10 h-10 rounded-xl bg-amber-950/50 border border-amber-900/30 flex items-center justify-center flex-shrink-0 text-xl">
           🔩
@@ -47,7 +47,7 @@ const GreenSparkSection = () => {
           ))}
         </div>
 
-        <span className="text-muted-foreground group-hover:text-foreground flex-shrink-0 transition-all group-hover:translate-x-0.5">
+        <span className="text-muted-foreground group-hover:text-foreground flex-shrink-0 transition-[colors,transform] group-hover:translate-x-0.5">
           →
         </span>
       </a>

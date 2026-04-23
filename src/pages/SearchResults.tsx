@@ -216,7 +216,7 @@ const getConditionMeta = (condition: string | undefined) => {
   return { label, classes: "bg-zinc-800/80 text-zinc-400 border-b border-white/10" };
 };
 
-const RESULT_ICON_BUTTON_CLASS = "min-w-[44px] min-h-[44px] md:w-8 md:h-8 md:min-w-0 md:min-h-0 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-white transition-all duration-200";
+const RESULT_ICON_BUTTON_CLASS = "min-w-[44px] min-h-[44px] md:w-8 md:h-8 md:min-w-0 md:min-h-0 rounded-xl bg-zinc-800 hover:bg-zinc-700 border border-white/[0.06] flex items-center justify-center text-zinc-400 hover:text-white transition-colors";
 
 const getPriceBadgeClasses = (variant: "great" | "good" | "high" | "top") => {
   if (variant === "great") return "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25";
@@ -705,19 +705,19 @@ const SearchResults = () => {
           {/* Mode tabs */}
           <div className="flex items-center gap-1 mb-3">
             <button onClick={() => setSearchMode("text")}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${searchMode === "text" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${searchMode === "text" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
               <Search size={14} /> Part Search
             </button>
             <button onClick={() => setSearchMode("reg")}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${searchMode === "reg" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${searchMode === "reg" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
               <Car size={14} /> Reg Plate <span className="text-[10px] bg-blue-900/40 border border-blue-500/30 text-blue-300 px-1.5 py-0.5 rounded font-bold tracking-wider leading-none">UK</span>
             </button>
             <button onClick={() => setSearchMode("vin")}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${searchMode === "vin" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${searchMode === "vin" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
               <Search size={14} /> VIN 🌍
             </button>
             <button onClick={() => navigate('/tyres')}
-              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-white border border-zinc-700/50 transition-all">
+              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-white border border-zinc-700/50 transition-colors">
               <span>🛞</span>
               <span>Tyre Search</span>
             </button>
@@ -733,13 +733,13 @@ const SearchResults = () => {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search car parts..."
-                    className="w-full pl-14 pr-4 h-14 rounded-2xl bg-[#141414] border border-white/10 text-white placeholder:text-zinc-500 focus:outline-none focus:border-red-500/50 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition-all duration-200 text-sm"
+                    className="w-full pl-14 pr-4 h-14 rounded-2xl bg-[#141414] border border-white/10 text-white placeholder:text-zinc-500 focus:outline-none focus:border-red-500/50 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition-colors text-sm"
                   />
                 </div>
                 <div className="flex items-center gap-2">
                   <label className={`cursor-pointer shrink-0 ${identifying ? "pointer-events-none opacity-60" : ""}`}>
                     <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={identifying} />
-                    <div className="flex items-center gap-1.5 px-4 h-14 rounded-xl bg-[#1a1a1a] hover:bg-[#222] border border-white/10 transition-all duration-200 text-sm text-zinc-300">
+                    <div className="flex items-center gap-1.5 px-4 h-14 rounded-xl bg-[#1a1a1a] hover:bg-[#222] border border-white/10 transition-colors text-sm text-zinc-300">
                       {identifying ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
                       <span>{identifying ? "Identifying..." : "Photo"}</span>
                     </div>
@@ -820,7 +820,7 @@ const SearchResults = () => {
                     value={vinNumber}
                     onChange={(e) => { setVinNumber(e.target.value.toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g, "").slice(0, 17)); setVinError(""); }}
                     placeholder="Enter 17-character VIN"
-                    className="w-full pl-11 pr-16 h-14 rounded-2xl bg-[#141414] border border-white/10 text-white placeholder:text-zinc-500 focus:outline-none focus:border-red-500/50 transition-all duration-200 text-sm uppercase tracking-widest font-mono font-bold"
+                    className="w-full pl-11 pr-16 h-14 rounded-2xl bg-[#141414] border border-white/10 text-white placeholder:text-zinc-500 focus:outline-none focus:border-red-500/50 transition-colors text-sm uppercase tracking-widest font-mono font-bold"
                     maxLength={17}
                   />
                   <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] text-zinc-500 font-mono">{vinNumber.length}/17</span>
@@ -941,7 +941,7 @@ const SearchResults = () => {
                     <p className="text-xs text-zinc-500 mb-2.5 font-medium">Enter your vehicle model for more accurate parts search</p>
                     <div className="flex items-center gap-2">
                       <input value={vehicleModelInput} onChange={(e) => setVehicleModelInput(e.target.value)} placeholder={getModelPlaceholder(vehicleInfo.make)}
-                        className="flex-1 h-11 rounded-xl bg-[#141414] border border-white/10 px-4 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-red-500/50 transition-all"
+                        className="flex-1 h-11 rounded-xl bg-[#141414] border border-white/10 px-4 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-red-500/50 transition-colors"
                         onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); confirmModel(); } }} autoFocus />
                       <button type="button" onClick={confirmModel} disabled={!vehicleModelInput.trim()}
                         className="h-11 px-5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm flex items-center gap-1.5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
@@ -1118,7 +1118,7 @@ const SearchResults = () => {
                             localStorage.setItem('partara_recent_views', JSON.stringify(updated));
                           } catch(e) {}
                         }}
-                        className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-all duration-300 flex flex-col relative cursor-pointer animate-fade-in"
+                        className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-[colors,transform] flex flex-col relative cursor-pointer animate-fade-in"
                         style={{ animationDelay: `${idx * 50}ms` }}>
                         <div className="h-7 flex items-center justify-center text-xs font-semibold tracking-wide uppercase border-b border-white/10" style={conditionBarStyle}>
                           {item.condition || "Unknown"}
@@ -1222,14 +1222,14 @@ const SearchResults = () => {
                               else if (compareParts.length < 3) setCompareParts((prev) => [...prev, { id: item.id, title: item.partName, price: item.price, condition: item.condition, sellerName: item.sellerUsername, sellerRating: item.sellerPositivePercent, freeShipping: item.freeShipping, shippingCost: item.shippingCost, location: item.itemLocation, itemCountry: item.itemCountry, url: item.url, imageUrl: item.imageUrl, source: "ebay" as const }]);
                             }}
                               aria-label="Compare this part"
-                              className={`min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-xl border flex items-center justify-center transition-all duration-150 ${compareParts.some((p) => p.id === item.id) ? "border-red-500 bg-red-500/20 text-red-400" : "border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] text-zinc-400 hover:text-white"}`}
+                              className={`min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-xl border flex items-center justify-center transition-colors ${compareParts.some((p) => p.id === item.id) ? "border-red-500 bg-red-500/20 text-red-400" : "border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] text-zinc-400 hover:text-white"}`}
                               title={compareParts.some((p) => p.id === item.id) ? "Remove" : "Compare"}
                               disabled={!compareParts.some((p) => p.id === item.id) && compareParts.length >= 3}>
                               <Scale size={14} />
                             </button>
                             <button onClick={() => handleSave(item)} disabled={savingId === item.id}
                               aria-label="Save this part"
-                              className="min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-xl border border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] flex items-center justify-center transition-all duration-150 text-zinc-400 hover:text-white">
+                              className="min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-xl border border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] flex items-center justify-center transition-colors text-zinc-400 hover:text-white">
                               {savingId === item.id ? <Loader2 size={14} className="animate-spin" /> : savedIds.has(item.partNumber) ? <BookmarkCheck size={14} className="text-red-500" /> : <Bookmark size={14} />}
                             </button>
                             <PriceAlertDialog supplierName="eBay Motors" partQuery={item.partName} supplierUrl={item.url} ebayItemId={item.id} currentPrice={item.price} />
@@ -1256,7 +1256,7 @@ const SearchResults = () => {
               const href = `https://lowest-prices.eu/a/rkrn4sDyrWIyElw?url=${encodeURIComponent(autodocUrl)}`;
               return (
                 <a href={href} target="_blank" rel="noopener noreferrer"
-                  className="mt-6 mb-4 bg-zinc-900/60 border border-white/[0.08] rounded-xl px-5 py-4 flex items-center gap-4 hover:border-red-500/30 hover:bg-zinc-900/80 transition-all group">
+                  className="mt-6 mb-4 bg-zinc-900/60 border border-white/[0.08] rounded-xl px-5 py-4 flex items-center gap-4 hover:border-red-500/30 hover:bg-zinc-900/80 transition-colors group">
                   <div className="w-10 h-10 rounded-xl bg-[#E72B2B]/10 flex items-center justify-center shrink-0 border border-[#E72B2B]/20">
                     <img src="https://www.autodoc.co.uk/favicon.ico" alt="Autodoc" loading="lazy" decoding="async" className="w-5 h-5" />
                   </div>
@@ -1286,7 +1286,7 @@ const SearchResults = () => {
                 {activeQuery && isUKUser() && (() => {
                   const matched = findDealByBrand(activeQuery);
                   return matched ? (
-                    <a href={matched.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between w-full p-4 mt-4 bg-gradient-to-r from-red-950/40 to-zinc-900/60 border border-red-800/30 hover:border-red-600/40 rounded-2xl transition-all group">
+                    <a href={matched.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between w-full p-4 mt-4 bg-gradient-to-r from-red-950/40 to-zinc-900/60 border border-red-800/30 hover:border-red-600/40 rounded-2xl transition-colors group">
                       <div className="flex items-center gap-3">
                         <span className="text-xl">🔥</span>
                         <div>
@@ -1297,7 +1297,7 @@ const SearchResults = () => {
                       <span className="text-xs font-semibold text-red-400 group-hover:translate-x-0.5 transition-transform">View deal →</span>
                     </a>
                   ) : (
-                    <a href={EBAY_ALL_DEALS_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between w-full p-4 mt-4 bg-gradient-to-r from-red-950/40 to-zinc-900/60 border border-red-800/30 hover:border-red-600/40 rounded-2xl transition-all group">
+                    <a href={EBAY_ALL_DEALS_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between w-full p-4 mt-4 bg-gradient-to-r from-red-950/40 to-zinc-900/60 border border-red-800/30 hover:border-red-600/40 rounded-2xl transition-colors group">
                       <div className="flex items-center gap-3">
                         <span className="text-xl">🔥</span>
                         <div>
@@ -1330,7 +1330,7 @@ const SearchResults = () => {
                     href={`https://www.amazon.co.uk/s?k=${encodeURIComponent(activeQuery)}&tag=gopartara-21`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between w-full p-4 mt-6 bg-zinc-900/50 border border-zinc-800/50 rounded-xl hover:border-zinc-700/50 transition-all group"
+                    className="flex items-center justify-between w-full p-4 mt-6 bg-zinc-900/50 border border-zinc-800/50 rounded-xl hover:border-zinc-700/50 transition-colors group"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-lg">📦</span>
@@ -1365,7 +1365,7 @@ const SearchResults = () => {
                   {ebayFallback ? "The service is experiencing high demand. Search suppliers directly below." : "Try a different search term or change your marketplace"}
                 </p>
                 <button onClick={() => { setQuery(""); setActiveQuery(""); setSearchParams({}); }}
-                  className="px-5 py-2.5 rounded-xl bg-[#1a1a1a] border border-white/10 text-sm font-medium text-zinc-300 hover:bg-[#222] hover:border-white/20 transition-all">
+                  className="px-5 py-2.5 rounded-xl bg-[#1a1a1a] border border-white/10 text-sm font-medium text-zinc-300 hover:bg-[#222] hover:border-white/20 transition-colors">
                   Clear search
                 </button>
                 {ebayFallback && (

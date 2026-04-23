@@ -87,13 +87,13 @@ const VinCountryModal = ({ open, onClose, countryInfo, onSearchGlobal, onSelectM
           <div className="space-y-3 mb-4">
             <button
               onClick={onSearchGlobal}
-              className="w-full py-3.5 bg-red-600 hover:bg-red-500 text-white font-semibold rounded-xl transition-all duration-200 text-sm flex items-center justify-center gap-2"
+              className="w-full py-3.5 bg-red-600 hover:bg-red-500 text-white font-semibold rounded-xl transition-colors text-sm flex items-center justify-center gap-2"
             >
               Search Global eBay Instead <ArrowRight size={16} />
             </button>
             <button
               onClick={() => setShowCountryPicker(!showCountryPicker)}
-              className="w-full py-3 border border-zinc-700 hover:border-zinc-500 text-zinc-300 rounded-xl transition-all duration-200 text-sm"
+              className="w-full py-3 border border-zinc-700 hover:border-zinc-500 text-zinc-300 rounded-xl transition-colors text-sm"
             >
               Choose a Different eBay Market
             </button>
@@ -108,7 +108,7 @@ const VinCountryModal = ({ open, onClose, countryInfo, onSearchGlobal, onSelectM
                   <button
                     key={market.code}
                     onClick={() => onSelectMarket(market)}
-                    className="p-2.5 bg-zinc-800/60 hover:bg-zinc-700 rounded-xl text-center transition-all duration-150 border border-transparent hover:border-white/10"
+                    className="p-2.5 bg-zinc-800/60 hover:bg-zinc-700 rounded-xl text-center transition-colors border border-transparent hover:border-white/10"
                   >
                     <div className="flex justify-center mb-1">
                       <CountryFlag countryCode={market.code} emoji={market.emoji} size={22} />
