@@ -442,6 +442,14 @@ nav a, nav button, button, a {
   }
 }
 
+/* Mobile horizontal-overflow safety */
+@media (max-width: 767px) {
+  html, body, #root {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+}
+
 /* Logo styles */
 .logo-text {
   font-family: 'Space Grotesk', sans-serif;
