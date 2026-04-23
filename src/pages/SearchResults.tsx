@@ -718,7 +718,14 @@ const SearchResults = () => {
             </button>
             <button onClick={() => navigate('/tyres')}
               className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-white border border-zinc-700/50 transition-colors">
-              <span>🛞</span>
+              <img
+                src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
+                width={16}
+                height={16}
+                alt="tyre"
+                loading="lazy"
+                style={{ display: "inline-block", verticalAlign: "middle" }}
+              />
               <span>Tyre Search</span>
             </button>
           </div>

@@ -363,7 +363,14 @@ const HeroSection = () => {
                   onClick={() => navigate('/tyres')}
                   className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-colors text-muted-foreground hover:text-foreground"
                 >
-                  <span>🛞</span>
+                  <img
+                    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
+                    width={16}
+                    height={16}
+                    alt="tyre"
+                    loading="lazy"
+                    style={{ display: "inline-block", verticalAlign: "middle" }}
+                  />
                   Tyre Search
                 </button>
               </div>
