@@ -232,7 +232,7 @@ const Navbar = () => {
             <button
               type="button"
               onClick={() => setMenuOpen(true)}
-              className="md:hidden"
+              className="md:hidden flex items-center justify-center"
               style={{
                 background: "none",
                 border: "none",
@@ -241,9 +241,6 @@ const Navbar = () => {
                 padding: "8px",
                 minWidth: "44px",
                 minHeight: "44px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
               }}
               aria-label="Open navigation menu"
             >
