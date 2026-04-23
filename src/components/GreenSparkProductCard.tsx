@@ -286,7 +286,8 @@ const GreenSparkProductCard = ({
             <button
               onClick={handleCompareClick}
               disabled={!isComparing && compareDisabled}
-              className={`w-9 h-9 rounded-2xl border flex items-center justify-center transition-all duration-150 ${
+              aria-label="Compare this part"
+              className={`min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-2xl border flex items-center justify-center transition-all duration-150 ${
                 isComparing
                   ? "border-amber-500 bg-amber-500/20 text-amber-400"
                   : "border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] text-zinc-400 hover:text-white"
@@ -300,7 +301,8 @@ const GreenSparkProductCard = ({
             <button
               onClick={handleSaveClick}
               disabled={isThisSaving}
-              className="w-9 h-9 rounded-2xl border border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] flex items-center justify-center transition-all duration-150 text-zinc-400 hover:text-white"
+              aria-label="Save this part"
+              className="min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-2xl border border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] flex items-center justify-center transition-all duration-150 text-zinc-400 hover:text-white"
               title={isSaved ? "Saved" : "Save part"}
             >
               {isThisSaving ? (

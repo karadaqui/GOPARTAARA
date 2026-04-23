@@ -524,8 +524,9 @@ const Tyres = () => {
                               supplier: product.supplierName,
                             });
                           }}
-                          className="p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
+                          className="min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 sm:p-1.5 flex items-center justify-center rounded-lg hover:bg-zinc-800 transition-colors"
                           title="Save"
+                          aria-label="Save this part"
                         >
                           <Heart className="w-3.5 h-3.5 text-zinc-500 hover:text-red-400" />
                         </button>
@@ -538,15 +539,17 @@ const Tyres = () => {
                               url: product.url,
                             });
                           }}
-                          className="p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
+                          className="min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 sm:p-1.5 flex items-center justify-center rounded-lg hover:bg-zinc-800 transition-colors"
                           title="Price alert"
+                          aria-label="Set price alert"
                         >
                           <Bell className="w-3.5 h-3.5 text-zinc-500 hover:text-yellow-400" />
                         </button>
                         <button
                           onClick={(e) => { e.preventDefault(); toggleCompare(product); }}
                           title="Compare"
-                          className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-150 ${
+                          aria-label="Compare this part"
+                          className={`min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-xl border flex items-center justify-center transition-all duration-150 ${
                             compareList.find(p => p.id === product.id)
                               ? 'border-red-500 bg-red-600/20 text-red-400'
                               : 'border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] text-zinc-400 hover:text-white'
