@@ -258,101 +258,136 @@ const Navbar = () => {
       </nav>
 
       {menuOpen && (
-        <div
-          className="md:hidden"
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "#0f0f0f",
-            zIndex: 99999,
-            display: "flex",
-            flexDirection: "column",
-            overflowY: "auto",
-            WebkitOverflowScrolling: "touch",
-          }}
-        >
+        <div className="md:hidden">
+          {/* Backdrop */}
+          <div
+            onClick={() => setMenuOpen(false)}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.7)",
+              zIndex: 99998,
+            }}
+          />
+
+          {/* Drawer — slides in from right */}
           <div
             style={{
+              position: "fixed",
+              top: 0,
+              right: 0,
+              bottom: 0,
+              width: "280px",
+              backgroundColor: "#0f0f0f",
+              zIndex: 99999,
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "16px 20px",
-              borderBottom: "1px solid #1f1f1f",
+              flexDirection: "column",
+              overflowY: "auto",
+              WebkitOverflowScrolling: "touch",
+              boxShadow: "-8px 0 24px rgba(0,0,0,0.5)",
             }}
           >
-            <span style={{ fontWeight: 900, fontSize: "20px", color: "white" }}>
-              <span style={{ color: "#cc1111" }}>GO</span>PARTARA
-            </span>
-            <button
-              type="button"
-              onClick={() => setMenuOpen(false)}
+            {/* Header */}
+            <div
               style={{
-                background: "none",
-                border: "none",
-                color: "white",
-                cursor: "pointer",
-                padding: "8px",
-                fontSize: "22px",
-                minWidth: "44px",
-                minHeight: "44px",
                 display: "flex",
+                justifyContent: "space-between",
                 alignItems: "center",
-                justifyContent: "center",
+                padding: "16px 20px",
+                borderBottom: "1px solid #1f1f1f",
               }}
             >
-              ✕
-            </button>
-          </div>
-
-          <div style={{ padding: "8px 16px", flex: 1 }}>
-            {[
-              { label: "🏠 Home", href: "/" },
-              { label: "🔍 Search Parts", href: "/search" },
-              { label: "🛞 Tyres", href: "/tyres" },
-              { label: "🔥 Deals", href: "/deals" },
-              { label: "🏪 Marketplace", href: "/marketplace" },
-              { label: "💰 Pricing", href: "/pricing" },
-              { label: "📝 Blog", href: "/blog" },
-              { label: "🏢 For Business", href: "/business" },
-              { label: "📊 Dashboard", href: "/dashboard" },
-            ].map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleMobileLinkClick(e, link.href)}
+              <span style={{ fontWeight: 900, fontSize: "18px", color: "white" }}>
+                <span style={{ color: "#cc1111" }}>GO</span>PARTARA
+              </span>
+              <button
+                type="button"
+                onClick={() => setMenuOpen(false)}
                 style={{
+                  background: "none",
+                  border: "none",
+                  color: "#888",
+                  cursor: "pointer",
+                  padding: "8px",
+                  fontSize: "20px",
+                  minWidth: "44px",
+                  minHeight: "44px",
                   display: "flex",
                   alignItems: "center",
-                  padding: "16px 8px",
-                  color: "#ffffff",
-                  textDecoration: "none",
-                  fontSize: "17px",
-                  fontWeight: 600,
-                  borderBottom: "1px solid #1a1a1a",
-                  minHeight: "56px",
-                  WebkitTapHighlightColor: "transparent",
+                  justifyContent: "center",
                 }}
               >
-                {link.label}
-              </a>
-            ))}
-          </div>
+                ✕
+              </button>
+            </div>
 
-          <div style={{ padding: "20px", borderTop: "1px solid #1a1a1a" }}>
-            <a
-              href="/sign-out"
-              onClick={(e) => {
-                e.preventDefault();
-                setMenuOpen(false);
-                signOut();
-              }}
-              style={{ color: "#666", fontSize: "14px", textDecoration: "none" }}
-            >
-              Sign Out →
-            </a>
+            {/* Links */}
+            <div style={{ padding: "12px", flex: 1 }}>
+              {[
+                { label: "Home", href: "/", icon: "🏠" },
+                { label: "Search Parts", href: "/search", icon: "🔍" },
+                { label: "Tyres", href: "/tyres", icon: "tyre" },
+                { label: "Deals", href: "/deals", icon: "🔥" },
+                { label: "Marketplace", href: "/marketplace", icon: "🏪" },
+                { label: "Pricing", href: "/pricing", icon: "💰" },
+                { label: "Blog", href: "/blog", icon: "📝" },
+                { label: "For Business", href: "/business", icon: "🏢" },
+                { label: "Dashboard", href: "/dashboard", icon: "📊" },
+              ].map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  onClick={(e) => handleMobileLinkClick(e, link.href)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "12px",
+                    padding: "13px 12px",
+                    color: "#ffffff",
+                    textDecoration: "none",
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    borderRadius: "10px",
+                    marginBottom: "2px",
+                    WebkitTapHighlightColor: "transparent",
+                  }}
+                >
+                  {link.icon === "tyre" ? (
+                    <img
+                      src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
+                      width={18}
+                      height={18}
+                      alt=""
+                      loading="lazy"
+                      style={{ display: "inline-block", verticalAlign: "middle" }}
+                    />
+                  ) : (
+                    <span style={{ fontSize: "18px", width: "20px", textAlign: "center" }}>
+                      {link.icon}
+                    </span>
+                  )}
+                  {link.label}
+                </a>
+              ))}
+            </div>
+
+            {/* Bottom */}
+            <div style={{ padding: "20px", borderTop: "1px solid #1a1a1a" }}>
+              <a
+                href="/sign-out"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMenuOpen(false);
+                  signOut();
+                }}
+                style={{ color: "#555", fontSize: "13px", textDecoration: "none" }}
+              >
+                Sign Out →
+              </a>
+            </div>
           </div>
         </div>
       )}
