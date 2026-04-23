@@ -222,37 +222,34 @@ const Navbar = () => {
             {!loading && user && <MessageBubble />}
             {!loading && user && <NotificationBell />}
 
-            {/* Hamburger button - mobile only */}
             <button
               type="button"
               onClick={() => setMenuOpen(true)}
               className="md:hidden"
-              aria-label="Open menu"
               style={{
                 background: "none",
                 border: "none",
                 cursor: "pointer",
-                padding: "8px",
                 color: "white",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "5px",
+                padding: "8px",
                 minWidth: "44px",
                 minHeight: "44px",
-                WebkitTapHighlightColor: "transparent",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
+              aria-label="Open navigation menu"
             >
-              <span style={{ display: "block", width: "22px", height: "2px", background: "white", borderRadius: "2px" }} />
-              <span style={{ display: "block", width: "22px", height: "2px", background: "white", borderRadius: "2px" }} />
-              <span style={{ display: "block", width: "22px", height: "2px", background: "white", borderRadius: "2px" }} />
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Mobile full-screen menu - inline styles for maximum reliability */}
       {menuOpen && (
         <div
           style={{
@@ -261,145 +258,93 @@ const Navbar = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "#0a0a0a",
-            zIndex: 9999,
+            backgroundColor: "#0f0f0f",
+            zIndex: 99999,
             display: "flex",
             flexDirection: "column",
             overflowY: "auto",
             WebkitOverflowScrolling: "touch",
           }}
         >
-          {/* Top bar */}
           <div
             style={{
               display: "flex",
-              alignItems: "center",
               justifyContent: "space-between",
+              alignItems: "center",
               padding: "16px 20px",
-              borderBottom: "1px solid #1a1a1a",
+              borderBottom: "1px solid #1f1f1f",
             }}
           >
-            <span style={{ fontWeight: 900, fontSize: "20px", letterSpacing: "-0.02em" }}>
-              <span style={{ color: "#ffffff" }}>GO</span>
-              <span style={{ color: "#cc1111" }}>PART</span>
-              <span style={{ color: "#ffffff" }}>ARA</span>
+            <span style={{ fontWeight: 900, fontSize: "20px", color: "white" }}>
+              <span style={{ color: "#cc1111" }}>GO</span>PARTARA
             </span>
             <button
               type="button"
               onClick={() => setMenuOpen(false)}
-              aria-label="Close menu"
               style={{
                 background: "none",
                 border: "none",
                 color: "white",
                 cursor: "pointer",
                 padding: "8px",
-                fontSize: "24px",
+                fontSize: "22px",
                 minWidth: "44px",
                 minHeight: "44px",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                WebkitTapHighlightColor: "transparent",
               }}
             >
               ✕
             </button>
           </div>
 
-          {/* Links */}
-          <div style={{ flex: 1, padding: "8px 20px" }}>
-            {mobileLinks.map((link) => (
+          <div style={{ padding: "8px 16px", flex: 1 }}>
+            {[
+              { label: "🏠 Home", href: "/" },
+              { label: "🔍 Search Parts", href: "/search" },
+              { label: "🛞 Tyres", href: "/tyres" },
+              { label: "🔥 Deals", href: "/deals" },
+              { label: "🏪 Marketplace", href: "/marketplace" },
+              { label: "💰 Pricing", href: "/pricing" },
+              { label: "📝 Blog", href: "/blog" },
+              { label: "🏢 For Business", href: "/business" },
+              { label: "📊 Dashboard", href: "/dashboard" },
+            ].map((link) => (
               <a
-                key={link.label}
+                key={link.href}
                 href={link.href}
                 onClick={(e) => handleMobileLinkClick(e, link.href)}
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "12px",
-                  padding: "16px 12px",
+                  padding: "16px 8px",
                   color: "#ffffff",
                   textDecoration: "none",
                   fontSize: "17px",
                   fontWeight: 600,
                   borderBottom: "1px solid #1a1a1a",
-                  WebkitTapHighlightColor: "transparent",
                   minHeight: "56px",
+                  WebkitTapHighlightColor: "transparent",
                 }}
               >
-                <span style={{ fontSize: "20px" }}>{link.icon}</span>
                 {link.label}
               </a>
             ))}
-
-            {!loading && user && user.email === ADMIN_EMAIL && (
-              <a
-                href="/admin"
-                onClick={(e) => handleMobileLinkClick(e, "/admin")}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  padding: "16px 12px",
-                  color: "#ff4444",
-                  textDecoration: "none",
-                  fontSize: "17px",
-                  fontWeight: 600,
-                  borderBottom: "1px solid #1a1a1a",
-                  WebkitTapHighlightColor: "transparent",
-                  minHeight: "56px",
-                }}
-              >
-                <span style={{ fontSize: "20px" }}>🛡️</span>
-                Admin
-              </a>
-            )}
           </div>
 
-          {/* Bottom */}
           <div style={{ padding: "20px", borderTop: "1px solid #1a1a1a" }}>
-            {!loading && user ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setMenuOpen(false);
-                  signOut();
-                }}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#888888",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                  padding: "8px 0",
-                  WebkitTapHighlightColor: "transparent",
-                }}
-              >
-                Sign Out →
-              </button>
-            ) : (
-              <a
-                href="/auth"
-                onClick={(e) => handleMobileLinkClick(e, "/auth")}
-                style={{
-                  display: "block",
-                  textAlign: "center",
-                  padding: "14px",
-                  background: "#cc1111",
-                  color: "white",
-                  textDecoration: "none",
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  borderRadius: "12px",
-                  WebkitTapHighlightColor: "transparent",
-                }}
-              >
-                Get Started
-              </a>
-            )}
+            <a
+              href="/sign-out"
+              onClick={(e) => {
+                e.preventDefault();
+                setMenuOpen(false);
+                signOut();
+              }}
+              style={{ color: "#666", fontSize: "14px", textDecoration: "none" }}
+            >
+              Sign Out →
+            </a>
           </div>
         </div>
       )}
