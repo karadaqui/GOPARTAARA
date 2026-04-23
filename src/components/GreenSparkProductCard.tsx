@@ -277,7 +277,7 @@ const GreenSparkProductCard = ({
             href={product.url}
             target="_blank"
             rel="noopener noreferrer sponsored"
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold transition-colors duration-150"
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold transition-colors duration-150"
             title="Affiliate link — supports PARTARA at no extra cost"
           >
             <ExternalLink size={14} /> View Product
@@ -286,7 +286,7 @@ const GreenSparkProductCard = ({
             <button
               onClick={handleCompareClick}
               disabled={!isComparing && compareDisabled}
-              className={`w-9 h-9 rounded-xl border flex items-center justify-center transition-all duration-150 ${
+              className={`w-9 h-9 rounded-2xl border flex items-center justify-center transition-all duration-150 ${
                 isComparing
                   ? "border-amber-500 bg-amber-500/20 text-amber-400"
                   : "border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] text-zinc-400 hover:text-white"
@@ -300,7 +300,7 @@ const GreenSparkProductCard = ({
             <button
               onClick={handleSaveClick}
               disabled={isThisSaving}
-              className="w-9 h-9 rounded-xl border border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] flex items-center justify-center transition-all duration-150 text-zinc-400 hover:text-white"
+              className="w-9 h-9 rounded-2xl border border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] flex items-center justify-center transition-all duration-150 text-zinc-400 hover:text-white"
               title={isSaved ? "Saved" : "Save part"}
             >
               {isThisSaving ? (

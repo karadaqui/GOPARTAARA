@@ -138,7 +138,7 @@ const Blog = () => {
         {/* Header */}
         <div className="text-center py-16 px-4 max-w-2xl mx-auto">
           <h1 className="font-display text-4xl font-black text-foreground mb-3">
-            <span className="text-primary">PART</span>ARA Blog
+            <span style={{ color: '#cc1111' }}>GO</span>PARTARA Blog
           </h1>
           <p className="text-muted-foreground text-sm">
             Expert guides, maintenance tips & industry insights

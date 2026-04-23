@@ -15,6 +15,13 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Prevent Chatbase floating widget from overlapping content on mobile */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 80px;
+  }
+}
+
 @supports (-webkit-touch-callout: none) {
   .transition-all {
     transition-property: color, background-color, border-color, opacity, transform !important;
@@ -446,14 +453,14 @@ nav a, nav button, button, a {
 .logo-go {
   font-size: 1em;
   font-weight: 800;
-  color: #dc2626;
+  color: #cc1111;
   letter-spacing: -0.03em;
 }
 
 .logo-part {
   font-size: 1em;
   font-weight: 800;
-  color: #dc2626;
+  color: #cc1111;
   letter-spacing: -0.03em;
 }
 

@@ -29,7 +29,7 @@ const GreenSparkFeaturedCard = ({ searchQuery }: GreenSparkFeaturedCardProps) =>
       className="flex items-center gap-4 p-4 mb-4 rounded-2xl border border-amber-800/30 bg-amber-950/15 hover:border-amber-600/40 hover:bg-amber-950/25 transition-all group"
     >
       {/* Supplier badge */}
-      <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-amber-900/30 border border-amber-800/30 flex items-center justify-center text-xl">
+      <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-amber-900/30 border border-amber-800/30 flex items-center justify-center text-xl">
         🔩
       </div>
 

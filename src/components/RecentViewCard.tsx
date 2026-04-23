@@ -98,7 +98,7 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
   return (
     <div className="group">
       <a href={item.url} target="_blank" rel="noopener noreferrer">
-        <div className="relative w-full h-36 rounded-xl overflow-hidden bg-secondary mb-3">
+        <div className="relative w-full h-36 rounded-2xl overflow-hidden bg-secondary mb-3">
           <img
             src={item.image}
             alt={item.title}
