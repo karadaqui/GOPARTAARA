@@ -978,7 +978,7 @@ const SearchResults = () => {
                   <span className="text-red-500">"</span>{activeQuery}<span className="text-red-500">"</span>
                 </h1>
                 {totalResults > 0 && !liveLoading && (
-                  <p className="text-sm text-zinc-500 mt-2 flex items-center gap-2">
+                  <p className="text-sm text-zinc-500 mt-2 flex items-center gap-2 tabular-nums transition-all duration-700">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                     {activeFilterCount > 0
                       ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`

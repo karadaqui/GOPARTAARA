@@ -13,6 +13,7 @@ import PageLoader from "@/components/PageLoader";
 import CookieConsent from "./components/CookieConsent.tsx";
 import DevToolsGuard from "./components/DevToolsGuard.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
+import BackToTop from "./components/BackToTop.tsx";
 import MotTaxReminderRunner from "./components/garage/MotTaxReminderRunner.tsx";
 
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
@@ -116,6 +117,7 @@ const App = () => (
           </Suspense>
           </ErrorBoundary>
           <CookieConsent />
+          <BackToTop />
           <DevToolsGuard />
           
           </LocaleProvider>
