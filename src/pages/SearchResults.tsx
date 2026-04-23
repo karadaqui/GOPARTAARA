@@ -19,7 +19,7 @@ import {
   Truck, Bookmark, BookmarkCheck, Clock,
   Heart, AlertCircle, Zap, Globe,
   ChevronLeft, ChevronRight, ChevronDown, Pencil, Calendar, Palette, Fuel, Gauge,
-  ShieldCheck, Receipt, Check,
+  ShieldCheck, Receipt, Check, Link2 as LinkIcon,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { useAuth } from "@/contexts/AuthContext";
@@ -978,7 +978,7 @@ const SearchResults = () => {
                   <span className="text-red-500">"</span>{activeQuery}<span className="text-red-500">"</span>
                 </h1>
                 {totalResults > 0 && !liveLoading && (
-                  <p className="text-sm text-zinc-500 mt-2 flex items-center gap-2">
+                  <p className="text-sm text-zinc-500 mt-2 flex items-center gap-2 tabular-nums transition-all duration-700">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                     {activeFilterCount > 0
                       ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
@@ -1233,6 +1233,22 @@ const SearchResults = () => {
                               {savingId === item.id ? <Loader2 size={14} className="animate-spin" /> : savedIds.has(item.partNumber) ? <BookmarkCheck size={14} className="text-red-500" /> : <Bookmark size={14} />}
                             </button>
                             <PriceAlertDialog supplierName="eBay Motors" partQuery={item.partName} supplierUrl={item.url} ebayItemId={item.id} currentPrice={item.price} />
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(item.url).then(() => {
+                                  toast({ title: "Link copied", description: "Product link copied to clipboard." });
+                                }).catch(() => {
+                                  toast({ title: "Copy failed", description: "Unable to copy link.", variant: "destructive" });
+                                });
+                              }}
+                              aria-label="Copy product link"
+                              title="Copy link"
+                              className="min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-xl border border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] flex items-center justify-center transition-all duration-150 text-zinc-400 hover:text-white"
+                            >
+                              <LinkIcon size={14} />
+                            </button>
                           </div>
                         </div>
                       </div>
