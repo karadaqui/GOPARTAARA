@@ -171,7 +171,8 @@ const Navbar = () => {
                   <div className="absolute top-full right-0 pt-2 w-48">
                     <div className="rounded-xl border border-border/60 bg-popover/95 backdrop-blur-xl p-1.5 shadow-xl shadow-background/40 animate-in fade-in-0 zoom-in-95">
                       {moreLinks.map((l) => {
-                        const isActive = pathname === l.href;
+                        const isActive =
+                          pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
                         return (
                           <button
                             key={l.href}
