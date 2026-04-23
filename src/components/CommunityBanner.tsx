@@ -44,7 +44,7 @@ const CommunityBanner = () => {
                       window.location.href = `/search?q=${encodeURIComponent(input.value.trim())}`;
                     }
                   }}
-                  className="px-5 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold rounded-xl transition-all whitespace-nowrap"
+                  className="px-5 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold rounded-xl transition-colors whitespace-nowrap"
                 >
                   Search
                 </button>
@@ -58,7 +58,7 @@ const CommunityBanner = () => {
               <p className="text-muted-foreground/70 text-[11px] mb-3 leading-relaxed">No credit card needed</p>
               <a
                 href="/pricing"
-                className="block w-full py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-lg transition-all"
+                className="block w-full py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-lg transition-colors"
               >
                 Claim now →
               </a>

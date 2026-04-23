@@ -37,7 +37,7 @@ const EbayDealsSection = () => {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`${deal.label} eBay UK deal`}
-            className="flex-shrink-0 flex items-center gap-2.5 px-3 py-2.5 bg-card/60 border border-border/50 rounded-xl hover:border-border hover:bg-card transition-all group min-w-[160px]"
+            className="flex-shrink-0 flex items-center gap-2.5 px-3 py-2.5 bg-card/60 border border-border/50 rounded-xl hover:border-border hover:bg-card transition-colors group min-w-[160px]"
           >
             <span className="text-base">{getDealIcon(deal)}</span>
             <div className="min-w-0">

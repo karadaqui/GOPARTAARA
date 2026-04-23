@@ -193,7 +193,7 @@ const BlogPost = () => {
                 <Link
                   key={r.id}
                   to={`/blog/${r.slug}`}
-                  className="glass rounded-xl p-5 hover:border-primary/30 transition-all group"
+                  className="glass rounded-xl p-5 hover:border-primary/30 transition-colors group"
                 >
                   {r.category && (
                     <span className={`text-[9px] font-semibold px-2 py-0.5 rounded-full ${categoryColor(r.category)}`}>

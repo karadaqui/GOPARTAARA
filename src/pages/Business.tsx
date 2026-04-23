@@ -48,7 +48,7 @@ const Business = () => {
           </p>
           <a
             href="mailto:business@gopartara.com"
-            className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-4 rounded-2xl transition-all text-sm"
+            className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-4 rounded-2xl transition-colors text-sm"
           >
             Get a Custom Quote →
           </a>
@@ -99,7 +99,7 @@ const Business = () => {
             </p>
             <a
               href="mailto:business@gopartara.com"
-              className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-3 rounded-xl transition-all text-sm"
+              className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-3 rounded-xl transition-colors text-sm"
             >
               Contact Us →
             </a>

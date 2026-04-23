@@ -136,7 +136,7 @@ const About = () => (
           {steps.map((s, i) => (
             <div
               key={s.title}
-              className="group relative rounded-2xl border border-border bg-card p-8 text-center transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
+              className="group relative rounded-2xl border border-border bg-card p-8 text-center transition-colors hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
             >
               <span className="absolute top-4 right-4 text-[3rem] font-black text-muted/30 leading-none select-none">
                 {i + 1}
@@ -165,7 +165,7 @@ const About = () => (
           {features.map((f) => (
             <div
               key={f.title}
-              className="flex gap-4 rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-primary/20"
+              className="flex gap-4 rounded-2xl border border-border bg-card p-6 transition-colors hover:border-primary/20"
             >
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <f.icon size={22} />
@@ -193,7 +193,7 @@ const About = () => (
           {reasons.map((r) => (
             <div
               key={r.title}
-              className="flex gap-5 rounded-2xl border border-border bg-card p-6 transition-all duration-300 hover:border-primary/20"
+              className="flex gap-5 rounded-2xl border border-border bg-card p-6 transition-colors hover:border-primary/20"
             >
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <r.icon size={24} />

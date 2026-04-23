@@ -366,7 +366,7 @@ const ListingDetail = () => {
                       <button
                         key={i}
                         onClick={() => setSelectedPhoto(i)}
-                        className={`w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 shrink-0 transition-all ${
+                        className={`w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden border-2 shrink-0 transition-colors ${
                           i === selectedPhoto ? "border-primary ring-1 ring-primary/30" : "border-border hover:border-muted-foreground"
                         }`}
                       >

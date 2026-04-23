@@ -17,7 +17,7 @@ const testimonials = [
 ];
 
 const TestimonialCard = ({ t }: { t: typeof testimonials[0] }) => (
-  <div className="w-[320px] flex-shrink-0 rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm p-5 mx-2 transition-all duration-300 hover:border-primary/20 hover:bg-card/60">
+  <div className="w-[320px] flex-shrink-0 rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm p-5 mx-2 transition-colors hover:border-primary/20 hover:bg-card/60">
     <div className="flex items-center gap-0.5 mb-3">
       {[1, 2, 3, 4, 5].map((star) => (
         <Star

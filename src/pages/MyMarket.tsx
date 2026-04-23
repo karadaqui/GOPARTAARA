@@ -1320,7 +1320,7 @@ const MyMarket = () => {
                 key={pkg.name}
                 onClick={() => handleBoost(pkg)}
                 disabled={boostingPriceId === pkg.name}
-                className={`w-full text-left p-4 rounded-xl border transition-all hover:border-yellow-500/40 hover:bg-yellow-500/5 ${
+                className={`w-full text-left p-4 rounded-xl border transition-colors hover:border-yellow-500/40 hover:bg-yellow-500/5 ${
                   (pkg as any).popular ? "border-yellow-500/30 bg-yellow-500/5" : "border-border"
                 }`}
               >

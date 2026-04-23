@@ -47,7 +47,7 @@ const HowItWorksSection = () => (
         {steps.map((s, i) => (
           <ScrollReveal key={s.title} delay={i + 1} threshold={0.05}>
             <div className="relative text-center group mb-6 md:mb-16">
-              <div className="mx-auto mb-4 md:mb-6 flex h-14 w-14 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary/20 group-hover:scale-110">
+              <div className="mx-auto mb-4 md:mb-6 flex h-14 w-14 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-[colors,transform] group-hover:bg-primary/20 group-hover:scale-110">
                 <s.icon size={26} />
               </div>
               <span className="absolute -top-2 right-4 md:top-0 md:right-4 text-5xl md:text-6xl font-black text-muted/15 select-none pointer-events-none">

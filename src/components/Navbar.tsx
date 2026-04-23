@@ -102,7 +102,7 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 transition-colors ${
           scrolled
             ? "glass-strong shadow-lg shadow-background/50"
             : "bg-transparent backdrop-blur-md border-b border-transparent"
@@ -133,7 +133,7 @@ const Navbar = () => {
           >
             <span className="logo-text text-2xl">
               <span className="logo-go">GO</span>
-              <span className="logo-part transition-all duration-300 group-hover:drop-shadow-[0_0_8px_hsl(0_85%_50%/0.6)]">
+              <span className="logo-part transition-colors group-hover:drop-shadow-[0_0_8px_hsl(0_85%_50%/0.6)]">
                 PART
               </span>
               <span className="logo-ara">ARA</span>
@@ -143,13 +143,14 @@ const Navbar = () => {
           <div className="flex items-center gap-3">
             <div className="hidden md:flex items-center gap-8">
               {primaryLinks.map((l) => {
-                const isActive = pathname === l.href;
+                const isActive =
+                  pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
                 return (
                   <button
                     key={l.label}
                     onClick={() => handleNavClick(l.href)}
-                    className={`nav-link text-sm py-1 ${
-                      isActive ? "text-white font-semibold" : "text-zinc-400 hover:text-white transition-colors"
+                    className={`nav-link text-sm py-1 transition-colors ${
+                      isActive ? "text-white font-semibold" : "text-zinc-400 hover:text-white"
                     }`}
                   >
                     {l.label}
@@ -170,7 +171,8 @@ const Navbar = () => {
                   <div className="absolute top-full right-0 pt-2 w-48">
                     <div className="rounded-xl border border-border/60 bg-popover/95 backdrop-blur-xl p-1.5 shadow-xl shadow-background/40 animate-in fade-in-0 zoom-in-95">
                       {moreLinks.map((l) => {
-                        const isActive = pathname === l.href;
+                        const isActive =
+                          pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
                         return (
                           <button
                             key={l.href}

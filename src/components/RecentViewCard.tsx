@@ -124,7 +124,7 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
           onClick={handleSave}
           disabled={saving}
           aria-label="Save this part"
-          className="flex-1 flex items-center justify-center gap-1 min-h-[44px] py-1.5 text-[11px] text-muted-foreground hover:text-foreground border border-border hover:border-muted-foreground/40 rounded-md transition-all"
+          className="flex-1 flex items-center justify-center gap-1 min-h-[44px] py-1.5 text-[11px] text-muted-foreground hover:text-foreground border border-border hover:border-muted-foreground/40 rounded-md transition-colors"
         >
           {isSaved ? <BookmarkCheck size={11} className="text-yellow-500" /> : <Bookmark size={11} />}
           {isSaved ? "Saved" : "Save"}
@@ -132,7 +132,7 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
         <button
           onClick={handleAlertClick}
           aria-label="Set price alert"
-          className="flex-1 flex items-center justify-center gap-1 min-h-[44px] py-1.5 text-[11px] text-muted-foreground hover:text-destructive border border-border hover:border-destructive/30 rounded-md transition-all"
+          className="flex-1 flex items-center justify-center gap-1 min-h-[44px] py-1.5 text-[11px] text-muted-foreground hover:text-destructive border border-border hover:border-destructive/30 rounded-md transition-colors"
         >
           {hasAlert ? <BellRing size={11} className="text-destructive" /> : <Bell size={11} />}
           {hasAlert ? "Alert Set" : "Alert"}
@@ -166,7 +166,7 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
                 const v = Math.max(0, parseFloat(alertPrice || "0") - 1);
                 setAlertPrice(v.toFixed(2));
               }}
-              className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-lg border border-border bg-secondary text-foreground text-xl font-light hover:bg-muted active:scale-95 transition-all select-none"
+              className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-lg border border-border bg-secondary text-foreground text-xl font-light hover:bg-muted active:scale-95 transition-[colors,transform] select-none"
             >
               −
             </button>
@@ -198,7 +198,7 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
                 const v = parseFloat(alertPrice || "0") + 1;
                 setAlertPrice(v.toFixed(2));
               }}
-              className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-lg border border-border bg-secondary text-foreground text-xl font-light hover:bg-muted active:scale-95 transition-all select-none"
+              className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-lg border border-border bg-secondary text-foreground text-xl font-light hover:bg-muted active:scale-95 transition-[colors,transform] select-none"
             >
               +
             </button>
@@ -211,7 +211,7 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
           <button
             onClick={confirmAlert}
             disabled={!alertPrice || parseFloat(alertPrice) <= 0}
-            className="w-full py-2 rounded-lg bg-destructive hover:bg-destructive/90 disabled:opacity-40 disabled:cursor-not-allowed text-destructive-foreground text-sm font-semibold transition-all active:scale-[0.98]"
+            className="w-full py-2 rounded-lg bg-destructive hover:bg-destructive/90 disabled:opacity-40 disabled:cursor-not-allowed text-destructive-foreground text-sm font-semibold transition-[colors,transform] active:scale-[0.98]"
           >
             🔔 Set Alert
           </button>

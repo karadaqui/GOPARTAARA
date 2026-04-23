@@ -294,7 +294,7 @@ const HeroSection = () => {
 
       <div className="container relative z-10 text-center px-4 py-12 sm:py-0">
         {/* Badge */}
-        <div className={`transition-all duration-700 ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+        <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             ⚡ 1,000,000+ parts searchable · Free to compare
@@ -302,7 +302,7 @@ const HeroSection = () => {
         </div>
 
         {/* Heading */}
-        <div className={`transition-all duration-700 ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+        <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-[5.5rem] font-bold tracking-[-0.04em] leading-[0.9] mb-6 sm:mb-8">
             Find Any Car Part
             <br />
@@ -311,7 +311,7 @@ const HeroSection = () => {
         </div>
 
         {/* Subtitle */}
-        <div className={`transition-all duration-700 ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+        <div className={`transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
           <p className="text-muted-foreground text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-12 sm:mb-14 leading-relaxed">
             Search 1,000,000+ parts from trusted UK &amp; global suppliers.
             <br className="hidden sm:block" />
@@ -320,14 +320,14 @@ const HeroSection = () => {
         </div>
 
         {/* Search section */}
-        <div className={`transition-all duration-700 ease-out delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+        <div className={`transition-[colors,transform] ease-out delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
           <div id="search" className="max-w-3xl mx-auto">
             {/* Tabs */}
             <div className="flex items-center justify-center mb-5">
               <div className="inline-flex items-center rounded-xl bg-card/40 backdrop-blur-md border border-border/30 p-1">
                 <button
                   onClick={() => setActiveTab("part")}
-                  className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ${
+                  className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
                     activeTab === "part"
                       ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                       : "text-muted-foreground hover:text-foreground"
@@ -338,7 +338,7 @@ const HeroSection = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("plate")}
-                  className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ${
+                  className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
                     activeTab === "plate"
                       ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                       : "text-muted-foreground hover:text-foreground"
@@ -350,7 +350,7 @@ const HeroSection = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("vin")}
-                  className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ${
+                  className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
                     activeTab === "vin"
                       ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                       : "text-muted-foreground hover:text-foreground"
@@ -361,7 +361,7 @@ const HeroSection = () => {
                 </button>
                 <button
                   onClick={() => navigate('/tyres')}
-                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 text-muted-foreground hover:text-foreground"
+                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-colors text-muted-foreground hover:text-foreground"
                 >
                   <span>🛞</span>
                   Tyre Search
@@ -399,7 +399,7 @@ const HeroSection = () => {
                         onChange={handlePhotoUpload}
                         disabled={identifying}
                       />
-                      <div className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-secondary hover:bg-secondary/80 transition-all text-sm text-secondary-foreground hover:scale-[1.02] active:scale-[0.98]">
+                      <div className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-secondary hover:bg-secondary/80 transition-[colors,transform] text-sm text-secondary-foreground hover:scale-[1.02] active:scale-[0.98]">
                         {identifying ? (
                           <>
                             <Loader2 size={18} className="animate-spin" />
@@ -615,7 +615,7 @@ const HeroSection = () => {
                             <button
                               key={i}
                               onClick={() => navigate(`/search?q=${encodeURIComponent(term)}&photo=1`)}
-                              className="flex items-center justify-between w-full p-3 bg-secondary hover:bg-secondary/80 rounded-xl transition-all group text-left"
+                              className="flex items-center justify-between w-full p-3 bg-secondary hover:bg-secondary/80 rounded-xl transition-colors group text-left"
                             >
                               <div className="flex items-center gap-2">
                                 {smartLabel && <span className="text-sm">{smartLabel.icon}</span>}
@@ -761,7 +761,7 @@ const HeroSection = () => {
         </div>
 
         {/* Suppliers Section */}
-        <div className={`transition-all duration-700 ease-out delay-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+        <div className={`transition-[colors,transform] ease-out delay-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <section className="py-12 px-4 max-w-2xl mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-4">

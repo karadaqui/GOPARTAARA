@@ -87,7 +87,7 @@ const TecDocPartsSection = ({ make, model, year }: TecDocPartsSectionProps) => {
               key={cat.id}
               onClick={() => handleCategoryClick(cat.id)}
               disabled={loading}
-              className={`relative flex items-center gap-2.5 px-4 py-3.5 rounded-xl border text-sm font-semibold transition-all duration-200 ${
+              className={`relative flex items-center gap-2.5 px-4 py-3.5 rounded-xl border text-sm font-semibold transition-colors ${
                 selectedCategory === cat.id
                   ? "bg-red-600 border-red-500 text-white shadow-lg shadow-red-600/20"
                   : "bg-[#1a1a1a] border-white/[0.08] text-zinc-300 hover:border-red-500/40 hover:bg-red-600/10 hover:text-white"
@@ -139,7 +139,7 @@ const TecDocPartsSection = ({ make, model, year }: TecDocPartsSectionProps) => {
                     rel="noopener noreferrer"
                     className="shrink-0"
                   >
-                    <button className="flex items-center gap-1.5 h-9 px-4 rounded-xl bg-red-600/10 border border-red-500/20 text-red-400 hover:bg-red-600 hover:text-white text-xs font-semibold transition-all duration-200">
+                    <button className="flex items-center gap-1.5 h-9 px-4 rounded-xl bg-red-600/10 border border-red-500/20 text-red-400 hover:bg-red-600 hover:text-white text-xs font-semibold transition-colors">
                       <Search size={13} />
                       Find on eBay
                       <ExternalLink size={11} />

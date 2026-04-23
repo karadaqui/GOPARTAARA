@@ -151,7 +151,7 @@ const Blog = () => {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
                 activeCategory === cat
                   ? 'bg-primary border-primary text-primary-foreground'
                   : 'bg-card border-border text-muted-foreground hover:border-muted-foreground/50'
@@ -211,7 +211,7 @@ const Blog = () => {
               <div className="relative group mb-8">
                 <Link
                   to={`/blog/${featured.slug}`}
-                  className="block p-6 bg-card border border-border rounded-2xl hover:border-muted-foreground/40 transition-all"
+                  className="block p-6 bg-card border border-border rounded-2xl hover:border-muted-foreground/40 transition-colors"
                 >
                   <div className="flex items-center gap-2 mb-3 flex-wrap">
                     {featured.category && (
@@ -250,7 +250,7 @@ const Blog = () => {
                     <div key={post.id} className="relative group">
                       <Link
                         to={`/blog/${post.slug}`}
-                        className="flex flex-col h-full p-5 bg-card border border-border rounded-2xl hover:border-muted-foreground/40 hover:-translate-y-0.5 transition-all duration-200"
+                        className="flex flex-col h-full p-5 bg-card border border-border rounded-2xl hover:border-muted-foreground/40 hover:-translate-y-0.5 transition-[colors,transform]"
                       >
                         <div className="flex items-center gap-2 mb-3">
                           {post.category && (

@@ -152,7 +152,7 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
             return (
               <div
                 key={alert.id}
-                className="flex items-center gap-4 bg-secondary/30 border border-border/50 rounded-xl p-4 hover:border-border transition-all group"
+                className="flex items-center gap-4 bg-secondary/30 border border-border/50 rounded-xl p-4 hover:border-border transition-colors group"
               >
                 <div className="w-16 h-16 flex-shrink-0 bg-secondary rounded-lg overflow-hidden">
                   {alert.image_url ? (
@@ -184,7 +184,7 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
                             const v = Math.max(0, parseFloat(editPrice || "0") - 1);
                             setEditPrice(v.toFixed(2));
                           }}
-                          className="w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-lg border border-border bg-secondary text-foreground text-base font-light hover:bg-muted active:scale-95 transition-all select-none"
+                          className="w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-lg border border-border bg-secondary text-foreground text-base font-light hover:bg-muted active:scale-95 transition-[colors,transform] select-none"
                         >
                           −
                         </button>
@@ -214,7 +214,7 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
                             const v = parseFloat(editPrice || "0") + 1;
                             setEditPrice(v.toFixed(2));
                           }}
-                          className="w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-lg border border-border bg-secondary text-foreground text-base font-light hover:bg-muted active:scale-95 transition-all select-none"
+                          className="w-7 h-7 flex-shrink-0 flex items-center justify-center rounded-lg border border-border bg-secondary text-foreground text-base font-light hover:bg-muted active:scale-95 transition-[colors,transform] select-none"
                         >
                           +
                         </button>
@@ -223,13 +223,13 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
                         <button
                           onClick={() => saveEdit(alert.id)}
                           disabled={!editPrice || parseFloat(editPrice) <= 0}
-                          className="flex-1 py-1.5 bg-destructive hover:bg-destructive/90 disabled:opacity-40 text-destructive-foreground text-[11px] font-semibold rounded-lg transition-all"
+                          className="flex-1 py-1.5 bg-destructive hover:bg-destructive/90 disabled:opacity-40 text-destructive-foreground text-[11px] font-semibold rounded-lg transition-colors"
                         >
                           Save
                         </button>
                         <button
                           onClick={cancelEdit}
-                          className="px-3 py-1.5 border border-border text-muted-foreground text-[11px] rounded-lg hover:text-foreground transition-all"
+                          className="px-3 py-1.5 border border-border text-muted-foreground text-[11px] rounded-lg hover:text-foreground transition-colors"
                         >
                           Cancel
                         </button>
@@ -279,14 +279,14 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
                         href={alert.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground border border-border rounded-lg hover:border-muted-foreground/50 hover:text-foreground transition-all text-center"
+                        className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground border border-border rounded-lg hover:border-muted-foreground/50 hover:text-foreground transition-colors text-center"
                       >
                         View ↗
                       </a>
                     )}
                     <button
                       onClick={() => setConfirmDeleteId(alert.id)}
-                      className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground/50 border border-border/50 rounded-lg hover:border-destructive/30 hover:text-destructive transition-all"
+                      className="px-3 py-1.5 text-[11px] font-medium text-muted-foreground/50 border border-border/50 rounded-lg hover:border-destructive/30 hover:text-destructive transition-colors"
                     >
                       Remove
                     </button>

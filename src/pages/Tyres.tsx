@@ -360,7 +360,7 @@ const Tyres = () => {
               type="button"
               onClick={searchTyres}
               disabled={loading}
-              className="w-full py-4 bg-red-600 hover:bg-red-500 active:scale-[0.98] disabled:opacity-50 text-white font-black rounded-2xl transition-all text-sm tracking-wide shadow-lg shadow-red-900/30"
+              className="w-full py-4 bg-red-600 hover:bg-red-500 active:scale-[0.98] disabled:opacity-50 text-white font-black rounded-2xl transition-[colors,transform] text-sm tracking-wide shadow-lg shadow-red-900/30"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -387,7 +387,7 @@ const Tyres = () => {
                 <button
                   key={s.id}
                   onClick={() => { setCountryFilter(s.id); setCurrentPage(1); }}
-                  className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                  className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
                     countryFilter === s.id
                       ? 'bg-red-600 border-red-500 text-white'
                       : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
@@ -411,7 +411,7 @@ const Tyres = () => {
                 <button
                   key={s.id}
                   onClick={() => { setSeasonFilter(s.id as 'all'|'summer'|'winter'|'allseason'); setCurrentPage(1); }}
-                  className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
                     seasonFilter === s.id
                       ? 'bg-red-600 border-red-500 text-white'
                       : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
@@ -459,7 +459,7 @@ const Tyres = () => {
                 return (
                   <div
                     key={`${product.supplierMeta?.id || ''}-${product.id || i}`}
-                    className="bg-zinc-900 border border-zinc-800/80 hover:border-zinc-600 rounded-2xl overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50 group flex flex-col"
+                    className="bg-zinc-900 border border-zinc-800/80 hover:border-zinc-600 rounded-2xl overflow-hidden transition-[colors,transform] hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50 group flex flex-col"
                   >
                     <a
                       href={product.url}
@@ -550,7 +550,7 @@ const Tyres = () => {
                           onClick={(e) => { e.preventDefault(); toggleCompare(product); }}
                           title="Compare"
                           aria-label="Compare this part"
-                          className={`min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-xl border flex items-center justify-center transition-all duration-150 ${
+                          className={`min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-xl border flex items-center justify-center transition-colors ${
                             compareList.find(p => p.id === product.id)
                               ? 'border-red-500 bg-red-600/20 text-red-400'
                               : 'border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] text-zinc-400 hover:text-white'

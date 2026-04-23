@@ -495,7 +495,7 @@ const Garage = () => {
           {vehicles.map(v => {
             const VehicleIcon = getVehicleIcon(v.make, v.model);
             return (
-              <div key={v.id} className="glass rounded-2xl p-6 group hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+              <div key={v.id} className="glass rounded-2xl p-6 group hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-colors">
                 <div className="flex items-start justify-between mb-4">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
                     <VehicleIcon size={24} className="text-primary" />
