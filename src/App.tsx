@@ -73,6 +73,7 @@ const App = () => (
           <MotTaxReminderRunner />
           <ErrorBoundary>
           <Suspense fallback={<PageLoader />}>
+            <div className="pb-20 md:pb-0">
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
@@ -110,8 +111,8 @@ const App = () => (
               <Route path="/business" element={<Business />} />
               <Route path="/compare" element={<Compare />} />
               <Route path="*" element={<NotFound />} />
-              <Route path="*" element={<NotFound />} />
             </Routes>
+            </div>
           </Suspense>
           </ErrorBoundary>
           <CookieConsent />
