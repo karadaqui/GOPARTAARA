@@ -865,25 +865,25 @@ const SearchResults = () => {
 
         {/* ── Supplier Sources Banner ── */}
         {!supplierBannerDismissed && (
-          <div className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3">
-            <div className="flex items-center gap-2 shrink-0 flex-wrap">
+          <div className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-2xl px-4 py-2.5 flex items-center gap-3">
+            <div className="flex overflow-x-auto scrollbar-hide gap-3 pb-1 sm:pb-0 sm:flex-wrap items-center flex-1 min-w-0">
               {SUPPLIERS.map((supplier, idx) => (
-                <span key={supplier.id} className="flex items-center gap-1.5">
-                  {idx > 0 && <span className="text-[10px] text-zinc-600">•</span>}
+                <span key={supplier.id} className="flex items-center gap-1.5 flex-shrink-0">
+                  {idx > 0 && <span className="text-[10px] text-zinc-600 hidden sm:inline">•</span>}
                   {supplier.status === 'live' ? (
-                    <span className="flex items-center gap-1.5 text-xs font-medium text-white">
+                    <span className="flex items-center gap-1.5 text-xs font-medium text-white whitespace-nowrap">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
                       {supplier.label}
                     </span>
                   ) : (
-                    <span className="text-xs text-zinc-600 opacity-50 flex items-center gap-1">
+                    <span className="text-xs text-zinc-600 opacity-50 flex items-center gap-1 whitespace-nowrap">
                       <span className="text-[10px]">🔜</span> {supplier.label}
                     </span>
                   )}
                 </span>
               ))}
             </div>
-            <p className="text-xs text-zinc-500 flex-1 hidden sm:block">More suppliers coming soon</p>
+            <p className="text-xs text-zinc-500 hidden sm:block shrink-0">More suppliers coming soon</p>
             <button
               onClick={() => { setSupplierBannerDismissed(true); localStorage.setItem("supplier_banner_dismissed", "1"); }}
               className="shrink-0 p-1 rounded-lg hover:bg-white/5 text-zinc-600 hover:text-zinc-400 transition-colors"
