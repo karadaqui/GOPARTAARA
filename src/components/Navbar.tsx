@@ -169,15 +169,22 @@ const Navbar = () => {
                 {moreOpen && (
                   <div className="absolute top-full right-0 pt-2 w-48">
                     <div className="rounded-xl border border-border/60 bg-popover/95 backdrop-blur-xl p-1.5 shadow-xl shadow-background/40 animate-in fade-in-0 zoom-in-95">
-                      {moreLinks.map((l) => (
-                        <button
-                          key={l.href}
-                          onClick={() => handleNavClick(l.href)}
-                          className="w-full rounded-lg px-3 py-2.5 text-left text-sm text-popover-foreground transition-colors hover:bg-accent/10 hover:text-accent-foreground"
-                        >
-                          {l.label}
-                        </button>
-                      ))}
+                      {moreLinks.map((l) => {
+                        const isActive = pathname === l.href;
+                        return (
+                          <button
+                            key={l.href}
+                            onClick={() => handleNavClick(l.href)}
+                            className={`w-full rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
+                              isActive
+                                ? "text-white font-semibold"
+                                : "text-zinc-400 hover:bg-accent/10 hover:text-white"
+                            }`}
+                          >
+                            {l.label}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

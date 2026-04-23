@@ -59,12 +59,12 @@ const Compare = lazy(() => import("./pages/Compare.tsx"));
 const queryClient = new QueryClient();
 
 const App = () => {
-  const [showTop, setShowTop] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setShowTop(window.scrollY > 400);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    const handleScroll = () => setShowBackToTop(window.scrollY > 400);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
@@ -132,7 +132,7 @@ const App = () => {
             </SearchLimitProvider>
             </SubscriptionProvider>
           </AuthProvider>
-          {showTop && (
+          {showBackToTop && (
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               aria-label="Back to top"
@@ -152,7 +152,7 @@ const App = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: "0 4px 16px rgba(204,17,17,0.5)",
+                boxShadow: "0 4px 16px rgba(204,17,17,0.4)",
                 fontWeight: "bold",
               }}
             >

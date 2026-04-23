@@ -431,14 +431,21 @@ const HeroSection = () => {
                   </div>
                 </form>
                 <div className="flex flex-col items-center mt-4 gap-2">
+                  <p
+                    style={{
+                      color: "#555555",
+                      fontSize: "12px",
+                      marginTop: "8px",
+                      textAlign: "center",
+                    }}
+                  >
+                    🟢 {viewers} people searching right now
+                  </p>
                   <p className="text-xs text-muted-foreground text-center flex items-center gap-1.5">
                     <ImageIcon size={12} className="text-muted-foreground/70" />
                     Upload a photo of any car part — our system will identify it and find the best prices
                   </p>
                   {user && <SearchCounter limitData={searchLimit} />}
-                  <p className="text-xs text-muted-foreground text-center mt-1">
-                    🟢 <span className="tabular-nums">{viewers}</span> people searching right now
-                  </p>
                   <div className="flex items-center justify-center mt-3">
                     <a
                       href="#mission"
