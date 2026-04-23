@@ -83,7 +83,11 @@ function setCache(key: string, data: any) {
 }
 
 Deno.serve(async (req) => {
-  const corsHeaders = getCorsHeaders(req);
+  const corsHeaders = {
+    ...getCorsHeaders(req),
+    "X-RateLimit-Limit": "30",
+    "X-RateLimit-Window": "60s",
+  };
 
   if (req.method === "OPTIONS") return corsPreflightResponse(corsHeaders);
 

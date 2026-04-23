@@ -122,14 +122,16 @@ const RecentViewCard = ({ item, savedIds, alertIds, onSaved, onAlertSet }: Recen
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[11px] text-muted-foreground hover:text-foreground border border-border hover:border-muted-foreground/40 rounded-md transition-all"
+          aria-label="Save this part"
+          className="flex-1 flex items-center justify-center gap-1 min-h-[44px] py-1.5 text-[11px] text-muted-foreground hover:text-foreground border border-border hover:border-muted-foreground/40 rounded-md transition-all"
         >
           {isSaved ? <BookmarkCheck size={11} className="text-yellow-500" /> : <Bookmark size={11} />}
           {isSaved ? "Saved" : "Save"}
         </button>
         <button
           onClick={handleAlertClick}
-          className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[11px] text-muted-foreground hover:text-destructive border border-border hover:border-destructive/30 rounded-md transition-all"
+          aria-label="Set price alert"
+          className="flex-1 flex items-center justify-center gap-1 min-h-[44px] py-1.5 text-[11px] text-muted-foreground hover:text-destructive border border-border hover:border-destructive/30 rounded-md transition-all"
         >
           {hasAlert ? <BellRing size={11} className="text-destructive" /> : <Bell size={11} />}
           {hasAlert ? "Alert Set" : "Alert"}
