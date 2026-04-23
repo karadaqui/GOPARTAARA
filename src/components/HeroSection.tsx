@@ -95,6 +95,31 @@ const HeroSection = () => {
     return () => clearTimeout(t);
   }, []);
 
+  // Live "people searching" counter
+  const [viewers, setViewers] = useState(() => Math.floor(Math.random() * 170) + 180);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setViewers(Math.floor(Math.random() * 170) + 180);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Keyboard shortcut "/" focuses search input
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (e.key === "/" && !["INPUT", "TEXTAREA"].includes(tag)) {
+        e.preventDefault();
+        const el = document.querySelector<HTMLInputElement>(
+          'input[placeholder*="BMW"], input[placeholder*="Search"], input[type="text"]'
+        );
+        el?.focus();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
   // Fetch user's first garage vehicle (deduped per session)
   const garageFetchedRef = useRef(false);
   useEffect(() => {
