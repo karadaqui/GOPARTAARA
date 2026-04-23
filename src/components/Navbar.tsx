@@ -187,20 +187,22 @@ const Navbar = () => {
           {!loading && user && <MessageBubble />}
           {!loading && user && <NotificationBell />}
 
-          <button
-            type="button"
-            className="flex md:hidden items-center justify-center min-h-[44px] min-w-[44px] text-foreground rounded-xl relative z-[70]"
-            style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
-            onClick={(e) => {
-              e.stopPropagation();
-              console.log('menu toggled:', !open);
-              setOpen((prev) => !prev);
-            }}
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-          >
-            {open ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {!open && (
+            <button
+              type="button"
+              className="flex md:hidden items-center justify-center min-h-[44px] min-w-[44px] text-foreground rounded-xl relative z-[70]"
+              style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log('menu toggled: true');
+                setOpen(true);
+              }}
+              aria-label="Open menu"
+              aria-expanded={false}
+            >
+              <Menu size={24} />
+            </button>
+          )}
         </div>
       </div>
 
@@ -240,7 +242,7 @@ const Navbar = () => {
                     key={l.label}
                     onClick={() => handleNavClick(l.href)}
                     className={`flex items-center w-full min-h-[48px] px-3 text-left text-base transition-colors rounded-xl ${
-                      isActive ? "text-foreground font-medium bg-accent/10" : "text-muted-foreground hover:text-foreground hover:bg-accent/5"
+                      isActive ? "text-foreground font-semibold bg-accent/10" : "text-foreground/90 hover:text-foreground hover:bg-accent/5"
                     }`}
                   >
                     {l.label}
@@ -254,7 +256,7 @@ const Navbar = () => {
                   <button
                     key={l.href}
                     onClick={() => handleNavClick(l.href)}
-                    className="flex items-center w-full min-h-[48px] px-3 text-left text-base text-muted-foreground hover:text-foreground hover:bg-accent/5 rounded-xl transition-colors"
+                    className="flex items-center w-full min-h-[48px] px-3 text-left text-base text-foreground/90 hover:text-foreground hover:bg-accent/5 rounded-xl transition-colors"
                   >
                     {l.label}
                   </button>
