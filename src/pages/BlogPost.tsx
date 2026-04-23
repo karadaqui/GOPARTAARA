@@ -98,7 +98,7 @@ const BlogPost = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title={`${post.title} | PARTARA Blog`}
+        title={`${post.title} | GOPARTARA Blog`}
         description={post.meta_description || post.preview}
         path={`/blog/${post.slug}`}
         jsonLd={{
