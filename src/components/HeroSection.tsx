@@ -323,22 +323,23 @@ const HeroSection = () => {
         <div className={`transition-[colors,transform] ease-out delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
           <div id="search" className="max-w-3xl mx-auto">
             {/* Tabs */}
-            <div className="flex items-center justify-center mb-5">
-              <div className="inline-flex items-center rounded-xl bg-card/40 backdrop-blur-md border border-border/30 p-1">
+            <div className="mb-5 -mx-4 md:mx-0 md:flex md:items-center md:justify-center">
+              <div className="flex overflow-x-auto scrollbar-hide gap-1 px-4 md:px-0 md:overflow-visible md:inline-flex md:items-center md:rounded-xl md:bg-card/40 md:backdrop-blur-md md:border md:border-border/30 md:p-1">
                 <button
                   onClick={() => setActiveTab("part")}
-                  className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                  className={`flex-shrink-0 whitespace-nowrap flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
                     activeTab === "part"
                       ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   <Search size={14} />
-                  Part Search
+                  <span className="md:hidden">Search</span>
+                  <span className="hidden md:inline">Part Search</span>
                 </button>
                 <button
                   onClick={() => setActiveTab("plate")}
-                  className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                  className={`flex-shrink-0 whitespace-nowrap flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
                     activeTab === "plate"
                       ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                       : "text-muted-foreground hover:text-foreground"
@@ -350,7 +351,7 @@ const HeroSection = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("vin")}
-                  className={`flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                  className={`flex-shrink-0 whitespace-nowrap flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
                     activeTab === "vin"
                       ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                       : "text-muted-foreground hover:text-foreground"
@@ -361,7 +362,7 @@ const HeroSection = () => {
                 </button>
                 <button
                   onClick={() => navigate('/tyres')}
-                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg transition-colors text-muted-foreground hover:text-foreground"
+                  className="flex-shrink-0 whitespace-nowrap flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors text-muted-foreground hover:text-foreground"
                 >
                   <img
                     src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
