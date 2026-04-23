@@ -107,6 +107,7 @@ const Navbar = () => {
             ? "glass-strong shadow-lg shadow-background/50"
             : "bg-transparent backdrop-blur-md border-b border-transparent"
         }`}
+        style={{ WebkitTransform: "translateZ(0)", transform: "translateZ(0)", willChange: "transform" }}
       >
         <div className="container flex h-16 items-center justify-between">
           <a
