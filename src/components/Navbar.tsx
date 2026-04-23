@@ -242,7 +242,7 @@ const Navbar = () => {
                     key={l.label}
                     onClick={() => handleNavClick(l.href)}
                     className={`flex items-center w-full min-h-[48px] px-3 text-left text-base transition-colors rounded-xl ${
-                      isActive ? "text-foreground font-medium bg-accent/10" : "text-muted-foreground hover:text-foreground hover:bg-accent/5"
+                      isActive ? "text-foreground font-semibold bg-accent/10" : "text-foreground/90 hover:text-foreground hover:bg-accent/5"
                     }`}
                   >
                     {l.label}
@@ -256,7 +256,7 @@ const Navbar = () => {
                   <button
                     key={l.href}
                     onClick={() => handleNavClick(l.href)}
-                    className="flex items-center w-full min-h-[48px] px-3 text-left text-base text-muted-foreground hover:text-foreground hover:bg-accent/5 rounded-xl transition-colors"
+                    className="flex items-center w-full min-h-[48px] px-3 text-left text-base text-foreground/90 hover:text-foreground hover:bg-accent/5 rounded-xl transition-colors"
                   >
                     {l.label}
                   </button>
