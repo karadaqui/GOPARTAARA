@@ -187,20 +187,22 @@ const Navbar = () => {
           {!loading && user && <MessageBubble />}
           {!loading && user && <NotificationBell />}
 
-          <button
-            type="button"
-            className="flex md:hidden items-center justify-center min-h-[44px] min-w-[44px] text-foreground rounded-xl relative z-[70]"
-            style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
-            onClick={(e) => {
-              e.stopPropagation();
-              console.log('menu toggled:', !open);
-              setOpen((prev) => !prev);
-            }}
-            aria-label={open ? "Close menu" : "Open menu"}
-            aria-expanded={open}
-          >
-            {open ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {!open && (
+            <button
+              type="button"
+              className="flex md:hidden items-center justify-center min-h-[44px] min-w-[44px] text-foreground rounded-xl relative z-[70]"
+              style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log('menu toggled: true');
+                setOpen(true);
+              }}
+              aria-label="Open menu"
+              aria-expanded={false}
+            >
+              <Menu size={24} />
+            </button>
+          )}
         </div>
       </div>
 
