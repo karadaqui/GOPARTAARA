@@ -15,8 +15,26 @@ const BackToTop = () => {
   return (
     <button
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      className="fixed bottom-6 right-6 z-50 w-11 h-11 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:bg-primary/90 transition-colors animate-fade-in"
       aria-label="Back to top"
+      style={{
+        position: "fixed",
+        bottom: "80px",
+        right: "16px",
+        width: "44px",
+        height: "44px",
+        background: "#cc1111",
+        color: "white",
+        border: "none",
+        borderRadius: "50%",
+        cursor: "pointer",
+        zIndex: 998,
+        fontSize: "20px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: "0 4px 16px rgba(204,17,17,0.4)",
+        fontWeight: "bold",
+      }}
     >
       <ArrowUp size={18} />
     </button>
