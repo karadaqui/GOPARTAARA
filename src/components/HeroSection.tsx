@@ -776,6 +776,7 @@ const HeroSection = () => {
                       width={18}
                       height={18}
                       loading="lazy"
+                      decoding="async"
                       alt=""
                       className="flex-shrink-0 opacity-90"
                     />
