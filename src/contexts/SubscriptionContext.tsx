@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, useCallback, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -26,6 +26,7 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
   const [trialEndsAt, setTrialEndsAt] = useState<string | null>(null);
   const [subscriptionPeriod, setSubscriptionPeriod] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const fetchedForUserIdRef = useRef<string | null>(null);
 
   const refresh = useCallback(async () => {
     if (!user) {
@@ -56,8 +57,17 @@ export const SubscriptionProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (authLoading) return;
+    // Reset guard on logout
+    if (!user) {
+      fetchedForUserIdRef.current = null;
+      refresh();
+      return;
+    }
+    // Skip duplicate fetch for the same user across re-renders/navigations
+    if (fetchedForUserIdRef.current === user.id) return;
+    fetchedForUserIdRef.current = user.id;
     refresh();
-  }, [authLoading, refresh]);
+  }, [authLoading, user?.id, refresh]);
 
   return (
     <SubscriptionContext.Provider value={{ plan, trialEndsAt, subscriptionPeriod, loading, refresh }}>

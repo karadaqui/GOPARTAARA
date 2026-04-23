@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   ReactNode,
 } from "react";
@@ -40,6 +41,7 @@ export const SearchLimitProvider = ({ children }: { children: ReactNode }) => {
   const [searchCount, setSearchCount] = useState(0);
   const [bonusSearches, setBonusSearches] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const fetchedForUserIdRef = useRef<string | null>(null);
 
   const isPro = UNLIMITED_SEARCH_PLANS.includes(plan);
 
@@ -93,8 +95,15 @@ export const SearchLimitProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (authLoading || subLoading) return;
+    if (!user) {
+      fetchedForUserIdRef.current = null;
+      refresh();
+      return;
+    }
+    if (fetchedForUserIdRef.current === user.id) return;
+    fetchedForUserIdRef.current = user.id;
     refresh();
-  }, [authLoading, subLoading, refresh]);
+  }, [authLoading, subLoading, user?.id, refresh]);
 
   const value = useMemo<SearchLimitValue>(() => {
     const totalAllowed = FREE_LIMIT + bonusSearches;
