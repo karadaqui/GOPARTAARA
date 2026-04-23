@@ -23,12 +23,13 @@ html, body {
 }
 
 @supports (-webkit-touch-callout: none) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
   .transition-all {
     transition-property: color, background-color, border-color, opacity, transform !important;
     transition-duration: 100ms !important;
-  }
-  .duration-300, .duration-500, .duration-700 {
-    transition-duration: 100ms !important;
+    transition-timing-function: ease-out !important;
   }
 }
 
@@ -484,8 +485,14 @@ input, textarea, select {
 
 /* iOS-specific: shorter transitions to feel snappier */
 @supports (-webkit-touch-callout: none) {
-  .transition-all { transition-duration: 100ms !important; }
-  .duration-300, .duration-500, .duration-700 { transition-duration: 100ms !important; }
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  .transition-all {
+    transition-property: color, background-color, border-color, opacity, transform !important;
+    transition-duration: 100ms !important;
+    transition-timing-function: ease-out !important;
+  }
 }
 
 /* Mobile/tablet GPU performance: convert transition-all to only
