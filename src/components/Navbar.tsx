@@ -193,6 +193,7 @@ const Navbar = () => {
             style={{ touchAction: "manipulation", WebkitTapHighlightColor: "transparent" }}
             onClick={(e) => {
               e.stopPropagation();
+              console.log('menu toggled:', !open);
               setOpen((prev) => !prev);
             }}
             aria-label={open ? "Close menu" : "Open menu"}
