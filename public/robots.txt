@@ -4,5 +4,7 @@ Disallow: /dashboard
 Disallow: /admin
 Disallow: /my-market
 Disallow: /complete-profile
+Disallow: /api/
+Disallow: /auth/
 
 Sitemap: https://gopartara.com/sitemap.xml
