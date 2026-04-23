@@ -11,6 +11,10 @@ input, textarea, select {
   -webkit-appearance: none;
 }
 
+html, body {
+  -webkit-overflow-scrolling: touch;
+}
+
 @supports (-webkit-touch-callout: none) {
   .transition-all {
     transition-property: color, background-color, border-color, opacity, transform !important;
