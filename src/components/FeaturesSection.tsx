@@ -24,7 +24,7 @@ const features = [
   {
     icon: Bell,
     title: "Price Alerts",
-    desc: "Set a target price and get notified when parts drop to your budget.",
+    desc: "Set a target price and get notified by email when the price drops.",
     link: "/dashboard",
   },
   {
