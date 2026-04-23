@@ -436,6 +436,9 @@ const HeroSection = () => {
                     Upload a photo of any car part — our system will identify it and find the best prices
                   </p>
                   {user && <SearchCounter limitData={searchLimit} />}
+                  <p className="text-xs text-muted-foreground text-center mt-1">
+                    🟢 <span className="tabular-nums">{viewers}</span> people searching right now
+                  </p>
                   <div className="flex items-center justify-center mt-3">
                     <a
                       href="#mission"
