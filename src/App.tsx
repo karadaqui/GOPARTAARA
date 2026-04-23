@@ -118,6 +118,7 @@ const App = () => (
           </ErrorBoundary>
           <CookieConsent />
           <DevToolsGuard />
+          <BackToTop />
           
           </LocaleProvider>
           </CountryProvider>

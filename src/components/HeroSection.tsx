@@ -85,6 +85,7 @@ const HeroSection = () => {
   const [vinError, setVinError] = useState("");
   const [authGateOpen, setAuthGateOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [viewers, setViewers] = useState(() => Math.floor(Math.random() * 170) + 180);
   const navigate = useNavigate();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -93,6 +94,17 @@ const HeroSection = () => {
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 50);
     return () => clearTimeout(t);
+  }, []);
+
+  // Live viewer counter — updates every 15s with small fluctuations
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setViewers((prev) => {
+        const change = Math.floor(Math.random() * 21) - 10;
+        return Math.max(150, Math.min(400, prev + change));
+      });
+    }, 15000);
+    return () => clearInterval(interval);
   }, []);
 
   // Fetch user's first garage vehicle (deduped per session)
