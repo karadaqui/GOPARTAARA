@@ -259,6 +259,7 @@ const Navbar = () => {
 
       {menuOpen && (
         <div
+          className="md:hidden"
           style={{
             position: "fixed",
             top: 0,
