@@ -143,13 +143,14 @@ const Navbar = () => {
           <div className="flex items-center gap-3">
             <div className="hidden md:flex items-center gap-8">
               {primaryLinks.map((l) => {
-                const isActive = pathname === l.href;
+                const isActive =
+                  pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
                 return (
                   <button
                     key={l.label}
                     onClick={() => handleNavClick(l.href)}
-                    className={`nav-link text-sm py-1 ${
-                      isActive ? "text-white font-semibold" : "text-zinc-400 hover:text-white transition-colors"
+                    className={`nav-link text-sm py-1 transition-colors ${
+                      isActive ? "text-white font-semibold" : "text-zinc-400 hover:text-white"
                     }`}
                   >
                     {l.label}
