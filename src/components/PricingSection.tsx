@@ -167,7 +167,7 @@ const PricingSection = () => {
 
 
   return (
-    <section id="pricing" className="py-24">
+    <section id="pricing" className="py-12 md:py-16">
       <div className="container max-w-5xl px-4 mx-auto">
         {/* Header */}
         <div className="text-center mb-8 space-y-4">
