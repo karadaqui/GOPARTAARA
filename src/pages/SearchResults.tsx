@@ -325,6 +325,9 @@ const SearchResults = () => {
   useEffect(() => {
     setIsInitialLoad(true);
     const timer = setTimeout(() => setIsInitialLoad(false), 3000);
+    if (activeQuery && activeQuery.trim()) {
+      addRecentSearch(activeQuery.trim());
+    }
     return () => clearTimeout(timer);
   }, [activeQuery]);
 
