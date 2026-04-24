@@ -959,26 +959,56 @@ const SearchResults = () => {
 
         {/* ── Supplier Sources Banner ── */}
         {!supplierBannerDismissed && (
-          <div className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3">
+          <div ref={supplierBannerRef} className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3 scroll-mt-24">
             <div className="flex items-center gap-2 shrink-0 flex-wrap">
-              {SUPPLIERS.map((supplier, idx) => (
-                <span key={supplier.id} className="flex items-center gap-1.5">
-                  {idx > 0 && <span className="text-[10px] text-zinc-600">•</span>}
-                  {supplier.status === 'live' ? (
-                    <span className="flex items-center gap-1.5 font-medium text-white" style={{ fontSize: "12px", fontWeight: 500 }}>
-                      <span className="rounded-full bg-emerald-400 inline-block" style={{ width: "6px", height: "6px" }} />
-                      {supplier.label}
+              {SUPPLIERS.map((supplier, idx) => {
+                const isActive = activeSupplierId === supplier.id;
+                const isFilterable = !!SUPPLIER_BRAND_MAP[supplier.id];
+                const dimmed = activeSupplierId !== null && !isActive;
+                if (supplier.status !== "live") {
+                  return (
+                    <span key={supplier.id} className="flex items-center gap-1.5">
+                      {idx > 0 && <span className="text-[10px] text-zinc-600">•</span>}
+                      <span className="opacity-50 flex items-center gap-1" style={{ fontSize: "12px", color: "#71717a" }}>
+                        <span className="rounded-full bg-zinc-600 inline-block" style={{ width: "6px", height: "6px" }} />
+                        {supplier.label}
+                      </span>
                     </span>
-                  ) : (
-                    <span className="opacity-50 flex items-center gap-1" style={{ fontSize: "12px", color: "#71717a" }}>
-                      <span className="rounded-full bg-zinc-600 inline-block" style={{ width: "6px", height: "6px" }} />
+                  );
+                }
+                return (
+                  <span key={supplier.id} className="flex items-center gap-1.5">
+                    {idx > 0 && <span className="text-[10px] text-zinc-600">•</span>}
+                    <button
+                      type="button"
+                      onClick={() => handleSupplierClick(supplier)}
+                      disabled={!isFilterable}
+                      title={isFilterable ? (isActive ? "Click to clear filter" : `Show only ${supplier.label}`) : `${supplier.label} (live source)`}
+                      className={`flex items-center gap-1.5 font-medium transition-all ${
+                        isFilterable ? "cursor-pointer hover:text-white" : "cursor-default"
+                      } ${
+                        isActive
+                          ? "text-[#cc1111] border-b-2 border-[#cc1111] -mb-[2px] pb-[1px]"
+                          : dimmed
+                            ? "text-white opacity-50"
+                            : "text-white"
+                      }`}
+                      style={{ fontSize: "12px", fontWeight: 500 }}
+                    >
+                      {isActive ? (
+                        <Check size={11} className="text-[#cc1111]" strokeWidth={3} />
+                      ) : (
+                        <span className="rounded-full bg-emerald-400 inline-block" style={{ width: "6px", height: "6px" }} />
+                      )}
                       {supplier.label}
-                    </span>
-                  )}
-                </span>
-              ))}
+                    </button>
+                  </span>
+                );
+              })}
             </div>
-            <p className="text-xs text-zinc-500 flex-1 hidden sm:block">More suppliers coming soon</p>
+            <p className="text-xs text-zinc-500 flex-1 hidden sm:block">
+              {activeSupplierId ? "Filtering by supplier — click again to clear" : "More suppliers coming soon"}
+            </p>
             <button
               onClick={() => { setSupplierBannerDismissed(true); localStorage.setItem("supplier_banner_dismissed", "1"); }}
               className="shrink-0 p-1 rounded-lg hover:bg-white/5 text-zinc-600 hover:text-zinc-400 transition-colors"
@@ -988,6 +1018,7 @@ const SearchResults = () => {
             </button>
           </div>
         )}
+
 
         {activeQuery ? (
           <>
