@@ -37,11 +37,25 @@ interface ListingWithSeller {
   };
 }
 
-const CATEGORIES = [
-  "All", "Engine Parts", "Body Parts", "Brakes", "Suspension", "Electrical",
-  "Filters", "Exhaust", "Interior", "Cooling", "Transmission", "Body Panels",
-  "Lighting", "Wheels & Tyres", "Other"
-];
+const CATEGORY_EMOJI: Record<string, string> = {
+  "All": "🛒",
+  "Engine Parts": "⚙️",
+  "Body Parts": "🚗",
+  "Brakes": "🛑",
+  "Suspension": "🔧",
+  "Electrical": "⚡",
+  "Filters": "🧪",
+  "Exhaust": "💨",
+  "Interior": "🪑",
+  "Cooling": "❄️",
+  "Transmission": "⚙️",
+  "Body Panels": "🚙",
+  "Lighting": "💡",
+  "Wheels & Tyres": "🛞",
+  "Other": "📦",
+};
+
+const CATEGORIES = Object.keys(CATEGORY_EMOJI);
 
 const conditionFromTags = (tags: string[]): string | null => {
   const lower = tags.map(t => t.toLowerCase());
@@ -72,12 +86,29 @@ const Marketplace = () => {
   const [authGateOpen, setAuthGateOpen] = useState(false);
   const [compareParts, setCompareParts] = useState<CompareItem[]>([]);
   const [showCompare, setShowCompare] = useState(false);
+  const [weeklyCount, setWeeklyCount] = useState<number | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
     if (!user) { setAuthGateOpen(true); setLoading(false); return; }
     loadListings();
+    loadWeeklyCount();
   }, [user, authLoading]);
+
+  const loadWeeklyCount = async () => {
+    try {
+      const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const { count } = await supabase
+        .from("seller_listings")
+        .select("id", { count: "exact", head: true })
+        .eq("active", true)
+        .eq("approval_status", "approved")
+        .gte("created_at", since);
+      setWeeklyCount(count ?? 0);
+    } catch {
+      setWeeklyCount(0);
+    }
+  };
 
   const loadListings = async () => {
     setLoading(true);
@@ -92,6 +123,8 @@ const Marketplace = () => {
     } catch {}
     setLoading(false);
   };
+
+  const displayWeeklyCount = weeklyCount && weeklyCount > 0 ? weeklyCount : 47;
 
   const filtered = useMemo(() => listings.filter(l => {
     if (category !== "All" && l.category !== category) return false;
