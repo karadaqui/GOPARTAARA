@@ -44,6 +44,7 @@ import GreenSparkFeaturedCard, { isClassicPartSearch } from "@/components/GreenS
 import GreenSparkResultsRow from "@/components/GreenSparkResultsRow";
 import GreenSparkProductCard, { useGspProducts } from "@/components/GreenSparkProductCard";
 import RecentSearches, { addRecentSearch } from "@/components/RecentSearches";
+import SearchAutocomplete from "@/components/SearchAutocomplete";
 
 
 // ── Twemoji helper ──
