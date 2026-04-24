@@ -322,117 +322,208 @@ const HeroSection = () => {
         {/* Search section */}
         <div className={`transition-[colors,transform] ease-out delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
           <div id="search" className="max-w-3xl mx-auto">
-            {/* Tabs */}
-            <div style={{ width: "100%", overflow: "visible", marginBottom: "20px" }}>
-              <div
-                className="tab-scroll-container"
+            {/* Tabs — Mobile (scrollable) */}
+            <div
+              className="md:hidden tab-scroll-container"
+              style={{
+                display: "flex",
+                gap: "8px",
+                paddingLeft: "16px",
+                paddingRight: "16px",
+                paddingBottom: "8px",
+                marginBottom: "12px",
+                overflowX: "auto",
+                overflowY: "visible",
+                WebkitOverflowScrolling: "touch",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+                width: "100%",
+              }}
+            >
+              <button
+                onClick={() => setActiveTab("part")}
                 style={{
+                  flexShrink: 0,
+                  whiteSpace: "nowrap",
+                  padding: "7px 12px",
+                  fontSize: "13px",
+                  borderRadius: "999px",
+                  border: activeTab === "part" ? "none" : "1px solid rgba(255,255,255,0.1)",
+                  background: activeTab === "part" ? "hsl(var(--primary))" : "rgba(255,255,255,0.06)",
+                  color: activeTab === "part" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
+                  fontWeight: activeTab === "part" ? 600 : 500,
+                  cursor: "pointer",
                   display: "flex",
-                  gap: "8px",
-                  padding: "4px 16px 8px",
-                  overflowX: "auto",
-                  overflowY: "visible",
-                  WebkitOverflowScrolling: "touch",
-                  scrollbarWidth: "none",
-                  msOverflowStyle: "none",
-                  width: "100%",
-                  justifyContent: "flex-start",
+                  alignItems: "center",
+                  gap: "5px",
                 }}
               >
-                <button
-                  onClick={() => setActiveTab("part")}
-                  style={{
-                    flexShrink: 0,
-                    whiteSpace: "nowrap",
-                    padding: "8px 16px",
-                    borderRadius: "999px",
-                    border: activeTab === "part" ? "none" : "1px solid rgba(255,255,255,0.1)",
-                    background: activeTab === "part" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
-                    color: activeTab === "part" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
-                    fontSize: "13px",
-                    fontWeight: activeTab === "part" ? 600 : 500,
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                  }}
-                >
-                  <Search size={14} style={{ flexShrink: 0 }} />
-                  Parts
-                </button>
+                <Search size={13} style={{ flexShrink: 0 }} />
+                Parts
+              </button>
+              <button
+                onClick={() => setActiveTab("plate")}
+                style={{
+                  flexShrink: 0,
+                  whiteSpace: "nowrap",
+                  padding: "7px 12px",
+                  fontSize: "13px",
+                  borderRadius: "999px",
+                  border: activeTab === "plate" ? "none" : "1px solid rgba(255,255,255,0.1)",
+                  background: activeTab === "plate" ? "hsl(var(--primary))" : "rgba(255,255,255,0.06)",
+                  color: activeTab === "plate" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
+                  fontWeight: activeTab === "plate" ? 600 : 500,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "5px",
+                }}
+              >
+                <Car size={13} style={{ flexShrink: 0 }} />
+                Reg Plate UK
+              </button>
+              <button
+                onClick={() => setActiveTab("vin")}
+                style={{
+                  flexShrink: 0,
+                  whiteSpace: "nowrap",
+                  padding: "7px 12px",
+                  fontSize: "13px",
+                  borderRadius: "999px",
+                  border: activeTab === "vin" ? "none" : "1px solid rgba(255,255,255,0.1)",
+                  background: activeTab === "vin" ? "hsl(var(--primary))" : "rgba(255,255,255,0.06)",
+                  color: activeTab === "vin" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
+                  fontWeight: activeTab === "vin" ? 600 : 500,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "5px",
+                }}
+              >
+                🌍 VIN
+              </button>
+              <button
+                onClick={() => navigate("/tyres")}
+                style={{
+                  flexShrink: 0,
+                  whiteSpace: "nowrap",
+                  padding: "7px 12px",
+                  fontSize: "13px",
+                  borderRadius: "999px",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  background: "rgba(255,255,255,0.06)",
+                  color: "rgba(255,255,255,0.55)",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "5px",
+                }}
+              >
+                <img
+                  src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
+                  width={13}
+                  height={13}
+                  alt=""
+                  loading="lazy"
+                  style={{ flexShrink: 0 }}
+                />
+                Tyres
+              </button>
+            </div>
 
-                <button
-                  onClick={() => setActiveTab("plate")}
-                  style={{
-                    flexShrink: 0,
-                    whiteSpace: "nowrap",
-                    padding: "8px 16px",
-                    borderRadius: "999px",
-                    border: activeTab === "plate" ? "none" : "1px solid rgba(255,255,255,0.1)",
-                    background: activeTab === "plate" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
-                    color: activeTab === "plate" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
-                    fontSize: "13px",
-                    fontWeight: activeTab === "plate" ? 600 : 500,
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                  }}
-                >
-                  <Car size={14} style={{ flexShrink: 0 }} />
-                  Reg Plate UK
-                </button>
-
-                <button
-                  onClick={() => setActiveTab("vin")}
-                  style={{
-                    flexShrink: 0,
-                    whiteSpace: "nowrap",
-                    padding: "8px 16px",
-                    borderRadius: "999px",
-                    border: activeTab === "vin" ? "none" : "1px solid rgba(255,255,255,0.1)",
-                    background: activeTab === "vin" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
-                    color: activeTab === "vin" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
-                    fontSize: "13px",
-                    fontWeight: activeTab === "vin" ? 600 : 500,
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                  }}
-                >
-                  🌍 VIN
-                </button>
-
-                <button
-                  onClick={() => navigate("/tyres")}
-                  style={{
-                    flexShrink: 0,
-                    whiteSpace: "nowrap",
-                    padding: "8px 16px",
-                    borderRadius: "999px",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    background: "rgba(255,255,255,0.05)",
-                    color: "rgba(255,255,255,0.55)",
-                    fontSize: "13px",
-                    fontWeight: 500,
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "6px",
-                  }}
-                >
-                  <img
-                    src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
-                    width={14}
-                    height={14}
-                    alt=""
-                    loading="lazy"
-                    style={{ flexShrink: 0 }}
-                  />
-                  Tyres
-                </button>
-              </div>
+            {/* Tabs — Desktop (centered) */}
+            <div className="hidden md:flex md:items-center md:justify-center md:gap-2 md:mb-5">
+              <button
+                onClick={() => setActiveTab("part")}
+                style={{
+                  flexShrink: 0,
+                  whiteSpace: "nowrap",
+                  padding: "8px 16px",
+                  borderRadius: "999px",
+                  border: activeTab === "part" ? "none" : "1px solid rgba(255,255,255,0.1)",
+                  background: activeTab === "part" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
+                  color: activeTab === "part" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
+                  fontSize: "13px",
+                  fontWeight: activeTab === "part" ? 600 : 500,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                <Search size={14} style={{ flexShrink: 0 }} />
+                Parts
+              </button>
+              <button
+                onClick={() => setActiveTab("plate")}
+                style={{
+                  flexShrink: 0,
+                  whiteSpace: "nowrap",
+                  padding: "8px 16px",
+                  borderRadius: "999px",
+                  border: activeTab === "plate" ? "none" : "1px solid rgba(255,255,255,0.1)",
+                  background: activeTab === "plate" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
+                  color: activeTab === "plate" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
+                  fontSize: "13px",
+                  fontWeight: activeTab === "plate" ? 600 : 500,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                <Car size={14} style={{ flexShrink: 0 }} />
+                Reg Plate UK
+              </button>
+              <button
+                onClick={() => setActiveTab("vin")}
+                style={{
+                  flexShrink: 0,
+                  whiteSpace: "nowrap",
+                  padding: "8px 16px",
+                  borderRadius: "999px",
+                  border: activeTab === "vin" ? "none" : "1px solid rgba(255,255,255,0.1)",
+                  background: activeTab === "vin" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
+                  color: activeTab === "vin" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
+                  fontSize: "13px",
+                  fontWeight: activeTab === "vin" ? 600 : 500,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                🌍 VIN
+              </button>
+              <button
+                onClick={() => navigate("/tyres")}
+                style={{
+                  flexShrink: 0,
+                  whiteSpace: "nowrap",
+                  padding: "8px 16px",
+                  borderRadius: "999px",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  background: "rgba(255,255,255,0.05)",
+                  color: "rgba(255,255,255,0.55)",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                }}
+              >
+                <img
+                  src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
+                  width={14}
+                  height={14}
+                  alt=""
+                  loading="lazy"
+                  style={{ flexShrink: 0 }}
+                />
+                Tyres
+              </button>
             </div>
 
             {/* Part search */}
