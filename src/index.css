@@ -178,16 +178,40 @@ html, body {
     box-shadow: 0 20px 40px -15px hsl(0 0% 0% / 0.4);
   }
 
-  /* Scroll reveal — always visible to prevent hidden content / black voids */
-  .reveal,
+  /* Scroll reveal — fades + slides into view via IntersectionObserver */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    will-change: opacity, transform;
+  }
   .reveal.revealed {
     opacity: 1;
-    transform: none;
+    transform: translateY(0);
   }
-  .reveal-delay-1,
-  .reveal-delay-2,
-  .reveal-delay-3,
-  .reveal-delay-4 { transition-delay: 0s; }
+  .reveal-delay-1.revealed { transition-delay: 0.1s; }
+  .reveal-delay-2.revealed { transition-delay: 0.2s; }
+  .reveal-delay-3.revealed { transition-delay: 0.3s; }
+  .reveal-delay-4.revealed { transition-delay: 0.4s; }
+
+  /* Stagger children inside a .reveal-stagger when revealed */
+  .reveal-stagger.revealed > *:nth-child(1) { transition-delay: 0s; }
+  .reveal-stagger.revealed > *:nth-child(2) { transition-delay: 0.1s; }
+  .reveal-stagger.revealed > *:nth-child(3) { transition-delay: 0.2s; }
+  .reveal-stagger.revealed > *:nth-child(4) { transition-delay: 0.3s; }
+  .reveal-stagger.revealed > *:nth-child(5) { transition-delay: 0.4s; }
+  .reveal-stagger.revealed > *:nth-child(6) { transition-delay: 0.5s; }
+
+  /* Search result card stagger entrance — animation-driven, indexed via --i */
+  @keyframes resultCardEnter {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .result-card-enter {
+    opacity: 0;
+    animation: resultCardEnter 0.3s ease-out forwards;
+    animation-delay: calc(var(--i, 0) * 50ms);
+  }
 
   /* Animated gradient bg for hero */
   .animated-gradient-bg {
