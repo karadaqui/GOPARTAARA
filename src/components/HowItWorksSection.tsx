@@ -1,60 +1,98 @@
-import { Search, BarChart3, ShoppingCart, Bell } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const steps = [
   {
-    icon: Search,
-    number: "1",
+    number: "01",
     title: "Search",
     desc: "Type a part name, upload a photo, or enter your reg plate. We'll handle the rest.",
   },
   {
-    icon: BarChart3,
-    number: "2",
+    number: "02",
     title: "Compare",
     desc: "See prices from trusted UK & global suppliers side by side. Filter by price, rating, and availability.",
   },
   {
-    icon: ShoppingCart,
-    number: "3",
+    number: "03",
     title: "Save",
     desc: "Order directly from your chosen supplier. No middleman, no markup — just the best deal.",
   },
   {
-    icon: Bell,
-    number: "4",
+    number: "04",
     title: "Save More",
     desc: "Set price alerts and get notified when parts drop to your target price. Never overpay again.",
   },
 ];
 
 const HowItWorksSection = () => (
-  <section className="py-12 md:py-16 relative overflow-hidden">
-    <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/[0.02] to-transparent pointer-events-none" />
+  <section className="py-20 md:py-28 relative overflow-hidden">
     <div className="container px-4 md:px-6 lg:px-8 relative">
-      <ScrollReveal className="text-center mb-8 md:mb-10" threshold={0.05}>
-        <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
-          How It Works
-        </span>
-        <h2 className="font-display text-2xl md:text-5xl font-bold mb-5 tracking-tight">
-          Four Simple Steps
-        </h2>
-        <p className="text-muted-foreground max-w-xl mx-auto text-base md:text-lg leading-relaxed">
+      <ScrollReveal className="text-center mb-16 md:mb-20" threshold={0.05}>
+        <span className="ds-eyebrow">How It Works</span>
+        <h2 className="ds-h2 mt-2 mb-5">Four Simple Steps</h2>
+        <p className="ds-body max-w-xl mx-auto">
           Finding the right car part shouldn't take hours. With GOPARTARA, it takes seconds.
         </p>
       </ScrollReveal>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-10 max-w-5xl mx-auto">
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-14 md:gap-y-20 max-w-4xl mx-auto">
         {steps.map((s, i) => (
           <ScrollReveal key={s.title} delay={i + 1} threshold={0.05}>
-            <div className="relative text-center group mb-6 md:mb-16">
-              <div className="mx-auto mb-4 md:mb-6 flex h-14 w-14 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-[colors,transform] group-hover:bg-primary/20 group-hover:scale-110">
-                <s.icon size={26} />
-              </div>
-              <span className="absolute -top-2 right-4 md:top-0 md:right-4 text-5xl md:text-6xl font-black text-muted/15 select-none pointer-events-none">
+            <div className="relative pl-2 sm:pl-0">
+              {/* Massive ghost number behind */}
+              <span
+                aria-hidden="true"
+                className="absolute select-none pointer-events-none"
+                style={{
+                  top: "-28px",
+                  left: "-8px",
+                  fontSize: "120px",
+                  fontWeight: 800,
+                  color: "#cc1111",
+                  opacity: 0.12,
+                  letterSpacing: "-0.04em",
+                  lineHeight: 1,
+                  fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
+                }}
+              >
                 {s.number}
               </span>
-              <h3 className="font-display text-lg md:text-xl font-bold mb-2 md:mb-3">{s.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{s.desc}</p>
+
+              {/* Foreground content */}
+              <div className="relative">
+                <span
+                  className="block mb-3"
+                  style={{
+                    color: "#cc1111",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    letterSpacing: "0.12em",
+                  }}
+                >
+                  STEP {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3
+                  className="mb-3"
+                  style={{
+                    color: "#ffffff",
+                    fontSize: "22px",
+                    fontWeight: 600,
+                    letterSpacing: "-0.01em",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {s.title}
+                </h3>
+                <p
+                  style={{
+                    color: "#71717a",
+                    fontSize: "14px",
+                    lineHeight: 1.6,
+                    maxWidth: "320px",
+                  }}
+                >
+                  {s.desc}
+                </p>
+              </div>
             </div>
           </ScrollReveal>
         ))}
