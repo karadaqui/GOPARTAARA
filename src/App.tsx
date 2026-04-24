@@ -14,6 +14,7 @@ import CookieConsent from "./components/CookieConsent.tsx";
 import PWAInstallPrompt from "./components/PWAInstallPrompt.tsx";
 import DevToolsGuard from "./components/DevToolsGuard.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
+import TopProgressBar from "./components/TopProgressBar.tsx";
 import MotTaxReminderRunner from "./components/garage/MotTaxReminderRunner.tsx";
 
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
@@ -75,6 +76,7 @@ const App = () => {
             <CountryProvider>
             <LocaleProvider>
             <ScrollToTop />
+            <TopProgressBar />
             <MotTaxReminderRunner />
             <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>

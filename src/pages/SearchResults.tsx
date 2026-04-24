@@ -325,6 +325,35 @@ const SearchResults = () => {
     return () => clearTimeout(timer);
   }, [liveResults]);
 
+  // Autofocus search input on mount so users can type immediately
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") {
+        searchInputRef.current?.focus();
+      }
+    }, 150);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Global keyboard shortcuts: "/" focuses search, "Escape" clears + blurs
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      const isTyping = tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable;
+
+      if (e.key === "/" && !isTyping && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        searchInputRef.current?.select();
+      } else if (e.key === "Escape" && document.activeElement === searchInputRef.current) {
+        setQuery("");
+        searchInputRef.current?.blur();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   // ── Initial-load grace period: avoid showing "No results" before the first response arrives ──
   useEffect(() => {
     setIsInitialLoad(true);
@@ -917,6 +946,7 @@ const SearchResults = () => {
                     onChange={(e) => { setQuery(e.target.value); setAutoOpen(true); }}
                     onFocus={() => setAutoOpen(true)}
                     placeholder="Search car parts..."
+                    title="Press / to focus · Esc to clear"
                     autoComplete="off"
                     className="w-full pl-14 pr-4 h-14 rounded-2xl bg-[#141414] border border-white/10 text-white placeholder:text-zinc-500 focus:outline-none focus:border-red-500/50 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition-colors text-sm"
                   />

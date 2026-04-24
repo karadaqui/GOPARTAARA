@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Package } from "lucide-react";
 
-interface SafeImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
+interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallbackClassName?: string;
 }
 
-const SafeImage = ({ fallbackClassName, className, alt, style, onLoad, ...props }: SafeImageProps) => {
+/**
+ * Premium lazy-loaded image with placeholder background and smooth fade-in.
+ * Drop-in replacement for SafeImage — adds fade-in transition.
+ */
+const LazyImage = ({ fallbackClassName, className, alt, style, onLoad, ...props }: LazyImageProps) => {
   const [error, setError] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
@@ -42,5 +46,4 @@ const SafeImage = ({ fallbackClassName, className, alt, style, onLoad, ...props 
   );
 };
 
-export default SafeImage;
-
+export default LazyImage;
