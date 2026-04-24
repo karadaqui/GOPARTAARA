@@ -434,8 +434,20 @@ const SearchResults = () => {
               if (data?.error === "SEARCH_LIMIT_REACHED") { setSearchLimitModalType("free"); setSearchLimitModalOpen(true); searchLimit.refresh(); return; }
               if (data?.fallback) { setEbayFallback(true); setLiveResults([]); setTotalResults(0); }
               else {
-                setLiveResults(data?.results || []); setTotalResults(data?.totalResults || 0); searchLimit.refresh();
-                setCachedSearch(cacheKey, { results: data?.results, totalResults: data?.totalResults, fallback: false });
+                const incoming = data?.results || [];
+                // APPEND when paginating beyond page 1; REPLACE on first page (filter/query change)
+                if (currentPage > 1) {
+                  setLiveResults((prev) => {
+                    const seen = new Set(prev.map((r: any) => r.id));
+                    const merged = [...prev];
+                    for (const r of incoming) if (!seen.has(r.id)) merged.push(r);
+                    return merged;
+                  });
+                } else {
+                  setLiveResults(incoming);
+                }
+                setTotalResults(data?.totalResults || 0); searchLimit.refresh();
+                setCachedSearch(cacheKey, { results: incoming, totalResults: data?.totalResults, fallback: false });
               }
             }
           }
@@ -684,12 +696,13 @@ const SearchResults = () => {
     return results;
   })();
 
-  // ── Unified results (eBay only) ──
+  // ── Unified results (eBay only) — grows with currentPage so "Load more" appends ──
+  const visibleCount = currentPage * ITEMS_PER_PAGE;
   const unifiedResults = useMemo(() => {
     return filteredResults
-      .slice(0, 12)
+      .slice(0, visibleCount)
       .map((result: any) => ({ ...result, _source: "ebay" as const }));
-  }, [filteredResults]);
+  }, [filteredResults, visibleCount]);
 
   // ── Green Spark Plug Co. real product feed (AWIN) ──
   const gspIsClassic = isClassicPartSearch(activeQuery);
@@ -772,17 +785,53 @@ const SearchResults = () => {
     return null;
   })();
 
-  // Premium "Load more" handler — advances page; data fetch handles itself via deps
+  // Premium "Load more" handler — advances page; data fetch appends new results
   const handleLoadMore = async () => {
     if (currentPage >= totalPages || loadingMore) return;
     setLoadingMore(true);
     setCurrentPage(currentPage + 1);
-    window.scrollTo({ top: window.scrollY + 200, behavior: "smooth" });
+    // Do NOT scroll — appended results render below; user stays in place
   };
   // Reset loadingMore once new results arrive
   useEffect(() => {
     if (!liveLoading) setLoadingMore(false);
   }, [liveLoading, liveResults]);
+
+  // ── Scroll position memory: save before user clicks an outbound link, restore on back nav ──
+  const saveScrollPosition = useCallback(() => {
+    try {
+      sessionStorage.setItem(
+        "searchScrollPosition",
+        JSON.stringify({ q: activeQuery, y: window.scrollY, page: currentPage, ts: Date.now() }),
+      );
+    } catch {}
+  }, [activeQuery, currentPage]);
+
+  // Restore on mount / when results for the saved query are rendered
+  useEffect(() => {
+    if (!activeQuery || liveResults.length === 0) return;
+    try {
+      const raw = sessionStorage.getItem("searchScrollPosition");
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (!saved || saved.q !== activeQuery) return;
+      // Only restore within 30 minutes
+      if (Date.now() - (saved.ts || 0) > 30 * 60 * 1000) {
+        sessionStorage.removeItem("searchScrollPosition");
+        return;
+      }
+      // If the saved view required more pages than currently loaded, bump page first
+      if (saved.page && saved.page > currentPage) {
+        setCurrentPage(saved.page);
+        return; // wait for next render with more results
+      }
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: saved.y || 0, behavior: "auto" });
+        sessionStorage.removeItem("searchScrollPosition");
+      });
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeQuery, liveResults.length]);
 
 
   // Vehicle model confirm handler
@@ -1452,6 +1501,8 @@ const SearchResults = () => {
                           </div>
                           <div className="flex flex-col sm:flex-row gap-2">
                             <a href={buildEbayAffiliateUrl(item.url)} target="_blank" rel="noopener noreferrer"
+                              onClick={saveScrollPosition}
+                              onAuxClick={saveScrollPosition}
                               style={{ whiteSpace: "nowrap", height: "44px" }}
                               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150"
                               title="Buying through this link supports GOPARTARA at no extra cost to you ">
@@ -1551,65 +1602,76 @@ const SearchResults = () => {
                   );
                 })()}
 
-                {/* Premium "Load more" button */}
-                {currentPage < totalPages && (
+                {/* Premium "Load more" button (append-style pagination) */}
+                {liveResults.length > 0 && (
                   <div className="mt-10 mb-2">
-                    <button
-                      type="button"
-                      onClick={handleLoadMore}
-                      disabled={loadingMore || liveLoading}
-                      className="w-full flex items-center justify-center gap-2 transition-colors disabled:cursor-not-allowed group"
-                      style={{
-                        height: "48px",
-                        background: "transparent",
-                        border: "1px solid #27272a",
-                        borderRadius: "10px",
-                        color: "#a1a1aa",
-                        fontSize: "14px",
-                        fontWeight: 600,
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!loadingMore && !liveLoading) {
-                          e.currentTarget.style.borderColor = "#3f3f46";
-                          e.currentTarget.style.color = "#ffffff";
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "#27272a";
-                        e.currentTarget.style.color = "#a1a1aa";
-                      }}
-                    >
-                      {loadingMore || liveLoading ? (
-                        <>
-                          <Loader2 size={16} className="animate-spin" />
-                          Loading more results…
-                        </>
-                      ) : (
-                        <>
-                          Load {Math.min(ITEMS_PER_PAGE, totalResults - endItem)} more results
-                          <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
-                        </>
-                      )}
-                    </button>
-                    <p className="text-center mt-2.5" style={{ fontSize: "12px", color: "#52525b" }}>
-                      Showing {endItem.toLocaleString()} of {totalResults.toLocaleString()} results
-                    </p>
+                    {currentPage < totalPages ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={handleLoadMore}
+                          disabled={loadingMore || liveLoading}
+                          className="flex items-center justify-center gap-2 transition-colors disabled:cursor-not-allowed group"
+                          style={{
+                            display: "flex",
+                            width: "100%",
+                            maxWidth: "600px",
+                            margin: "40px auto 0",
+                            height: "52px",
+                            background: "transparent",
+                            border: "1px solid #27272a",
+                            borderRadius: "12px",
+                            color: "#a1a1aa",
+                            fontSize: "15px",
+                            fontWeight: 500,
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!loadingMore && !liveLoading) {
+                              e.currentTarget.style.borderColor = "#3f3f46";
+                              e.currentTarget.style.color = "#ffffff";
+                              e.currentTarget.style.background = "#111111";
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = "#27272a";
+                            e.currentTarget.style.color = "#a1a1aa";
+                            e.currentTarget.style.background = "transparent";
+                          }}
+                        >
+                          {loadingMore || liveLoading ? (
+                            <>
+                              <Loader2 size={16} className="animate-spin" />
+                              Loading...
+                            </>
+                          ) : (
+                            <>Load {Math.min(ITEMS_PER_PAGE, totalResults - endItem)} more results</>
+                          )}
+                        </button>
+                        <p className="text-center mt-3" style={{ fontSize: "13px", color: "#52525b" }}>
+                          Showing {endItem.toLocaleString()} of {totalResults.toLocaleString()} results · 7 suppliers searched
+                        </p>
+                        <div className="text-center mt-2">
+                          <button
+                            type="button"
+                            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                            className="transition-colors"
+                            style={{ fontSize: "13px", color: "#52525b", background: "transparent", border: "none", cursor: "pointer" }}
+                            onMouseEnter={(e) => { e.currentTarget.style.color = "#ffffff"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.color = "#52525b"; }}
+                          >
+                            ↑ Back to top
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="text-center mt-10" style={{ fontSize: "13px", color: "#71717a" }}>
+                        You've seen all {totalResults.toLocaleString()} results
+                      </p>
+                    )}
                   </div>
                 )}
 
-                {/* Pagination (page jump for power users) */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-1 mt-6 flex-wrap">
-                    <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="flex items-center gap-0.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border border-white/[0.06]"><ChevronLeft size={14} /> Prev</button>
-                    {getPageNumbers().map((page, i) => page === "..." ? (
-                      <span key={`e-${i}`} className="px-2 py-2 text-sm text-zinc-600">...</span>
-                    ) : (
-                      <button key={page} onClick={() => handlePageChange(page as number)}
-                        className={`min-w-[36px] h-9 rounded-xl text-sm font-medium transition-colors border ${currentPage === page ? "bg-red-600 text-white border-red-600 shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border-white/[0.06]"}`}>{page}</button>
-                    ))}
-                    <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="flex items-center gap-0.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border border-white/[0.06]">Next <ChevronRight size={14} /></button>
-                  </div>
-                )}
+                {/* Page-jump pagination removed in favor of "Load more" append flow */}
 
 
                 {/* Amazon Affiliate Banner */}
