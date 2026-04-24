@@ -40,7 +40,7 @@ const HowItWorksSection = () => (
           Four Simple Steps
         </h2>
         <p className="text-muted-foreground max-w-xl mx-auto text-base md:text-lg leading-relaxed">
-          Finding the right car part shouldn't take hours. With PARTARA, it takes seconds.
+          Finding the right car part shouldn't take hours. With GOPARTARA, it takes seconds.
         </p>
       </ScrollReveal>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-10 max-w-5xl mx-auto">

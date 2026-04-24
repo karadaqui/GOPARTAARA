@@ -7,8 +7,8 @@ import { FileText } from "lucide-react";
 const Terms = () => (
   <div className="min-h-screen bg-background">
     <SEOHead
-      title="Terms of Service | PARTARA"
-      description="Read PARTARA's terms of service. Understand the rules and guidelines for using our car parts search and comparison platform."
+      title="Terms of Service | GOPARTARA"
+      description="Read GOPARTARA's terms of service. Understand the rules and guidelines for using our car parts search and comparison platform."
       path="/terms"
     />
     <Navbar />
@@ -25,19 +25,19 @@ const Terms = () => (
         <article className="space-y-10">
           <Section title="1. Introduction">
             <p>
-              These Terms of Service ("Terms") govern your access to and use of the PARTARA website
-              (<strong>gopartara.com</strong>) and application, operated by PARTARA ("we", "us", "our").
+              These Terms of Service ("Terms") govern your access to and use of the GOPARTARA website
+              (<strong>gopartara.com</strong>) and application, operated by GOPARTARA ("we", "us", "our").
             </p>
             <p>
-              By accessing or using PARTARA, you agree to be bound by these Terms. If you do not
+              By accessing or using GOPARTARA, you agree to be bound by these Terms. If you do not
               agree, you must not use our service. These Terms constitute a legally binding agreement
-              between you and PARTARA.
+              between you and GOPARTARA.
             </p>
           </Section>
 
           <Section title="2. Service Description">
             <p>
-              PARTARA is a car parts search, comparison, and marketplace platform. We aggregate listings from
+              GOPARTARA is a car parts search, comparison, and marketplace platform. We aggregate listings from
               trusted UK &amp; global suppliers, and host a seller marketplace to help you find, compare, and purchase car parts.
             </p>
             <p><strong>Important:</strong></p>
@@ -46,7 +46,7 @@ const Terms = () => (
                 For search results from external suppliers, we act as a <strong>comparison platform</strong> — all purchases are made directly with the supplier. We are not a party to transactions between you and external suppliers.
               </li>
               <li>
-                The <strong>PARTARA Marketplace</strong> connects independent sellers with buyers. Transactions for marketplace listings are between you and the seller.
+                The <strong>GOPARTARA Marketplace</strong> connects independent sellers with buyers. Transactions for marketplace listings are between you and the seller.
               </li>
               <li>
                 We make reasonable efforts to display accurate information, but pricing, availability,
@@ -82,7 +82,7 @@ const Terms = () => (
           </Section>
 
           <Section title="4. Subscription Plans &amp; Payments">
-            <p>PARTARA offers the following subscription tiers for users:</p>
+            <p>GOPARTARA offers the following subscription tiers for users:</p>
             <div className="grid sm:grid-cols-3 gap-4 mt-4">
               <PlanCard
                 name="Free"
@@ -118,7 +118,7 @@ const Terms = () => (
             </div>
 
             <p className="mt-6 font-semibold text-foreground">Seller Plans</p>
-            <p className="mt-1">For sellers listing on the PARTARA Marketplace:</p>
+            <p className="mt-1">For sellers listing on the GOPARTARA Marketplace:</p>
             <div className="grid sm:grid-cols-3 gap-4 mt-4">
               <PlanCard
                 name="Basic Seller"
@@ -183,7 +183,7 @@ const Terms = () => (
             <div className="rounded-xl border border-border bg-card p-6 space-y-3">
               <p>All users may list up to 5 items for free. Pro and Elite members may list unlimited items.</p>
               <p>
-                PARTARA Marketplace is currently commission-free. PARTARA reserves the right to introduce a
+                GOPARTARA Marketplace is currently commission-free. GOPARTARA reserves the right to introduce a
                 commission fee on future sales. All active sellers will receive at least 30 days written notice
                 before any commission is implemented.
               </p>
@@ -194,7 +194,7 @@ const Terms = () => (
           <Section title="6. Marketplace Rules">
             <div className="rounded-xl border border-border bg-card p-6">
               <p className="font-semibold text-foreground mb-3">Seller Obligations</p>
-              <p>By listing items on the PARTARA Marketplace, sellers agree to:</p>
+              <p>By listing items on the GOPARTARA Marketplace, sellers agree to:</p>
               <ul className="list-disc pl-5 space-y-2 mt-2">
                 <li>List only genuine automotive parts and accessories.</li>
                 <li>Provide accurate descriptions, pricing, condition details, and clear photographs.</li>
@@ -205,7 +205,7 @@ const Terms = () => (
               </ul>
 
               <p className="font-semibold text-foreground mt-5 mb-3">Prohibited Listings</p>
-              <p>The following items may not be listed on the PARTARA Marketplace:</p>
+              <p>The following items may not be listed on the GOPARTARA Marketplace:</p>
               <ul className="list-disc pl-5 space-y-2 mt-2">
                 <li>Counterfeit or replica parts marketed as genuine.</li>
                 <li>Stolen goods or items without proof of ownership.</li>
@@ -229,7 +229,7 @@ const Terms = () => (
             <ul className="list-disc pl-5 space-y-2 mt-2">
               <li>Retain ownership of your original content.</li>
               <li>
-                Grant PARTARA a non-exclusive, worldwide, royalty-free licence to use, display, reproduce, and distribute your content in connection with operating the platform.
+                Grant GOPARTARA a non-exclusive, worldwide, royalty-free licence to use, display, reproduce, and distribute your content in connection with operating the platform.
               </li>
               <li>Confirm that your content is truthful, not defamatory, and does not infringe third-party rights.</li>
               <li>Acknowledge that we may remove content that violates these Terms or is reported as inappropriate.</li>
@@ -242,7 +242,7 @@ const Terms = () => (
           <Section title="8. Affiliate Disclosure">
             <div className="rounded-xl border border-border bg-card p-6">
               <p>
-                <strong>PARTARA earns affiliate commissions</strong> when you click through to a
+                <strong>GOPARTARA earns affiliate commissions</strong> when you click through to a
                 supplier's website and make a purchase. We participate in the following affiliate programmes:
               </p>
               <ul className="list-disc pl-5 space-y-2 mt-3">
@@ -285,7 +285,7 @@ const Terms = () => (
             <ul className="list-disc pl-5 space-y-2 mt-2">
               <li>Use the service for any unlawful purpose or in violation of any applicable law.</li>
               <li>
-                Scrape, crawl, spider, or use automated means to access PARTARA without our prior
+                Scrape, crawl, spider, or use automated means to access GOPARTARA without our prior
                 written consent.
               </li>
               <li>
@@ -299,7 +299,7 @@ const Terms = () => (
                 permission.
               </li>
               <li>
-                Use PARTARA to engage in price manipulation, fraudulent activity, or misrepresentation.
+                Use GOPARTARA to engage in price manipulation, fraudulent activity, or misrepresentation.
               </li>
               <li>
                 Submit false reviews, fake listings, or misleading marketplace content.
@@ -313,8 +313,8 @@ const Terms = () => (
 
           <Section title="10. Intellectual Property">
             <p>
-              All content, design, branding, code, and technology comprising the PARTARA platform is
-              owned by or licensed to PARTARA and is protected by UK and international
+              All content, design, branding, code, and technology comprising the GOPARTARA platform is
+              owned by or licensed to GOPARTARA and is protected by UK and international
               intellectual property laws.
             </p>
             <p>
@@ -324,13 +324,13 @@ const Terms = () => (
             </p>
             <p>
               You may not copy, modify, distribute, or create derivative works from any part of
-              PARTARA without our prior written consent.
+              GOPARTARA without our prior written consent.
             </p>
           </Section>
 
           <Section title="11. Disclaimer of Warranties">
             <p>
-              PARTARA is provided on an <strong>"as is"</strong> and <strong>"as available"</strong>{" "}
+              GOPARTARA is provided on an <strong>"as is"</strong> and <strong>"as available"</strong>{" "}
               basis. To the fullest extent permitted by law, we disclaim all warranties, express or
               implied, including but not limited to:
             </p>
@@ -361,7 +361,7 @@ const Terms = () => (
           <Section title="12. Limitation of Liability">
             <div className="rounded-xl border border-border bg-card p-6">
               <p>
-                To the maximum extent permitted by applicable law, PARTARA, its directors,
+                To the maximum extent permitted by applicable law, GOPARTARA, its directors,
                 employees, and agents shall not be liable for:
               </p>
               <ul className="list-disc pl-5 space-y-2 mt-3">
@@ -391,7 +391,7 @@ const Terms = () => (
               </ul>
               <p className="mt-4">
                 <strong>Cap on liability:</strong> Our total aggregate liability to you for any
-                claims arising from or related to these Terms or your use of PARTARA shall not exceed
+                claims arising from or related to these Terms or your use of GOPARTARA shall not exceed
                 the greater of (a) the total fees you paid us in the 12 months preceding the claim,
                 or (b) £100.
               </p>
@@ -408,12 +408,12 @@ const Terms = () => (
 
           <Section title="13. Indemnification">
             <p>
-              You agree to indemnify and hold harmless PARTARA and its officers, directors,
+              You agree to indemnify and hold harmless GOPARTARA and its officers, directors,
               employees, and agents from any claims, losses, damages, liabilities, and expenses
               (including reasonable legal fees) arising from:
             </p>
             <ul className="list-disc pl-5 space-y-2 mt-2">
-              <li>Your use of or conduct on the PARTARA platform.</li>
+              <li>Your use of or conduct on the GOPARTARA platform.</li>
               <li>Your breach of these Terms or any applicable law.</li>
               <li>Your violation of any third party's rights.</li>
               <li>Content you submit, including reviews, listings, and marketplace content.</li>
@@ -434,7 +434,7 @@ const Terms = () => (
               law. We will provide notice where reasonably practicable.
             </p>
             <p>
-              Upon termination, your right to use PARTARA ceases immediately. Active marketplace listings will be removed. Provisions that by
+              Upon termination, your right to use GOPARTARA ceases immediately. Active marketplace listings will be removed. Provisions that by
               their nature should survive termination (including limitation of liability,
               indemnification, and governing law) shall remain in effect.
             </p>
@@ -442,7 +442,7 @@ const Terms = () => (
 
           <Section title="15. Third-Party Links &amp; Services">
             <p>
-              PARTARA contains links to third-party supplier websites, including eBay and Amazon. We are not responsible for the
+              GOPARTARA contains links to third-party supplier websites, including eBay and Amazon. We are not responsible for the
               content, accuracy, privacy practices, or policies of these external sites. Your use of
               third-party websites is governed by their own terms and conditions.
             </p>
@@ -483,7 +483,7 @@ const Terms = () => (
             <p>
               We reserve the right to modify these Terms at any time. Material changes will be
               communicated via email or a prominent notice on our website at least 30 days before
-              they take effect. Your continued use of PARTARA after changes become effective
+              they take effect. Your continued use of GOPARTARA after changes become effective
               constitutes acceptance of the updated Terms.
             </p>
           </Section>
@@ -491,7 +491,7 @@ const Terms = () => (
           <Section title="19. Contact Us">
             <p>If you have questions about these Terms, please contact us:</p>
             <div className="mt-4 rounded-xl border border-border bg-card p-6">
-              <p className="font-semibold mb-1">PARTARA</p>
+              <p className="font-semibold mb-1">GOPARTARA</p>
               <p className="text-sm text-muted-foreground">
                 Email:{" "}
                 <a href="mailto:info@gopartara.com" className="text-primary hover:underline">

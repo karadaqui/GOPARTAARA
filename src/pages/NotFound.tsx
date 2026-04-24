@@ -14,8 +14,8 @@ const NotFound = () => {
   return (
     <>
       <SEOHead
-        title="Page Not Found | PARTARA"
-        description="The page you're looking for doesn't exist. Head back to PARTARA to find any car part instantly."
+        title="Page Not Found | GOPARTARA"
+        description="The page you're looking for doesn't exist. Head back to GOPARTARA to find any car part instantly."
         path={location.pathname}
       />
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
@@ -69,7 +69,7 @@ const NotFound = () => {
 
         <div className="absolute bottom-8">
           <span className="font-display text-xs font-bold tracking-[4px] text-muted-foreground/40 uppercase">
-            PARTARA
+            GOPARTARA
           </span>
         </div>
       </div>

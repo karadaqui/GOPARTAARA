@@ -98,9 +98,9 @@ const Pricing = () => {
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "WebPage",
-          "name": "PARTARA Pricing",
+          "name": "GOPARTARA Pricing",
           "url": "https://gopartara.com/pricing",
-          "description": "Compare PARTARA subscription plans for car parts search."
+          "description": "Compare GOPARTARA subscription plans for car parts search."
         }}
       />
       <Navbar />

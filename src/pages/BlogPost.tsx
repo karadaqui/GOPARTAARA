@@ -111,7 +111,7 @@ const BlogPost = () => {
           "description": post.meta_description,
           "author": { "@type": "Organization", "name": post.author },
           "datePublished": post.published_at,
-          "publisher": { "@type": "Organization", "name": "PARTARA" },
+          "publisher": { "@type": "Organization", "name": "GOPARTARA" },
         }}
       />
       <Navbar />
@@ -225,7 +225,7 @@ const BlogPost = () => {
 
         {/* CTA */}
         <div className="mt-12 rounded-2xl border border-primary/20 bg-primary/5 p-6 sm:p-8 text-center">
-          <h3 className="font-display text-xl font-bold mb-2">Find car parts on PARTARA</h3>
+          <h3 className="font-display text-xl font-bold mb-2">Find car parts on GOPARTARA</h3>
           <p className="text-sm text-muted-foreground mb-4">
             Compare prices from multiple suppliers and find the best deals on car parts.
           </p>

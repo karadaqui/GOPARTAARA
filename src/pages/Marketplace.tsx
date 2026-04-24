@@ -219,7 +219,7 @@ const Marketplace = () => {
         title="Car Parts Marketplace UK — Buy & Sell | GOPARTARA"
         description="Buy and sell used car parts in the UK. Verified sellers, secure listings, free to browse. List your parts for free."
         path="/marketplace"
-        jsonLd={{ "@context": "https://schema.org", "@type": "CollectionPage", "name": "PARTARA Parts Marketplace", "url": "https://gopartara.com/marketplace", "description": "Browse and buy car parts from verified UK sellers." }}
+        jsonLd={{ "@context": "https://schema.org", "@type": "CollectionPage", "name": "GOPARTARA Parts Marketplace", "url": "https://gopartara.com/marketplace", "description": "Browse and buy car parts from verified UK sellers." }}
       />
       <Navbar />
 
@@ -252,7 +252,7 @@ const Marketplace = () => {
         {/* Info banners */}
         <div className="space-y-2 mb-8">
           <div className="bg-green-900/30 border border-green-500/30 rounded-xl px-4 py-2.5 text-sm text-green-400">
-            🎉 Free to list — All PARTARA members can list up to 5 parts for free. Upgrade to Pro for unlimited listings.
+            🎉 Free to list — All GOPARTARA members can list up to 5 parts for free. Upgrade to Pro for unlimited listings.
           </div>
         </div>
 
@@ -338,7 +338,7 @@ const Marketplace = () => {
             )}
 
             <div className="glass rounded-2xl p-8 mt-12 text-center">
-              <h2 className="font-display text-xl font-bold mb-2">Sell Your Parts on PARTARA</h2>
+              <h2 className="font-display text-xl font-bold mb-2">Sell Your Parts on GOPARTARA</h2>
               <p className="text-muted-foreground mb-4">Reach thousands of car owners and mechanics.</p>
               <Button onClick={() => navigate("/my-market")} className="rounded-xl gap-2 h-11">
                 <Store size={16} /> List Your Parts

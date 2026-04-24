@@ -295,7 +295,7 @@ const Blog = () => {
           <BookOpen size={24} className="text-primary mx-auto mb-3" />
           <h3 className="font-display text-lg font-bold mb-2">Subscribe to our newsletter</h3>
           <p className="text-sm text-muted-foreground mb-5 max-w-md mx-auto">
-            Get the latest car parts guides, price tips, and PARTARA updates delivered to your inbox.
+            Get the latest car parts guides, price tips, and GOPARTARA updates delivered to your inbox.
           </p>
           <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
             <Input

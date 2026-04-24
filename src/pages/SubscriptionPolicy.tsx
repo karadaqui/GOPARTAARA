@@ -9,7 +9,7 @@ const SubscriptionPolicy = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead title="Subscription Policy - PARTARA" description="PARTARA subscription policy: plans, billing, cancellation and refund information." path="/subscription-policy" />
+      <SEOHead title="Subscription Policy - GOPARTARA" description="GOPARTARA subscription policy: plans, billing, cancellation and refund information." path="/subscription-policy" />
       <Navbar />
       <div className="container max-w-3xl py-16 px-4">
         <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8">
@@ -55,7 +55,7 @@ const SubscriptionPolicy = () => {
           <section>
             <h2 className="font-display text-xl font-semibold mb-3">How to Cancel or Request a Refund</h2>
             <ol className="space-y-2 text-muted-foreground text-sm list-decimal pl-5">
-              <li>Log in to your PARTARA account.</li>
+              <li>Log in to your GOPARTARA account.</li>
               <li>Go to your <strong className="text-foreground">Dashboard</strong>.</li>
               <li>Click <strong className="text-foreground">Manage Subscription</strong> to cancel, or <strong className="text-foreground">Request Refund</strong> if within 7 days.</li>
             </ol>

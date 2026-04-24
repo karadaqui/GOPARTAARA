@@ -73,7 +73,7 @@ const Unsubscribe = () => {
             <>
               <h1 className="font-display text-3xl font-bold mb-4">Unsubscribe</h1>
               <p className="text-muted-foreground mb-8">
-                Are you sure you want to unsubscribe from PARTARA emails?
+                Are you sure you want to unsubscribe from GOPARTARA emails?
               </p>
               <Button onClick={handleUnsubscribe} disabled={submitting} variant="destructive">
                 {submitting ? "Processing…" : "Confirm Unsubscribe"}

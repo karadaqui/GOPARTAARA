@@ -61,7 +61,7 @@ const FeaturesSection = () => {
             Everything You Need to Find the Right Part
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
-            From search to purchase, PARTARA gives you the tools to find, compare, and buy car parts faster.
+            From search to purchase, GOPARTARA gives you the tools to find, compare, and buy car parts faster.
           </p>
         </ScrollReveal>
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-6xl mx-auto">

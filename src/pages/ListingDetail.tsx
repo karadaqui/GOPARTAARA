@@ -335,7 +335,7 @@ const ListingDetail = () => {
   return (
     <div className="min-h-screen bg-background animate-fade-in">
       <SEOHead
-        title={`${listing.title} | PARTARA Marketplace`}
+        title={`${listing.title} | GOPARTARA Marketplace`}
         description={listing.description.slice(0, 155)}
         path={`/listing/${listing.id}`}
       />

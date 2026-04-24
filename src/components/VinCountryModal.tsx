@@ -70,7 +70,7 @@ const VinCountryModal = ({ open, onClose, countryInfo, onSearchGlobal, onSelectM
           {/* Description */}
           <p className="text-sm text-zinc-400 leading-relaxed mb-6 max-w-sm mx-auto">
             We detected your vehicle was manufactured in {countryInfo.name}.
-            We're working hard to bring local {countryInfo.name} suppliers to PARTARA.
+            We're working hard to bring local {countryInfo.name} suppliers to GOPARTARA.
           </p>
 
           {/* Progress bar */}

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 const PrioritySupportButton = ({ displayName }: { displayName: string }) => {
   const subject = encodeURIComponent(`Priority Support Request - ${displayName || "Business User"}`);
-  const body = encodeURIComponent("Hi PARTARA team,\n\nI need help with:\n\n");
+  const body = encodeURIComponent("Hi GOPARTARA team,\n\nI need help with:\n\n");
   
   return (
     <Button

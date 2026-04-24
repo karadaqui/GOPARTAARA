@@ -295,11 +295,11 @@ const Dashboard = () => {
   };
 
   const shareWhatsApp = () => {
-    window.open(`https://wa.me/?text=${encodeURIComponent(`Check out PARTARA — compare car part prices instantly! Sign up with my link and get 1 month Pro free: ${referralLink}`)}`, "_blank");
+    window.open(`https://wa.me/?text=${encodeURIComponent(`Check out GOPARTARA — compare car part prices instantly! Sign up with my link and get 1 month Pro free: ${referralLink}`)}`, "_blank");
   };
 
   const shareTwitter = () => {
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I use @PARTARA to compare car part prices. Sign up with my link and get 1 month Pro free! ${referralLink}`)}`, "_blank");
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I use @GOPARTARA to compare car part prices. Sign up with my link and get 1 month Pro free! ${referralLink}`)}`, "_blank");
   };
 
   // Admin: show full email. Regular: show display_name only (required).
