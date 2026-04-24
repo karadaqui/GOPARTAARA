@@ -540,3 +540,17 @@ input, textarea, select {
   border-color: #3f3f46 !important;
   color: #ffffff !important;
 }
+
+/* Stats grid: 2x2 on mobile with right border on left col & bottom border on top row.
+   On md+ becomes a single row with right dividers between cells (not on last). */
+.stats-cell { border-right: none; border-bottom: none; }
+@media (max-width: 767px) {
+  .stats-cell[data-idx="0"], .stats-cell[data-idx="2"] { border-right: 1px solid #1f1f1f; }
+  .stats-cell[data-idx="0"], .stats-cell[data-idx="1"] { border-bottom: 1px solid #1f1f1f; padding-bottom: 12px; }
+  .stats-cell[data-idx="2"], .stats-cell[data-idx="3"] { padding-top: 12px; }
+}
+@media (min-width: 768px) {
+  .stats-cell[data-idx="0"], .stats-cell[data-idx="1"], .stats-cell[data-idx="2"] {
+    border-right: 1px solid #1f1f1f;
+  }
+}
