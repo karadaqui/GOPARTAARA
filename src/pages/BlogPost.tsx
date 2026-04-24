@@ -255,7 +255,7 @@ const BlogPost = () => {
               <p className="mt-5 text-[13px] text-[#52525b]">
                 {formattedDate}
                 {post.read_time && <> · {post.read_time}</>}
-                {" · By "}{post.author}
+                {" · By "}{post.author === "PARTARA Team" ? "GOPARTARA Team" : post.author}
               </p>
               <div className="mt-8 mb-10 border-b border-[#1f1f1f]" />
             </header>
