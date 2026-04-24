@@ -134,42 +134,78 @@ const Blog = () => {
       />
       <Navbar />
 
-      <div className="container max-w-5xl px-4 pb-20">
-        {/* Header */}
-        <div className="text-center py-16 px-4 max-w-2xl mx-auto">
-          <h1 className="font-display text-4xl font-black text-foreground mb-3">
-            <span style={{ color: '#cc1111' }}>GO</span>PARTARA Blog
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Expert guides, maintenance tips & industry insights
+      <div className="container max-w-6xl px-4 pb-20">
+        {/* Editorial Header */}
+        <div
+          className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6"
+          style={{ padding: "60px 0 40px", borderBottom: "1px solid #1f1f1f" }}
+        >
+          <div>
+            <div
+              className="font-display text-white"
+              style={{ fontSize: "clamp(28px, 4vw, 40px)", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1 }}
+            >
+              The GOPARTARA
+            </div>
+            <div
+              className="font-display text-white"
+              style={{
+                fontSize: "clamp(56px, 7vw, 96px)",
+                fontWeight: 900,
+                letterSpacing: "-0.04em",
+                lineHeight: 1,
+                marginTop: "4px",
+              }}
+            >
+              Blog
+            </div>
+          </div>
+          <p style={{ fontSize: "16px", color: "#71717a", maxWidth: "280px", lineHeight: 1.5 }}>
+            Expert guides, savings tips & industry insights for UK car owners.
           </p>
         </div>
 
         {/* Category filter */}
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-4 max-w-5xl mx-auto">
-          {CATS.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
-                activeCategory === cat
-                  ? 'bg-primary border-primary text-primary-foreground'
-                  : 'bg-card border-border text-muted-foreground hover:border-muted-foreground/50'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide" style={{ paddingTop: "28px", paddingBottom: "16px" }}>
+          {CATS.map((cat) => {
+            const active = activeCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className="flex-shrink-0 transition-colors"
+                style={{
+                  padding: "6px 16px",
+                  borderRadius: "999px",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  border: `1px solid ${active ? "#cc1111" : "#27272a"}`,
+                  background: active ? "#cc1111" : "transparent",
+                  color: active ? "white" : "#71717a",
+                }}
+              >
+                {cat}
+              </button>
+            );
+          })}
         </div>
 
         {/* Search */}
-        <div className="mb-8 mt-2">
+        <div className="mb-10 mt-2">
           <input
             type="text"
-            placeholder="Search articles..."
+            placeholder={`Search ${posts.length} articles...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-muted-foreground/50 transition-colors"
+            className="w-full outline-none focus:border-zinc-600 transition-colors"
+            style={{
+              background: "#111111",
+              border: "1px solid #27272a",
+              borderRadius: "12px",
+              padding: "12px 16px",
+              fontSize: "14px",
+              color: "white",
+            }}
           />
         </div>
 
