@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
+import type { LucideIcon } from "lucide-react";
 
 interface EmptyStateProps {
-  /** Lucide icon (or any SVG-producing component) — rendered with strokeWidth=1.5, no fill */
-  icon: React.ComponentType<{ size?: number; strokeWidth?: number; className?: string }>;
+  /** Lucide icon — rendered as outline (no fill) at strokeWidth 1.5 */
+  icon: LucideIcon;
   iconSize?: number;
   title: string;
   description: string;
