@@ -1111,6 +1111,8 @@ const SearchResults = () => {
                     const item = entry;
                     // ── eBay Card ──
                     const priceBadge = getPriceBadge(item.price);
+                    const conditionNorm = (item.condition || "").trim().toLowerCase();
+                    void conditionNorm;
                     const priceBadgeStyles = {
                       great: { text: "text-emerald-400", icon: "✦" },
                       good: { text: "text-blue-400", icon: "✦" },
@@ -1138,207 +1140,116 @@ const SearchResults = () => {
                             localStorage.setItem('partara_recent_views', JSON.stringify(updated));
                           } catch(e) {}
                         }}
-                        className="group flex flex-col relative cursor-pointer animate-fade-in premium-result-card"
-                        style={{
-                          background: "#111111",
-                          border: "1px solid #1f1f1f",
-                          borderRadius: "16px",
-                          padding: "16px",
-                          transition: "border-color 200ms ease, transform 200ms ease, box-shadow 200ms ease",
-                          animationDelay: `${idx * 50}ms`,
-                        }}>
-                        {/* Image — square 1:1 */}
+                        className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-[colors,transform] flex flex-col relative cursor-pointer animate-fade-in"
+                        style={{ animationDelay: `${idx * 50}ms` }}>
                         <a href={item.url} target="_blank" rel="noopener noreferrer" className="block relative">
-                          <div
-                            className="relative w-full overflow-hidden"
-                            style={{
-                              aspectRatio: "1 / 1",
-                              background: "#1a1a1a",
-                              borderRadius: "10px",
-                            }}
-                          >
-                            <img
-                              src={item.imageUrl}
-                              alt={item.partName}
-                              className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500"
-                              loading="lazy"
-                              decoding="async"
-                              onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }}
-                            />
-                            {/* Supplier flag — top left circle overlay */}
-                            <span
-                              className="absolute top-2 left-2 flex items-center justify-center"
-                              style={{
-                                width: "24px",
-                                height: "24px",
-                                borderRadius: "999px",
-                                background: "rgba(0,0,0,0.6)",
-                                backdropFilter: "blur(8px)",
-                                border: "1px solid rgba(255,255,255,0.08)",
-                                overflow: "hidden",
-                              }}
-                              title={isGlobal ? (item.itemCountry || "Global") : country.name}
-                            >
+                          <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
+                            <img src={item.imageUrl} alt={item.partName} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }} />
+                            <span className="absolute bottom-2 right-2 text-xl" title={isGlobal ? (item.itemCountry || "Global") : country.name}>
                               {isGlobal ? (
-                                item.itemCountry
-                                  ? <CountryFlag countryCode={item.itemCountry} emoji={getFlag(item.itemCountry)} size={14} />
-                                  : <span style={{ fontSize: "12px" }}>🌍</span>
+                                <span className="flex items-center gap-1">
+                                  <span>🌍</span>
+                                  {item.itemCountry && <CountryFlag countryCode={item.itemCountry} emoji={getFlag(item.itemCountry)} size={14} />}
+                                </span>
                               ) : (
-                                <CountryFlag countryCode={country.code} emoji={country.flag} size={16} />
+                                <CountryFlag countryCode={country.code} emoji={country.flag} size={18} />
                               )}
                             </span>
                           </div>
                         </a>
-
-                        {/* Body */}
-                        <div className="pt-4 flex-1 flex flex-col gap-3">
+                        <div className="p-4 flex-1 flex flex-col gap-3">
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
-                            <p className="text-sm font-medium leading-snug line-clamp-2 min-h-[2.5rem] transition-colors" style={{ color: "#ffffff" }}>{item.partName}</p>
+                            <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.partName}</p>
                           </a>
-
-                          {/* Price */}
-                          <div className="flex items-baseline gap-2 flex-wrap">
-                            <span style={{ fontSize: "22px", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.01em" }}>
-                              {locale.formatPrice(item.price)}
-                            </span>
+                          <div>
+                            <span className="text-2xl font-bold text-red-500">{locale.formatPrice(item.price)}</span>
                             {(() => {
                               const conv = locale.convertPrice(item.price);
-                              return conv ? <span className="text-xs" style={{ color: "#52525b" }}>≈ {conv.symbol}{conv.converted.toFixed(2)}</span> : null;
+                              return conv ? <p className="text-xs text-zinc-500 mt-0.5">≈ {conv.symbol}{conv.converted.toFixed(2)}</p> : null;
                             })()}
                           </div>
-
-                          {/* Price badge */}
                           {priceBadge && (
-                            <div
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium w-fit"
-                              style={
-                                priceBadge.variant === "great"
-                                  ? { background: "rgba(34,197,94,0.1)", color: "#4ade80", border: "1px solid rgba(34,197,94,0.2)" }
-                                  : priceBadge.variant === "good"
-                                  ? { background: "rgba(96,165,250,0.1)", color: "#93c5fd", border: "1px solid rgba(96,165,250,0.2)" }
-                                  : priceBadge.variant === "high"
-                                  ? { background: "rgba(239,68,68,0.1)", color: "#fca5a5", border: "1px solid rgba(239,68,68,0.2)" }
-                                  : { background: "rgba(245,158,11,0.1)", color: "#fcd34d", border: "1px solid rgba(245,158,11,0.2)" }
-                              }
-                            >
+                            <div className={`w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold mt-1 ${
+                              priceBadge.variant === "great" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25" :
+                              priceBadge.variant === "good" ? "bg-blue-500/15 text-blue-400 border border-blue-500/25" :
+                              priceBadge.variant === "high" ? "bg-red-500/15 text-red-400 border border-red-500/25" :
+                              "bg-amber-500/15 text-amber-400 border border-amber-500/25"
+                            }`}>
                               <span>{priceBadgeStyles[priceBadge.variant as keyof typeof priceBadgeStyles]?.icon || "✦"}</span>
                               {priceBadge.label}
                             </div>
                           )}
                           {!priceBadge && item.topRatedSeller && (
-                            <div
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium w-fit"
-                              style={{ background: "rgba(245,158,11,0.1)", color: "#fcd34d", border: "1px solid rgba(245,158,11,0.2)" }}
-                            >
+                            <div className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold mt-1 bg-amber-500/15 text-amber-400 border border-amber-500/25">
                               <span>★</span> {locale.t("top_rated")}
                             </div>
                           )}
-
-                          {/* Shipping & meta pills (subtle outlined style) */}
-                          <div className="flex flex-wrap gap-1.5">
+                          <div className="flex flex-col gap-1.5">
                             {item.freeShipping ? (
-                              <span
-                                className="inline-flex items-center gap-1 rounded-full"
-                                style={{ background: "transparent", border: "1px solid #27272a", color: "#71717a", fontSize: "11px", padding: "3px 9px" }}
-                              >
-                                <Zap size={10} /> {locale.t("free_shipping")}
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 w-fit">
+                                <Zap size={11} /> {locale.t("free_shipping")}
                               </span>
                             ) : item.shippingCost > 0 ? (
-                              <span className="inline-flex items-center gap-1" style={{ color: "#71717a", fontSize: "11px" }}>
-                                <Truck size={11} /> +{locale.formatPrice(item.shippingCost)} P&P
+                              <span className="inline-flex items-center gap-1 text-xs text-zinc-500">
+                                <Truck size={12} /> +{locale.formatPrice(item.shippingCost)} P&P
                               </span>
                             ) : null}
                             {item.itemCountry !== locale.locationCountry && (
                               item.shipsToUK ? (
-                                <span
-                                  className="inline-flex items-center gap-1 rounded-full"
-                                  style={{ background: "transparent", border: "1px solid #27272a", color: "#71717a", fontSize: "11px", padding: "3px 9px" }}
-                                >
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 w-fit">
                                   📦 {locale.t("ships_to")} {locale.getCountryName(locale.locationCountry)}
                                 </span>
                               ) : (
-                                <span
-                                  className="inline-flex items-center gap-1 rounded-full"
-                                  style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", color: "#fca5a5", fontSize: "11px", padding: "3px 9px" }}
-                                >
+                                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-red-500/15 text-red-400 border border-red-500/20 w-fit">
                                   🚫 {locale.t("no_ship")} {locale.getCountryName(locale.locationCountry)}
                                 </span>
                               )
                             )}
                             {item.handlingTime && (
-                              <span className="inline-flex items-center gap-1" style={{ color: "#52525b", fontSize: "11px" }}>
-                                <Clock size={10} /> {item.handlingTime}{locale.t("handling_days")}
+                              <span className="inline-flex items-center gap-1 text-xs text-zinc-600">
+                                <Clock size={11} /> {item.handlingTime}{locale.t("handling_days")}
                               </span>
                             )}
                           </div>
-
                           {item.quantityAvailable != null && item.quantityAvailable > 0 && item.quantityAvailable <= 5 && (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium" style={{ color: "#fbbf24" }}>
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-400">
                               <AlertCircle size={11} /> {locale.t("left_only", { n: item.quantityAvailable })}
                             </span>
                           )}
                           {item.quantityAvailable != null && item.quantityAvailable > 5 && (
-                            <span className="inline-flex items-center gap-1 text-xs font-medium" style={{ color: "#4ade80" }}>✓ {locale.t("in_stock")}</span>
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400">✓ {locale.t("in_stock")}</span>
                           )}
-
-                          {/* Seller info */}
-                          <div className="flex items-center gap-1.5 text-xs mt-auto">
-                            <span className="flex items-center gap-0.5" style={{ color: "#fbbf24" }}>
+                          <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
+                            <span className="flex items-center gap-0.5 text-amber-400">
                               <Star size={11} className="fill-amber-400" /> {item.sellerPositivePercent?.toFixed(0)}%
                             </span>
-                            <span className="font-medium truncate max-w-[100px]" style={{ color: "#a1a1aa" }}>{item.sellerUsername}</span>
-                            <span style={{ color: "#52525b" }}>({item.sellerFeedbackScore})</span>
+                            <span className="font-medium truncate max-w-[100px] text-zinc-400">{item.sellerUsername}</span>
+                            <span className="text-zinc-600">({item.sellerFeedbackScore})</span>
                             {item.watchCount > 0 && (
-                              <span className="flex items-center gap-0.5 ml-auto" style={{ color: "#52525b" }}>
-                                <Heart size={10} /> {item.watchCount}
-                              </span>
+                              <span className="flex items-center gap-0.5 text-zinc-600 ml-auto"><Heart size={10} /> {item.watchCount}</span>
                             )}
                           </div>
-
-                          {/* Subtle separator */}
-                          <div style={{ height: "1px", background: "#1f1f1f", margin: "4px -16px 0" }} />
-
-                          {/* Action row */}
-                          <div className="flex items-center gap-2 pt-1">
-                            <a
-                              href={buildEbayAffiliateUrl(item.url)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex-1 flex items-center justify-center gap-2 rounded-lg transition-colors premium-cta-btn"
-                              style={{ background: "#cc1111", color: "#ffffff", fontSize: "14px", fontWeight: 600, padding: "10px 14px", height: "40px" }}
-                              title="Buying through this link supports GOPARTARA at no extra cost to you"
-                            >
-                              View on eBay <ExternalLink size={14} />
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <a href={buildEbayAffiliateUrl(item.url)} target="_blank" rel="noopener noreferrer"
+                              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150"
+                              title="Buying through this link supports GOPARTARA at no extra cost to you ">
+                              <ExternalLink size={14} /> View on eBay
                             </a>
-                            <button
-                              onClick={() => {
-                                const isSelected = compareParts.some((p) => p.id === item.id);
-                                if (isSelected) setCompareParts((prev) => prev.filter((p) => p.id !== item.id));
-                                else if (compareParts.length < 3) setCompareParts((prev) => [...prev, { id: item.id, title: item.partName, price: item.price, condition: item.condition, sellerName: item.sellerUsername, sellerRating: item.sellerPositivePercent, freeShipping: item.freeShipping, shippingCost: item.shippingCost, location: item.itemLocation, itemCountry: item.itemCountry, url: item.url, imageUrl: item.imageUrl, source: "ebay" as const }]);
-                              }}
+                            <button onClick={() => {
+                              const isSelected = compareParts.some((p) => p.id === item.id);
+                              if (isSelected) setCompareParts((prev) => prev.filter((p) => p.id !== item.id));
+                              else if (compareParts.length < 3) setCompareParts((prev) => [...prev, { id: item.id, title: item.partName, price: item.price, condition: item.condition, sellerName: item.sellerUsername, sellerRating: item.sellerPositivePercent, freeShipping: item.freeShipping, shippingCost: item.shippingCost, location: item.itemLocation, itemCountry: item.itemCountry, url: item.url, imageUrl: item.imageUrl, source: "ebay" as const }]);
+                            }}
                               aria-label="Compare this part"
-                              className="flex items-center justify-center transition-colors rounded-lg premium-icon-btn"
-                              style={{
-                                width: "40px",
-                                height: "40px",
-                                background: compareParts.some((p) => p.id === item.id) ? "rgba(204,17,17,0.15)" : "#27272a",
-                                color: compareParts.some((p) => p.id === item.id) ? "#fca5a5" : "#a1a1aa",
-                                border: compareParts.some((p) => p.id === item.id) ? "1px solid rgba(204,17,17,0.4)" : "1px solid transparent",
-                                cursor: "pointer",
-                              }}
+                              className={`min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-xl border flex items-center justify-center transition-colors ${compareParts.some((p) => p.id === item.id) ? "border-red-500 bg-red-500/20 text-red-400" : "border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] text-zinc-400 hover:text-white"}`}
                               title={compareParts.some((p) => p.id === item.id) ? "Remove" : "Compare"}
-                              disabled={!compareParts.some((p) => p.id === item.id) && compareParts.length >= 3}
-                            >
-                              <Scale size={15} />
+                              disabled={!compareParts.some((p) => p.id === item.id) && compareParts.length >= 3}>
+                              <Scale size={14} />
                             </button>
-                            <button
-                              onClick={() => handleSave(item)}
-                              disabled={savingId === item.id}
+                            <button onClick={() => handleSave(item)} disabled={savingId === item.id}
                               aria-label="Save this part"
-                              className="flex items-center justify-center transition-colors rounded-lg premium-icon-btn"
-                              style={{ width: "40px", height: "40px", background: "#27272a", color: "#a1a1aa", border: "none", cursor: "pointer" }}
-                            >
-                              {savingId === item.id ? <Loader2 size={15} className="animate-spin" /> : savedIds.has(item.partNumber) ? <BookmarkCheck size={15} style={{ color: "#cc1111" }} /> : <Bookmark size={15} />}
+                              className="min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-xl border border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] flex items-center justify-center transition-colors text-zinc-400 hover:text-white">
+                              {savingId === item.id ? <Loader2 size={14} className="animate-spin" /> : savedIds.has(item.partNumber) ? <BookmarkCheck size={14} className="text-red-500" /> : <Bookmark size={14} />}
                             </button>
                             <PriceAlertDialog supplierName="eBay Motors" partQuery={item.partName} supplierUrl={item.url} ebayItemId={item.id} currentPrice={item.price} />
                           </div>
