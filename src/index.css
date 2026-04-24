@@ -42,49 +42,64 @@ html, body {
 
 @layer base {
   :root {
-    --background: 220 20% 6%;
-    --foreground: 0 0% 96%;
+    /* === GOPARTARA Design System v2 ===
+       Premium minimal — Linear / Vercel inspired
+       All values mirror the spec hex codes exactly */
 
-    --card: 220 18% 10%;
-    --card-foreground: 0 0% 96%;
+    /* Backgrounds */
+    --background: 0 0% 3%;            /* #080808 page */
+    --foreground: 0 0% 100%;          /* #ffffff primary text */
 
-    --popover: 220 18% 10%;
-    --popover-foreground: 0 0% 96%;
+    --card: 0 0% 7%;                  /* #111111 surface */
+    --card-foreground: 0 0% 100%;
 
-    --primary: 0 85% 50%;
+    --popover: 0 0% 9%;               /* #161616 elevated */
+    --popover-foreground: 0 0% 100%;
+
+    /* Brand red */
+    --primary: 0 85% 43%;             /* #cc1111 */
     --primary-foreground: 0 0% 100%;
+    --primary-hover: 0 85% 38%;       /* #b01010 */
+    --primary-soft: 0 85% 43% / 0.08; /* rgba(204,17,17,0.08) */
 
-    --secondary: 220 15% 16%;
-    --secondary-foreground: 0 0% 90%;
+    --secondary: 0 0% 9%;             /* #161616 */
+    --secondary-foreground: 240 5% 84%; /* zinc-300 #d4d4d8 */
 
-    --muted: 220 15% 14%;
-    --muted-foreground: 220 10% 55%;
+    --muted: 0 0% 12%;                /* #1f1f1f */
+    --muted-foreground: 240 4% 46%;   /* #71717a zinc-500 */
 
-    --accent: 0 85% 50%;
+    --accent: 0 85% 43%;              /* #cc1111 */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 85% 43%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 18%;
-    --input: 220 15% 18%;
-    --ring: 0 85% 50%;
+    --border: 0 0% 12%;               /* #1f1f1f */
+    --border-hover: 0 0% 16%;         /* #2a2a2a */
+    --input: 0 0% 12%;
+    --ring: 0 85% 43%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 220 18% 8%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 0 85% 50%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 14%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 220 15% 18%;
-    --sidebar-ring: 0 85% 50%;
+    /* Text levels */
+    --text-primary: 0 0% 100%;        /* #ffffff */
+    --text-secondary: 240 5% 65%;     /* #a1a1aa zinc-400 */
+    --text-tertiary: 240 4% 46%;      /* #71717a zinc-500 */
+    --text-disabled: 240 5% 26%;      /* #3f3f46 zinc-700 */
 
-    --hero-glow: 0 85% 50%;
-    
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 240 5% 84%;
+    --sidebar-primary: 0 85% 43%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 9%;
+    --sidebar-accent-foreground: 240 5% 84%;
+    --sidebar-border: 0 0% 12%;
+    --sidebar-ring: 0 85% 43%;
+
+    --hero-glow: 0 85% 43%;
+
     /* Semantic status colors */
-    --success: 142 76% 36%;
+    --success: 142 76% 45%;
     --success-foreground: 0 0% 100%;
   }
 }
