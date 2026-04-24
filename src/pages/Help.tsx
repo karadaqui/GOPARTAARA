@@ -4,6 +4,7 @@ import { Search, ArrowRight, Mail, Sparkles, CreditCard, Bell, Car, ShoppingBag,
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 interface Category {
@@ -88,6 +89,10 @@ const Help = () => {
           }}
         />
         <div className="mx-auto max-w-3xl text-center">
+          <Breadcrumbs
+            className="mb-6 justify-center [&>ol]:justify-center"
+            items={[{ label: "Home", href: "/" }, { label: "Help" }]}
+          />
           <h1
             className="font-display font-extrabold text-white"
             style={{

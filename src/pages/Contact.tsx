@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Mail, Twitter, CheckCircle } from "lucide-react";
@@ -102,8 +103,8 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Contact GOPARTARA — We respond within 24 hours"
-        description="Get in touch with the GOPARTARA team. Have a question about car parts, pricing, or our platform? We'd love to hear from you."
+        title="Contact Us | GOPARTARA"
+        description="Get in touch with the GOPARTARA team. Have a question about car parts, pricing, or our platform? We respond within 24 hours."
         path="/contact"
         jsonLd={{
           "@context": "https://schema.org",
@@ -118,6 +119,10 @@ const Contact = () => {
         <div className="container px-4 max-w-5xl mx-auto">
           {/* Header */}
           <div style={{ paddingTop: "20px", paddingBottom: "48px" }}>
+            <Breadcrumbs
+              className="mb-6"
+              items={[{ label: "Home", href: "/" }, { label: "Contact" }]}
+            />
             <span style={SECTION_LABEL}>Contact</span>
             <h1
               className="font-display"

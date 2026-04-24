@@ -4,6 +4,7 @@ import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
 import SocialProofStats from "@/components/SocialProofStats";
 import HomeCTASection from "@/components/HomeCTASection";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 const SECTION_LABEL: React.CSSProperties = {
   fontSize: "11px",
@@ -33,7 +34,7 @@ const VALUES = [
 const About = () => (
   <div className="min-h-screen bg-background">
     <SEOHead
-      title="About GOPARTARA — UK Car Parts Search"
+      title="About GOPARTARA — UK Car Parts Price Comparison"
       description="GOPARTARA is an independent UK car parts comparison platform. We search 1M+ parts from trusted suppliers to find you the best price."
       path="/about"
       jsonLd={{
@@ -49,6 +50,10 @@ const About = () => (
     <main className="pt-24 pb-16">
       {/* Editorial header */}
       <section className="container px-4 max-w-5xl mx-auto" style={{ paddingTop: "40px", paddingBottom: "80px" }}>
+        <Breadcrumbs
+          className="mb-6"
+          items={[{ label: "Home", href: "/" }, { label: "About" }]}
+        />
         <span style={SECTION_LABEL}>About</span>
         <h1
           className="font-display"
