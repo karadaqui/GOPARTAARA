@@ -543,3 +543,8 @@ input, textarea, select {
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
   border-color: #2a2a2a;
 }
+
+.search-tab-inactive:hover {
+  border-color: #2a2a2a !important;
+  color: #a1a1aa !important;
+}
