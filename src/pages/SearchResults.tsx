@@ -785,12 +785,12 @@ const SearchResults = () => {
     return null;
   })();
 
-  // Premium "Load more" handler — advances page; data fetch handles itself via deps
+  // Premium "Load more" handler — advances page; data fetch appends new results
   const handleLoadMore = async () => {
     if (currentPage >= totalPages || loadingMore) return;
     setLoadingMore(true);
     setCurrentPage(currentPage + 1);
-    window.scrollTo({ top: window.scrollY + 200, behavior: "smooth" });
+    // Do NOT scroll — appended results render below; user stays in place
   };
   // Reset loadingMore once new results arrive
   useEffect(() => {
