@@ -1,6 +1,14 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ChevronDown } from "lucide-react";
+import {
+  ChevronDown,
+  CircleDot,
+  Briefcase,
+  BookOpen,
+  HelpCircle,
+  Info,
+  Mail as MailIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationBell from "@/components/NotificationBell";
@@ -14,25 +22,19 @@ const primaryLinks = [
   { label: "Pricing", href: "/pricing" },
 ];
 
-const moreLinks = [
-  { label: "Tyres", href: "/tyres" },
-  { label: "For Business", href: "/business" },
-  { label: "Compare", href: "/compare" },
-  { label: "Blog", href: "/blog" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-];
+type MoreLink = {
+  label: string;
+  href: string;
+  Icon: React.ComponentType<{ size?: number; className?: string }>;
+};
 
-const mobileLinks = [
-  { label: "Home", href: "/", icon: "🏠" },
-  { label: "Search Parts", href: "/", icon: "🔍" },
-  { label: "Tyres", href: "/tyres", icon: "🛞" },
-  { label: "Deals", href: "/deals", icon: "🔥" },
-  { label: "Marketplace", href: "/marketplace", icon: "🏪" },
-  { label: "Pricing", href: "/pricing", icon: "💰" },
-  { label: "Blog", href: "/blog", icon: "📝" },
-  { label: "For Business", href: "/business", icon: "🏢" },
-  { label: "Dashboard", href: "/dashboard", icon: "📊" },
+const moreLinks: MoreLink[] = [
+  { label: "Tyres", href: "/tyres", Icon: CircleDot },
+  { label: "For Business", href: "/business", Icon: Briefcase },
+  { label: "Blog", href: "/blog", Icon: BookOpen },
+  { label: "Help Center", href: "/help", Icon: HelpCircle },
+  { label: "About", href: "/about", Icon: Info },
+  { label: "Contact", href: "/contact", Icon: MailIcon },
 ];
 
 const ADMIN_EMAIL = "info@gopartara.com";
