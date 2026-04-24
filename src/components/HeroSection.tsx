@@ -523,16 +523,34 @@ const HeroSection = () => {
             {/* Part search */}
             {activeTab === "part" ? (
               <>
-                <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2 sm:p-2.5 rounded-2xl glass glow-focus">
+                <form
+                  onSubmit={handleSearch}
+                  className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2 sm:p-2.5"
+                  style={{
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: "12px",
+                    transition: "border-color 150ms ease",
+                  }}
+                >
                   <div className="flex-1 flex items-center gap-3 px-4">
                     <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
-                    <Search className="text-muted-foreground shrink-0" size={20} />
+                    <Search size={20} style={{ color: "#71717a", flexShrink: 0 }} />
                     <input
                       type="text"
                       placeholder="e.g. BMW E46 brake pads, Ford Focus clutch..."
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm sm:text-base py-3.5"
+                      onFocus={(e) => {
+                        const form = e.currentTarget.closest("form");
+                        if (form) form.style.borderColor = "rgba(204,17,17,0.5)";
+                      }}
+                      onBlur={(e) => {
+                        const form = e.currentTarget.closest("form");
+                        if (form) form.style.borderColor = "rgba(255,255,255,0.1)";
+                      }}
+                      className="w-full bg-transparent outline-none text-sm sm:text-base py-3.5 hero-search-input"
+                      style={{ color: "#ffffff" }}
                       disabled={identifying}
                       autoComplete="off"
                       autoCorrect="off"
