@@ -1104,15 +1104,60 @@ const SearchResults = () => {
                   <span className="text-red-500">"</span>{activeQuery}<span className="text-red-500">"</span>
                 </h1>
                 {totalResults > 0 && !liveLoading && (
-                  <p className="mt-2 flex items-center gap-2" style={{ fontSize: "13px", color: "#52525b" }}>
-                    <span className="rounded-full bg-emerald-500 animate-pulse" style={{ width: "6px", height: "6px" }} />
-                    {activeFilterCount > 0
-                      ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
-                      : `${startItem.toLocaleString()}-${endItem.toLocaleString()} of ${totalResults.toLocaleString()} listings`}
-                  </p>
+                  <>
+                    <p className="mt-2 flex items-center gap-2" style={{ fontSize: "13px", color: "#52525b" }}>
+                      <span className="rounded-full bg-emerald-500 animate-pulse" style={{ width: "6px", height: "6px" }} />
+                      {activeFilterCount > 0
+                        ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
+                        : `${startItem.toLocaleString()}-${endItem.toLocaleString()} of ${totalResults.toLocaleString()} listings`}
+                    </p>
+                    <p className="mt-1.5" style={{ fontSize: "12px", color: "#52525b" }}>
+                      from{" "}
+                      <button
+                        type="button"
+                        onClick={scrollToSuppliers}
+                        className="text-zinc-400 hover:text-[#cc1111] underline-offset-2 hover:underline transition-colors"
+                      >
+                        {liveSupplierCount} suppliers
+                      </button>{" "}
+                      · Last updated just now
+                    </p>
+                  </>
                 )}
               </div>
             </div>
+
+            {/* ── Active Filter Pills ── */}
+            {activeFilterPills.length > 0 && !liveLoading && (
+              <div className="mb-3 flex items-center gap-2 flex-wrap">
+                {activeFilterPills.map((pill) => (
+                  <button
+                    key={pill.key}
+                    type="button"
+                    onClick={pill.clear}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors"
+                    style={{
+                      background: "rgba(204,17,17,0.10)",
+                      color: "#cc1111",
+                      border: "1px solid rgba(204,17,17,0.20)",
+                    }}
+                  >
+                    {pill.label}
+                    <X size={11} strokeWidth={2.5} />
+                  </button>
+                ))}
+                {activeFilterPills.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={clearAllFilters}
+                    className="text-xs text-zinc-500 hover:text-white transition-colors ml-1"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
+            )}
+
 
             {/* ── Sort & Filter Bar ── */}
             {liveResults.length > 0 && !liveLoading && (
