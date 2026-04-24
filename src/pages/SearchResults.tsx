@@ -703,28 +703,41 @@ const SearchResults = () => {
       <div className="sticky top-0 z-20 pt-14 sm:pt-16 border-b border-white/[0.06]" style={{ background: "rgba(10,10,10,0.85)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           {/* Mode tabs */}
-          <div className="flex items-center gap-1 mb-3">
+          <div
+            className="flex items-center gap-1 mb-3 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0"
+            style={{
+              overflowX: "auto",
+              WebkitOverflowScrolling: "touch",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+          >
             <button onClick={() => setSearchMode("text")}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${searchMode === "text" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
-              <Search size={14} /> Part Search
+              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
+              className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-colors ${searchMode === "text" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
+              <Search size={14} style={{ flexShrink: 0 }} />
+              <span><span className="hidden sm:inline">Part </span>Search</span>
             </button>
             <button onClick={() => setSearchMode("reg")}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${searchMode === "reg" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
-              <Car size={14} /> Reg Plate <span className="text-[10px] bg-blue-900/40 border border-blue-500/30 text-blue-300 px-1.5 py-0.5 rounded font-bold tracking-wider leading-none">UK</span>
+              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
+              className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-colors ${searchMode === "reg" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
+              <Car size={14} style={{ flexShrink: 0 }} /> Reg Plate <span className="text-[10px] bg-blue-900/40 border border-blue-500/30 text-blue-300 px-1.5 py-0.5 rounded font-bold tracking-wider leading-none">UK</span>
             </button>
             <button onClick={() => setSearchMode("vin")}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${searchMode === "vin" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
-              <Search size={14} /> VIN 🌍
+              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
+              className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-colors ${searchMode === "vin" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
+              <Search size={14} style={{ flexShrink: 0 }} /> VIN 🌍
             </button>
             <button onClick={() => navigate('/tyres')}
-              className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-white border border-zinc-700/50 transition-colors">
+              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full text-sm font-medium bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-white border border-zinc-700/50 transition-colors">
               <img
                 src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
                 width={16}
                 height={16}
                 alt="tyre"
                 loading="lazy"
-                style={{ display: "inline-block", verticalAlign: "middle" }}
+                style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0 }}
               />
               <span>Tyre Search</span>
             </button>
