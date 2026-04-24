@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
-import PricingSection from "@/components/PricingSection";
+import PricingSection, { faqItems } from "@/components/PricingSection";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
