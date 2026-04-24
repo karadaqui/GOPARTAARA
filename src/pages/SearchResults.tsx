@@ -1368,6 +1368,16 @@ const SearchResults = () => {
                     </span>
                   </a>
                 )}
+
+                {/* Sell your parts CTA */}
+                <div className="text-center mt-6 mb-2">
+                  <a
+                    href="/list-your-parts"
+                    className="text-xs text-zinc-500 hover:text-red-400 transition-colors"
+                  >
+                    Got spare parts? <span className="text-zinc-300 hover:text-red-400">Sell your parts on PARTARA →</span>
+                  </a>
+                </div>
                 </>
                 )}
                 {isClassicPartSearch(activeQuery) && brandFilter !== "eBay" && brandFilter !== "Amazon" && (
