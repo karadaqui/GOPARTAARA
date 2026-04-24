@@ -795,21 +795,76 @@ const Dashboard = () => {
 
 /* ── Small reusable components ──────────────────────────── */
 
-const StatCard = ({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) => (
-  <div className="glass rounded-2xl p-4 sm:p-5">
-    <div className="mb-2">{icon}</div>
-    <p className="text-xs text-muted-foreground">{label}</p>
-    <p className="font-display font-bold text-lg">{value}</p>
+const StatCard = ({
+  icon,
+  label,
+  value,
+  valueColor = "white",
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  valueColor?: string;
+}) => (
+  <div
+    className="rounded-xl"
+    style={{ background: "#111111", border: "1px solid #1f1f1f", padding: "20px" }}
+  >
+    <div className="mb-3">{icon}</div>
+    <p
+      className="font-display"
+      style={{ fontSize: "28px", fontWeight: 800, color: valueColor, lineHeight: 1.1 }}
+    >
+      {value}
+    </p>
+    <p
+      className="uppercase mt-2"
+      style={{ fontSize: "12px", color: "#52525b", fontWeight: 500, letterSpacing: "0.04em" }}
+    >
+      {label}
+    </p>
   </div>
 );
 
-const QuickAction = ({ icon, label, onClick }: { icon: string; label: string; onClick: () => void }) => (
+const QuickAction = ({
+  icon,
+  label,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+}) => (
   <button
     onClick={onClick}
-    className="glass rounded-xl p-4 text-center hover:border-primary/30 transition-[colors,transform] hover:-translate-y-0.5"
+    className="group flex items-center gap-3 rounded-xl transition-colors text-left"
+    style={{
+      background: "#111111",
+      border: "1px solid #1f1f1f",
+      padding: "20px 24px",
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.background = "#161616";
+      e.currentTarget.style.borderColor = "#2a2a2a";
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.background = "#111111";
+      e.currentTarget.style.borderColor = "#1f1f1f";
+    }}
   >
-    <span className="text-xl mb-1 block">{icon}</span>
-    <span className="text-xs font-medium text-foreground">{label}</span>
+    <div
+      className="shrink-0 flex items-center justify-center rounded-lg"
+      style={{ width: "40px", height: "40px", background: "#1a1a1a" }}
+    >
+      {icon}
+    </div>
+    <span className="flex-1 text-white" style={{ fontSize: "15px", fontWeight: 600 }}>
+      {label}
+    </span>
+    <ArrowRight
+      size={16}
+      className="text-zinc-700 group-hover:text-zinc-400 transition-colors shrink-0"
+    />
   </button>
 );
 
