@@ -178,20 +178,16 @@ html, body {
     box-shadow: 0 20px 40px -15px hsl(0 0% 0% / 0.4);
   }
 
-  /* Scroll reveal (hidden by default, revealed by IntersectionObserver) */
-  .reveal {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-  }
+  /* Scroll reveal — always visible to prevent hidden content / black voids */
+  .reveal,
   .reveal.revealed {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
-  .reveal-delay-1 { transition-delay: 0.1s; }
-  .reveal-delay-2 { transition-delay: 0.2s; }
-  .reveal-delay-3 { transition-delay: 0.3s; }
-  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-1,
+  .reveal-delay-2,
+  .reveal-delay-3,
+  .reveal-delay-4 { transition-delay: 0s; }
 
   /* Animated gradient bg for hero */
   .animated-gradient-bg {
