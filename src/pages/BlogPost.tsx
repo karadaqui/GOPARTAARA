@@ -26,9 +26,11 @@ interface BlogPostData {
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [post, setPost] = useState<BlogPostData | null>(null);
   const [related, setRelated] = useState<BlogPostData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (slug) fetchPost();
