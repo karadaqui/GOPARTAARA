@@ -11,6 +11,7 @@ import { CountryProvider } from "@/contexts/CountryContext";
 import { LocaleProvider } from "@/contexts/LocaleContext";
 import PageLoader from "@/components/PageLoader";
 import CookieConsent from "./components/CookieConsent.tsx";
+import PWAInstallPrompt from "./components/PWAInstallPrompt.tsx";
 import DevToolsGuard from "./components/DevToolsGuard.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
 import MotTaxReminderRunner from "./components/garage/MotTaxReminderRunner.tsx";
@@ -119,6 +120,7 @@ const App = () => {
             </Suspense>
             </ErrorBoundary>
             <CookieConsent />
+            <PWAInstallPrompt />
             <DevToolsGuard />
             
             </LocaleProvider>
