@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -618,6 +619,7 @@ const MyMarket = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
+        <SEOHead title="My Market — GOPARTARA" description="Manage your seller listings on GOPARTARA." path="/my-market" noindex />
         <Navbar />
         <div className="container py-24 flex justify-center">
           <Loader2 className="animate-spin text-primary" size={32} />

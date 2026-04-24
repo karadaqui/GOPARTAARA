@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
@@ -159,6 +160,7 @@ const SavedParts = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEOHead title="Saved Parts — GOPARTARA" description="Your saved car parts collection." path="/saved-parts" noindex />
       <Navbar />
 
       <div className="container max-w-6xl flex-1 px-4 py-24">

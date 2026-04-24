@@ -100,7 +100,7 @@ const comparisonRows: { feature: string; free: string; pro: string; elite: strin
 
 /* ── FAQ data ───────────────────────────────────────────── */
 
-const faqItems = [
+export const faqItems = [
   {
     q: "Can I cancel anytime?",
     a: "Yes, absolutely. Cancel anytime from your dashboard. No contracts, no cancellation fees. Your plan stays active until the end of the billing period.",

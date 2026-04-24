@@ -204,7 +204,7 @@ const Garage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead title="My Garage — GOPARTARA" description="Save your vehicles and find compatible parts instantly. Track MOT, tax dates and get price alerts." path="/garage" />
+      <SEOHead title="My Garage — GOPARTARA" description="Save your vehicles and find compatible parts instantly. Track MOT, tax dates and get price alerts." path="/garage" noindex />
       <Navbar />
 
       <div className="container max-w-4xl py-20 px-6 md:px-4">

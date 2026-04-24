@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -546,6 +547,7 @@ const Admin = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead title="Admin — GOPARTARA" description="GOPARTARA admin panel." path="/admin" noindex />
       <Navbar />
       <div className="container max-w-6xl py-20 px-4">
         <div className="flex items-center gap-3 mb-8">

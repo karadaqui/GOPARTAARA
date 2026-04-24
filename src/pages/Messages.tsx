@@ -302,7 +302,7 @@ const Messages = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <SEOHead title="Messages — GOPARTARA" description="Your marketplace messages" />
+      <SEOHead title="Messages — GOPARTARA" description="Your marketplace messages" path="/messages" noindex />
       <Navbar />
       <div className="container max-w-5xl flex-1 py-20 px-4">
         <div className="flex items-center justify-between mb-6">

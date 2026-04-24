@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { User, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import SEOHead from "@/components/SEOHead";
 
 const CompleteProfile = () => {
   const { user, loading: authLoading } = useAuth();
@@ -51,6 +52,7 @@ const CompleteProfile = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <SEOHead title="Complete Your Profile — GOPARTARA" description="Finish setting up your GOPARTARA profile." path="/complete-profile" noindex />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-md">
