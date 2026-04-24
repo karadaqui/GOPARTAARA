@@ -525,3 +525,8 @@ input, textarea, select {
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Hero search — premium placeholder + button hovers */
+.hero-search-input::placeholder { color: #52525b; opacity: 1; }
+.hero-photo-btn:hover { background: rgba(255,255,255,0.08) !important; }
+.hero-cta-btn:not(:disabled):hover { background: #dd1414 !important; }

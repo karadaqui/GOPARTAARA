@@ -292,36 +292,52 @@ const HeroSection = () => {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary/6 blur-[180px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-primary/4 blur-[140px] pointer-events-none" />
 
-      <div className="container relative z-10 text-center px-4 py-12 sm:py-0">
+      <div className="container relative z-10 text-center px-4 py-20 sm:py-24">
         {/* Badge */}
         <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md text-xs text-zinc-400 mb-10">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            ⚡ 1,000,000+ parts searchable · Free to compare
+            1,000,000+ parts searchable · Free to compare
           </div>
         </div>
 
         {/* Heading */}
         <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-[5.5rem] font-bold tracking-[-0.04em] leading-[0.9] mb-6 sm:mb-8">
+          <h1
+            className="font-display mb-6"
+            style={{
+              fontSize: "clamp(48px, 6vw, 80px)",
+              fontWeight: 700,
+              color: "#ffffff",
+              letterSpacing: "-0.03em",
+              lineHeight: 1.05,
+            }}
+          >
             Find Any Car Part
             <br />
-            <span className="text-gradient">Instantly</span>
+            <span style={{ color: "#cc1111", fontStyle: "italic" }}>Instantly.</span>
           </h1>
         </div>
 
         {/* Subtitle */}
         <div className={`transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-          <p className="text-muted-foreground text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-12 sm:mb-14 leading-relaxed">
-            Search 1,000,000+ parts from trusted UK &amp; global suppliers.
-            <br className="hidden sm:block" />
-            Compare prices, check availability, and order — all in one place.
+          <p
+            className="mx-auto mb-12"
+            style={{
+              fontSize: "18px",
+              color: "#71717a",
+              fontWeight: 400,
+              maxWidth: "480px",
+              lineHeight: 1.6,
+            }}
+          >
+            Compare prices from 1,000,000+ parts across trusted UK &amp; global suppliers.
           </p>
         </div>
 
         {/* Search section */}
         <div className={`transition-[colors,transform] ease-out delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-          <div id="search" className="max-w-3xl mx-auto">
+          <div id="search" className="mx-auto" style={{ maxWidth: "700px" }}>
             {/* Tabs — Mobile (scrollable) */}
             <div
               className="md:hidden tab-scroll-container flex"
@@ -431,87 +447,67 @@ const HeroSection = () => {
               </button>
             </div>
 
-            {/* Tabs — Desktop (centered) */}
-            <div className="hidden md:flex md:items-center md:justify-center md:gap-2 md:mb-5">
-              <button
-                onClick={() => setActiveTab("part")}
-                style={{
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                  padding: "8px 16px",
-                  borderRadius: "999px",
-                  border: activeTab === "part" ? "none" : "1px solid rgba(255,255,255,0.1)",
-                  background: activeTab === "part" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
-                  color: activeTab === "part" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
-                  fontSize: "13px",
-                  fontWeight: activeTab === "part" ? 600 : 500,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                <Search size={14} style={{ flexShrink: 0 }} />
-                Parts
-              </button>
-              <button
-                onClick={() => setActiveTab("plate")}
-                style={{
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                  padding: "8px 16px",
-                  borderRadius: "999px",
-                  border: activeTab === "plate" ? "none" : "1px solid rgba(255,255,255,0.1)",
-                  background: activeTab === "plate" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
-                  color: activeTab === "plate" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
-                  fontSize: "13px",
-                  fontWeight: activeTab === "plate" ? 600 : 500,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                <Car size={14} style={{ flexShrink: 0 }} />
-                Reg Plate UK
-              </button>
-              <button
-                onClick={() => setActiveTab("vin")}
-                style={{
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                  padding: "8px 16px",
-                  borderRadius: "999px",
-                  border: activeTab === "vin" ? "none" : "1px solid rgba(255,255,255,0.1)",
-                  background: activeTab === "vin" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
-                  color: activeTab === "vin" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
-                  fontSize: "13px",
-                  fontWeight: activeTab === "vin" ? 600 : 500,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                🌍 VIN
-              </button>
+            {/* Tabs — Desktop (clean underlined) */}
+            <div
+              className="hidden md:flex md:items-center md:justify-center md:mb-5"
+              style={{ gap: "32px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+            >
+              {[
+                { key: "part", label: "Parts", icon: <Search size={14} /> },
+                { key: "plate", label: "Reg Plate UK", icon: <Car size={14} /> },
+                { key: "vin", label: "VIN", icon: <span style={{ fontSize: "14px" }}>🌍</span> },
+              ].map((tab) => {
+                const isActive = activeTab === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key as "part" | "plate" | "vin")}
+                    className="transition-colors"
+                    style={{
+                      background: "none",
+                      border: "none",
+                      padding: "10px 0",
+                      marginBottom: "-1px",
+                      borderBottom: isActive ? "2px solid #cc1111" : "2px solid transparent",
+                      color: isActive ? "#ffffff" : "#71717a",
+                      fontSize: "14px",
+                      fontWeight: isActive ? 500 : 400,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) e.currentTarget.style.color = "#ffffff";
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) e.currentTarget.style.color = "#71717a";
+                    }}
+                  >
+                    {tab.icon}
+                    {tab.label}
+                  </button>
+                );
+              })}
               <button
                 onClick={() => navigate("/tyres")}
+                className="transition-colors"
                 style={{
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                  padding: "8px 16px",
-                  borderRadius: "999px",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  background: "rgba(255,255,255,0.05)",
-                  color: "rgba(255,255,255,0.55)",
-                  fontSize: "13px",
-                  fontWeight: 500,
+                  background: "none",
+                  border: "none",
+                  padding: "10px 0",
+                  marginBottom: "-1px",
+                  borderBottom: "2px solid transparent",
+                  color: "#71717a",
+                  fontSize: "14px",
+                  fontWeight: 400,
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
-                  gap: "6px",
+                  gap: "8px",
                 }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#71717a")}
               >
                 <img
                   src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
@@ -519,7 +515,6 @@ const HeroSection = () => {
                   height={14}
                   alt=""
                   loading="lazy"
-                  style={{ flexShrink: 0 }}
                 />
                 Tyres
               </button>
@@ -528,16 +523,34 @@ const HeroSection = () => {
             {/* Part search */}
             {activeTab === "part" ? (
               <>
-                <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2 sm:p-2.5 rounded-2xl glass glow-focus">
+                <form
+                  onSubmit={handleSearch}
+                  className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2 sm:p-2.5"
+                  style={{
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: "12px",
+                    transition: "border-color 150ms ease",
+                  }}
+                >
                   <div className="flex-1 flex items-center gap-3 px-4">
                     <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
-                    <Search className="text-muted-foreground shrink-0" size={20} />
+                    <Search size={20} style={{ color: "#71717a", flexShrink: 0 }} />
                     <input
                       type="text"
                       placeholder="e.g. BMW E46 brake pads, Ford Focus clutch..."
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm sm:text-base py-3.5"
+                      onFocus={(e) => {
+                        const form = e.currentTarget.closest("form");
+                        if (form) form.style.borderColor = "rgba(204,17,17,0.5)";
+                      }}
+                      onBlur={(e) => {
+                        const form = e.currentTarget.closest("form");
+                        if (form) form.style.borderColor = "rgba(255,255,255,0.1)";
+                      }}
+                      className="w-full bg-transparent outline-none text-sm sm:text-base py-3.5 hero-search-input"
+                      style={{ color: "#ffffff" }}
                       disabled={identifying}
                       autoComplete="off"
                       autoCorrect="off"
@@ -555,15 +568,23 @@ const HeroSection = () => {
                         onChange={handlePhotoUpload}
                         disabled={identifying}
                       />
-                      <div className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-secondary hover:bg-secondary/80 transition-[colors,transform] text-sm text-secondary-foreground hover:scale-[1.02] active:scale-[0.98]">
+                      <div
+                        className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-colors text-sm hero-photo-btn"
+                        style={{
+                          background: "rgba(255,255,255,0.04)",
+                          border: "1px solid rgba(255,255,255,0.08)",
+                          color: "#ffffff",
+                          fontWeight: 400,
+                        }}
+                      >
                         {identifying ? (
                           <>
-                            <Loader2 size={18} className="animate-spin" />
+                            <Loader2 size={16} className="animate-spin" />
                             <span>Identifying...</span>
                           </>
                         ) : (
                           <>
-                            <Camera size={18} />
+                            <Camera size={16} />
                             <span className="sm:hidden">Photo</span>
                             <span className="hidden sm:inline">Photo Search</span>
                           </>
@@ -571,31 +592,69 @@ const HeroSection = () => {
                       </div>
                     </label>
                     {user && searchLimit.limitReached ? (
-                      <Button
+                      <button
                         type="button"
-                        className="shrink-0 flex-1 sm:flex-none rounded-xl px-7 py-3.5 h-auto text-sm font-semibold"
+                        className="shrink-0 flex-1 sm:flex-none rounded-lg px-6 py-3 text-sm transition-colors flex items-center justify-center gap-1 hero-cta-btn"
+                        style={{ background: "#cc1111", color: "#ffffff", fontWeight: 600, border: "none", cursor: "pointer" }}
                         onClick={() => navigate("/pricing")}
                       >
-                        <ArrowUp size={14} className="mr-1" />
+                        <ArrowUp size={14} />
                         Upgrade
-                      </Button>
+                      </button>
                     ) : (
-                      <Button type="submit" className="shrink-0 flex-1 sm:flex-none rounded-xl px-7 py-3.5 h-auto text-sm font-semibold" disabled={identifying}>
+                      <button
+                        type="submit"
+                        className="shrink-0 flex-1 sm:flex-none rounded-lg px-6 py-3 text-sm transition-colors hero-cta-btn"
+                        style={{ background: "#cc1111", color: "#ffffff", fontWeight: 600, border: "none", cursor: "pointer" }}
+                        disabled={identifying}
+                      >
                         Search
-                      </Button>
+                      </button>
                     )}
                   </div>
                 </form>
-                <div className="flex flex-col items-center mt-4 gap-2">
+                <div className="flex flex-col items-center mt-5 gap-3">
+                  {/* Trust badges */}
+                  <div className="flex flex-wrap items-center justify-center gap-2 mb-1">
+                    {["✓ Free to use", "✓ No registration required", "✓ 1M+ parts"].map((b) => (
+                      <span
+                        key={b}
+                        className="rounded-full"
+                        style={{
+                          background: "#27272a",
+                          color: "#a1a1aa",
+                          padding: "4px 12px",
+                          fontSize: "12px",
+                          fontWeight: 400,
+                          letterSpacing: "0.01em",
+                        }}
+                      >
+                        {b}
+                      </span>
+                    ))}
+                  </div>
+
                   <p
                     style={{
-                      color: "#555555",
-                      fontSize: "12px",
-                      marginTop: "8px",
+                      color: "#71717a",
+                      fontSize: "13px",
                       textAlign: "center",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
                     }}
                   >
-                    🟢 {viewers} people searching right now
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: "8px",
+                        height: "8px",
+                        borderRadius: "999px",
+                        background: "#22c55e",
+                        boxShadow: "0 0 8px rgba(34,197,94,0.6)",
+                      }}
+                    />
+                    {viewers} people searching right now
                   </p>
                   <p
                     className="text-xs text-muted-foreground flex items-center justify-center gap-1.5 text-center leading-tight"
