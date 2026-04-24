@@ -7,13 +7,26 @@ interface SEOHeadProps {
   type?: string;
   image?: string;
   jsonLd?: Record<string, any>;
+  /** Additional JSON-LD blocks (e.g. FAQ schema) rendered as separate <script> tags */
+  additionalJsonLd?: Record<string, any>[];
+  /** When true, set robots noindex,nofollow (private pages) */
+  noindex?: boolean;
 }
 
 const BASE_URL = "https://gopartara.com";
 const DEFAULT_IMAGE = `${BASE_URL}/og-image.png`;
 
-const SEOHead = ({ title, description, path = "", type = "website", image, jsonLd }: SEOHeadProps) => {
-  const fullTitle = /GOPARTARA|GOPARTARA/i.test(title) ? title : `${title} | GOPARTARA`;
+const SEOHead = ({
+  title,
+  description,
+  path = "",
+  type = "website",
+  image,
+  jsonLd,
+  additionalJsonLd,
+  noindex = false,
+}: SEOHeadProps) => {
+  const fullTitle = /GOPARTARA/i.test(title) ? title : `${title} | GOPARTARA`;
   const url = `${BASE_URL}${path}`;
   const ogImage = image || DEFAULT_IMAGE;
 
@@ -31,11 +44,14 @@ const SEOHead = ({ title, description, path = "", type = "website", image, jsonL
     };
 
     setMeta("name", "description", description);
+    setMeta("name", "robots", noindex ? "noindex, nofollow" : "index, follow");
     setMeta("property", "og:title", fullTitle);
     setMeta("property", "og:description", description);
     setMeta("property", "og:url", url);
     setMeta("property", "og:type", type);
     setMeta("property", "og:image", ogImage);
+    setMeta("property", "og:site_name", "GOPARTARA");
+    setMeta("name", "twitter:card", "summary_large_image");
     setMeta("name", "twitter:title", fullTitle);
     setMeta("name", "twitter:description", description);
     setMeta("name", "twitter:image", ogImage);
@@ -49,23 +65,26 @@ const SEOHead = ({ title, description, path = "", type = "website", image, jsonL
     }
     canonical.setAttribute("href", url);
 
-    // JSON-LD
-    const existingLd = document.querySelector('script[data-seo-jsonld]');
-    if (existingLd) existingLd.remove();
+    // JSON-LD — clear all previously injected blocks
+    document.querySelectorAll('script[data-seo-jsonld]').forEach((n) => n.remove());
 
-    if (jsonLd) {
+    const injectLd = (data: Record<string, any>) => {
       const script = document.createElement("script");
       script.type = "application/ld+json";
       script.setAttribute("data-seo-jsonld", "true");
-      script.textContent = JSON.stringify(jsonLd);
+      script.textContent = JSON.stringify(data);
       document.head.appendChild(script);
+    };
+
+    if (jsonLd) injectLd(jsonLd);
+    if (additionalJsonLd && Array.isArray(additionalJsonLd)) {
+      additionalJsonLd.forEach((data) => data && injectLd(data));
     }
 
     return () => {
-      const ld = document.querySelector('script[data-seo-jsonld]');
-      if (ld) ld.remove();
+      document.querySelectorAll('script[data-seo-jsonld]').forEach((n) => n.remove());
     };
-  }, [fullTitle, description, url, type, ogImage, jsonLd]);
+  }, [fullTitle, description, url, type, ogImage, jsonLd, additionalJsonLd, noindex]);
 
   return null;
 };
