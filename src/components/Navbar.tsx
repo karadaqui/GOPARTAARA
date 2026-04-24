@@ -8,6 +8,7 @@ import {
   HelpCircle,
   Info,
   Mail as MailIcon,
+  type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -25,7 +26,7 @@ const primaryLinks = [
 type MoreLink = {
   label: string;
   href: string;
-  Icon: React.ComponentType<{ size?: number; className?: string }>;
+  Icon: LucideIcon;
 };
 
 const moreLinks: MoreLink[] = [
