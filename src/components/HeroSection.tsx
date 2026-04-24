@@ -303,25 +303,41 @@ const HeroSection = () => {
 
         {/* Heading */}
         <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-[5.5rem] font-bold tracking-[-0.04em] leading-[0.9] mb-6 sm:mb-8">
+          <h1
+            className="font-display mb-6"
+            style={{
+              fontSize: "clamp(48px, 6vw, 80px)",
+              fontWeight: 700,
+              color: "#ffffff",
+              letterSpacing: "-0.03em",
+              lineHeight: 1.05,
+            }}
+          >
             Find Any Car Part
             <br />
-            <span className="text-gradient">Instantly</span>
+            <span style={{ color: "#cc1111", fontStyle: "italic" }}>Instantly.</span>
           </h1>
         </div>
 
         {/* Subtitle */}
         <div className={`transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-          <p className="text-muted-foreground text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-12 sm:mb-14 leading-relaxed">
-            Search 1,000,000+ parts from trusted UK &amp; global suppliers.
-            <br className="hidden sm:block" />
-            Compare prices, check availability, and order — all in one place.
+          <p
+            className="mx-auto mb-12"
+            style={{
+              fontSize: "18px",
+              color: "#71717a",
+              fontWeight: 400,
+              maxWidth: "480px",
+              lineHeight: 1.6,
+            }}
+          >
+            Compare prices from 1,000,000+ parts across trusted UK &amp; global suppliers.
           </p>
         </div>
 
         {/* Search section */}
         <div className={`transition-[colors,transform] ease-out delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-          <div id="search" className="max-w-3xl mx-auto">
+          <div id="search" className="mx-auto" style={{ maxWidth: "700px" }}>
             {/* Tabs — Mobile (scrollable) */}
             <div
               className="md:hidden tab-scroll-container flex"
