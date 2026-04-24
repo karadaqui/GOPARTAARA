@@ -696,3 +696,13 @@ input, textarea, select {
   }
   .btn-ds-ghost:hover { color: #ffffff; }
 }
+
+/* Editorial section cards */
+.features-card:hover {
+  border-color: #2a2a2a !important;
+  background-color: #111111 !important;
+}
+.testimonial-card:hover {
+  border-color: #2a2a2a !important;
+  transform: translateY(-2px);
+}

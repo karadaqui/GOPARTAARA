@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Camera, Car, Bookmark, Bell, Store, BarChart3, Gift } from "lucide-react";
+import { Camera, Car, Bookmark, Bell, Store, BarChart3, Gift, ArrowRight } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const features = [
@@ -36,7 +36,7 @@ const features = [
   {
     icon: BarChart3,
     title: "Price Comparison",
-    desc: "Compare prices from trusted UK &amp; global suppliers side by side in a single search.",
+    desc: "Compare prices from trusted UK & global suppliers side by side in a single search.",
     link: "/search",
   },
   {
@@ -51,40 +51,86 @@ const FeaturesSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="py-12 md:py-16">
+    <section className="py-20 md:py-28">
       <div className="container px-6 md:px-4">
-        <ScrollReveal className="text-center mb-16">
-          <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
-            Features
-          </span>
-          <h2 className="font-display text-3xl md:text-5xl font-bold mb-5 tracking-tight">
-            Everything You Need to Find the Right Part
-          </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
+        <ScrollReveal className="text-center mb-16 md:mb-20">
+          <span className="ds-eyebrow">Features</span>
+          <h2 className="ds-h2 mt-2 mb-5">Everything You Need to Find the Right Part</h2>
+          <p className="ds-body max-w-2xl mx-auto">
             From search to purchase, GOPARTARA gives you the tools to find, compare, and buy car parts faster.
           </p>
         </ScrollReveal>
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-6xl mx-auto">
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 max-w-6xl mx-auto">
           {features.map((f, i) => (
-            <ScrollReveal key={f.title} delay={(i % 4) + 1}>
+            <ScrollReveal key={f.title} delay={(i % 3) + 1}>
               <button
                 onClick={() => navigate(f.link)}
-                className={`group relative w-full rounded-2xl border border-border/50 bg-card/40 backdrop-blur-sm p-5 sm:p-7 text-center transition-colors hover:border-primary/30 hover:bg-card/70 card-hover cursor-pointer ${(f as any).dimmed ? "opacity-75" : ""}`}
+                className="features-card group relative w-full text-left"
+                style={{
+                  background: "transparent",
+                  border: "1px solid #1f1f1f",
+                  borderRadius: "16px",
+                  padding: "24px",
+                  cursor: "pointer",
+                  transition: "border-color 200ms ease, background-color 200ms ease",
+                }}
               >
-                {(f as any).badge && (
-                  <span className={`absolute top-3 right-3 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${(f as any).badgeColor}`}>
-                    {(f as any).badge}
-                  </span>
-                )}
-                <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-[colors,transform] group-hover:bg-primary group-hover:text-primary-foreground group-hover:scale-110 group-hover:rotate-3">
-                  <f.icon size={26} />
+                <div
+                  className="mb-5 flex items-center justify-center"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "10px",
+                    background: "rgba(204,17,17,0.1)",
+                    color: "#cc1111",
+                  }}
+                >
+                  <f.icon size={20} strokeWidth={2} />
                 </div>
-                <h3 className="font-semibold text-sm sm:text-base mb-2">{f.title}</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+                <h3
+                  className="mb-2"
+                  style={{
+                    color: "#ffffff",
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    letterSpacing: "-0.005em",
+                  }}
+                >
+                  {f.title}
+                </h3>
+                <p
+                  style={{
+                    color: "#71717a",
+                    fontSize: "13px",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  {f.desc}
+                </p>
               </button>
             </ScrollReveal>
           ))}
         </div>
+
+        {/* CTA row */}
+        <ScrollReveal>
+          <div
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-16 max-w-6xl mx-auto pt-12"
+            style={{ borderTop: "1px solid #1f1f1f" }}
+          >
+            <p style={{ color: "#a1a1aa", fontSize: "15px" }}>
+              Ready to find your part?
+            </p>
+            <button
+              onClick={() => navigate("/search")}
+              className="btn-ds-primary"
+            >
+              Search Now
+              <ArrowRight size={16} />
+            </button>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );
