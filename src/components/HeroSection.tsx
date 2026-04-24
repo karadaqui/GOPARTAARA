@@ -312,24 +312,64 @@ const HeroSection = () => {
 
         {/* Heading */}
         <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-[5.5rem] font-bold tracking-[-0.04em] leading-[0.9] mb-6 sm:mb-8">
+          <h1
+            className="font-display mb-5"
+            style={{
+              fontSize: "clamp(44px, 5.5vw, 72px)",
+              fontWeight: 800,
+              letterSpacing: "-0.04em",
+              lineHeight: 1.0,
+              color: "#ffffff",
+            }}
+          >
             Find Any Car Part
             <br />
-            <span className="text-gradient">Instantly</span>
+            <span style={{ color: "#cc1111", letterSpacing: "-0.04em" }}>Instantly.</span>
           </h1>
         </div>
 
         {/* Subtitle */}
         <div className={`transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-          <p className="text-muted-foreground text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-12 sm:mb-14 leading-relaxed">
-            Search 1,000,000+ parts from trusted UK &amp; global suppliers.
-            <br className="hidden sm:block" />
-            Compare prices, check availability, and order — all in one place.
+          <p
+            style={{
+              fontSize: "17px",
+              color: "#71717a",
+              fontWeight: 400,
+              maxWidth: "460px",
+              margin: "0 auto",
+              lineHeight: 1.65,
+            }}
+          >
+            Search 1,000,000+ parts from trusted UK & global suppliers.
           </p>
         </div>
 
+        {/* Trust strip */}
+        <div
+          className={`flex justify-center transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+          style={{ gap: "8px", margin: "16px 0", flexWrap: "wrap" }}
+        >
+          {["✓ Free to use", "✓ No account needed", "✓ 1M+ parts"].map((label) => (
+            <span
+              key={label}
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                color: "#71717a",
+                fontSize: "12px",
+                fontWeight: 500,
+                padding: "4px 12px",
+                borderRadius: "999px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+
         {/* Search section */}
-        <div className={`transition-[colors,transform] ease-out delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+        <div className={`transition-[colors,transform] ease-out delay-300 mt-6 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
           <div id="search" className="max-w-3xl mx-auto">
             {/* Tabs — Mobile (scrollable) */}
             <div
