@@ -563,16 +563,26 @@ const HeroSection = () => {
             {/* Part search */}
             {activeTab === "part" ? (
               <>
-                <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2 sm:p-2.5 rounded-2xl glass glow-focus">
-                  <div className="flex-1 flex items-center gap-3 px-4">
+                <form
+                  onSubmit={handleSearch}
+                  className="hero-search-form flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2"
+                  style={{
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: "14px",
+                    transition: "border-color 150ms ease, box-shadow 150ms ease",
+                  }}
+                >
+                  <div className="flex-1 flex items-center gap-3 px-3 sm:min-h-[52px]">
                     <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
-                    <Search className="text-muted-foreground shrink-0" size={20} />
+                    <Search style={{ color: "#52525b", flexShrink: 0 }} size={18} />
                     <input
                       type="text"
                       placeholder="e.g. BMW E46 brake pads, Ford Focus clutch..."
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm sm:text-base py-3.5"
+                      className="hero-search-input w-full bg-transparent outline-none text-sm sm:text-[15px] py-3"
+                      style={{ color: "#ffffff" }}
                       disabled={identifying}
                       autoComplete="off"
                       autoCorrect="off"
@@ -580,7 +590,7 @@ const HeroSection = () => {
                       spellCheck={false}
                     />
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 px-1">
                     <label className={`cursor-pointer shrink-0 flex-1 sm:flex-none ${identifying ? "pointer-events-none opacity-60" : ""}`}>
                       <input
                         ref={fileInputRef}
@@ -590,15 +600,26 @@ const HeroSection = () => {
                         onChange={handlePhotoUpload}
                         disabled={identifying}
                       />
-                      <div className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-secondary hover:bg-secondary/80 transition-[colors,transform] text-sm text-secondary-foreground hover:scale-[1.02] active:scale-[0.98]">
+                      <div
+                        className="flex items-center justify-center gap-2 transition-colors"
+                        style={{
+                          background: "transparent",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          color: "#a1a1aa",
+                          borderRadius: "10px",
+                          fontSize: "13px",
+                          padding: "0 14px",
+                          height: "44px",
+                        }}
+                      >
                         {identifying ? (
                           <>
-                            <Loader2 size={18} className="animate-spin" />
+                            <Loader2 size={16} className="animate-spin" />
                             <span>Identifying...</span>
                           </>
                         ) : (
                           <>
-                            <Camera size={18} />
+                            <Camera size={16} />
                             <span className="sm:hidden">Photo</span>
                             <span className="hidden sm:inline">Photo Search</span>
                           </>
@@ -606,18 +627,44 @@ const HeroSection = () => {
                       </div>
                     </label>
                     {user && searchLimit.limitReached ? (
-                      <Button
+                      <button
                         type="button"
-                        className="shrink-0 flex-1 sm:flex-none rounded-xl px-7 py-3.5 h-auto text-sm font-semibold"
                         onClick={() => navigate("/pricing")}
+                        className="shrink-0 flex-1 sm:flex-none flex items-center justify-center gap-1 transition-colors"
+                        style={{
+                          background: "#cc1111",
+                          color: "#ffffff",
+                          borderRadius: "10px",
+                          fontWeight: 600,
+                          fontSize: "15px",
+                          height: "44px",
+                          padding: "0 24px",
+                          border: "none",
+                          cursor: "pointer",
+                        }}
                       >
-                        <ArrowUp size={14} className="mr-1" />
+                        <ArrowUp size={14} />
                         Upgrade
-                      </Button>
+                      </button>
                     ) : (
-                      <Button type="submit" className="shrink-0 flex-1 sm:flex-none rounded-xl px-7 py-3.5 h-auto text-sm font-semibold" disabled={identifying}>
+                      <button
+                        type="submit"
+                        disabled={identifying}
+                        className="shrink-0 flex-1 sm:flex-none transition-colors disabled:opacity-60"
+                        style={{
+                          background: "#cc1111",
+                          color: "#ffffff",
+                          borderRadius: "10px",
+                          fontWeight: 600,
+                          fontSize: "15px",
+                          height: "44px",
+                          padding: "0 24px",
+                          border: "none",
+                          cursor: identifying ? "not-allowed" : "pointer",
+                        }}
+                      >
                         Search
-                      </Button>
+                      </button>
                     )}
                   </div>
                 </form>
