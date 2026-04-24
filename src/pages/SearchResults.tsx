@@ -1148,9 +1148,6 @@ const SearchResults = () => {
                         }}
                         className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-[colors,transform] flex flex-col relative cursor-pointer animate-fade-in"
                         style={{ animationDelay: `${idx * 50}ms` }}>
-                        <div className="h-7 flex items-center justify-center text-xs font-semibold tracking-wide uppercase border-b border-white/10" style={conditionBarStyle}>
-                          {item.condition || "Unknown"}
-                        </div>
                         <a href={item.url} target="_blank" rel="noopener noreferrer" className="block relative">
                           <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
                             <img src={item.imageUrl} alt={item.partName} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }} />

@@ -112,7 +112,7 @@ const Navbar = () => {
           borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
         }}
       >
-        <div className="container flex items-center justify-between" style={{ height: "56px" }}>
+        <div className="container grid grid-cols-[auto_1fr_auto] items-center gap-4" style={{ height: "56px" }}>
           {/* Left: Logo */}
           <a
             href="/"
@@ -145,7 +145,7 @@ const Navbar = () => {
           </a>
 
           {/* Center: Primary nav links */}
-          <div className="hidden md:flex items-center gap-7 absolute left-1/2 -translate-x-1/2">
+          <div className="hidden md:flex items-center justify-center gap-7">
             {primaryLinks.map((l) => {
               const isActive =
                 pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
@@ -245,10 +245,10 @@ const Navbar = () => {
           </div>
 
           {/* Right: Utilities + auth */}
-          <div className="flex items-center gap-2">
-            <CountrySelector />
+          <div className="flex items-center gap-2 justify-self-end">
             {!loading && user && <MessageBubble />}
             {!loading && user && <NotificationBell />}
+            <CountrySelector />
 
             {!loading && (
               <div className="hidden md:flex items-center gap-2 ml-1">

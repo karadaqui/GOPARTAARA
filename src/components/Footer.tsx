@@ -140,7 +140,7 @@ const Footer = () => {
 
         <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-center sm:text-left">
-            <span className="text-xs text-muted-foreground">© 2026 Partara Ltd. All rights reserved.</span>
+            <span className="text-xs text-muted-foreground">© 2026 GOPARTARA Ltd. All rights reserved.</span>
             <span className="text-xs text-muted-foreground">info@gopartara.com</span>
           </div>
 
