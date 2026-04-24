@@ -44,6 +44,7 @@ import GreenSparkFeaturedCard, { isClassicPartSearch } from "@/components/GreenS
 import GreenSparkResultsRow from "@/components/GreenSparkResultsRow";
 import GreenSparkProductCard, { useGspProducts } from "@/components/GreenSparkProductCard";
 import RecentSearches, { addRecentSearch } from "@/components/RecentSearches";
+import SearchAutocomplete from "@/components/SearchAutocomplete";
 
 
 // ── Twemoji helper ──
@@ -263,6 +264,8 @@ const SearchResults = () => {
   const [vinError, setVinError] = useState("");
   const [vinVehicle, setVinVehicle] = useState<Record<string, string | null> | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [autoOpen, setAutoOpen] = useState(false);
   const [compareParts, setCompareParts] = useState<CompareItem[]>([]);
   const [showCompare, setShowCompare] = useState(false);
   const [liveResults, setLiveResults] = useState<any[]>([]);
@@ -855,15 +858,31 @@ const SearchResults = () => {
 
           {searchMode === "text" ? (
             <div className="space-y-2">
-              <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <form onSubmit={(e) => { setAutoOpen(false); handleSearch(e); }} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <div className="flex-1 relative flex items-center group">
                   <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
                   <Search size={18} className="absolute left-8 top-1/2 -translate-y-1/2 text-zinc-500" />
                   <input
+                    ref={searchInputRef}
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    onChange={(e) => { setQuery(e.target.value); setAutoOpen(true); }}
+                    onFocus={() => setAutoOpen(true)}
                     placeholder="Search car parts..."
+                    autoComplete="off"
                     className="w-full pl-14 pr-4 h-14 rounded-2xl bg-[#141414] border border-white/10 text-white placeholder:text-zinc-500 focus:outline-none focus:border-red-500/50 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition-colors text-sm"
+                  />
+                  <SearchAutocomplete
+                    query={query}
+                    open={autoOpen}
+                    inputRef={searchInputRef}
+                    onClose={() => setAutoOpen(false)}
+                    onSelect={(q) => {
+                      setQuery(q);
+                      setActiveQuery(q);
+                      setCurrentPage(1);
+                      setSearchParams({ q });
+                      setAutoOpen(false);
+                    }}
                   />
                 </div>
                 <div className="flex items-center gap-2">
