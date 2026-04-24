@@ -122,6 +122,20 @@ const Pricing = () => {
       <div className="pt-24">
         <PricingSection />
 
+        {/* What Pro users say */}
+        <section className="container max-w-5xl mx-auto px-4 pb-12">
+          <h3 className="font-display text-2xl font-bold text-center mb-2 tracking-tight">
+            What Pro users say
+          </h3>
+          <p className="text-center text-sm mb-6" style={{ color: "#52525b" }}>
+            Real feedback from drivers and mechanics on a paid plan
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-3xl mx-auto">
+            <TestimonialCard t={testimonials.find((t) => t.name === "Gary T.") || testimonials[0]} />
+            <TestimonialCard t={testimonials.find((t) => t.name === "James B.") || testimonials[1]} />
+          </div>
+        </section>
+
         {/* Start Free CTA */}
         <div className="text-center pb-8">
           <Button onClick={handleStartFree} size="lg" className="rounded-full px-8">
