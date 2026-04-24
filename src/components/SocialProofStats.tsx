@@ -17,15 +17,13 @@ const SocialProofStats = () => {
       }}
     >
       <div className="max-w-6xl mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 stats-grid">
           {stats.map((stat, i) => (
             <div
               key={stat.label}
-              className="text-center py-2 px-4"
-              style={{
-                borderRight:
-                  i < stats.length - 1 ? "1px solid #1f1f1f" : "none",
-              }}
+              data-idx={i}
+              data-last={i === stats.length - 1 ? "true" : "false"}
+              className="stats-cell text-center py-3 sm:py-2 px-4"
             >
               <div
                 style={{

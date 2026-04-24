@@ -46,11 +46,11 @@ const HowItWorksSection = () => (
           Finding the right car part shouldn't take hours. With GOPARTARA, it takes seconds.
         </p>
       </ScrollReveal>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-10 max-w-5xl mx-auto relative">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 sm:gap-10 max-w-5xl mx-auto relative">
         {steps.map((s, i) => (
           <ScrollReveal key={s.title} delay={i + 1} threshold={0.05}>
-            <div className="relative text-center group mb-6 md:mb-16 pt-6 md:pt-8">
-              {/* Large background number */}
+            <div className="relative text-left md:text-center group mb-2 md:mb-16 pt-2 md:pt-8">
+              {/* Large background number — desktop only */}
               <span
                 className="hidden md:block absolute select-none pointer-events-none"
                 style={{
@@ -66,11 +66,7 @@ const HowItWorksSection = () => (
               >
                 {s.number}
               </span>
-              {/* Mobile number (smaller, top-right) */}
-              <span className="md:hidden absolute -top-1 right-2 text-4xl font-black select-none pointer-events-none" style={{ color: "rgba(204,17,17,0.12)" }}>
-                {s.number}
-              </span>
-              {/* Connecting dashed line — between steps (not after last) */}
+              {/* Connecting dashed line — desktop only */}
               {i < steps.length - 1 && (
                 <div
                   className="hidden md:block absolute pointer-events-none"
@@ -83,14 +79,25 @@ const HowItWorksSection = () => (
                   }}
                 />
               )}
-              <div
-                className="relative mx-auto mb-4 md:mb-6 flex h-14 w-14 md:h-16 md:w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-[colors,transform] group-hover:bg-primary/20 group-hover:scale-110"
-                style={{ zIndex: 1 }}
-              >
-                <s.icon size={26} />
+              {/* Mobile: row layout with icon + number on left */}
+              <div className="flex md:block items-start gap-4">
+                <div
+                  className="relative flex-shrink-0 mx-0 md:mx-auto mb-0 md:mb-6 flex h-12 w-12 md:h-16 md:w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-[colors,transform] group-hover:bg-primary/20 group-hover:scale-110"
+                  style={{ zIndex: 1 }}
+                >
+                  <s.icon size={22} className="md:hidden" />
+                  <s.icon size={26} className="hidden md:block" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-baseline gap-2 md:block">
+                    <span className="md:hidden text-xs font-bold tracking-wider" style={{ color: "rgba(204,17,17,0.7)" }}>
+                      STEP {s.number}
+                    </span>
+                  </div>
+                  <h3 className="relative font-display text-base md:text-xl font-bold mb-1.5 md:mb-3 mt-1 md:mt-0" style={{ zIndex: 1 }}>{s.title}</h3>
+                  <p className="relative text-sm text-muted-foreground leading-relaxed max-w-xs md:mx-auto" style={{ zIndex: 1 }}>{s.desc}</p>
+                </div>
               </div>
-              <h3 className="relative font-display text-lg md:text-xl font-bold mb-2 md:mb-3" style={{ zIndex: 1 }}>{s.title}</h3>
-              <p className="relative text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto" style={{ zIndex: 1 }}>{s.desc}</p>
             </div>
           </ScrollReveal>
         ))}

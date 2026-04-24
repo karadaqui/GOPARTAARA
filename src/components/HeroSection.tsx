@@ -331,8 +331,8 @@ const HeroSection = () => {
         {/* Subtitle */}
         <div className={`transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
           <p
+            className="text-[15px] md:text-[17px]"
             style={{
-              fontSize: "17px",
               color: "#71717a",
               fontWeight: 400,
               maxWidth: "460px",

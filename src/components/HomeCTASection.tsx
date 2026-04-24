@@ -3,19 +3,21 @@ import { Link } from "react-router-dom";
 const HomeCTASection = () => {
   return (
     <section
+      className="px-6 sm:px-6"
       style={{
         background:
           "linear-gradient(135deg, #0d0000 0%, #1a0000 50%, #0d0000 100%)",
         borderTop: "1px solid rgba(204,17,17,0.2)",
         borderBottom: "1px solid rgba(204,17,17,0.2)",
-        padding: "80px 24px",
+        paddingTop: "64px",
+        paddingBottom: "64px",
         textAlign: "center",
       }}
     >
       <div className="max-w-3xl mx-auto">
         <h2
+          className="text-[32px] sm:text-[48px] md:text-[56px]"
           style={{
-            fontSize: "clamp(36px, 5vw, 56px)",
             fontWeight: 800,
             letterSpacing: "-0.03em",
             color: "white",
@@ -25,8 +27,8 @@ const HomeCTASection = () => {
           Stop Overpaying for Car Parts.
         </h2>
         <p
+          className="text-base sm:text-lg"
           style={{
-            fontSize: "18px",
             color: "#71717a",
             marginTop: "12px",
           }}
@@ -34,11 +36,12 @@ const HomeCTASection = () => {
           Join 50,000+ drivers saving money every week.
         </p>
         <div
-          className="flex flex-wrap justify-center"
+          className="flex flex-col sm:flex-row sm:flex-wrap justify-center items-stretch sm:items-center"
           style={{ gap: "12px", marginTop: "32px" }}
         >
           <Link
             to="/search"
+            className="w-full sm:w-auto justify-center"
             style={{
               background: "#cc1111",
               color: "white",
@@ -57,7 +60,7 @@ const HomeCTASection = () => {
           </Link>
           <Link
             to="/pricing"
-            className="home-cta-secondary"
+            className="home-cta-secondary w-full sm:w-auto justify-center"
             style={{
               background: "transparent",
               border: "1px solid #27272a",
