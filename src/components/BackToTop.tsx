@@ -18,10 +18,10 @@ const BackToTop = () => {
       aria-label="Back to top"
       style={{
         position: "fixed",
-        bottom: "80px",
+        bottom: "76px",
         right: "16px",
-        width: "44px",
-        height: "44px",
+        width: "48px",
+        height: "48px",
         background: "#cc1111",
         color: "white",
         border: "none",
@@ -36,7 +36,7 @@ const BackToTop = () => {
         fontWeight: "bold",
       }}
     >
-      <ArrowUp size={18} />
+      <ArrowUp size={20} />
     </button>
   );
 };
