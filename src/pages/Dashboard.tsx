@@ -858,31 +858,42 @@ const StatCard = ({
   label,
   value,
   valueColor = "white",
+  onClick,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   valueColor?: string;
-}) => (
-  <div
-    className="rounded-xl"
-    style={{ background: "#111111", border: "1px solid #1f1f1f", padding: "20px" }}
-  >
-    <div className="mb-3">{icon}</div>
-    <p
-      className="font-display"
-      style={{ fontSize: "28px", fontWeight: 800, color: valueColor, lineHeight: 1.1 }}
+  onClick?: () => void;
+}) => {
+  const interactive = typeof onClick === "function";
+  return (
+    <div
+      onClick={onClick}
+      role={interactive ? "button" : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      onKeyDown={interactive ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick?.(); } } : undefined}
+      className={`rounded-xl transition-colors ${interactive ? "cursor-pointer" : ""}`}
+      style={{ background: "#111111", border: "1px solid #1f1f1f", padding: "20px" }}
+      onMouseEnter={interactive ? (e) => { e.currentTarget.style.background = "#161616"; e.currentTarget.style.borderColor = "#2a2a2a"; } : undefined}
+      onMouseLeave={interactive ? (e) => { e.currentTarget.style.background = "#111111"; e.currentTarget.style.borderColor = "#1f1f1f"; } : undefined}
     >
-      {value}
-    </p>
-    <p
-      className="uppercase mt-2"
-      style={{ fontSize: "12px", color: "#52525b", fontWeight: 500, letterSpacing: "0.04em" }}
-    >
-      {label}
-    </p>
-  </div>
-);
+      <div className="mb-3">{icon}</div>
+      <p
+        className="font-display"
+        style={{ fontSize: "28px", fontWeight: 800, color: valueColor, lineHeight: 1.1 }}
+      >
+        {value}
+      </p>
+      <p
+        className="uppercase mt-2"
+        style={{ fontSize: "12px", color: "#52525b", fontWeight: 500, letterSpacing: "0.04em" }}
+      >
+        {label}
+      </p>
+    </div>
+  );
+};
 
 const QuickAction = ({
   icon,
