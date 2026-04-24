@@ -1,13 +1,26 @@
 {
-  "name": "GOPARTARA",
+  "name": "GOPARTARA — Find Car Parts",
   "short_name": "GOPARTARA",
-  "description": "Find Any Car Part Instantly",
+  "description": "Compare car parts prices from 1M+ listings",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#dc2626",
+  "background_color": "#080808",
+  "theme_color": "#cc1111",
+  "orientation": "portrait-primary",
   "icons": [
-    { "src": "/favicon-32x32.png", "sizes": "32x32", "type": "image/png" },
-    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
-  ]
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["automotive", "shopping"],
+  "lang": "en-GB"
 }
