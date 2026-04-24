@@ -173,9 +173,14 @@ const Deals = () => {
 
       <main className="pt-16">
         {/* HERO */}
-        <section className="relative overflow-hidden pt-24 pb-16 px-4">
+        <section className="relative overflow-hidden pt-24 pb-12 px-4">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
           <div className="relative text-center max-w-2xl mx-auto">
+            <p className="text-[12px] text-zinc-500 mb-4">
+              Last updated: <span className="text-zinc-300 font-medium">{lastUpdatedLabel}</span>
+              <span className="mx-2">·</span>
+              Next update in: <span className="text-zinc-300 font-mono font-semibold">{countdownLabel}</span>
+            </p>
             <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               <span className="text-primary text-xs font-semibold tracking-wider uppercase">
@@ -185,11 +190,54 @@ const Deals = () => {
             <h1 className="text-5xl sm:text-6xl font-black text-foreground mb-4 tracking-tight">
               Deals &amp; Savings
             </h1>
-            <p className="text-muted-foreground text-lg leading-relaxed">
+            <p className="text-muted-foreground text-lg leading-relaxed mb-5">
               Curated affiliate deals from the UK's most trusted automotive retailers.
               Handpicked daily.
             </p>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {["Verified deals", "Real prices", "Updated daily"].map((label) => (
+                <span
+                  key={label}
+                  className="inline-flex items-center gap-1.5 bg-zinc-900/60 border border-zinc-800 rounded-full px-3 py-1 text-[12px] text-zinc-300"
+                >
+                  <span className="text-emerald-400 font-bold">✓</span>
+                  {label}
+                </span>
+              ))}
+            </div>
           </div>
+        </section>
+
+        {/* FEATURED DEAL */}
+        <section className="px-4 pb-12 max-w-5xl mx-auto">
+          <a
+            href={EBAY_ALL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group block rounded-2xl overflow-hidden border transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-red-950/40"
+            style={{
+              background: "linear-gradient(135deg, #0d0000, #1a0000)",
+              borderColor: "rgba(204,17,17,0.3)",
+            }}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 p-6 sm:p-8">
+              <div className="flex-1 min-w-0">
+                <span className="inline-flex items-center gap-1.5 bg-red-600/15 border border-red-600/40 text-red-400 text-[11px] font-bold uppercase tracking-wider rounded-full px-2.5 py-1 mb-3">
+                  🔥 Featured Deal
+                </span>
+                <h2 className="text-white text-2xl sm:text-3xl font-black tracking-tight mb-1.5">
+                  Up to 50% off Car Parts &amp; Accessories
+                </h2>
+                <p className="text-zinc-400 text-sm">Limited time · eBay UK</p>
+              </div>
+              <span
+                className="inline-flex items-center justify-center gap-2 bg-[#cc1111] hover:bg-red-500 text-white font-bold text-sm px-5 py-3 rounded-xl shadow-lg shadow-red-950/40 transition-colors whitespace-nowrap"
+              >
+                View Deal
+                <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+              </span>
+            </div>
+          </a>
         </section>
 
         {/* SECTION 1 — eBay UK */}
