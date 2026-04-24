@@ -125,7 +125,16 @@ const faqItems = [
     q: "Is there a plan for businesses or garages?",
     a: "Yes! We offer custom plans for garages, dealerships and trade buyers. Contact us at info@gopartara.com for a custom quote.",
   },
+  {
+    q: "Do you offer refunds?",
+    a: "Yes, full refund within 7 days of any paid subscription. No questions asked.",
+  },
+  {
+    q: "Can I use GOPARTARA for my garage business?",
+    a: "Absolutely — our Elite plan is perfect for garages. For larger operations with 5+ users, contact us about our custom Business plan.",
+  },
 ];
+
 
 
 const CHECKOUT_TIMEOUT_MS = 10_000;
