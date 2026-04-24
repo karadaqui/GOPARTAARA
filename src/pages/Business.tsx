@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -5,12 +6,36 @@ import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
 
 const benefits = [
-  { icon: "🔍", title: "Unlimited Searches", desc: "Search 1M+ parts across all suppliers with no monthly limits." },
-  { icon: "👥", title: "Team Access", desc: "Multiple team members on one account. Perfect for busy workshops." },
-  { icon: "📊", title: "Analytics Dashboard", desc: "Track your searches, savings and parts history over time." },
-  { icon: "💰", title: "Bulk Price Comparison", desc: "Compare prices across all suppliers at once. Always get the best deal." },
-  { icon: "⚡", title: "Priority Support", desc: "Dedicated email support. We respond within 24 hours." },
-  { icon: "🔧", title: "Custom Integration", desc: "API access for larger operations. Connect to your existing systems." },
+  {
+    icon: "🔍",
+    title: "Unlimited Searches",
+    desc: "Search all 7 suppliers simultaneously. No monthly limits, no throttling.",
+  },
+  {
+    icon: "👥",
+    title: "Team Access",
+    desc: "Add up to 10 team members. Each gets their own login and search history.",
+  },
+  {
+    icon: "📊",
+    title: "Analytics Dashboard",
+    desc: "Track your spending, most-searched parts, and savings over time.",
+  },
+  {
+    icon: "💰",
+    title: "Bulk Price Comparison",
+    desc: "Compare prices across all suppliers at once. Always get the best deal.",
+  },
+  {
+    icon: "⚡",
+    title: "Priority Support",
+    desc: "Dedicated email support. We respond within 24 hours.",
+  },
+  {
+    icon: "🔧",
+    title: "Custom Integration",
+    desc: "API access for larger operations. Connect to your existing systems.",
+  },
 ];
 
 const audiences = [
@@ -20,7 +45,28 @@ const audiences = [
   { icon: "🔧", label: "Mobile Mechanics" },
 ];
 
+const businessTestimonials = [
+  {
+    quote: "We save about £800/month on parts. The team access is perfect.",
+    author: "Mike's Auto",
+    location: "Birmingham",
+  },
+  {
+    quote: "Comparing prices across suppliers saves us hours every week.",
+    author: "AutoFix Pro",
+    location: "Manchester",
+  },
+  {
+    quote: "The analytics show us exactly where we're saving money.",
+    author: "Fleet Services Ltd",
+    location: "London",
+  },
+];
+
 const Business = () => {
+  const [partsPerMonth, setPartsPerMonth] = useState(15);
+  const estimatedSavings = partsPerMonth * 15;
+
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
@@ -34,24 +80,34 @@ const Business = () => {
         {/* Hero */}
         <section className="container max-w-4xl px-4 text-center mb-20">
           <div className="inline-flex items-center gap-2 mb-6">
-            <span className="text-xs font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+            <span className="text-xs font-semibold uppercase tracking-widest px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
               For Business
             </span>
           </div>
-          <h1 className="font-display text-4xl md:text-6xl font-bold mb-6 leading-tight">
-            GOPARTARA <br />
-            <span className="text-primary">for Garages &amp; Trade</span>
+          <h1 className="font-display text-4xl md:text-6xl font-black mb-6 leading-[1.05] tracking-tight">
+            <span className="text-white">Save money on</span>
+            <br />
+            <span style={{ color: "#cc1111" }}>every parts order.</span>
           </h1>
-          <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
-            Custom plans for garages, dealerships, fleet managers and trade buyers.
-            Save time and money on every parts order.
+          <p className="text-zinc-400 text-sm md:text-[14px] max-w-2xl mx-auto mb-8 leading-relaxed">
+            Join <span className="text-white font-semibold">500+ garages</span> already saving
+            <span className="mx-2">·</span>
+            Avg <span className="text-white font-semibold">22% cost reduction</span>
           </p>
-          <a
-            href="mailto:business@gopartara.com"
-            className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-4 rounded-2xl transition-colors text-sm"
-          >
-            Get a Custom Quote →
-          </a>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a
+              href="mailto:business@gopartara.com"
+              className="inline-flex items-center justify-center gap-2 bg-[#cc1111] hover:bg-red-500 text-white font-bold px-8 py-4 rounded-2xl transition-colors text-sm shadow-lg shadow-red-950/30"
+            >
+              Get Custom Quote →
+            </a>
+            <Link
+              to="/pricing"
+              className="inline-flex items-center justify-center gap-2 border border-zinc-700 hover:border-zinc-500 text-zinc-200 hover:text-white font-bold px-8 py-4 rounded-2xl transition-colors text-sm"
+            >
+              See Pricing →
+            </Link>
+          </div>
         </section>
 
         {/* Benefits */}
@@ -70,6 +126,57 @@ const Business = () => {
           </div>
         </section>
 
+        {/* Savings calculator */}
+        <section className="container max-w-3xl px-4 mb-20">
+          <div
+            className="rounded-2xl"
+            style={{
+              background: "#111111",
+              border: "1px solid #1f1f1f",
+              padding: 32,
+            }}
+          >
+            <h2 className="font-display text-2xl md:text-3xl font-black text-white text-center mb-2 tracking-tight">
+              How much could you save?
+            </h2>
+            <p className="text-zinc-500 text-sm text-center mb-8">
+              Estimate based on average savings per part comparison.
+            </p>
+
+            <label className="block text-sm font-semibold text-zinc-300 mb-3">
+              How many parts do you order per month?{" "}
+              <span className="text-white font-mono font-bold ml-1">{partsPerMonth}</span>
+            </label>
+            <input
+              type="range"
+              min={1}
+              max={50}
+              value={partsPerMonth}
+              onChange={(e) => setPartsPerMonth(parseInt(e.target.value, 10))}
+              className="w-full h-2 bg-zinc-800 rounded-full appearance-none cursor-pointer accent-[#cc1111]"
+              aria-label="Parts ordered per month"
+            />
+            <div className="flex justify-between text-[11px] text-zinc-600 mt-2 mb-8">
+              <span>1</span>
+              <span>25</span>
+              <span>50</span>
+            </div>
+
+            <div className="text-center">
+              <p className="text-zinc-500 text-sm mb-2">Estimated monthly savings:</p>
+              <p
+                className="font-display tracking-tight"
+                style={{ fontSize: 48, fontWeight: 900, color: "#4ade80", lineHeight: 1 }}
+              >
+                £{estimatedSavings.toLocaleString("en-GB")}
+              </p>
+              <p className="text-zinc-600 text-xs mt-3">
+                Based on £15 average saving per part across 7 suppliers.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Who it's for */}
         <section className="container max-w-4xl px-4 mb-20">
           <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8">
@@ -85,6 +192,67 @@ const Business = () => {
                 <p className="text-sm font-semibold">{w.label}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Business testimonials */}
+        <section className="container max-w-5xl px-4 mb-20">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8">
+            What garages say
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {businessTestimonials.map((t) => (
+              <figure
+                key={t.author}
+                className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/50 flex flex-col"
+              >
+                <div className="flex gap-0.5 mb-3" aria-label="5 out of 5 stars">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i} style={{ color: "#cc1111" }} className="text-sm">
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <blockquote className="text-zinc-200 text-[14px] leading-relaxed flex-1 mb-4">
+                  “{t.quote}”
+                </blockquote>
+                <figcaption className="text-xs text-zinc-500">
+                  <span className="text-white font-semibold">{t.author}</span>
+                  <span className="mx-1.5">·</span>
+                  {t.location}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+
+        {/* Pricing */}
+        <section className="container max-w-3xl px-4 mb-20">
+          <div className="text-center p-8 md:p-10 rounded-2xl border border-zinc-800 bg-zinc-900/50">
+            <p className="text-xs font-semibold uppercase tracking-widest text-primary mb-3">
+              Simple, transparent pricing
+            </p>
+            <h2 className="font-display text-2xl md:text-3xl font-black mb-3 tracking-tight">
+              Business Plans from{" "}
+              <span style={{ color: "#cc1111" }}>£19.99/mo</span>
+            </h2>
+            <p className="text-zinc-400 text-sm mb-6 max-w-xl mx-auto">
+              Pick a plan online or talk to us about a custom setup for larger teams.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Link
+                to="/pricing"
+                className="inline-flex items-center gap-2 bg-[#cc1111] hover:bg-red-500 text-white font-bold px-6 py-3 rounded-xl transition-colors text-sm"
+              >
+                See All Plans →
+              </Link>
+              <a
+                href="mailto:business@gopartara.com"
+                className="inline-flex items-center gap-2 border border-zinc-700 hover:border-zinc-500 text-zinc-200 hover:text-white font-bold px-6 py-3 rounded-xl transition-colors text-sm"
+              >
+                Custom plans for 10+ users →
+              </a>
+            </div>
           </div>
         </section>
 
