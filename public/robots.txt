@@ -4,7 +4,14 @@ Disallow: /dashboard
 Disallow: /admin
 Disallow: /my-market
 Disallow: /complete-profile
+Disallow: /saved-parts
+Disallow: /garage
+Disallow: /messages
+Disallow: /recent
+Disallow: /refund
+Disallow: /verify-email
+Disallow: /reset-password
+Disallow: /auth
 Disallow: /api/
-Disallow: /auth/
 
 Sitemap: https://gopartara.com/sitemap.xml
