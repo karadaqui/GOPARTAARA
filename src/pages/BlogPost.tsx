@@ -161,6 +161,53 @@ const BlogPost = () => {
           dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
         />
 
+        {/* Share section */}
+        <div className="mt-10 pt-6 border-t border-border/50">
+          <p className="text-sm font-semibold text-foreground mb-3">Share this article:</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent('https://gopartara.com/blog/' + post.slug)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 border border-border rounded-lg text-sm text-foreground transition-colors"
+            >
+              𝕏 Share
+            </a>
+            <a
+              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://gopartara.com/blog/' + post.slug)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 border border-border rounded-lg text-sm text-foreground transition-colors"
+            >
+              📘 Facebook
+            </a>
+            <a
+              href={`https://api.whatsapp.com/send?text=${encodeURIComponent(post.title + ' — https://gopartara.com/blog/' + post.slug)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 border border-border rounded-lg text-sm text-foreground transition-colors"
+            >
+              💬 WhatsApp
+            </a>
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText('https://gopartara.com/blog/' + post.slug);
+                  setCopied(true);
+                  toast({ title: "Link copied", description: "Article link copied to clipboard." });
+                  setTimeout(() => setCopied(false), 2000);
+                } catch {
+                  toast({ title: "Copy failed", description: "Please copy the URL manually.", variant: "destructive" });
+                }
+              }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 border border-border rounded-lg text-sm text-foreground transition-colors"
+            >
+              {copied ? <><Check size={14} /> Copied!</> : <><LinkIcon size={14} /> Copy link</>}
+            </button>
+          </div>
+        </div>
+
         {/* Amazon Affiliate Section */}
         <div className="mt-8 p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl">
           <p className="text-sm font-semibold text-zinc-300 mb-2">
