@@ -54,7 +54,7 @@ const FeaturesSection = () => {
     <section className="py-12 md:py-16">
       <div className="container px-6 md:px-4">
         <ScrollReveal className="text-center mb-16">
-          <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
+          <span className="inline-block uppercase" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em", color: "#cc1111", marginBottom: "12px" }}>
             Features
           </span>
           <h2 className="font-display text-3xl md:text-5xl font-bold mb-5 tracking-tight">

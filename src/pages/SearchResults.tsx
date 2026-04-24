@@ -769,7 +769,7 @@ const SearchResults = () => {
                     <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={identifying} />
                     <div className="flex items-center gap-1.5 px-4 h-14 rounded-xl bg-[#1a1a1a] hover:bg-[#222] border border-white/10 transition-colors text-sm text-zinc-300">
                       {identifying ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
-                      <span>{identifying ? "Identifying..." : "Photo"}</span>
+                      <span style={{ fontSize: "13px" }}>{identifying ? "Identifying..." : "Photo Search"}</span>
                     </div>
                   </label>
                   <button type="submit" className="h-14 px-6 sm:px-8 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm flex items-center gap-2 transition-colors duration-150 flex-1 sm:flex-none justify-center">
@@ -899,13 +899,14 @@ const SearchResults = () => {
                 <span key={supplier.id} className="flex items-center gap-1.5">
                   {idx > 0 && <span className="text-[10px] text-zinc-600">•</span>}
                   {supplier.status === 'live' ? (
-                    <span className="flex items-center gap-1.5 text-xs font-medium text-white">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                    <span className="flex items-center gap-1.5 font-medium text-white" style={{ fontSize: "12px", fontWeight: 500 }}>
+                      <span className="rounded-full bg-emerald-400 inline-block" style={{ width: "6px", height: "6px" }} />
                       {supplier.label}
                     </span>
                   ) : (
-                    <span className="text-xs text-zinc-600 opacity-50 flex items-center gap-1">
-                      <span className="text-[10px]">🔜</span> {supplier.label}
+                    <span className="opacity-50 flex items-center gap-1" style={{ fontSize: "12px", color: "#71717a" }}>
+                      <span className="rounded-full bg-zinc-600 inline-block" style={{ width: "6px", height: "6px" }} />
+                      {supplier.label}
                     </span>
                   )}
                 </span>
@@ -1006,8 +1007,8 @@ const SearchResults = () => {
                   <span className="text-red-500">"</span>{activeQuery}<span className="text-red-500">"</span>
                 </h1>
                 {totalResults > 0 && !liveLoading && (
-                  <p className="text-sm text-zinc-500 mt-2 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <p className="mt-2 flex items-center gap-2" style={{ fontSize: "13px", color: "#52525b" }}>
+                    <span className="rounded-full bg-emerald-500 animate-pulse" style={{ width: "6px", height: "6px" }} />
                     {activeFilterCount > 0
                       ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
                       : `${startItem.toLocaleString()}-${endItem.toLocaleString()} of ${totalResults.toLocaleString()} listings`}

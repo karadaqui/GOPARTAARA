@@ -33,7 +33,7 @@ const HowItWorksSection = () => (
     <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/[0.02] to-transparent pointer-events-none" />
     <div className="container px-4 md:px-6 lg:px-8 relative">
       <ScrollReveal className="text-center mb-8 md:mb-10" threshold={0.05}>
-        <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
+        <span className="inline-block uppercase" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em", color: "#cc1111", marginBottom: "12px" }}>
           How It Works
         </span>
         <h2 className="font-display text-2xl md:text-5xl font-bold mb-5 tracking-tight">

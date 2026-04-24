@@ -1012,7 +1012,7 @@ const HeroSection = () => {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <span className="text-[10px] uppercase tracking-[0.2em] text-green-400 font-bold">
-                  Live Suppliers
+                  Partners
                 </span>
                 <h2 className="text-base font-bold text-white tracking-tight">
                   Active Integrations
