@@ -323,11 +323,10 @@ const HeroSection = () => {
         <div className={`transition-[colors,transform] ease-out delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
           <div id="search" className="max-w-3xl mx-auto">
             {/* Tabs */}
-            <div className="mb-5 -mx-4 md:mx-0 md:flex md:items-center md:justify-center">
+            <div className="mb-5 w-full md:flex md:items-center md:justify-center">
               <div
-                className="flex gap-2 px-4 pb-1 md:px-0 md:overflow-visible md:inline-flex md:items-center md:rounded-xl md:bg-card/40 md:backdrop-blur-md md:border md:border-border/30 md:p-1 md:gap-1 scrollbar-hide"
+                className="flex gap-2 px-4 pb-2 w-full overflow-x-auto md:w-auto md:overflow-visible md:inline-flex md:justify-center md:items-center md:rounded-xl md:bg-card/40 md:backdrop-blur-md md:border md:border-border/30 md:p-1 md:gap-1 scrollbar-hide"
                 style={{
-                  overflowX: "auto",
                   WebkitOverflowScrolling: "touch",
                   scrollbarWidth: "none",
                   msOverflowStyle: "none",
