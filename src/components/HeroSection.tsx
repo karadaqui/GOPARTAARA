@@ -459,9 +459,16 @@ const HeroSection = () => {
                   >
                     🟢 {viewers} people searching right now
                   </p>
-                  <p className="text-xs text-muted-foreground text-center flex items-center gap-1.5">
-                    <ImageIcon size={12} className="text-muted-foreground/70" />
-                    Upload a photo of any car part — our system will identify it and find the best prices
+                  <p
+                    className="text-xs text-muted-foreground flex items-center justify-center gap-1.5 text-center leading-tight"
+                    style={{ flexWrap: "nowrap" }}
+                  >
+                    <ImageIcon
+                      size={12}
+                      className="text-muted-foreground/70"
+                      style={{ flexShrink: 0, width: 14, height: 14 }}
+                    />
+                    <span>Upload a photo to identify any car part</span>
                   </p>
                   {user && <SearchCounter limitData={searchLimit} />}
                   <div className="flex items-center justify-center mt-3">
