@@ -35,7 +35,7 @@ const Index = () => {
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <SEOHead
         title="GOPARTARA — Compare Car Parts Prices UK | 1M+ Parts"
-        description="Find and compare car parts prices from trusted UK & global suppliers. Search 1,000,000+ parts, compare prices, and save money instantly. Free to use."
+        description="Compare car parts prices from 1,000,000+ listings across 7 UK & global suppliers. Search by part name, reg plate, VIN, or photo. Free to use."
         path="/"
         jsonLd={{
           "@context": "https://schema.org",
@@ -51,6 +51,26 @@ const Index = () => {
             "priceCurrency": "GBP"
           }
         }}
+        additionalJsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "GOPARTARA",
+            "url": "https://gopartara.com",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": "https://gopartara.com/search?q={search_term_string}",
+              "query-input": "required name=search_term_string",
+            },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "GOPARTARA",
+            "url": "https://gopartara.com",
+            "logo": "https://gopartara.com/favicon.png",
+          },
+        ]}
       />
       <Navbar />
       <HeroSection />
