@@ -285,6 +285,7 @@ const Tyres = () => {
       <SEOHead
         title="Compare Tyre Prices UK & Europe — GOPARTARA"
         description="Compare tyre prices from mytyres.co.uk, Tyres UK, Pneumatici IT and more. Find the cheapest tyres for your car size. Free comparison tool."
+        path="/tyres"
       />
       <Navbar />
 
