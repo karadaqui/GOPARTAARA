@@ -44,6 +44,7 @@ import GreenSparkFeaturedCard, { isClassicPartSearch } from "@/components/GreenS
 import GreenSparkResultsRow from "@/components/GreenSparkResultsRow";
 import GreenSparkProductCard, { useGspProducts } from "@/components/GreenSparkProductCard";
 import RecentSearches, { addRecentSearch } from "@/components/RecentSearches";
+import { addRecentSearch as addRecentSearchV2 } from "@/lib/recentSearches";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
 
 
@@ -360,6 +361,7 @@ const SearchResults = () => {
     const timer = setTimeout(() => setIsInitialLoad(false), 3000);
     if (activeQuery && activeQuery.trim()) {
       addRecentSearch(activeQuery.trim());
+      addRecentSearchV2(activeQuery.trim());
     }
     return () => clearTimeout(timer);
   }, [activeQuery]);
