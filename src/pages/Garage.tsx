@@ -30,6 +30,7 @@ import VehicleNotes from "@/components/dashboard/VehicleNotes";
 import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { findDealByBrand, isUKUser } from "@/data/ebayDeals";
+import EmptyState from "@/components/EmptyState";
 
 interface Vehicle {
   id: string;
