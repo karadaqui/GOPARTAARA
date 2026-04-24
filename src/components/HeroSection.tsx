@@ -287,12 +287,21 @@ const HeroSection = () => {
 
 
   return (
-    <section id="home" className="relative min-h-[75vh] flex items-center justify-center pt-16 overflow-x-visible overflow-y-hidden animated-gradient-bg">
+    <section
+      id="home"
+      className="relative flex items-center justify-center pt-16 overflow-x-visible overflow-y-hidden animated-gradient-bg"
+      style={{
+        minHeight: "70vh",
+        backgroundImage:
+          "radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)",
+        backgroundSize: "32px 32px",
+      }}
+    >
       {/* Background glow orbs */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary/6 blur-[180px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-primary/4 blur-[140px] pointer-events-none" />
 
-      <div className="container relative z-10 text-center px-4 py-12 sm:py-0">
+      <div className="container relative z-10 text-center px-4 py-10 sm:py-14">
         {/* Badge */}
         <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
@@ -303,24 +312,64 @@ const HeroSection = () => {
 
         {/* Heading */}
         <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-[5.5rem] font-bold tracking-[-0.04em] leading-[0.9] mb-6 sm:mb-8">
+          <h1
+            className="font-display mb-5"
+            style={{
+              fontSize: "clamp(44px, 5.5vw, 72px)",
+              fontWeight: 800,
+              letterSpacing: "-0.04em",
+              lineHeight: 1.0,
+              color: "#ffffff",
+            }}
+          >
             Find Any Car Part
             <br />
-            <span className="text-gradient">Instantly</span>
+            <span style={{ color: "#cc1111", letterSpacing: "-0.04em" }}>Instantly.</span>
           </h1>
         </div>
 
         {/* Subtitle */}
         <div className={`transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-          <p className="text-muted-foreground text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-12 sm:mb-14 leading-relaxed">
-            Search 1,000,000+ parts from trusted UK &amp; global suppliers.
-            <br className="hidden sm:block" />
-            Compare prices, check availability, and order — all in one place.
+          <p
+            style={{
+              fontSize: "17px",
+              color: "#71717a",
+              fontWeight: 400,
+              maxWidth: "460px",
+              margin: "0 auto",
+              lineHeight: 1.65,
+            }}
+          >
+            Search 1,000,000+ parts from trusted UK & global suppliers.
           </p>
         </div>
 
+        {/* Trust strip */}
+        <div
+          className={`flex justify-center transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+          style={{ gap: "8px", margin: "16px 0", flexWrap: "wrap" }}
+        >
+          {["✓ Free to use", "✓ No account needed", "✓ 1M+ parts"].map((label) => (
+            <span
+              key={label}
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                color: "#71717a",
+                fontSize: "12px",
+                fontWeight: 500,
+                padding: "4px 12px",
+                borderRadius: "999px",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+
         {/* Search section */}
-        <div className={`transition-[colors,transform] ease-out delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+        <div className={`transition-[colors,transform] ease-out delay-300 mt-6 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
           <div id="search" className="max-w-3xl mx-auto">
             {/* Tabs — Mobile (scrollable) */}
             <div
@@ -431,87 +480,73 @@ const HeroSection = () => {
               </button>
             </div>
 
-            {/* Tabs — Desktop (centered) */}
-            <div className="hidden md:flex md:items-center md:justify-center md:gap-2 md:mb-5">
-              <button
-                onClick={() => setActiveTab("part")}
-                style={{
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                  padding: "8px 16px",
-                  borderRadius: "999px",
-                  border: activeTab === "part" ? "none" : "1px solid rgba(255,255,255,0.1)",
-                  background: activeTab === "part" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
-                  color: activeTab === "part" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
-                  fontSize: "13px",
-                  fontWeight: activeTab === "part" ? 600 : 500,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                <Search size={14} style={{ flexShrink: 0 }} />
-                Parts
-              </button>
-              <button
-                onClick={() => setActiveTab("plate")}
-                style={{
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                  padding: "8px 16px",
-                  borderRadius: "999px",
-                  border: activeTab === "plate" ? "none" : "1px solid rgba(255,255,255,0.1)",
-                  background: activeTab === "plate" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
-                  color: activeTab === "plate" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
-                  fontSize: "13px",
-                  fontWeight: activeTab === "plate" ? 600 : 500,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                <Car size={14} style={{ flexShrink: 0 }} />
-                Reg Plate UK
-              </button>
-              <button
-                onClick={() => setActiveTab("vin")}
-                style={{
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                  padding: "8px 16px",
-                  borderRadius: "999px",
-                  border: activeTab === "vin" ? "none" : "1px solid rgba(255,255,255,0.1)",
-                  background: activeTab === "vin" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
-                  color: activeTab === "vin" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
-                  fontSize: "13px",
-                  fontWeight: activeTab === "vin" ? 600 : 500,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                🌍 VIN
-              </button>
+            {/* Tabs — Desktop (clean underline) */}
+            <div
+              className="hidden md:flex md:items-center md:justify-center md:gap-7 md:mb-5"
+              style={{ borderBottom: "1px solid #1f1f1f" }}
+            >
+              {[
+                { key: "part", label: "Parts", icon: <Search size={14} style={{ flexShrink: 0 }} /> },
+                { key: "plate", label: "Reg Plate UK", icon: <Car size={14} style={{ flexShrink: 0 }} /> },
+                { key: "vin", label: "VIN", icon: <span style={{ fontSize: 13 }}>🌍</span> },
+              ].map((tab) => {
+                const isActive = activeTab === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key as "part" | "plate" | "vin")}
+                    style={{
+                      flexShrink: 0,
+                      whiteSpace: "nowrap",
+                      padding: "8px 2px",
+                      paddingBottom: "8px",
+                      marginBottom: "-1px",
+                      background: "transparent",
+                      border: "none",
+                      borderBottom: isActive ? "2px solid #cc1111" : "2px solid transparent",
+                      color: isActive ? "#ffffff" : "#52525b",
+                      fontSize: "13px",
+                      fontWeight: isActive ? 600 : 400,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      transition: "color 150ms ease, border-color 150ms ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) e.currentTarget.style.color = "#a1a1aa";
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) e.currentTarget.style.color = "#52525b";
+                    }}
+                  >
+                    {tab.icon}
+                    {tab.label}
+                  </button>
+                );
+              })}
               <button
                 onClick={() => navigate("/tyres")}
                 style={{
                   flexShrink: 0,
                   whiteSpace: "nowrap",
-                  padding: "8px 16px",
-                  borderRadius: "999px",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  background: "rgba(255,255,255,0.05)",
-                  color: "rgba(255,255,255,0.55)",
+                  padding: "8px 2px",
+                  paddingBottom: "8px",
+                  marginBottom: "-1px",
+                  background: "transparent",
+                  border: "none",
+                  borderBottom: "2px solid transparent",
+                  color: "#52525b",
                   fontSize: "13px",
-                  fontWeight: 500,
+                  fontWeight: 400,
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
                   gap: "6px",
+                  transition: "color 150ms ease",
                 }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#52525b")}
               >
                 <img
                   src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
@@ -528,16 +563,26 @@ const HeroSection = () => {
             {/* Part search */}
             {activeTab === "part" ? (
               <>
-                <form onSubmit={handleSearch} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2 sm:p-2.5 rounded-2xl glass glow-focus">
-                  <div className="flex-1 flex items-center gap-3 px-4">
+                <form
+                  onSubmit={handleSearch}
+                  className="hero-search-form flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2"
+                  style={{
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: "14px",
+                    transition: "border-color 150ms ease, box-shadow 150ms ease",
+                  }}
+                >
+                  <div className="flex-1 flex items-center gap-3 px-3 sm:min-h-[52px]">
                     <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
-                    <Search className="text-muted-foreground shrink-0" size={20} />
+                    <Search style={{ color: "#52525b", flexShrink: 0 }} size={18} />
                     <input
                       type="text"
                       placeholder="e.g. BMW E46 brake pads, Ford Focus clutch..."
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      className="w-full bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm sm:text-base py-3.5"
+                      className="hero-search-input w-full bg-transparent outline-none text-sm sm:text-[15px] py-3"
+                      style={{ color: "#ffffff" }}
                       disabled={identifying}
                       autoComplete="off"
                       autoCorrect="off"
@@ -545,7 +590,7 @@ const HeroSection = () => {
                       spellCheck={false}
                     />
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 px-1">
                     <label className={`cursor-pointer shrink-0 flex-1 sm:flex-none ${identifying ? "pointer-events-none opacity-60" : ""}`}>
                       <input
                         ref={fileInputRef}
@@ -555,15 +600,26 @@ const HeroSection = () => {
                         onChange={handlePhotoUpload}
                         disabled={identifying}
                       />
-                      <div className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-secondary hover:bg-secondary/80 transition-[colors,transform] text-sm text-secondary-foreground hover:scale-[1.02] active:scale-[0.98]">
+                      <div
+                        className="flex items-center justify-center gap-2 transition-colors"
+                        style={{
+                          background: "transparent",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          color: "#a1a1aa",
+                          borderRadius: "10px",
+                          fontSize: "13px",
+                          padding: "0 14px",
+                          height: "44px",
+                        }}
+                      >
                         {identifying ? (
                           <>
-                            <Loader2 size={18} className="animate-spin" />
+                            <Loader2 size={16} className="animate-spin" />
                             <span>Identifying...</span>
                           </>
                         ) : (
                           <>
-                            <Camera size={18} />
+                            <Camera size={16} />
                             <span className="sm:hidden">Photo</span>
                             <span className="hidden sm:inline">Photo Search</span>
                           </>
@@ -571,18 +627,44 @@ const HeroSection = () => {
                       </div>
                     </label>
                     {user && searchLimit.limitReached ? (
-                      <Button
+                      <button
                         type="button"
-                        className="shrink-0 flex-1 sm:flex-none rounded-xl px-7 py-3.5 h-auto text-sm font-semibold"
                         onClick={() => navigate("/pricing")}
+                        className="shrink-0 flex-1 sm:flex-none flex items-center justify-center gap-1 transition-colors"
+                        style={{
+                          background: "#cc1111",
+                          color: "#ffffff",
+                          borderRadius: "10px",
+                          fontWeight: 600,
+                          fontSize: "15px",
+                          height: "44px",
+                          padding: "0 24px",
+                          border: "none",
+                          cursor: "pointer",
+                        }}
                       >
-                        <ArrowUp size={14} className="mr-1" />
+                        <ArrowUp size={14} />
                         Upgrade
-                      </Button>
+                      </button>
                     ) : (
-                      <Button type="submit" className="shrink-0 flex-1 sm:flex-none rounded-xl px-7 py-3.5 h-auto text-sm font-semibold" disabled={identifying}>
+                      <button
+                        type="submit"
+                        disabled={identifying}
+                        className="shrink-0 flex-1 sm:flex-none transition-colors disabled:opacity-60"
+                        style={{
+                          background: "#cc1111",
+                          color: "#ffffff",
+                          borderRadius: "10px",
+                          fontWeight: 600,
+                          fontSize: "15px",
+                          height: "44px",
+                          padding: "0 24px",
+                          border: "none",
+                          cursor: identifying ? "not-allowed" : "pointer",
+                        }}
+                      >
                         Search
-                      </Button>
+                      </button>
                     )}
                   </div>
                 </form>

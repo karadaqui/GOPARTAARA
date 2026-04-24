@@ -525,3 +525,12 @@ input, textarea, select {
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Hero search — premium minimal */
+.hero-search-input::placeholder {
+  color: #3f3f46;
+}
+.hero-search-form:focus-within {
+  border-color: rgba(204, 17, 17, 0.4) !important;
+  box-shadow: 0 0 0 3px rgba(204, 17, 17, 0.08);
+}
