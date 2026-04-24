@@ -437,9 +437,13 @@ interface PlanCardProps {
   features?: string[];
   searchFeatures?: string[];
   sellerFeatures?: string[];
+  useCase?: string;
   cta: string;
   ctaSubtext?: string;
   popular: boolean;
+  bestValue?: boolean;
+  annual?: boolean;
+  yearlySaving?: number;
   loading: boolean;
   slowWarning: boolean;
   onSelect: () => void;
@@ -456,22 +460,47 @@ const FeatureItem = ({ text }: { text: string }) => (
 );
 
 const PlanCard = ({
-  name, tagline, price, period, originalPrice, billedNote, features, searchFeatures, sellerFeatures, cta, ctaSubtext, popular, loading, slowWarning, onSelect, was, saving, icon: Icon,
+  name, tagline, price, period, originalPrice, billedNote, features, searchFeatures, sellerFeatures, useCase, cta, ctaSubtext, popular, bestValue, annual, yearlySaving, loading, slowWarning, onSelect, was, saving, icon: Icon,
 }: PlanCardProps) => {
   const isBundle = !!(searchFeatures && sellerFeatures);
 
+  // Brief scale animation when the price changes (annual/monthly toggle)
+  const [pricePulse, setPricePulse] = useState(false);
+  useEffect(() => {
+    setPricePulse(true);
+    const t = setTimeout(() => setPricePulse(false), 280);
+    return () => clearTimeout(t);
+  }, [price]);
+
+  const cardBorderClass = bestValue
+    ? "shadow-[0_0_30px_-8px_rgba(251,191,36,0.18)] z-10 bg-card"
+    : popular
+      ? "border-primary/60 shadow-[0_0_30px_-5px_hsl(var(--primary)/0.3)] scale-[1.02] z-10 bg-card"
+      : "border-border/30 bg-card/50 hover:border-border/60 hover:-translate-y-1";
+
   return (
     <div
-      className={`relative rounded-2xl p-8 flex flex-col transition-[colors,transform] border ${
-        popular
-          ? "border-primary/60 shadow-[0_0_30px_-5px_hsl(var(--primary)/0.3)] scale-[1.02] z-10 bg-card"
-          : "border-border/30 bg-card/50 hover:border-border/60 hover:-translate-y-1"
-      }`}
+      className={`relative rounded-2xl p-8 flex flex-col transition-[colors,transform] border ${cardBorderClass}`}
+      style={bestValue ? { borderColor: "rgba(251,191,36,0.3)" } : undefined}
     >
       {popular && (
         <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
           <span className="flex items-center gap-1 text-xs font-semibold px-4 py-1 rounded-full bg-primary text-primary-foreground shadow-md">
             <Star size={10} fill="currentColor" /> Most Popular
+          </span>
+        </div>
+      )}
+      {bestValue && !popular && (
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+          <span
+            className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full"
+            style={{
+              background: "rgba(251,191,36,0.10)",
+              color: "#fbbf24",
+              border: "1px solid rgba(251,191,36,0.20)",
+            }}
+          >
+            <Star size={10} fill="currentColor" /> Best Value
           </span>
         </div>
       )}
@@ -486,14 +515,24 @@ const PlanCard = ({
         {was && <span className="text-muted-foreground/60 line-through text-sm mr-2">{was}</span>}
         {originalPrice && <span className="text-muted-foreground/60 line-through text-sm mr-2">{originalPrice}</span>}
       </div>
-      <div className="flex items-baseline gap-1 mb-1">
+      <div
+        className="flex items-baseline gap-1 mb-1 transition-transform duration-300 ease-out origin-left"
+        style={{ transform: pricePulse ? "scale(1.06)" : "scale(1)" }}
+      >
         <span className="font-display text-5xl font-bold text-foreground tracking-tight">{price}</span>
         <span className="text-muted-foreground text-base">{period}</span>
       </div>
       {billedNote ? (
         <p className="text-xs text-muted-foreground mb-2">{billedNote}</p>
       ) : null}
-      {saving ? (
+      {annual && yearlySaving && yearlySaving > 0 ? (
+        <span
+          className="inline-flex items-center gap-1 w-fit px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold mb-6"
+          style={{ color: "#4ade80" }}
+        >
+          <Zap size={10} /> Save £{yearlySaving}/year
+        </span>
+      ) : saving ? (
         <span className="inline-flex items-center gap-1 w-fit px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6">
           <Zap size={10} /> Save {saving}/mo
         </span>
@@ -502,7 +541,7 @@ const PlanCard = ({
       <div className="h-px bg-border/40 mb-6" />
 
       {/* Features */}
-      <div className="flex-1 mb-8">
+      <div className="flex-1 mb-6">
         {isBundle ? (
           <>
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">🔍 Search Features</p>
@@ -521,6 +560,22 @@ const PlanCard = ({
           </ul>
         )}
       </div>
+
+      {/* "What you can do" use case */}
+      {useCase && (
+        <p
+          className="mb-6"
+          style={{
+            fontSize: "13px",
+            color: "#52525b",
+            borderTop: "1px solid #1f1f1f",
+            paddingTop: "12px",
+            marginTop: "12px",
+          }}
+        >
+          {useCase}
+        </p>
+      )}
 
       <Button
         variant={popular ? "default" : "outline"}
