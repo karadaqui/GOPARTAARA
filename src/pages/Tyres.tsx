@@ -302,59 +302,109 @@ const Tyres = () => {
             <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight mb-3">
               Find Your Perfect Tyres
             </h1>
-            <p className="text-zinc-500 text-sm max-w-md mx-auto">
-              Compare tyre prices from UK & European specialists.
+            <p className="text-zinc-500 text-sm max-w-md mx-auto mb-3">
+              Compare prices from UK & European tyre specialists.
               Rim not included — tyres only.
+            </p>
+            <p className="text-zinc-500 text-[13px]">
+              Compare prices from <span className="text-zinc-300 font-semibold">5 tyre suppliers</span> · Updated daily
             </p>
           </div>
         </div>
 
         {/* Search Card */}
-        <div className="max-w-md mx-auto px-4 mb-10">
+        <div className="max-w-2xl mx-auto px-4 mb-6">
           <div className="bg-zinc-900/80 backdrop-blur border border-zinc-800 rounded-3xl p-6 shadow-2xl shadow-black/40">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-5">
               <p className="text-white font-bold text-sm">Tyre Size</p>
               <p className="text-zinc-600 text-xs">Found on your tyre sidewall</p>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 mb-2">
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-zinc-600 text-center uppercase tracking-widest">Width</label>
-                <select
-                  value={selectedWidth}
-                  onChange={(e) => setSelectedWidth(e.target.value)}
-                  className="bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded-xl px-2 py-3 text-white text-sm font-mono text-center focus:border-red-500 focus:ring-1 focus:ring-red-500/30 outline-none transition-colors cursor-pointer"
-                >
-                  {WIDTHS.map((w) => <option key={w}>{w}</option>)}
-                </select>
+            <div className="flex items-start gap-5">
+              {/* Visual tyre diagram */}
+              <div className="hidden sm:flex flex-shrink-0 flex-col items-center pt-1">
+                <svg width="92" height="120" viewBox="0 0 92 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  {/* Tyre side profile (cross-section) */}
+                  <rect x="22" y="12" width="48" height="96" rx="6" stroke="#52525b" strokeWidth="1.5" fill="none" />
+                  {/* Sidewall */}
+                  <rect x="22" y="12" width="48" height="22" stroke="#cc1111" strokeWidth="1.5" fill="rgba(204,17,17,0.08)" />
+                  <rect x="22" y="86" width="48" height="22" stroke="#cc1111" strokeWidth="1.5" fill="rgba(204,17,17,0.08)" />
+                  {/* Tread pattern */}
+                  <line x1="30" y1="40" x2="30" y2="80" stroke="#71717a" strokeWidth="1" />
+                  <line x1="38" y1="40" x2="38" y2="80" stroke="#71717a" strokeWidth="1" />
+                  <line x1="46" y1="40" x2="46" y2="80" stroke="#71717a" strokeWidth="1" />
+                  <line x1="54" y1="40" x2="54" y2="80" stroke="#71717a" strokeWidth="1" />
+                  <line x1="62" y1="40" x2="62" y2="80" stroke="#71717a" strokeWidth="1" />
+                  {/* Rim */}
+                  <line x1="22" y1="60" x2="70" y2="60" stroke="#a1a1aa" strokeWidth="1" strokeDasharray="2 2" />
+                  {/* Width arrow (top) */}
+                  <line x1="22" y1="6" x2="70" y2="6" stroke="#a1a1aa" strokeWidth="1" />
+                  <polygon points="22,6 26,4 26,8" fill="#a1a1aa" />
+                  <polygon points="70,6 66,4 66,8" fill="#a1a1aa" />
+                  <text x="46" y="3" fontSize="6" fill="#a1a1aa" textAnchor="middle" fontFamily="monospace">WIDTH</text>
+                  {/* Profile (sidewall height) */}
+                  <line x1="78" y1="12" x2="78" y2="34" stroke="#cc1111" strokeWidth="1" />
+                  <polygon points="78,12 76,16 80,16" fill="#cc1111" />
+                  <polygon points="78,34 76,30 80,30" fill="#cc1111" />
+                  <text x="84" y="26" fontSize="6" fill="#cc1111" fontFamily="monospace">PROF</text>
+                  {/* Rim diameter */}
+                  <line x1="78" y1="40" x2="78" y2="80" stroke="#a1a1aa" strokeWidth="1" />
+                  <polygon points="78,40 76,44 80,44" fill="#a1a1aa" />
+                  <polygon points="78,80 76,76 80,76" fill="#a1a1aa" />
+                  <text x="84" y="62" fontSize="6" fill="#a1a1aa" fontFamily="monospace">RIM</text>
+                </svg>
+                <p className="text-[9px] text-zinc-600 mt-1 font-mono">{selectedWidth}/{selectedProfile} R{selectedRim}</p>
               </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-zinc-600 text-center uppercase tracking-widest">Profile</label>
-                <select
-                  value={selectedProfile}
-                  onChange={(e) => setSelectedProfile(e.target.value)}
-                  className="bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded-xl px-2 py-3 text-white text-sm font-mono text-center focus:border-red-500 focus:ring-1 focus:ring-red-500/30 outline-none transition-colors cursor-pointer"
-                >
-                  {PROFILES.map((p) => <option key={p}>{p}</option>)}
-                </select>
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-zinc-600 text-center uppercase tracking-widest">Rim</label>
-                <select
-                  value={selectedRim}
-                  onChange={(e) => setSelectedRim(e.target.value)}
-                  className="bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded-xl px-2 py-3 text-white text-sm font-mono text-center focus:border-red-500 focus:ring-1 focus:ring-red-500/30 outline-none transition-colors cursor-pointer"
-                >
-                  {RIMS.map((r) => <option key={r} value={r}>R{r}</option>)}
-                </select>
-              </div>
-            </div>
 
-            <div className="text-center mb-5">
-              <span className="text-zinc-600 text-xs">Searching for </span>
-              <span className="text-white font-mono text-sm font-bold">
-                {selectedWidth}/{selectedProfile} R{selectedRim}
-              </span>
+              {/* Inputs */}
+              <div className="flex-1 min-w-0">
+                <div className="grid grid-cols-3 gap-2 mb-3 items-end">
+                  <div className="flex flex-col gap-1.5" title="Tyre width in millimetres (sidewall to sidewall)">
+                    <label className="text-[10px] text-zinc-600 text-center uppercase tracking-widest cursor-help">Width (mm)</label>
+                    <select
+                      value={selectedWidth}
+                      onChange={(e) => setSelectedWidth(e.target.value)}
+                      style={{ height: 52 }}
+                      className="bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded-xl px-2 text-white text-[18px] font-bold font-mono text-center focus:border-red-500 focus:ring-1 focus:ring-red-500/30 outline-none transition-colors cursor-pointer"
+                    >
+                      {WIDTHS.map((w) => <option key={w}>{w}</option>)}
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-1.5" title="Aspect ratio: sidewall height as a % of width">
+                    <label className="text-[10px] text-zinc-600 text-center uppercase tracking-widest cursor-help">Profile (%)</label>
+                    <div className="flex items-center gap-1">
+                      <select
+                        value={selectedProfile}
+                        onChange={(e) => setSelectedProfile(e.target.value)}
+                        style={{ height: 52 }}
+                        className="flex-1 bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded-xl px-2 text-white text-[18px] font-bold font-mono text-center focus:border-red-500 focus:ring-1 focus:ring-red-500/30 outline-none transition-colors cursor-pointer"
+                      >
+                        {PROFILES.map((p) => <option key={p}>{p}</option>)}
+                      </select>
+                      <span className="text-zinc-600 font-bold text-lg">/</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1.5" title="Rim diameter in inches">
+                    <label className="text-[10px] text-zinc-600 text-center uppercase tracking-widest cursor-help">Rim (in)</label>
+                    <select
+                      value={selectedRim}
+                      onChange={(e) => setSelectedRim(e.target.value)}
+                      style={{ height: 52 }}
+                      className="bg-zinc-800 border border-zinc-700 hover:border-zinc-600 rounded-xl px-2 text-white text-[18px] font-bold font-mono text-center focus:border-red-500 focus:ring-1 focus:ring-red-500/30 outline-none transition-colors cursor-pointer"
+                    >
+                      {RIMS.map((r) => <option key={r} value={r}>R{r}</option>)}
+                    </select>
+                  </div>
+                </div>
+
+                <p className="text-zinc-500 text-[12px] leading-relaxed mb-4">
+                  <span className="text-zinc-400 font-semibold">Reading your tyre:</span>{' '}
+                  <span className="font-mono text-zinc-300">{selectedWidth}/{selectedProfile} R{selectedRim}</span> means{' '}
+                  <span className="text-zinc-400">{selectedWidth}mm wide</span>,{' '}
+                  <span className="text-zinc-400">sidewall is {selectedProfile}% of width</span>,{' '}
+                  fits a <span className="text-zinc-400">{selectedRim}″ rim</span>.
+                </p>
+              </div>
             </div>
 
             <button
@@ -373,9 +423,67 @@ const Tyres = () => {
               )}
             </button>
             <p className="text-xs text-zinc-600 text-center mt-2">
-              All prices are for tyres only · Rim/wheel not included ·
-              "Rim protection" is a tyre sidewall safety feature
+              All prices are for tyres only · Rim/wheel not included
             </p>
+          </div>
+
+          {/* Popular sizes */}
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            <span className="text-zinc-500 text-[13px] font-semibold mr-1">Popular sizes:</span>
+            {[
+              { w: '205', p: '55', r: '16' },
+              { w: '195', p: '65', r: '15' },
+              { w: '225', p: '45', r: '17' },
+              { w: '235', p: '35', r: '19' },
+            ].map((s) => {
+              const active = selectedWidth === s.w && selectedProfile === s.p && selectedRim === s.r;
+              return (
+                <button
+                  key={`${s.w}-${s.p}-${s.r}`}
+                  type="button"
+                  onClick={() => {
+                    setSelectedWidth(s.w);
+                    setSelectedProfile(s.p);
+                    setSelectedRim(s.r);
+                  }}
+                  className={`rounded-full border px-3 py-1.5 text-[13px] font-mono transition-colors ${
+                    active
+                      ? 'border-red-500 bg-red-600/15 text-red-300'
+                      : 'border-zinc-800 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
+                  }`}
+                >
+                  {s.w}/{s.p} R{s.r}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Supplier strip */}
+        <div className="max-w-2xl mx-auto px-4 mb-12">
+          <p className="text-zinc-500 text-[12px] uppercase tracking-widest font-semibold mb-3">
+            Prices from these trusted suppliers
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { id: '4118', name: 'mytyres.co.uk' },
+              { id: '12715', name: 'Tyres UK' },
+              { id: '10499', name: 'neumaticos-online.es' },
+              { id: '12716', name: 'Pneumatici IT' },
+              { id: '10747', name: 'ReifenDirekt EE' },
+            ].map((s) => (
+              <div
+                key={s.id}
+                className="flex items-center gap-2 bg-zinc-900/60 border border-zinc-800 rounded-full px-3 py-1.5"
+              >
+                <FlagImg advertiserId={s.id} />
+                <span className="text-zinc-300 text-[12px] font-medium">{s.name}</span>
+                <span className="flex items-center gap-1 text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  Live
+                </span>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -513,6 +621,12 @@ const Tyres = () => {
                         {product.supplierMeta?.shipsTo || 'Ships to UK + 35 countries'}
                       </p>
 
+                      {/free/i.test(product.shipping || '') && (
+                        <span className="inline-flex items-center gap-1 mt-1.5 self-start bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          🚚 Free delivery
+                        </span>
+                      )}
+
                       {/* Actions */}
                       <div className="flex gap-1 mt-2">
                         <button
@@ -565,7 +679,7 @@ const Tyres = () => {
                           rel="noopener noreferrer sponsored"
                           className="ml-auto px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-lg transition-colors"
                         >
-                          View →
+                          Buy →
                         </a>
                       </div>
                     </div>
@@ -611,6 +725,25 @@ const Tyres = () => {
             </p>
           </div>
         )}
+
+        {/* Trust section */}
+        <section className="max-w-4xl mx-auto px-4 pb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              { icon: '🛡️', label: 'OEM Approved' },
+              { icon: '🚚', label: 'Free Delivery Available' },
+              { icon: '⭐', label: '4.8/5 Customer Rating' },
+            ].map((t) => (
+              <div
+                key={t.label}
+                className="flex items-center justify-center gap-2 bg-zinc-900/60 border border-zinc-800 rounded-2xl px-4 py-4"
+              >
+                <span className="text-xl" aria-hidden="true">{t.icon}</span>
+                <span className="text-zinc-200 text-sm font-semibold">{t.label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
       </main>
 
       <CompareBar
