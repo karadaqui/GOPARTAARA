@@ -1,6 +1,5 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Instagram, Plus, Minus } from "lucide-react";
+import { Instagram } from "lucide-react";
 
 type FooterSection = {
   title: string;
