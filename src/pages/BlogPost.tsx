@@ -178,14 +178,32 @@ const BlogPost = () => {
         title={`${post.title} | GOPARTARA Blog`}
         description={post.meta_description || post.preview}
         path={`/blog/${post.slug}`}
+        type="article"
+        image={(post as any).cover_image || (post as any).image_url || undefined}
         jsonLd={{
           "@context": "https://schema.org",
-          "@type": "BlogPosting",
+          "@type": "Article",
           "headline": post.title,
-          "description": post.meta_description,
-          "author": { "@type": "Organization", "name": post.author },
+          "description": post.meta_description || post.preview,
+          "image": (post as any).cover_image || (post as any).image_url || "https://gopartara.com/og-image.png",
           "datePublished": post.published_at,
-          "publisher": { "@type": "Organization", "name": "GOPARTARA" },
+          "dateModified": (post as any).updated_at || post.published_at,
+          "author": {
+            "@type": "Organization",
+            "name": "GOPARTARA",
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "GOPARTARA",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://gopartara.com/favicon.png",
+            },
+          },
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `https://gopartara.com/blog/${post.slug}`,
+          },
         }}
       />
       <Navbar />
