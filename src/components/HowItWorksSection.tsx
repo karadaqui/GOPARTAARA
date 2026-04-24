@@ -43,7 +43,7 @@ const HowItWorksSection = () => (
           Finding the right car part shouldn't take hours. With PARTARA, it takes seconds.
         </p>
       </ScrollReveal>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-10 max-w-5xl mx-auto">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-10 max-w-5xl mx-auto">
         {steps.map((s, i) => (
           <ScrollReveal key={s.title} delay={i + 1} threshold={0.05}>
             <div className="relative text-center group mb-6 md:mb-16">

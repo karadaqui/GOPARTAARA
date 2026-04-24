@@ -324,45 +324,56 @@ const HeroSection = () => {
           <div id="search" className="max-w-3xl mx-auto">
             {/* Tabs */}
             <div className="mb-5 -mx-4 md:mx-0 md:flex md:items-center md:justify-center">
-              <div className="flex overflow-x-auto scrollbar-hide gap-1 px-4 md:px-0 md:overflow-visible md:inline-flex md:items-center md:rounded-xl md:bg-card/40 md:backdrop-blur-md md:border md:border-border/30 md:p-1">
+              <div
+                className="flex gap-2 px-4 pb-1 md:px-0 md:overflow-visible md:inline-flex md:items-center md:rounded-xl md:bg-card/40 md:backdrop-blur-md md:border md:border-border/30 md:p-1 md:gap-1 scrollbar-hide"
+                style={{
+                  overflowX: "auto",
+                  WebkitOverflowScrolling: "touch",
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+                }}
+              >
                 <button
                   onClick={() => setActiveTab("part")}
-                  className={`flex-shrink-0 whitespace-nowrap flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                  style={{ flexShrink: 0, whiteSpace: "nowrap" }}
+                  className={`flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
                     activeTab === "part"
                       ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <Search size={14} />
-                  <span className="md:hidden">Search</span>
-                  <span className="hidden md:inline">Part Search</span>
+                  <Search size={14} style={{ flexShrink: 0 }} />
+                  <span><span className="hidden sm:inline">Part </span>Search</span>
                 </button>
                 <button
                   onClick={() => setActiveTab("plate")}
-                  className={`flex-shrink-0 whitespace-nowrap flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                  style={{ flexShrink: 0, whiteSpace: "nowrap" }}
+                  className={`flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
                     activeTab === "plate"
                       ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <Car size={14} />
+                  <Car size={14} style={{ flexShrink: 0 }} />
                   Reg Plate
                   <span className="text-[10px] bg-blue-900/40 border border-blue-500/30 text-blue-300 px-1.5 py-0.5 rounded font-bold tracking-wider leading-none">UK</span>
                 </button>
                 <button
                   onClick={() => setActiveTab("vin")}
-                  className={`flex-shrink-0 whitespace-nowrap flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                  style={{ flexShrink: 0, whiteSpace: "nowrap" }}
+                  className={`flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
                     activeTab === "vin"
                       ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <Search size={14} />
+                  <Search size={14} style={{ flexShrink: 0 }} />
                   VIN 🌍
                 </button>
                 <button
                   onClick={() => navigate('/tyres')}
-                  className="flex-shrink-0 whitespace-nowrap flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors text-muted-foreground hover:text-foreground"
+                  style={{ flexShrink: 0, whiteSpace: "nowrap" }}
+                  className="flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors text-muted-foreground hover:text-foreground"
                 >
                   <img
                     src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
@@ -370,7 +381,7 @@ const HeroSection = () => {
                     height={16}
                     alt="tyre"
                     loading="lazy"
-                    style={{ display: "inline-block", verticalAlign: "middle" }}
+                    style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0 }}
                   />
                   Tyre Search
                 </button>
