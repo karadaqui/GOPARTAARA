@@ -64,9 +64,9 @@ const Footer = () => {
   return (
     <footer className="border-t border-border py-12">
       <div className="container px-4 md:px-6 lg:px-8">
-        {/* Logo + description (always visible) */}
+        {/* Logo + description */}
         <div className="mb-8 md:mb-12 md:grid md:grid-cols-5 md:gap-8">
-          <div className="md:col-span-1">
+          <div className="md:col-span-1 text-center md:text-left mb-8 md:mb-0">
             <button onClick={() => handleLink("/")} className="inline-block min-h-[44px]">
               <span className="logo-text text-xl">
                 <span className="logo-go">GO</span>
@@ -74,12 +74,12 @@ const Footer = () => {
                 <span className="logo-ara">ARA</span>
               </span>
             </button>
-            <p className="text-muted-foreground text-sm mt-3 leading-relaxed">
+            <p className="text-muted-foreground text-sm mt-3 leading-relaxed max-w-sm mx-auto md:mx-0">
               The smarter way to find car parts. Search 1,000,000+ parts from trusted UK &amp; global suppliers.
             </p>
           </div>
 
-          {/* Desktop: 4 columns */}
+          {/* Desktop: 4 inline columns (md:contents lifts children into the parent grid) */}
           <div className="hidden md:contents">
             {SECTIONS.map((section) => (
               <div key={section.title}>
@@ -101,45 +101,29 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Mobile: collapsible accordion */}
-        <div className="md:hidden divide-y divide-border border-y border-border mb-8">
-          {SECTIONS.map((section) => {
-            const isOpen = openSection === section.title;
-            return (
-              <div key={section.title}>
-                <button
-                  onClick={() => toggleSection(section.title)}
-                  className="w-full flex items-center justify-between py-4 min-h-[48px] text-left"
-                  aria-expanded={isOpen}
-                >
-                  <span className="font-semibold text-sm">{section.title}</span>
-                  {isOpen ? (
-                    <Minus size={16} className="text-muted-foreground" />
-                  ) : (
-                    <Plus size={16} className="text-muted-foreground" />
-                  )}
-                </button>
-                {isOpen && (
-                  <ul className="pb-4 space-y-1 text-sm text-muted-foreground">
-                    {section.links.map((link) => (
-                      <li key={link.label}>
-                        <button
-                          onClick={() => handleLink(link.href)}
-                          className="block w-full text-left py-2 min-h-[44px] hover:text-foreground transition-colors"
-                        >
-                          {link.label}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            );
-          })}
+        {/* Mobile: 2x2 grid of link columns */}
+        <div className="md:hidden grid grid-cols-2 gap-x-6 gap-y-8 mb-8">
+          {SECTIONS.map((section) => (
+            <div key={section.title}>
+              <h4 className="font-semibold text-sm mb-3">{section.title}</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                {section.links.map((link) => (
+                  <li key={link.label}>
+                    <button
+                      onClick={() => handleLink(link.href)}
+                      className="text-left hover:text-foreground transition-colors"
+                    >
+                      {link.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
-        <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-center sm:text-left">
+        <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center sm:justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6 text-center sm:text-left">
             <span className="text-xs text-muted-foreground">© 2026 GOPARTARA Ltd. All rights reserved.</span>
             <span className="text-xs text-muted-foreground">info@gopartara.com</span>
           </div>
