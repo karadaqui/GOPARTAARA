@@ -77,6 +77,8 @@ const Index = () => {
       />
       <Navbar />
       <HeroSection />
+      <PopularSearchesStrip />
+      <BrowseByMakeSection />
       <SocialProofStats />
 
       {/* Trust bar */}
