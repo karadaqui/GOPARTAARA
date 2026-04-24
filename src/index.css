@@ -6,6 +6,9 @@
 
 * { -webkit-tap-highlight-color: transparent; }
 
+.tab-scroll-container::-webkit-scrollbar { display: none; }
+.tab-scroll-container { -ms-overflow-style: none; scrollbar-width: none; }
+
 input, textarea, select {
   font-size: 16px !important;
   -webkit-appearance: none;

@@ -323,66 +323,114 @@ const HeroSection = () => {
         <div className={`transition-[colors,transform] ease-out delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
           <div id="search" className="max-w-3xl mx-auto">
             {/* Tabs */}
-            <div className="mb-5 w-full md:flex md:items-center md:justify-center">
+            <div style={{ width: "100%", overflow: "visible", marginBottom: "20px" }}>
               <div
-                className="flex gap-2 px-4 pb-2 w-full overflow-x-auto md:w-auto md:overflow-visible md:inline-flex md:justify-center md:items-center md:rounded-xl md:bg-card/40 md:backdrop-blur-md md:border md:border-border/30 md:p-1 md:gap-1 scrollbar-hide"
+                className="tab-scroll-container"
                 style={{
+                  display: "flex",
+                  gap: "8px",
+                  padding: "4px 16px 8px",
+                  overflowX: "auto",
+                  overflowY: "visible",
                   WebkitOverflowScrolling: "touch",
                   scrollbarWidth: "none",
                   msOverflowStyle: "none",
+                  width: "100%",
+                  justifyContent: "flex-start",
                 }}
               >
                 <button
                   onClick={() => setActiveTab("part")}
-                  style={{ flexShrink: 0, whiteSpace: "nowrap" }}
-                  className={`flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
-                    activeTab === "part"
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  style={{
+                    flexShrink: 0,
+                    whiteSpace: "nowrap",
+                    padding: "8px 16px",
+                    borderRadius: "999px",
+                    border: activeTab === "part" ? "none" : "1px solid rgba(255,255,255,0.1)",
+                    background: activeTab === "part" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
+                    color: activeTab === "part" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
+                    fontSize: "13px",
+                    fontWeight: activeTab === "part" ? 600 : 500,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                  }}
                 >
                   <Search size={14} style={{ flexShrink: 0 }} />
-                  <span><span className="hidden sm:inline">Part </span>Search</span>
+                  Parts
                 </button>
+
                 <button
                   onClick={() => setActiveTab("plate")}
-                  style={{ flexShrink: 0, whiteSpace: "nowrap" }}
-                  className={`flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
-                    activeTab === "plate"
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  style={{
+                    flexShrink: 0,
+                    whiteSpace: "nowrap",
+                    padding: "8px 16px",
+                    borderRadius: "999px",
+                    border: activeTab === "plate" ? "none" : "1px solid rgba(255,255,255,0.1)",
+                    background: activeTab === "plate" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
+                    color: activeTab === "plate" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
+                    fontSize: "13px",
+                    fontWeight: activeTab === "plate" ? 600 : 500,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                  }}
                 >
                   <Car size={14} style={{ flexShrink: 0 }} />
-                  Reg Plate
-                  <span className="text-[10px] bg-blue-900/40 border border-blue-500/30 text-blue-300 px-1.5 py-0.5 rounded font-bold tracking-wider leading-none">UK</span>
+                  Reg Plate UK
                 </button>
+
                 <button
                   onClick={() => setActiveTab("vin")}
-                  style={{ flexShrink: 0, whiteSpace: "nowrap" }}
-                  className={`flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors ${
-                    activeTab === "vin"
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  style={{
+                    flexShrink: 0,
+                    whiteSpace: "nowrap",
+                    padding: "8px 16px",
+                    borderRadius: "999px",
+                    border: activeTab === "vin" ? "none" : "1px solid rgba(255,255,255,0.1)",
+                    background: activeTab === "vin" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
+                    color: activeTab === "vin" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
+                    fontSize: "13px",
+                    fontWeight: activeTab === "vin" ? 600 : 500,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                  }}
                 >
-                  <Search size={14} style={{ flexShrink: 0 }} />
-                  VIN 🌍
+                  🌍 VIN
                 </button>
+
                 <button
-                  onClick={() => navigate('/tyres')}
-                  style={{ flexShrink: 0, whiteSpace: "nowrap" }}
-                  className="flex items-center gap-2 px-4 md:px-5 py-2.5 text-sm font-medium rounded-lg transition-colors text-muted-foreground hover:text-foreground"
+                  onClick={() => navigate("/tyres")}
+                  style={{
+                    flexShrink: 0,
+                    whiteSpace: "nowrap",
+                    padding: "8px 16px",
+                    borderRadius: "999px",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    background: "rgba(255,255,255,0.05)",
+                    color: "rgba(255,255,255,0.55)",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                  }}
                 >
                   <img
                     src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
-                    width={16}
-                    height={16}
-                    alt="tyre"
+                    width={14}
+                    height={14}
+                    alt=""
                     loading="lazy"
-                    style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0 }}
+                    style={{ flexShrink: 0 }}
                   />
-                  Tyre Search
+                  Tyres
                 </button>
               </div>
             </div>
