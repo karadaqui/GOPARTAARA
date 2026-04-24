@@ -287,8 +287,12 @@ const Dashboard = () => {
   const hasDisplayName = !!profile?.display_name?.trim();
   const needsDisplayName = !isAdmin && !hasDisplayName;
 
-  const referralCode = (profile as any)?.referral_code || "";
-  const referralLink = `https://gopartara.com/auth?ref=${referralCode}`;
+  const referralCode =
+    (profile as any)?.referral_code ||
+    (user?.id ? user.id.replace(/-/g, "").slice(0, 8).toUpperCase() : "");
+  const referralLink = referralCode
+    ? `https://gopartara.com/auth?ref=${referralCode}`
+    : "https://gopartara.com/auth";
 
   const copyReferralLink = () => {
     navigator.clipboard.writeText(referralLink);
