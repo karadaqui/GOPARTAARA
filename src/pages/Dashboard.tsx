@@ -631,19 +631,49 @@ const Dashboard = () => {
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center">
-                  <Crown size={20} className="text-muted-foreground" />
+            <div
+              className="rounded-xl p-5"
+              style={{ background: "#0a0a0a", border: "1px solid #1f1f1f" }}
+            >
+              <div className="flex items-center gap-4 mb-4">
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                  style={{ background: "#1a1a1a", border: "1px solid #27272a" }}
+                >
+                  <Crown size={20} className="text-zinc-500" />
                 </div>
-                <div>
-                  <p className="font-display font-bold text-lg">Free Plan</p>
-                  <p className="text-xs text-muted-foreground">£0/mo · 10 searches per month</p>
+                <div className="flex-1">
+                  <p className="font-display font-bold text-lg text-white">Free Plan</p>
+                  <p style={{ fontSize: "12px", color: "#71717a", marginTop: "2px" }}>
+                    £0/mo · 5 searches per month
+                  </p>
                 </div>
               </div>
-              <Button size="sm" className="rounded-xl gap-2" onClick={() => navigate("/pricing")}>
-                Upgrade Plan
-              </Button>
+              <div
+                className="rounded-lg p-4 flex flex-col sm:flex-row sm:items-center gap-3"
+                style={{
+                  background: "linear-gradient(135deg, rgba(204,17,17,0.08), transparent)",
+                  border: "1px solid rgba(204,17,17,0.2)",
+                }}
+              >
+                <div className="flex-1">
+                  <p className="font-semibold text-white" style={{ fontSize: "14px" }}>
+                    Unlock unlimited searches
+                  </p>
+                  <p style={{ fontSize: "12px", color: "#a1a1aa", marginTop: "2px" }}>
+                    Get price alerts, search history & priority support from £9.99/mo.
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  className="rounded-xl gap-2 text-white shrink-0"
+                  style={{ background: "#cc1111" }}
+                  onClick={() => navigate("/pricing")}
+                >
+                  <Sparkles size={14} />
+                  Upgrade to Pro
+                </Button>
+              </div>
             </div>
           )}
         </div>
