@@ -721,24 +721,24 @@ const SearchResults = () => {
             }}
           >
             <button onClick={() => setSearchMode("text")}
-              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
-              className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-colors ${searchMode === "text" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
-              <Search size={14} style={{ flexShrink: 0 }} />
+              style={{ flexShrink: 0, whiteSpace: "nowrap", height: "36px", borderRadius: "8px", fontSize: "13px", border: searchMode === "text" ? "none" : "1px solid #27272a" }}
+              className={`flex items-center gap-1.5 px-3 sm:px-4 font-semibold transition-colors ${searchMode === "text" ? "bg-red-600 text-white" : "bg-transparent text-zinc-500 hover:text-zinc-300 search-tab-inactive"}`}>
+              <Search size={13} style={{ flexShrink: 0 }} />
               <span><span className="hidden sm:inline">Part </span>Search</span>
             </button>
             <button onClick={() => setSearchMode("reg")}
-              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
-              className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-colors ${searchMode === "reg" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
-              <Car size={14} style={{ flexShrink: 0 }} /> Reg Plate <span className="text-[10px] bg-blue-900/40 border border-blue-500/30 text-blue-300 px-1.5 py-0.5 rounded font-bold tracking-wider leading-none">UK</span>
+              style={{ flexShrink: 0, whiteSpace: "nowrap", height: "36px", borderRadius: "8px", fontSize: "13px", border: searchMode === "reg" ? "none" : "1px solid #27272a" }}
+              className={`flex items-center gap-1.5 px-3 sm:px-4 font-semibold transition-colors ${searchMode === "reg" ? "bg-red-600 text-white" : "bg-transparent text-zinc-500 hover:text-zinc-300 search-tab-inactive"}`}>
+              <Car size={13} style={{ flexShrink: 0 }} /> Reg Plate <span style={{ fontSize: "9px", padding: "1px 4px" }} className="bg-blue-900/40 border border-blue-500/30 text-blue-300 rounded font-bold tracking-wider leading-none">UK</span>
             </button>
             <button onClick={() => setSearchMode("vin")}
-              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
-              className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-colors ${searchMode === "vin" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
-              <Search size={14} style={{ flexShrink: 0 }} /> VIN 🌍
+              style={{ flexShrink: 0, whiteSpace: "nowrap", height: "36px", borderRadius: "8px", fontSize: "13px", border: searchMode === "vin" ? "none" : "1px solid #27272a" }}
+              className={`flex items-center gap-1.5 px-3 sm:px-4 font-semibold transition-colors ${searchMode === "vin" ? "bg-red-600 text-white" : "bg-transparent text-zinc-500 hover:text-zinc-300 search-tab-inactive"}`}>
+              <Search size={13} style={{ flexShrink: 0 }} /> VIN 🌍
             </button>
             <button onClick={() => navigate('/tyres')}
-              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full text-sm font-medium bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-white border border-zinc-700/50 transition-colors">
+              style={{ flexShrink: 0, whiteSpace: "nowrap", height: "36px", borderRadius: "8px", fontSize: "13px", border: "1px solid #27272a" }}
+              className="flex items-center gap-2 px-3 sm:px-4 font-semibold bg-transparent text-zinc-500 hover:text-zinc-300 search-tab-inactive transition-colors">
               <img
                 src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
                 width={16}
@@ -1231,7 +1231,7 @@ const SearchResults = () => {
                             <a href={buildEbayAffiliateUrl(item.url)} target="_blank" rel="noopener noreferrer"
                               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150"
                               title="Buying through this link supports GOPARTARA at no extra cost to you ">
-                              <ExternalLink size={14} /> View on eBay
+                              <ExternalLink size={14} /> View on eBay →
                             </a>
                             <button onClick={() => {
                               const isSelected = compareParts.some((p) => p.id === item.id);
