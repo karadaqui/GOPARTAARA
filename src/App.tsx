@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Suspense, lazy, useEffect, useState } from "react";
+import { Suspense, lazy } from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -59,14 +59,6 @@ const Compare = lazy(() => import("./pages/Compare.tsx"));
 const queryClient = new QueryClient();
 
 const App = () => {
-  const [showBackToTop, setShowBackToTop] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setShowBackToTop(window.scrollY > 400);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -132,33 +124,6 @@ const App = () => {
             </SearchLimitProvider>
             </SubscriptionProvider>
           </AuthProvider>
-          {showBackToTop && (
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              aria-label="Back to top"
-              style={{
-                position: "fixed",
-                bottom: "80px",
-                right: "16px",
-                width: "44px",
-                height: "44px",
-                background: "#cc1111",
-                color: "white",
-                border: "none",
-                borderRadius: "50%",
-                cursor: "pointer",
-                zIndex: 998,
-                fontSize: "20px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 4px 16px rgba(204,17,17,0.4)",
-                fontWeight: "bold",
-              }}
-            >
-              ↑
-            </button>
-          )}
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
