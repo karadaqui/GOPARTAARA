@@ -49,15 +49,10 @@ const SECTIONS: FooterSection[] = [
 
 const Footer = () => {
   const navigate = useNavigate();
-  const [openSection, setOpenSection] = useState<string | null>(null);
 
   const handleLink = (href: string) => {
     navigate(href);
     window.scrollTo({ top: 0 });
-  };
-
-  const toggleSection = (title: string) => {
-    setOpenSection((prev) => (prev === title ? null : title));
   };
 
   return (
