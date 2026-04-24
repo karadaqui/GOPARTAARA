@@ -540,3 +540,10 @@ input, textarea, select {
   border-color: #3f3f46 !important;
   color: #ffffff !important;
 }
+
+/* Premium feature card hover */
+.feature-card-premium:hover {
+  background-color: #161616 !important;
+  border-color: #2a2a2a !important;
+  border-top-color: #cc1111 !important;
+}
