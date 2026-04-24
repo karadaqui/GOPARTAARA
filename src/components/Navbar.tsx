@@ -217,11 +217,12 @@ const Navbar = () => {
                     {moreLinks.map((l) => {
                       const isActive =
                         pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
+                      const Icon = l.Icon;
                       return (
                         <button
                           key={l.href}
                           onClick={() => handleNavClick(l.href)}
-                          className="w-full rounded-md px-3 py-2 text-left transition-colors"
+                          className="w-full rounded-md px-3 py-2 text-left transition-colors flex items-center gap-2.5"
                           style={{
                             fontSize: "13px",
                             fontWeight: isActive ? 500 : 400,
@@ -240,6 +241,7 @@ const Navbar = () => {
                             e.currentTarget.style.backgroundColor = "transparent";
                           }}
                         >
+                          <Icon size={14} className="opacity-70" />
                           {l.label}
                         </button>
                       );
