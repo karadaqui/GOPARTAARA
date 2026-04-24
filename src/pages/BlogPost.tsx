@@ -1,12 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import DOMPurify from "dompurify";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
-import { ArrowLeft, Calendar, Clock, Loader2, ArrowRight, Link as LinkIcon, Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowLeft, Loader2, ArrowRight, Link as LinkIcon, Check, ThumbsUp, ThumbsDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface BlogPostData {
@@ -23,6 +22,20 @@ interface BlogPostData {
   published_at: string;
 }
 
+interface TocItem {
+  id: string;
+  text: string;
+  level: number;
+}
+
+const slugify = (text: string) =>
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .slice(0, 80);
+
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -31,12 +44,18 @@ const BlogPost = () => {
   const [related, setRelated] = useState<BlogPostData[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [activeId, setActiveId] = useState<string>("");
+  const [feedback, setFeedback] = useState<"up" | "down" | null>(null);
+  const articleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (slug) fetchPost();
+    window.scrollTo(0, 0);
+    setFeedback(null);
   }, [slug]);
 
   const fetchPost = async () => {
+    setLoading(true);
     const { data, error } = await supabase
       .from("blog_posts")
       .select("*")
@@ -47,7 +66,6 @@ const BlogPost = () => {
     if (!error && data) {
       const p = data as BlogPostData;
       setPost(p);
-      // Fetch related posts (same category, exclude current)
       if (p.category) {
         const { data: relatedData } = await supabase
           .from("blog_posts")
@@ -62,34 +80,86 @@ const BlogPost = () => {
     setLoading(false);
   };
 
-  const categoryColor = (cat: string | null) => {
-    switch (cat) {
-      case "Buying Guide": return "bg-emerald-500/15 text-emerald-400";
-      case "Maintenance": return "bg-amber-500/15 text-amber-400";
-      case "Education": return "bg-blue-500/15 text-blue-400";
-      case "Comparison": return "bg-purple-500/15 text-purple-400";
-      case "Tutorial": return "bg-cyan-500/15 text-cyan-400";
-      case "News": return "bg-rose-500/15 text-rose-400";
-      default: return "bg-primary/15 text-primary";
+  // Process content: inject ids on h2/h3, build TOC
+  const { processedHtml, toc } = useMemo(() => {
+    if (!post) return { processedHtml: "", toc: [] as TocItem[] };
+    const sanitized = DOMPurify.sanitize(post.content);
+    if (typeof window === "undefined") return { processedHtml: sanitized, toc: [] };
+    const doc = new DOMParser().parseFromString(sanitized, "text/html");
+    const items: TocItem[] = [];
+    const used = new Set<string>();
+    doc.querySelectorAll("h2, h3").forEach((el) => {
+      const text = el.textContent?.trim() || "";
+      if (!text) return;
+      let id = slugify(text);
+      let i = 2;
+      while (used.has(id)) { id = `${slugify(text)}-${i++}`; }
+      used.add(id);
+      el.setAttribute("id", id);
+      items.push({ id, text, level: el.tagName === "H2" ? 2 : 3 });
+    });
+    return { processedHtml: doc.body.innerHTML, toc: items };
+  }, [post]);
+
+  // Track active TOC heading
+  useEffect(() => {
+    if (!articleRef.current || toc.length === 0) return;
+    const headings = toc
+      .map((t) => document.getElementById(t.id))
+      .filter((el): el is HTMLElement => !!el);
+    if (headings.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) setActiveId(visible[0].target.id);
+      },
+      { rootMargin: "-96px 0px -70% 0px", threshold: 0 }
+    );
+    headings.forEach((h) => observer.observe(h));
+    return () => observer.disconnect();
+  }, [toc]);
+
+  const categoryColor = (_cat: string | null) =>
+    "bg-[#cc1111] text-white";
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(`https://gopartara.com/blog/${post?.slug}`);
+      setCopied(true);
+      toast({ title: "Link copied", description: "Article link copied to clipboard." });
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast({ title: "Copy failed", description: "Please copy the URL manually.", variant: "destructive" });
     }
+  };
+
+  const handleFeedback = (value: "up" | "down") => {
+    setFeedback(value);
+    toast({
+      title: value === "up" ? "Thanks for the feedback!" : "Sorry to hear that",
+      description: value === "up" ? "Glad you found it useful." : "We'll work on making it better.",
+    });
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="animate-spin text-primary" size={32} />
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+        <Loader2 className="animate-spin text-[#cc1111]" size={32} />
       </div>
     );
   }
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-[#0a0a0a]">
         <Navbar />
         <div className="container max-w-3xl py-20 px-4 text-center">
-          <h1 className="font-display text-3xl font-bold mb-4">Post Not Found</h1>
-          <p className="text-muted-foreground mb-6">This blog post doesn't exist or has been removed.</p>
-          <button onClick={() => navigate("/blog")} className="text-primary font-medium hover:underline">
+          <h1 className="text-3xl font-bold mb-4 text-white">Post Not Found</h1>
+          <p className="text-zinc-500 mb-6">This blog post doesn't exist or has been removed.</p>
+          <button onClick={() => navigate("/blog")} className="text-[#cc1111] font-medium hover:underline">
             ← Back to Blog
           </button>
         </div>
@@ -98,8 +168,12 @@ const BlogPost = () => {
     );
   }
 
+  const formattedDate = new Date(post.published_at).toLocaleDateString("en-GB", {
+    day: "numeric", month: "short", year: "numeric",
+  });
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <SEOHead
         title={`${post.title} | GOPARTARA Blog`}
         description={post.meta_description || post.preview}
@@ -116,150 +190,205 @@ const BlogPost = () => {
       />
       <Navbar />
 
-      <article className="container max-w-3xl py-20 px-4">
-        <button
-          onClick={() => navigate("/blog")}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
-        >
-          <ArrowLeft size={16} />
-          Back to Blog
-        </button>
+      <div className="pt-16 pb-24 px-4 sm:px-6">
+        {/* xl: 3-col grid with sticky TOC sidebar */}
+        <div className="mx-auto max-w-[1200px] xl:grid xl:grid-cols-[1fr_minmax(0,720px)_1fr] xl:gap-8">
+          {/* Left spacer (desktop) */}
+          <div className="hidden xl:block" />
 
-        <header className="mb-10">
-          <div className="flex items-center gap-3 text-xs text-muted-foreground mb-4 flex-wrap">
-            {post.category && (
-              <span className={`text-[10px] font-semibold px-2.5 py-0.5 rounded-full ${categoryColor(post.category)}`}>
-                {post.category}
-              </span>
-            )}
-            <span className="flex items-center gap-1.5">
-              <Calendar size={12} />
-              {new Date(post.published_at).toLocaleDateString("en-GB", {
-                day: "numeric", month: "long", year: "numeric",
-              })}
-            </span>
-            {post.read_time && (
-              <>
-                <span>·</span>
-                <span className="flex items-center gap-1">
-                  <Clock size={12} />
-                  {post.read_time}
-                </span>
-              </>
-            )}
-            <span>·</span>
-            <span>{post.author}</span>
-          </div>
-
-          <h1 className="font-display text-3xl md:text-4xl font-bold mb-4">
-            {post.title}
-          </h1>
-        </header>
-
-        <div
-          className="prose prose-invert prose-sm md:prose-base max-w-none prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground prose-a:text-primary prose-strong:text-foreground prose-li:text-muted-foreground"
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
-        />
-
-        {/* Share section */}
-        <div className="mt-10 pt-6 border-t border-border/50">
-          <p className="text-sm font-semibold text-foreground mb-3">Share this article:</p>
-          <div className="flex flex-wrap items-center gap-2">
-            <a
-              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent('https://gopartara.com/blog/' + post.slug)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 border border-border rounded-lg text-sm text-foreground transition-colors"
-            >
-              𝕏 Share
-            </a>
-            <a
-              href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://gopartara.com/blog/' + post.slug)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 border border-border rounded-lg text-sm text-foreground transition-colors"
-            >
-              📘 Facebook
-            </a>
-            <a
-              href={`https://api.whatsapp.com/send?text=${encodeURIComponent(post.title + ' — https://gopartara.com/blog/' + post.slug)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 border border-border rounded-lg text-sm text-foreground transition-colors"
-            >
-              💬 WhatsApp
-            </a>
+          {/* Article column */}
+          <article className="mx-auto w-full max-w-[720px]">
+            {/* Back button */}
             <button
-              type="button"
-              onClick={async () => {
-                try {
-                  await navigator.clipboard.writeText('https://gopartara.com/blog/' + post.slug);
-                  setCopied(true);
-                  toast({ title: "Link copied", description: "Article link copied to clipboard." });
-                  setTimeout(() => setCopied(false), 2000);
-                } catch {
-                  toast({ title: "Copy failed", description: "Please copy the URL manually.", variant: "destructive" });
-                }
-              }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-secondary hover:bg-secondary/80 border border-border rounded-lg text-sm text-foreground transition-colors"
+              onClick={() => navigate("/blog")}
+              className="inline-flex items-center gap-2 text-sm text-[#52525b] hover:text-white transition-colors mb-10"
             >
-              {copied ? <><Check size={14} /> Copied!</> : <><LinkIcon size={14} /> Copy link</>}
+              <ArrowLeft size={14} />
+              Back to Blog
             </button>
-          </div>
-        </div>
 
-        {/* Amazon Affiliate Section */}
-        <div className="mt-8 p-4 bg-zinc-900/50 border border-zinc-800 rounded-xl">
-          <p className="text-sm font-semibold text-zinc-300 mb-2">
-            🛒 Find related parts on Amazon UK
-          </p>
-          <a
-            href={`https://www.amazon.co.uk/s?k=${encodeURIComponent(post.keywords?.join(' ') || post.category || 'car parts')}&tag=gopartara-21`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-red-400 text-sm hover:underline"
-          >
-            Search Amazon UK for {post.category || 'car'} parts →
-          </a>
-        </div>
+            {/* Header */}
+            <header>
+              {post.category && (
+                <span className={`inline-block text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full ${categoryColor(post.category)}`}>
+                  {post.category}
+                </span>
+              )}
+              <h1
+                className="mt-5 font-display font-extrabold text-white"
+                style={{
+                  fontSize: "clamp(32px, 4vw, 52px)",
+                  letterSpacing: "-0.03em",
+                  lineHeight: 1.1,
+                }}
+              >
+                {post.title}
+              </h1>
+              <p className="mt-5 text-[13px] text-[#52525b]">
+                {formattedDate}
+                {post.read_time && <> · {post.read_time}</>}
+                {" · By "}{post.author}
+              </p>
+              <div className="mt-8 mb-10 border-b border-[#1f1f1f]" />
+            </header>
 
-        {/* CTA */}
-        <div className="mt-12 rounded-2xl border border-primary/20 bg-primary/5 p-6 sm:p-8 text-center">
-          <h3 className="font-display text-xl font-bold mb-2">Find car parts on GOPARTARA</h3>
-          <p className="text-sm text-muted-foreground mb-4">
-            Compare prices from multiple suppliers and find the best deals on car parts.
-          </p>
-          <Button onClick={() => navigate("/search")} className="rounded-xl gap-2">
-            Search Parts <ArrowRight size={14} />
-          </Button>
-        </div>
+            {/* Body */}
+            <div
+              ref={articleRef}
+              className="article-prose"
+              dangerouslySetInnerHTML={{ __html: processedHtml }}
+            />
 
-        {/* Related posts */}
-        {related.length > 0 && (
-          <div className="mt-16">
-            <h2 className="font-display text-2xl font-bold mb-6">Related Articles</h2>
-            <div className="grid sm:grid-cols-3 gap-4">
-              {related.map((r) => (
-                <Link
-                  key={r.id}
-                  to={`/blog/${r.slug}`}
-                  className="glass rounded-xl p-5 hover:border-primary/30 transition-colors group"
-                >
-                  {r.category && (
-                    <span className={`text-[9px] font-semibold px-2 py-0.5 rounded-full ${categoryColor(r.category)}`}>
-                      {r.category}
-                    </span>
-                  )}
-                  <h3 className="font-display font-bold text-sm mt-2 mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                    {r.title}
-                  </h3>
-                  <p className="text-xs text-muted-foreground line-clamp-2">{r.preview}</p>
-                </Link>
-              ))}
+            {/* Amazon affiliate */}
+            <div className="mt-12 p-5 bg-[#111111] border border-[#1f1f1f] rounded-2xl">
+              <p className="text-sm font-semibold text-zinc-300 mb-2">
+                🛒 Find related parts on Amazon UK
+              </p>
+              <a
+                href={`https://www.amazon.co.uk/s?k=${encodeURIComponent(post.keywords?.join(" ") || post.category || "car parts")}&tag=gopartara-21`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#cc1111] text-sm hover:underline"
+              >
+                Search Amazon UK for {post.category || "car"} parts →
+              </a>
             </div>
-          </div>
-        )}
-      </article>
+
+            {/* Was this helpful? */}
+            <div className="mt-12 pt-8 border-t border-[#1f1f1f]">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-zinc-400">Was this helpful?</span>
+                  <button
+                    onClick={() => handleFeedback("up")}
+                    aria-label="Helpful"
+                    className={`inline-flex items-center justify-center w-9 h-9 rounded-lg border transition-colors ${
+                      feedback === "up"
+                        ? "border-[#cc1111] bg-[#cc1111]/10 text-[#cc1111]"
+                        : "border-[#27272a] bg-[#111111] text-zinc-500 hover:text-white hover:border-[#3f3f46]"
+                    }`}
+                  >
+                    <ThumbsUp size={15} />
+                  </button>
+                  <button
+                    onClick={() => handleFeedback("down")}
+                    aria-label="Not helpful"
+                    className={`inline-flex items-center justify-center w-9 h-9 rounded-lg border transition-colors ${
+                      feedback === "down"
+                        ? "border-[#cc1111] bg-[#cc1111]/10 text-[#cc1111]"
+                        : "border-[#27272a] bg-[#111111] text-zinc-500 hover:text-white hover:border-[#3f3f46]"
+                    }`}
+                  >
+                    <ThumbsDown size={15} />
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-zinc-400">Share:</span>
+                  <a
+                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent("https://gopartara.com/blog/" + post.slug)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-white transition-colors"
+                  >
+                    𝕏 Twitter
+                  </a>
+                  <span className="text-zinc-700">·</span>
+                  <button
+                    onClick={copyLink}
+                    className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-white transition-colors"
+                  >
+                    {copied ? <><Check size={13} /> Copied</> : <><LinkIcon size={13} /> Copy link</>}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA */}
+            <div className="mt-10 rounded-2xl border border-[#cc1111]/20 bg-gradient-to-br from-[#cc1111]/[0.08] to-transparent p-6 sm:p-8">
+              <h3 className="text-xl font-bold text-white mb-2">Find car parts on GOPARTARA</h3>
+              <p className="text-sm text-zinc-400 mb-5">
+                Compare prices from multiple suppliers and find the best deals on car parts.
+              </p>
+              <button
+                onClick={() => navigate("/search")}
+                className="inline-flex items-center gap-2 bg-[#cc1111] hover:bg-[#b30e0e] text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors"
+              >
+                Search Parts <ArrowRight size={14} />
+              </button>
+            </div>
+
+            {/* Related */}
+            {related.length > 0 && (
+              <div className="mt-16 pt-12 border-t border-[#1f1f1f]">
+                <h2 className="text-2xl font-bold text-white mb-6 tracking-tight">
+                  More from the GOPARTARA Blog
+                </h2>
+                <div className="grid sm:grid-cols-3 gap-5">
+                  {related.map((r) => (
+                    <Link
+                      key={r.id}
+                      to={`/blog/${r.slug}`}
+                      className="group block rounded-xl border border-[#1f1f1f] bg-[#0f0f0f] hover:border-[#27272a] p-5 transition-colors"
+                    >
+                      {r.category && (
+                        <span className="inline-block text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#cc1111] text-white">
+                          {r.category}
+                        </span>
+                      )}
+                      <h3 className="font-bold text-[15px] text-white mt-3 mb-2 line-clamp-2 leading-snug group-hover:text-[#cc1111] transition-colors">
+                        {r.title}
+                      </h3>
+                      <p className="text-[13px] text-zinc-500 line-clamp-2 leading-relaxed">{r.preview}</p>
+                      <div className="mt-3 text-[12px] text-[#52525b]">
+                        {new Date(r.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                        {r.read_time && <> · {r.read_time}</>}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </article>
+
+          {/* Right TOC sidebar (xl+) */}
+          <aside className="hidden xl:block">
+            {toc.length > 0 && (
+              <div className="sticky top-20">
+                <div className="text-[11px] uppercase tracking-[0.08em] text-zinc-400 font-semibold mb-4">
+                  In this article
+                </div>
+                <nav className="space-y-2 border-l border-[#1f1f1f]">
+                  {toc.map((item) => (
+                    <a
+                      key={item.id}
+                      href={`#${item.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const el = document.getElementById(item.id);
+                        if (el) {
+                          window.scrollTo({ top: el.offsetTop - 80, behavior: "smooth" });
+                          setActiveId(item.id);
+                        }
+                      }}
+                      className={`block text-[13px] leading-snug pl-4 -ml-px border-l transition-colors ${
+                        item.level === 3 ? "pl-7" : ""
+                      } ${
+                        activeId === item.id
+                          ? "text-[#cc1111] border-[#cc1111]"
+                          : "text-[#52525b] border-transparent hover:text-zinc-300"
+                      }`}
+                      style={{ paddingTop: 4, paddingBottom: 4 }}
+                    >
+                      {item.text}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+            )}
+          </aside>
+        </div>
+      </div>
 
       <Footer />
     </div>
