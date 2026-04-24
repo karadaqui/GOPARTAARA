@@ -17,49 +17,37 @@ const SocialProofStats = () => {
       }}
     >
       <div className="max-w-6xl mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-4">
-          {stats.map((stat, i) => {
-            // Mobile (2 cols): no right border on items 1, 3 (idx 1, 3)
-            // Desktop (4 cols): no right border on last item only
-            const isLast = i === stats.length - 1;
-            const isRightColMobile = i % 2 === 1;
-            const isBottomRowMobile = i >= 2;
-            return (
+        <div className="grid grid-cols-2 md:grid-cols-4 stats-grid">
+          {stats.map((stat, i) => (
+            <div
+              key={stat.label}
+              data-idx={i}
+              data-last={i === stats.length - 1 ? "true" : "false"}
+              className="stats-cell text-center py-3 sm:py-2 px-4"
+            >
               <div
-                key={stat.label}
-                className={`text-center py-3 sm:py-2 px-4 ${
-                  isRightColMobile ? "md:border-r" : "border-r"
-                } ${isLast ? "md:border-r-0" : "md:border-r"} ${
-                  isBottomRowMobile ? "" : "border-b md:border-b-0"
-                }`}
                 style={{
-                  borderColor: "#1f1f1f",
+                  fontSize: "28px",
+                  fontWeight: 700,
+                  color: "#ffffff",
+                  lineHeight: 1.1,
                 }}
               >
-                <div
-                  style={{
-                    fontSize: "28px",
-                    fontWeight: 700,
-                    color: "#ffffff",
-                    lineHeight: 1.1,
-                  }}
-                >
-                  {stat.value}
-                </div>
-                <div
-                  style={{
-                    fontSize: "12px",
-                    color: "#52525b",
-                    marginTop: "2px",
-                    fontWeight: 400,
-                    letterSpacing: "0.04em",
-                  }}
-                >
-                  {stat.label}
-                </div>
+                {stat.value}
               </div>
-            );
-          })}
+              <div
+                style={{
+                  fontSize: "12px",
+                  color: "#52525b",
+                  marginTop: "2px",
+                  fontWeight: 400,
+                  letterSpacing: "0.04em",
+                }}
+              >
+                {stat.label}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>
