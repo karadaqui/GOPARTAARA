@@ -1171,9 +1171,7 @@ const SearchResults = () => {
                           {priceBadge && (
                             <div className={`w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold mt-1 ${
                               priceBadge.variant === "great" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25" :
-                              priceBadge.variant === "good" ? "bg-blue-500/15 text-blue-400 border border-blue-500/25" :
-                              priceBadge.variant === "high" ? "bg-red-500/15 text-red-400 border border-red-500/25" :
-                              "bg-amber-500/15 text-amber-400 border border-amber-500/25"
+                              "bg-blue-500/15 text-blue-400 border border-blue-500/25"
                             }`}>
                               <span>{priceBadgeStyles[priceBadge.variant as keyof typeof priceBadgeStyles]?.icon || "✦"}</span>
                               {priceBadge.label}
