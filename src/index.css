@@ -554,3 +554,24 @@ input, textarea, select {
     border-right: 1px solid #1f1f1f;
   }
 }
+
+/* Auth page premium inputs */
+.auth-input {
+  height: 44px !important;
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid #27272a !important;
+  border-radius: 8px !important;
+  color: white !important;
+  font-size: 14px !important;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease !important;
+}
+.auth-input::placeholder {
+  color: #52525b !important;
+}
+.auth-input:focus,
+.auth-input:focus-visible {
+  outline: none !important;
+  border-color: rgba(204,17,17,0.5) !important;
+  background: rgba(255,255,255,0.06) !important;
+  box-shadow: 0 0 0 3px rgba(204,17,17,0.12) !important;
+}
