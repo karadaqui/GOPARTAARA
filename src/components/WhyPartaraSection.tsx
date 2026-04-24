@@ -72,7 +72,7 @@ const WhyPartaraSection = () => {
         >
           <table className="w-full min-w-[680px]" style={{ borderCollapse: "collapse" }}>
             <thead>
-              <tr style={{ borderBottom: "1px solid #1f1f1f" }}>
+              <tr style={{ borderBottom: "1px solid #1f1f1f", background: "#161616" }}>
                 <th
                   className="text-left"
                   style={{
@@ -95,11 +95,10 @@ const WhyPartaraSection = () => {
                       style={{
                         padding: "20px 16px",
                         fontSize: isPartara ? "14px" : "13px",
-                        fontWeight: isPartara ? 700 : 600,
-                        color: isPartara ? "#cc1111" : "#d4d4d8",
+                        fontWeight: isPartara ? 700 : 500,
+                        color: isPartara ? "#cc1111" : "#a1a1aa",
                         borderLeft: isPartara ? "2px solid #cc1111" : undefined,
-                        background: isPartara ? "rgba(204,17,17,0.04)" : undefined,
-                        textTransform: isPartara ? undefined : "lowercase",
+                        background: isPartara ? "rgba(204,17,17,0.08)" : undefined,
                         letterSpacing: isPartara ? "0.02em" : undefined,
                         whiteSpace: "nowrap",
                       }}
