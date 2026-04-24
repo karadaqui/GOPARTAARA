@@ -39,8 +39,10 @@ const individualPlans = [
     annualBilled: "",
     period: "/mo",
     features: ["10 searches per month", "5 active marketplace listings", "Save up to 5 parts & alerts", "1 garage vehicle", "Referral bonuses"],
+    useCase: "Perfect for occasional searches",
     cta: "Start Free",
     popular: false,
+    bestValue: false,
     priceId: null as string | null,
     annualPriceId: null as string | null,
   },
@@ -52,8 +54,10 @@ const individualPlans = [
     annualBilled: "Billed £95.88/yr",
     period: "/mo",
     features: ["Unlimited searches", "Photo search", "Unlimited marketplace listings", "Unlimited parts & alerts", "Unlimited garage vehicles", "Search history", "Price alerts", "Ad-free experience", "10 photos per listing"],
+    useCase: "For DIY mechanics and car enthusiasts",
     cta: "Go Pro",
     popular: true,
+    bestValue: false,
     priceId: STRIPE.pro,
     annualPriceId: STRIPE.pro_annual,
   },
@@ -65,12 +69,15 @@ const individualPlans = [
     annualBilled: "Billed £191.88/yr",
     period: "/mo",
     features: ["Everything in Pro", "Export search history CSV", "30-day price tracking", "Vehicle notes & history", "Early access to features", "Priority email support", "Analytics dashboard"],
+    useCase: "For those who buy parts regularly",
     cta: "Go Elite",
     popular: false,
+    bestValue: true,
     priceId: STRIPE.elite,
     annualPriceId: STRIPE.elite_annual,
   },
 ];
+
 
 
 /* ── Comparison table data ──────────────────────────────── */
