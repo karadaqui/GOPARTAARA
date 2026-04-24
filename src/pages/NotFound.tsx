@@ -31,11 +31,12 @@ const NotFound = () => {
         description="The page you're looking for doesn't exist. Head back to GOPARTARA to find any car part instantly."
         path={location.pathname}
       />
-      <div
-        className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
-        style={{ background: "#080808" }}
-      >
-        {/* Subtle dot grid */}
+      <div className="min-h-screen flex flex-col" style={{ background: "#080808" }}>
+        <Navbar />
+        <div
+          className="relative flex-1 flex flex-col items-center justify-center overflow-hidden"
+        >
+          {/* Subtle dot grid */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
