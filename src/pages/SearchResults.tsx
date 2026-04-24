@@ -797,6 +797,42 @@ const SearchResults = () => {
     if (!liveLoading) setLoadingMore(false);
   }, [liveLoading, liveResults]);
 
+  // ── Scroll position memory: save before user clicks an outbound link, restore on back nav ──
+  const saveScrollPosition = useCallback(() => {
+    try {
+      sessionStorage.setItem(
+        "searchScrollPosition",
+        JSON.stringify({ q: activeQuery, y: window.scrollY, page: currentPage, ts: Date.now() }),
+      );
+    } catch {}
+  }, [activeQuery, currentPage]);
+
+  // Restore on mount / when results for the saved query are rendered
+  useEffect(() => {
+    if (!activeQuery || liveResults.length === 0) return;
+    try {
+      const raw = sessionStorage.getItem("searchScrollPosition");
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (!saved || saved.q !== activeQuery) return;
+      // Only restore within 30 minutes
+      if (Date.now() - (saved.ts || 0) > 30 * 60 * 1000) {
+        sessionStorage.removeItem("searchScrollPosition");
+        return;
+      }
+      // If the saved view required more pages than currently loaded, bump page first
+      if (saved.page && saved.page > currentPage) {
+        setCurrentPage(saved.page);
+        return; // wait for next render with more results
+      }
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: saved.y || 0, behavior: "auto" });
+        sessionStorage.removeItem("searchScrollPosition");
+      });
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeQuery, liveResults.length]);
+
 
   // Vehicle model confirm handler
   const confirmModel = useCallback(() => {
