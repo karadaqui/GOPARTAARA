@@ -1344,6 +1344,7 @@ const SearchResults = () => {
                 sortOptions={SORT_OPTIONS}
                 partCategories={PART_CATEGORIES}
               />
+              </>
             )}
 
             {/* ── Results Grid ── */}
