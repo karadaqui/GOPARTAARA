@@ -265,6 +265,7 @@ const SearchResults = () => {
   const [showCompare, setShowCompare] = useState(false);
   const [liveResults, setLiveResults] = useState<any[]>([]);
   const [liveLoading, setLiveLoading] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [savingId, setSavingId] = useState<string | null>(null);
   const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo | null>(null);
