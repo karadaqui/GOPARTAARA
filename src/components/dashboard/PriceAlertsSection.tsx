@@ -126,14 +126,22 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
             </span>
           </h2>
         </div>
-        {alerts.length > 0 && (
-          <button
-            onClick={() => setConfirmClearAll(true)}
-            className="text-xs text-muted-foreground/50 hover:text-destructive transition-colors"
+        <div className="flex items-center gap-3">
+          <a
+            href="/alerts"
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors underline-offset-2 hover:underline"
           >
-            Clear all
-          </button>
-        )}
+            Manage all →
+          </a>
+          {alerts.length > 0 && (
+            <button
+              onClick={() => setConfirmClearAll(true)}
+              className="text-xs text-muted-foreground/50 hover:text-destructive transition-colors"
+            >
+              Clear all
+            </button>
+          )}
+        </div>
       </div>
 
       {loading ? (
