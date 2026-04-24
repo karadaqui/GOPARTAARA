@@ -281,6 +281,8 @@ const SearchResults = () => {
   const [searchLimitModalType, setSearchLimitModalType] = useState<"free" | "guest">("free");
   const [supplierBannerDismissed, setSupplierBannerDismissed] = useState(() => localStorage.getItem("supplier_banner_dismissed") === "1");
   const resultsRef = useRef<HTMLDivElement>(null);
+  const supplierBannerRef = useRef<HTMLDivElement>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
   const userPlan = useUserPlan();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [upgradeFeature, setUpgradeFeature] = useState("");
@@ -292,6 +294,7 @@ const SearchResults = () => {
   const [garageVehicleLabel, setGarageVehicleLabel] = useState<string | null>(null);
   const [vinCountryInfo, setVinCountryInfo] = useState<VinCountryInfo | null>(null);
   const [vinCountryModalOpen, setVinCountryModalOpen] = useState(false);
+
 
 
   // ── Filter & Sort State ──
