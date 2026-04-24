@@ -59,14 +59,6 @@ const Compare = lazy(() => import("./pages/Compare.tsx"));
 const queryClient = new QueryClient();
 
 const App = () => {
-  const [showBackToTop, setShowBackToTop] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setShowBackToTop(window.scrollY > 400);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
