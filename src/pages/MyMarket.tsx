@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import VehicleSelector from "@/components/VehicleSelector";
 import CategoryTagSelector from "@/components/CategoryTagSelector";
+import EmptyState from "@/components/EmptyState";
 
 interface SellerProfile {
   id: string;
