@@ -61,19 +61,6 @@ const NotFound = () => {
           }}
         />
 
-        {/* Logo */}
-        <Link
-          to="/"
-          className="absolute top-8 left-8 z-10"
-          style={{ fontSize: "20px" }}
-        >
-          <span className="logo-text">
-            <span className="logo-go">GO</span>
-            <span className="logo-part">PART</span>
-            <span className="logo-ara">ARA</span>
-          </span>
-        </Link>
-
         <div className="relative z-10 w-full max-w-xl px-4 text-center">
           {/* Decorative 404 + overlay text */}
           <div className="relative" style={{ height: "180px" }}>
