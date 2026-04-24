@@ -554,3 +554,145 @@ input, textarea, select {
 }
 .premium-cta-btn:hover { background: #dd1414 !important; }
 .premium-icon-btn:not(:disabled):hover { background: #3f3f46 !important; color: #ffffff !important; }
+
+/* === Design System v2 — Typography utilities ============================ */
+@layer utilities {
+  /* Display (hero headlines) */
+  .ds-display {
+    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    font-size: clamp(48px, 6vw, 80px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    color: hsl(var(--text-primary));
+  }
+  /* H1 — page titles */
+  .ds-h1 {
+    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    font-size: clamp(36px, 4vw, 48px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: hsl(var(--text-primary));
+  }
+  /* H2 — section titles */
+  .ds-h2 {
+    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+    font-size: clamp(28px, 3vw, 36px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: hsl(var(--text-primary));
+  }
+  /* H3 — card titles */
+  .ds-h3 {
+    font-size: clamp(16px, 1.5vw, 20px);
+    font-weight: 600;
+    line-height: 1.3;
+    color: hsl(var(--text-primary));
+  }
+  /* Body */
+  .ds-body {
+    font-size: clamp(15px, 1vw, 16px);
+    font-weight: 400;
+    line-height: 1.6;
+    color: hsl(var(--text-secondary));
+  }
+  /* Small / caption */
+  .ds-caption {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: hsl(var(--text-tertiary));
+  }
+  /* Label / tag (small uppercase) */
+  .ds-label {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: hsl(var(--text-tertiary));
+  }
+  /* Section eyebrow label — "HOW IT WORKS", "FEATURES", etc. */
+  .ds-eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: hsl(var(--primary));
+    background: transparent;
+    padding: 0;
+    border: 0;
+    margin-bottom: 16px;
+  }
+
+  /* Text level helpers */
+  .ds-text-primary { color: hsl(var(--text-primary)); }
+  .ds-text-secondary { color: hsl(var(--text-secondary)); }
+  .ds-text-tertiary { color: hsl(var(--text-tertiary)); }
+  .ds-text-disabled { color: hsl(var(--text-disabled)); }
+}
+
+/* === Design System v2 — Buttons ========================================= */
+@layer components {
+  .btn-ds-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 150ms ease, transform 150ms ease;
+  }
+  .btn-ds-primary:hover { background: hsl(var(--primary-hover)); }
+  .btn-ds-primary:active { transform: translateY(1px); }
+  .btn-ds-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-ds-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: transparent;
+    color: hsl(240 5% 84%); /* zinc-300 */
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid #27272a; /* zinc-800 */
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    transition: border-color 150ms ease, color 150ms ease;
+  }
+  .btn-ds-secondary:hover {
+    border-color: #52525b; /* zinc-600 */
+    color: #ffffff;
+  }
+  .btn-ds-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-ds-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    color: hsl(var(--text-secondary));
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 150ms ease;
+  }
+  .btn-ds-ghost:hover { color: #ffffff; }
+}
