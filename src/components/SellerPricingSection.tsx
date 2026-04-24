@@ -8,7 +8,7 @@ const sellerPlans = [
     price: "£9.99",
     period: "/month",
     icon: Store,
-    description: "Get listed in the PARTARA supplier directory",
+    description: "Get listed in the GOPARTARA supplier directory",
     features: [
       "Supplier directory listing",
       "Business profile page",
@@ -64,7 +64,7 @@ const SellerPricingSection = () => {
             For Parts <span className="text-gradient">Sellers</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-            List your parts on PARTARA and reach thousands of buyers. Choose the
+            List your parts on GOPARTARA and reach thousands of buyers. Choose the
             tier that fits your business.
           </p>
         </div>

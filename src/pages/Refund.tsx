@@ -61,7 +61,7 @@ const Refund = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead title="Request Refund | PARTARA" description="Request a refund for your PARTARA subscription." path="/refund" />
+      <SEOHead title="Request Refund | GOPARTARA" description="Request a refund for your GOPARTARA subscription." path="/refund" />
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container max-w-lg mx-auto px-4">

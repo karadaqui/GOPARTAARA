@@ -7,8 +7,8 @@ import { Shield } from "lucide-react";
 const Privacy = () => (
   <div className="min-h-screen bg-background">
     <SEOHead
-      title="Privacy Policy | PARTARA"
-      description="Read PARTARA's privacy policy. Learn how we collect, use, and protect your personal data in compliance with UK GDPR."
+      title="Privacy Policy | GOPARTARA"
+      description="Read GOPARTARA's privacy policy. Learn how we collect, use, and protect your personal data in compliance with UK GDPR."
       path="/privacy"
     />
     <Navbar />
@@ -25,11 +25,11 @@ const Privacy = () => (
         <article className="space-y-10">
           <Section title="1. Who We Are">
             <p>
-              PARTARA ("we", "us", "our") is a UK-based car parts search engine. We operate the website{" "}
-              <strong>gopartara.com</strong> and the PARTARA application.
+              GOPARTARA ("we", "us", "our") is a UK-based car parts search engine. We operate the website{" "}
+              <strong>gopartara.com</strong> and the GOPARTARA application.
             </p>
             <p>
-              <strong>Data Controller:</strong> PARTARA
+              <strong>Data Controller:</strong> GOPARTARA
               <br />
               <strong>Contact:</strong>{" "}
               <a href="mailto:info@gopartara.com" className="text-primary hover:underline">
@@ -63,7 +63,7 @@ const Privacy = () => (
               />
               <DataCard
                 label="Marketplace &amp; Seller Data"
-                detail="Business name, contact details, listing content, photos, and pricing submitted by sellers on the PARTARA Marketplace."
+                detail="Business name, contact details, listing content, photos, and pricing submitted by sellers on the GOPARTARA Marketplace."
               />
               <DataCard
                 label="Contact Form Data"
@@ -80,7 +80,7 @@ const Privacy = () => (
             <p>We process your personal data under the following lawful bases:</p>
             <ul className="list-disc pl-5 space-y-2 mt-3">
               <li>
-                <strong>Performance of a contract</strong> — to provide the PARTARA service you signed
+                <strong>Performance of a contract</strong> — to provide the GOPARTARA service you signed
                 up for, manage your account, process subscriptions via Stripe, and deliver price alert notifications.
               </li>
               <li>
@@ -100,14 +100,14 @@ const Privacy = () => (
 
           <Section title="4. How We Use Your Data">
             <ul className="list-disc pl-5 space-y-2">
-              <li>To provide, maintain, and improve the PARTARA search engine and related features.</li>
+              <li>To provide, maintain, and improve the GOPARTARA search engine and related features.</li>
               <li>To process your searches and deliver comparison results from our supplier network.</li>
               <li>To manage your account, saved parts, and subscription plan.</li>
               <li>To identify car parts from uploaded photos using image recognition technology.</li>
               <li>To look up vehicle details using registration numbers via the DVLA API for accurate part matching.</li>
               <li>To send price alert notifications when tracked parts drop below your target price.</li>
               <li>To process subscription payments and manage billing through Stripe.</li>
-              <li>To operate the PARTARA Marketplace, including listing moderation, seller verification, and buyer notifications.</li>
+              <li>To operate the GOPARTARA Marketplace, including listing moderation, seller verification, and buyer notifications.</li>
               <li>To send transactional emails (e.g., contact confirmations, password resets, listing approvals).</li>
               <li>To track affiliate referrals through eBay Partner Network and Amazon Associates when you click through to make purchases.</li>
               <li>To communicate service updates and, with your consent, promotional content.</li>
@@ -285,7 +285,7 @@ const Privacy = () => (
 
           <Section title="11. Children's Privacy">
             <p>
-              PARTARA is not directed at individuals under the age of 13. We do not knowingly collect
+              GOPARTARA is not directed at individuals under the age of 13. We do not knowingly collect
               personal data from children. If we become aware that we have collected data from a child
               under 13, we will take steps to delete it promptly.
             </p>

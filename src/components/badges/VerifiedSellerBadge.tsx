@@ -16,7 +16,7 @@ const config: Record<Variant, { label: string; bg: string; border: string; text:
     text: "text-amber-400",
   },
   admin: {
-    label: "PARTARA Official",
+    label: "GOPARTARA Official",
     bg: "bg-gradient-to-r from-red-500/20 to-rose-500/20",
     border: "border-red-500/30",
     text: "text-red-400",

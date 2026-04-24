@@ -40,7 +40,7 @@ const reasons = [
   {
     icon: Users,
     title: "Built for Everyone",
-    desc: "Whether you're a weekend DIY-er, a professional mechanic, or managing a fleet — PARTARA adapts to how you work.",
+    desc: "Whether you're a weekend DIY-er, a professional mechanic, or managing a fleet — GOPARTARA adapts to how you work.",
   },
   {
     icon: Clock,
@@ -68,9 +68,9 @@ const About = () => (
       jsonLd={{
         "@context": "https://schema.org",
         "@type": "AboutPage",
-        "name": "About PARTARA",
+        "name": "About GOPARTARA",
         "url": "https://gopartara.com/about",
-        "description": "Learn how PARTARA is revolutionising car part search in the UK."
+        "description": "Learn how GOPARTARA is revolutionising car part search in the UK."
       }}
     />
     <Navbar />
@@ -85,12 +85,12 @@ const About = () => (
           <span className="text-primary">Simple</span>
         </h1>
         <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-3xl mx-auto mb-6">
-          PARTARA was born out of frustration. Finding the right car part used to mean hours of
+          GOPARTARA was born out of frustration. Finding the right car part used to mean hours of
           searching across dozens of supplier websites, comparing prices in spreadsheets, and
           hoping you'd picked a trustworthy source.
         </p>
         <p className="text-muted-foreground text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
-          We built PARTARA to fix that. As a UK-based platform built by car enthusiasts and engineers, we
+          We built GOPARTARA to fix that. As a UK-based platform built by car enthusiasts and engineers, we
           created a platform that lets you search by part name, vehicle reg plate, or even a photo —
           then compare prices across trusted UK &amp; global suppliers, browse a verified marketplace, set price alerts,
           and manage your garage — all in one place.
@@ -116,7 +116,7 @@ const About = () => (
             <p>
               We're building the most comprehensive parts platform in the UK, connecting buyers
               to trusted suppliers and verified sellers. Transparent pricing, real availability,
-              community reviews, and zero hidden fees — that's the PARTARA promise.
+              community reviews, and zero hidden fees — that's the GOPARTARA promise.
             </p>
           </div>
         </div>
@@ -179,11 +179,11 @@ const About = () => (
         </div>
       </section>
 
-      {/* Why PARTARA */}
+      {/* Why GOPARTARA */}
       <section className="container px-4 mb-16 max-w-5xl mx-auto">
         <div className="text-center mb-12">
           <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary mb-4">
-            Why PARTARA
+            Why GOPARTARA
           </span>
           <h2 className="font-display text-3xl md:text-4xl font-bold">
             The Smarter Way to Find Parts
@@ -214,7 +214,7 @@ const About = () => (
             Ready to Find Your Part?
           </h2>
           <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
-            Join thousands of drivers and mechanics who save time and money with PARTARA.
+            Join thousands of drivers and mechanics who save time and money with GOPARTARA.
           </p>
           <Link to="/">
             <Button size="lg" className="rounded-xl px-8">

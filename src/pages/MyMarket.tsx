@@ -55,7 +55,7 @@ const BOOST_PACKAGES = [
   { name: "Weekly Feature ⭐", duration: 7, price: "£4.99", priceId: "price_1TLlEQAc5QcTT3aLOd2ZsBFf", description: "Top placement for a full week", popular: true },
   { name: "Power Boost", duration: 7, price: "£11.99", priceId: "price_1TLlERAc5QcTT3aL8KbbVNwA", description: "Feature 3 listings simultaneously for 7 days" },
   { name: "Monthly Spotlight", duration: 30, price: "£14.99", priceId: "price_1TLlESAc5QcTT3aLrDNMavJy", description: "Maximum visibility for a full month" },
-  { name: "Homepage Spotlight 🏠", duration: 7, price: "£9.99", priceId: "price_1TLlEUAc5QcTT3aLDbH7FKy0", description: "Your listing featured on the PARTARA homepage" },
+  { name: "Homepage Spotlight 🏠", duration: 7, price: "£9.99", priceId: "price_1TLlEUAc5QcTT3aLDbH7FKy0", description: "Your listing featured on the GOPARTARA homepage" },
 ];
 
 interface DisputedReview {
@@ -634,7 +634,7 @@ const MyMarket = () => {
           <div className="glass rounded-2xl p-8 text-center">
             <Store size={48} className="text-primary mx-auto mb-4" />
             <h1 className="font-display text-2xl font-bold mb-2">Set Up Your Seller Profile</h1>
-            <p className="text-muted-foreground mb-6">Create your seller profile to start listing parts on PARTARA.</p>
+            <p className="text-muted-foreground mb-6">Create your seller profile to start listing parts on GOPARTARA.</p>
             <div className="space-y-4 text-left">
               <div>
                 <label className="text-sm text-muted-foreground block mb-1">Business Name *</label>
@@ -1233,7 +1233,7 @@ const MyMarket = () => {
         <DialogContent className="sm:max-w-md bg-card border-border">
           <DialogHeader>
             <DialogTitle className="font-display flex items-center gap-2 text-destructive">
-              <Trash2 size={18} /> Delete your PARTARA shop?
+              <Trash2 size={18} /> Delete your GOPARTARA shop?
             </DialogTitle>
           </DialogHeader>
           {shopDeleteSent ? (

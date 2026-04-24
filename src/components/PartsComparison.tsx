@@ -237,7 +237,7 @@ export const CompareModal = ({ items, onRemove, onClose }: CompareModalProps) =>
                 {items.map((item) => (
                   <td key={item.id} className="p-2 sm:p-3 text-center">
                     {item.url ? (
-                      <a href={item.source === "ebay" ? buildEbayAffiliateUrl(item.url) : item.url} target="_blank" rel="noopener noreferrer" title="Buying through this link supports PARTARA at no extra cost to you 💙">
+                      <a href={item.source === "ebay" ? buildEbayAffiliateUrl(item.url) : item.url} target="_blank" rel="noopener noreferrer" title="Buying through this link supports GOPARTARA at no extra cost to you 💙">
                         <Button size="sm" className="rounded-xl gap-1.5 text-xs">
                           <ExternalLink size={12} />
                           View

@@ -88,7 +88,7 @@ const WelcomeModal = () => {
           </div>
           <PartyPopper className="mx-auto text-primary mb-3" size={40} />
           <h2 className="font-display text-2xl font-bold">
-            Welcome to PARTARA {planInfo.label}! 🎉
+            Welcome to GOPARTARA {planInfo.label}! 🎉
           </h2>
           <p className="text-muted-foreground text-sm mt-1">Thank you for subscribing</p>
         </div>

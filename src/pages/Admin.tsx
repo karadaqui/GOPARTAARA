@@ -332,7 +332,7 @@ const Admin = () => {
             await supabase.from("notifications").insert({
               user_id: sp.user_id,
               title: "Your listing was removed",
-              message: `Your listing '${listing?.title}' was removed by PARTARA admin. Reason: ${adminDeleteReason}. If you believe this was a mistake, please contact us.`,
+              message: `Your listing '${listing?.title}' was removed by GOPARTARA admin. Reason: ${adminDeleteReason}. If you believe this was a mistake, please contact us.`,
               type: "listing_removed",
               link: "/contact",
             });
@@ -420,7 +420,7 @@ const Admin = () => {
       await supabase.from("notifications").insert({
         user_id: shopDeleteTarget.userId,
         title: "Your shop has been closed",
-        message: `Your PARTARA seller account has been closed by our moderation team. Reason: ${shopDeleteReason}. If you believe this is an error, contact us at info@gopartara.com`,
+        message: `Your GOPARTARA seller account has been closed by our moderation team. Reason: ${shopDeleteReason}. If you believe this is an error, contact us at info@gopartara.com`,
         type: "shop_closed",
         link: "/contact",
       });

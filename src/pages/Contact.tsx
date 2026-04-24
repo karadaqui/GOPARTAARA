@@ -100,13 +100,13 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Contact Us | PARTARA"
-        description="Get in touch with the PARTARA team. Have a question about car parts, pricing, or our platform? We'd love to hear from you."
+        title="Contact Us | GOPARTARA"
+        description="Get in touch with the GOPARTARA team. Have a question about car parts, pricing, or our platform? We'd love to hear from you."
         path="/contact"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "ContactPage",
-          "name": "Contact PARTARA",
+          "name": "Contact GOPARTARA",
           "url": "https://gopartara.com/contact"
         }}
       />
@@ -146,7 +146,7 @@ const Contact = () => {
                   <MessageSquare size={20} />
                 </div>
                 <h3 className="font-semibold mb-1">Feedback Welcome</h3>
-                <p className="text-sm text-muted-foreground">We're always improving — your feedback helps us build a better PARTARA.</p>
+                <p className="text-sm text-muted-foreground">We're always improving — your feedback helps us build a better GOPARTARA.</p>
               </div>
             </div>
 

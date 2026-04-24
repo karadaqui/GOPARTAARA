@@ -94,7 +94,7 @@ const VerifyEmail = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <SEOHead title="Verify Your Email | PARTARA" description="Check your inbox to confirm your PARTARA account." path="/verify-email" />
+      <SEOHead title="Verify Your Email | GOPARTARA" description="Check your inbox to confirm your GOPARTARA account." path="/verify-email" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-md">
@@ -107,7 +107,7 @@ const VerifyEmail = () => {
         </button>
 
         <div className="glass rounded-2xl p-8 glow-red text-center">
-          {/* PARTARA Logo */}
+          {/* GOPARTARA Logo */}
           <div className="mb-6">
             <span className="font-display text-3xl font-bold tracking-tight">
               <span className="text-primary">PART</span>

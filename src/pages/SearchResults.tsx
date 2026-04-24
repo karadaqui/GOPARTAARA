@@ -1233,7 +1233,7 @@ const SearchResults = () => {
                           <div className="flex flex-col sm:flex-row gap-2">
                             <a href={buildEbayAffiliateUrl(item.url)} target="_blank" rel="noopener noreferrer"
                               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150"
-                              title="Buying through this link supports PARTARA at no extra cost to you ">
+                              title="Buying through this link supports GOPARTARA at no extra cost to you ">
                               <ExternalLink size={14} /> View on eBay
                             </a>
                             <button onClick={() => {
@@ -1375,7 +1375,7 @@ const SearchResults = () => {
                     href="/list-your-parts"
                     className="text-xs text-zinc-500 hover:text-red-400 transition-colors"
                   >
-                    Got spare parts? <span className="text-zinc-300 hover:text-red-400">Sell your parts on PARTARA →</span>
+                    Got spare parts? <span className="text-zinc-300 hover:text-red-400">Sell your parts on GOPARTARA →</span>
                   </a>
                 </div>
                 </>

@@ -278,7 +278,7 @@ const GreenSparkProductCard = ({
             target="_blank"
             rel="noopener noreferrer sponsored"
             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold transition-colors duration-150"
-            title="Affiliate link — supports PARTARA at no extra cost"
+            title="Affiliate link — supports GOPARTARA at no extra cost"
           >
             <ExternalLink size={14} /> View Product
           </a>

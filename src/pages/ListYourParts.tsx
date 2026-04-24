@@ -32,8 +32,8 @@ const ListYourParts = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="List Your Parts — Free | PARTARA"
-        description="Sell your car parts on PARTARA for free. Reach thousands of UK buyers. Free members get 5 listings, Pro and Elite get unlimited."
+        title="List Your Parts — Free | GOPARTARA"
+        description="Sell your car parts on GOPARTARA for free. Reach thousands of UK buyers. Free members get 5 listings, Pro and Elite get unlimited."
         path="/list-your-parts"
       />
       <Navbar />
