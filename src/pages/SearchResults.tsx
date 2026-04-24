@@ -1305,6 +1305,25 @@ const SearchResults = () => {
 
             {/* ── Sort & Filter Bar ── */}
             {liveResults.length > 0 && !liveLoading && (
+              <>
+                <div className="flex justify-end mb-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(window.location.href);
+                        toast({ title: "Search link copied!", description: "Share it with friends." });
+                      } catch {
+                        toast({ title: "Copy failed", description: "Please copy the URL manually.", variant: "destructive" });
+                      }
+                    }}
+                    title="Copy search link"
+                    className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-white transition-colors px-2.5 py-1.5 rounded-md border border-[#27272a] hover:border-[#3f3f46]"
+                  >
+                    <Share2 size={12} />
+                    Share this search
+                  </button>
+                </div>
               <FilterBar
                 conditionFilter={conditionFilter}
                 setConditionFilter={setConditionFilter}
