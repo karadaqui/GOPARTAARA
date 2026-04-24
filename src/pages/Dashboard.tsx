@@ -386,7 +386,13 @@ const Dashboard = () => {
                 {planBadge()}
               </div>
               <p style={{ fontSize: "13px", color: "#71717a", marginTop: "4px" }}>
-                Member since {profile?.created_at ? new Date(profile.created_at).toLocaleDateString("en-GB", { month: "long", year: "numeric" }) : "—"}
+                {(() => {
+                  const d = profile?.created_at || (user as any)?.created_at;
+                  if (d) {
+                    return `Member since ${new Date(d).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}`;
+                  }
+                  return "Member since recently";
+                })()}
               </p>
             </div>
 
