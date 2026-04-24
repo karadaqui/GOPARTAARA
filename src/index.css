@@ -481,8 +481,9 @@ nav a, nav button, button, a {
 .logo-part {
   font-size: 1em;
   font-weight: 800;
-  color: #cc1111;
+  color: #ffffff;
   letter-spacing: -0.03em;
+  transition: color 0.2s ease;
 }
 
 .logo-ara {
