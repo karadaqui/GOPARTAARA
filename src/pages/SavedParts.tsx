@@ -33,8 +33,10 @@ import {
   FolderPlus,
   FolderInput,
   X,
+  Bookmark,
 } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import EmptyState from "@/components/EmptyState";
 
 type SavedPart = Tables<"saved_parts">;
 
