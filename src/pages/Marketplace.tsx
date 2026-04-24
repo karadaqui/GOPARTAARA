@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Store, Eye, Package, Scale, Star, Wrench, Bookmark, Tag, Users, Zap } from "lucide-react";
+import { Search, Store, Eye, Package, Scale, Star, Wrench, Bookmark } from "lucide-react";
 import VerifiedSellerBadge from "@/components/badges/VerifiedSellerBadge";
 import SafeImage from "@/components/SafeImage";
 import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsComparison";
