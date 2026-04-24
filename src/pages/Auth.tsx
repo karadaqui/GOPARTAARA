@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mail, Lock, User, ArrowLeft, Eye, EyeOff, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import SEOHead from "@/components/SEOHead";
 import ForgotPassword from "@/components/ForgotPassword";
 import { lovable } from "@/integrations/lovable/index";
 
@@ -126,6 +127,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex" style={{ background: "#080808" }}>
+      <SEOHead title="Sign In — GOPARTARA" description="Sign in or create your free GOPARTARA account." path="/auth" noindex />
       {/* LEFT BRAND PANEL — desktop only */}
       <div
         className="hidden lg:flex flex-col justify-between relative overflow-hidden"

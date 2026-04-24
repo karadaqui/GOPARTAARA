@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useUserPlan } from "@/hooks/useUserPlan";
+import SEOHead from "@/components/SEOHead";
 import {
   Camera, Save, User, Mail, Crown, Bookmark, Loader2,
   Search, X, ExternalLink, CreditCard, Download, Lock, Copy,
@@ -325,6 +326,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <SEOHead title="Dashboard — GOPARTARA" description="Your GOPARTARA account dashboard." path="/dashboard" noindex />
       <Navbar />
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
 
