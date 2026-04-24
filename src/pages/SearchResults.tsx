@@ -899,13 +899,14 @@ const SearchResults = () => {
                 <span key={supplier.id} className="flex items-center gap-1.5">
                   {idx > 0 && <span className="text-[10px] text-zinc-600">•</span>}
                   {supplier.status === 'live' ? (
-                    <span className="flex items-center gap-1.5 text-xs font-medium text-white">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
+                    <span className="flex items-center gap-1.5 font-medium text-white" style={{ fontSize: "12px", fontWeight: 500 }}>
+                      <span className="rounded-full bg-emerald-400 inline-block" style={{ width: "6px", height: "6px" }} />
                       {supplier.label}
                     </span>
                   ) : (
-                    <span className="text-xs text-zinc-600 opacity-50 flex items-center gap-1">
-                      <span className="text-[10px]">🔜</span> {supplier.label}
+                    <span className="opacity-50 flex items-center gap-1" style={{ fontSize: "12px", color: "#71717a" }}>
+                      <span className="rounded-full bg-zinc-600 inline-block" style={{ width: "6px", height: "6px" }} />
+                      {supplier.label}
                     </span>
                   )}
                 </span>
