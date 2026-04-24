@@ -683,6 +683,69 @@ const SearchResults = () => {
     setSortBy("best_match");
   };
 
+  // Live supplier count for header context row (only the green/live ones)
+  const liveSupplierCount = SUPPLIERS.filter((s) => s.status === "live").length;
+
+  // Map supplier id → brandFilter value (must match labels used in FilterBar brand options)
+  const SUPPLIER_BRAND_MAP: Record<string, string> = {
+    ebay: "eBay",
+    greensparkplug: "Green Spark Plug Co.",
+  };
+  const activeSupplierId = (() => {
+    if (brandFilter === "All") return null;
+    const found = Object.entries(SUPPLIER_BRAND_MAP).find(([, v]) => v === brandFilter);
+    return found ? found[0] : null;
+  })();
+  const handleSupplierClick = (supplier: typeof SUPPLIERS[number]) => {
+    if (supplier.status !== "live") return;
+    const brand = SUPPLIER_BRAND_MAP[supplier.id];
+    if (!brand) {
+      // Supplier not directly filterable yet — just scroll back to results
+      setBrandFilter("All");
+      return;
+    }
+    if (brandFilter === brand) setBrandFilter("All");
+    else setBrandFilter(brand);
+  };
+
+  const scrollToSuppliers = () => {
+    if (supplierBannerDismissed) {
+      setSupplierBannerDismissed(false);
+      localStorage.removeItem("supplier_banner_dismissed");
+    }
+    setTimeout(() => {
+      supplierBannerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 50);
+  };
+
+  // Active filter pill descriptors
+  const activeFilterPills: { key: string; label: string; clear: () => void }[] = [];
+  if (conditionFilter !== "All") activeFilterPills.push({ key: "condition", label: conditionFilter, clear: () => setConditionFilter("All") });
+  if (shippingFilter !== "All") activeFilterPills.push({ key: "shipping", label: shippingFilter, clear: () => setShippingFilter("All") });
+  if (priceRangeIdx !== 0) activeFilterPills.push({ key: "price", label: PRICE_RANGES[priceRangeIdx].label, clear: () => setPriceRangeIdx(0) });
+  if (brandFilter !== "All") activeFilterPills.push({ key: "brand", label: brandFilter, clear: () => setBrandFilter("All") });
+  if (categoryFilter !== "All Parts") activeFilterPills.push({ key: "category", label: categoryFilter, clear: () => setCategoryFilter("All Parts") });
+
+  // Detect reg-plate / garage searches → enables "Fits [reg]" badge
+  const fitRegLabel = (() => {
+    if (vehicleInfo?.registrationNumber) return vehicleInfo.registrationNumber;
+    if (isFromGarage && garageVehicleLabel) return garageVehicleLabel;
+    return null;
+  })();
+
+  // Premium "Load more" handler — advances page; data fetch handles itself via deps
+  const handleLoadMore = async () => {
+    if (currentPage >= totalPages || loadingMore) return;
+    setLoadingMore(true);
+    setCurrentPage(currentPage + 1);
+    window.scrollTo({ top: window.scrollY + 200, behavior: "smooth" });
+  };
+  // Reset loadingMore once new results arrive
+  useEffect(() => {
+    if (!liveLoading) setLoadingMore(false);
+  }, [liveLoading, liveResults]);
+
+
   // Vehicle model confirm handler
   const confirmModel = useCallback(() => {
     if (vehicleModelInput.trim() && vehicleInfo) {
