@@ -725,6 +725,25 @@ const Tyres = () => {
             </p>
           </div>
         )}
+
+        {/* Trust section */}
+        <section className="max-w-4xl mx-auto px-4 pb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              { icon: '🛡️', label: 'OEM Approved' },
+              { icon: '🚚', label: 'Free Delivery Available' },
+              { icon: '⭐', label: '4.8/5 Customer Rating' },
+            ].map((t) => (
+              <div
+                key={t.label}
+                className="flex items-center justify-center gap-2 bg-zinc-900/60 border border-zinc-800 rounded-2xl px-4 py-4"
+              >
+                <span className="text-xl" aria-hidden="true">{t.icon}</span>
+                <span className="text-zinc-200 text-sm font-semibold">{t.label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
       </main>
 
       <CompareBar
