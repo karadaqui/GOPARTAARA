@@ -1006,8 +1006,8 @@ const SearchResults = () => {
                   <span className="text-red-500">"</span>{activeQuery}<span className="text-red-500">"</span>
                 </h1>
                 {totalResults > 0 && !liveLoading && (
-                  <p className="text-sm text-zinc-500 mt-2 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <p className="mt-2 flex items-center gap-2" style={{ fontSize: "13px", color: "#52525b" }}>
+                    <span className="rounded-full bg-emerald-500 animate-pulse" style={{ width: "6px", height: "6px" }} />
                     {activeFilterCount > 0
                       ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
                       : `${startItem.toLocaleString()}-${endItem.toLocaleString()} of ${totalResults.toLocaleString()} listings`}
