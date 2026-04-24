@@ -448,6 +448,11 @@ nav a, nav button, button, a {
     overflow-x: hidden;
     max-width: 100vw;
   }
+
+  /* Prevent any direct child from blowing past the viewport */
+  img, video, iframe, table {
+    max-width: 100%;
+  }
 }
 
 /* Logo styles */
