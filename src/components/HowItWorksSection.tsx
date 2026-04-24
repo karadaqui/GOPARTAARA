@@ -29,10 +29,10 @@ const steps = [
 ];
 
 const HowItWorksSection = () => (
-  <section className="py-12 md:py-32 relative overflow-hidden">
+  <section className="py-12 md:py-16 relative overflow-hidden">
     <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/[0.02] to-transparent pointer-events-none" />
     <div className="container px-4 md:px-6 lg:px-8 relative">
-      <ScrollReveal className="text-center mb-8 md:mb-16" threshold={0.05}>
+      <ScrollReveal className="text-center mb-8 md:mb-10" threshold={0.05}>
         <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">
           How It Works
         </span>

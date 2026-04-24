@@ -51,7 +51,7 @@ const FeaturesSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="py-24 md:py-32">
+    <section className="py-12 md:py-16">
       <div className="container px-6 md:px-4">
         <ScrollReveal className="text-center mb-16">
           <span className="inline-block text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-4">

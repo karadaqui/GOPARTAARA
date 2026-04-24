@@ -43,7 +43,7 @@ const TestimonialCard = ({ t }: { t: typeof testimonials[0] }) => (
 const uniqueTestimonials = testimonials.slice(0, 6);
 
 const TestimonialsSection = () => (
-  <section className="py-24 md:py-32 relative overflow-hidden">
+  <section className="py-12 md:py-16 relative overflow-hidden">
     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.02] to-transparent pointer-events-none" />
 
     <ScrollReveal className="text-center mb-16 px-4">
