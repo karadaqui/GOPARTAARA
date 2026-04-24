@@ -133,7 +133,7 @@ const Auth = () => {
         className="hidden lg:flex flex-col justify-between relative overflow-hidden"
         style={{
           width: "40%",
-          background: "#0a0a0a",
+          background: "#080808",
           padding: "48px",
           borderRight: "1px solid #1a1a1a",
         }}
@@ -174,7 +174,7 @@ const Auth = () => {
           <h2
             className="font-display"
             style={{
-              fontSize: "40px",
+              fontSize: "42px",
               fontWeight: 800,
               letterSpacing: "-0.03em",
               lineHeight: 1.05,
@@ -186,25 +186,23 @@ const Auth = () => {
             <span style={{ color: "#cc1111" }}>Save every time.</span>
           </h2>
 
-          <ul className="mt-8 flex flex-col gap-3">
+          <ul className="flex flex-col" style={{ marginTop: "24px", gap: "12px" }}>
             {[
               "Search 1,000,000+ parts instantly",
               "Compare prices across 7 UK suppliers",
-              "Price alerts when parts drop in price",
+              "Price alerts when parts drop",
             ].map((line) => (
               <li
                 key={line}
                 className="flex items-start gap-3"
-                style={{ fontSize: "14px", color: "#a1a1aa" }}
+                style={{ fontSize: "15px", color: "#a1a1aa", lineHeight: 1.5 }}
               >
                 <span
-                  className="shrink-0 inline-flex items-center justify-center rounded-full"
+                  className="shrink-0"
                   style={{
-                    width: "20px",
-                    height: "20px",
-                    background: "rgba(204,17,17,0.15)",
-                    color: "#cc1111",
-                    fontSize: "12px",
+                    color: "#4ade80",
+                    fontSize: "15px",
+                    fontWeight: 700,
                     marginTop: "1px",
                   }}
                 >
@@ -226,7 +224,14 @@ const Auth = () => {
             border: "1px solid rgba(255,255,255,0.06)",
           }}
         >
-          <p style={{ fontSize: "14px", color: "white", lineHeight: 1.5 }}>
+          <p
+            style={{
+              fontSize: "14px",
+              color: "#d4d4d8",
+              lineHeight: 1.5,
+              fontStyle: "italic",
+            }}
+          >
             "Saved £40 on brake pads in minutes."
           </p>
           <p style={{ fontSize: "12px", color: "#71717a", marginTop: "8px" }}>
@@ -248,7 +253,7 @@ const Auth = () => {
           Back to home
         </button>
 
-        <div className="w-full" style={{ maxWidth: "400px" }}>
+        <div className="w-full" style={{ maxWidth: "380px" }}>
           {showForgot ? (
             <ForgotPassword onBack={() => setShowForgot(false)} />
           ) : (
@@ -474,7 +479,7 @@ const Auth = () => {
 
               <p
                 className="text-center mt-6"
-                style={{ fontSize: "12px", color: "#52525b", lineHeight: 1.5 }}
+                style={{ fontSize: "11px", color: "#52525b", lineHeight: 1.5 }}
               >
                 By continuing, you agree to our{" "}
                 <a href="/terms" style={{ color: "#71717a", textDecoration: "underline" }}>Terms</a>
