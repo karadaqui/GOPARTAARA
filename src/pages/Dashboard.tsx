@@ -529,15 +529,41 @@ const Dashboard = () => {
               <Loader2 size={20} className="animate-spin text-muted-foreground" />
             </div>
           ) : currentPlan === "admin" ? (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Crown size={20} className="text-primary" />
+            <div
+              className="rounded-xl p-5 flex items-center gap-4"
+              style={{
+                background: "linear-gradient(135deg, rgba(234,179,8,0.08) 0%, rgba(234,179,8,0.02) 100%)",
+                border: "1px solid rgba(234,179,8,0.3)",
+              }}
+            >
+              <div
+                className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                style={{ background: "linear-gradient(135deg, #fbbf24, #d97706)" }}
+              >
+                <Crown size={22} className="text-black" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <p className="font-display font-bold text-lg text-white">Admin Plan</p>
+                  <span
+                    className="uppercase"
+                    style={{
+                      fontSize: "10px",
+                      fontWeight: 700,
+                      letterSpacing: "0.08em",
+                      padding: "2px 8px",
+                      borderRadius: "999px",
+                      background: "rgba(234,179,8,0.15)",
+                      color: "#fbbf24",
+                      border: "1px solid rgba(234,179,8,0.3)",
+                    }}
+                  >
+                    Lifetime
+                  </span>
                 </div>
-                <div>
-                  <p className="font-display font-bold text-lg">Admin Plan</p>
-                  <p className="text-xs text-muted-foreground">Manually Assigned</p>
-                </div>
+                <p style={{ fontSize: "12px", color: "#a1a1aa", marginTop: "2px" }}>
+                  Unlimited access · All features unlocked
+                </p>
               </div>
             </div>
           ) : currentPlan !== "free" ? (
