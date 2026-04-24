@@ -55,6 +55,7 @@ const Deals = lazy(() => import("./pages/Deals.tsx"));
 const AffiliateDisclosure = lazy(() => import("./pages/AffiliateDisclosure.tsx"));
 const Business = lazy(() => import("./pages/Business.tsx"));
 const Compare = lazy(() => import("./pages/Compare.tsx"));
+const Help = lazy(() => import("./pages/Help.tsx"));
 
 const queryClient = new QueryClient();
 
