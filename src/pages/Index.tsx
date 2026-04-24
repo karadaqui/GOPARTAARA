@@ -10,6 +10,7 @@ const FeaturesSection = lazy(() => import("@/components/FeaturesSection"));
 const HowItWorksSection = lazy(() => import("@/components/HowItWorksSection"));
 const TestimonialsSection = lazy(() => import("@/components/TestimonialsSection"));
 const PricingSection = lazy(() => import("@/components/PricingSection"));
+const WhyPartaraSection = lazy(() => import("@/components/WhyPartaraSection"));
 
 import Footer from "@/components/Footer";
 import ScrollReveal from "@/components/ScrollReveal";
@@ -128,8 +129,9 @@ const Index = () => {
 
       <Suspense fallback={<div className="h-32" />}>
         <ScrollReveal><HowItWorksSection /></ScrollReveal>
-        <ScrollReveal><TestimonialsSection /></ScrollReveal>
         <ScrollReveal><FeaturesSection /></ScrollReveal>
+        <ScrollReveal><WhyPartaraSection /></ScrollReveal>
+        <ScrollReveal><TestimonialsSection /></ScrollReveal>
         <ScrollReveal><PricingSection /></ScrollReveal>
       </Suspense>
 
