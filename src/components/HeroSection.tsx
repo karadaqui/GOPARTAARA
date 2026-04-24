@@ -10,6 +10,7 @@ import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
 import SearchCounter from "@/components/SearchCounter";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
+import SearchAutocomplete from "@/components/SearchAutocomplete";
 
 const buildPhotoSearchTerms = (
   partName: string,
@@ -89,6 +90,8 @@ const HeroSection = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const heroInputRef = useRef<HTMLInputElement>(null);
+  const [autoOpen, setAutoOpen] = useState(false);
   const [garageVehicle, setGarageVehicle] = useState<{ make: string; model: string; year?: number } | null>(null);
 
   useEffect(() => {
