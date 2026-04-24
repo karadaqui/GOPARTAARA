@@ -769,7 +769,7 @@ const SearchResults = () => {
                     <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={identifying} />
                     <div className="flex items-center gap-1.5 px-4 h-14 rounded-xl bg-[#1a1a1a] hover:bg-[#222] border border-white/10 transition-colors text-sm text-zinc-300">
                       {identifying ? <Loader2 size={16} className="animate-spin" /> : <Camera size={16} />}
-                      <span>{identifying ? "Identifying..." : "Photo"}</span>
+                      <span style={{ fontSize: "13px" }}>{identifying ? "Identifying..." : "Photo Search"}</span>
                     </div>
                   </label>
                   <button type="submit" className="h-14 px-6 sm:px-8 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm flex items-center gap-2 transition-colors duration-150 flex-1 sm:flex-none justify-center">
