@@ -1140,11 +1140,11 @@ const SearchResults = () => {
                             localStorage.setItem('partara_recent_views', JSON.stringify(updated));
                           } catch(e) {}
                         }}
-                        className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-[colors,transform] flex flex-col relative cursor-pointer animate-fade-in"
+                        className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm flex flex-col relative cursor-pointer animate-fade-in search-card-hover"
                         style={{ animationDelay: `${idx * 50}ms` }}>
-                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="block relative">
-                          <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
-                            <img src={item.imageUrl} alt={item.partName} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }} />
+                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="block relative p-3">
+                          <div className="h-[140px] sm:h-[180px] lg:h-[200px] overflow-hidden relative" style={{ backgroundColor: "#161616", borderRadius: "10px", padding: "10px" }}>
+                            <img src={item.imageUrl} alt={item.partName} className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }} />
                             <span className="absolute bottom-2 right-2 text-xl" title={isGlobal ? (item.itemCountry || "Global") : country.name}>
                               {isGlobal ? (
                                 <span className="flex items-center gap-1">
@@ -1217,21 +1217,20 @@ const SearchResults = () => {
                           {item.quantityAvailable != null && item.quantityAvailable > 5 && (
                             <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400">✓ {locale.t("in_stock")}</span>
                           )}
-                          <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
-                            <span className="flex items-center gap-0.5 text-amber-400">
-                              <Star size={11} className="fill-amber-400" /> {item.sellerPositivePercent?.toFixed(0)}%
-                            </span>
-                            <span className="font-medium truncate max-w-[100px] text-zinc-400">{item.sellerUsername}</span>
-                            <span className="text-zinc-600">({item.sellerFeedbackScore})</span>
+                          <div className="flex items-center gap-1.5 pt-3 mt-auto whitespace-nowrap overflow-hidden" style={{ borderTop: "1px solid #1a1a1a", fontSize: "12px", color: "#52525b" }}>
+                            <Star size={11} className="fill-current" style={{ color: "#cc1111" }} />
+                            <span>{item.sellerPositivePercent?.toFixed(0)}%</span>
+                            <span className="truncate">{item.sellerUsername}</span>
+                            <span>({item.sellerFeedbackScore})</span>
                             {item.watchCount > 0 && (
-                              <span className="flex items-center gap-0.5 text-zinc-600 ml-auto"><Heart size={10} /> {item.watchCount}</span>
+                              <span className="flex items-center gap-0.5 ml-auto"><Heart size={10} /> {item.watchCount}</span>
                             )}
                           </div>
-                          <div className="flex flex-col sm:flex-row gap-2">
+                          <div className="flex flex-col sm:flex-row gap-2 pt-3" style={{ borderTop: "1px solid #1a1a1a" }}>
                             <a href={buildEbayAffiliateUrl(item.url)} target="_blank" rel="noopener noreferrer"
                               className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150"
                               title="Buying through this link supports GOPARTARA at no extra cost to you ">
-                              <ExternalLink size={14} /> View on eBay
+                              View on eBay →
                             </a>
                             <button onClick={() => {
                               const isSelected = compareParts.some((p) => p.id === item.id);
