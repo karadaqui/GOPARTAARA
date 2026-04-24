@@ -6,6 +6,7 @@ import SocialProofStats from "@/components/SocialProofStats";
 import HomeCTASection from "@/components/HomeCTASection";
 import PopularSearchesStrip from "@/components/PopularSearchesStrip";
 import BrowseByMakeSection from "@/components/BrowseByMakeSection";
+import SuppliersSection from "@/components/SuppliersSection";
 import HomeShareRow from "@/components/HomeShareRow";
 
 // Below-the-fold: lazy-load to keep initial JS small and defer their data fetches
