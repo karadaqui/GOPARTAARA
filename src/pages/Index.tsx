@@ -4,6 +4,8 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import SocialProofStats from "@/components/SocialProofStats";
 import HomeCTASection from "@/components/HomeCTASection";
+import PopularSearchesStrip from "@/components/PopularSearchesStrip";
+import BrowseByMakeSection from "@/components/BrowseByMakeSection";
 
 // Below-the-fold: lazy-load to keep initial JS small and defer their data fetches
 const FeaturesSection = lazy(() => import("@/components/FeaturesSection"));
