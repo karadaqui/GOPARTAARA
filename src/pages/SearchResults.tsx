@@ -317,6 +317,13 @@ const SearchResults = () => {
     return () => clearTimeout(timer);
   }, [liveResults]);
 
+  // ── Initial-load grace period: avoid showing "No results" before the first response arrives ──
+  useEffect(() => {
+    setIsInitialLoad(true);
+    const timer = setTimeout(() => setIsInitialLoad(false), 3000);
+    return () => clearTimeout(timer);
+  }, [activeQuery]);
+
   // ── URL sync ──
   useEffect(() => {
     if (urlQuery && urlQuery !== query) setQuery(urlQuery);
