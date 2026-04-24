@@ -621,6 +621,12 @@ const Tyres = () => {
                         {product.supplierMeta?.shipsTo || 'Ships to UK + 35 countries'}
                       </p>
 
+                      {/free/i.test(product.shipping || '') && (
+                        <span className="inline-flex items-center gap-1 mt-1.5 self-start bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                          🚚 Free delivery
+                        </span>
+                      )}
+
                       {/* Actions */}
                       <div className="flex gap-1 mt-2">
                         <button
