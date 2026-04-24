@@ -696,12 +696,13 @@ const SearchResults = () => {
     return results;
   })();
 
-  // ── Unified results (eBay only) ──
+  // ── Unified results (eBay only) — grows with currentPage so "Load more" appends ──
+  const visibleCount = currentPage * ITEMS_PER_PAGE;
   const unifiedResults = useMemo(() => {
     return filteredResults
-      .slice(0, 12)
+      .slice(0, visibleCount)
       .map((result: any) => ({ ...result, _source: "ebay" as const }));
-  }, [filteredResults]);
+  }, [filteredResults, visibleCount]);
 
   // ── Green Spark Plug Co. real product feed (AWIN) ──
   const gspIsClassic = isClassicPartSearch(activeQuery);
