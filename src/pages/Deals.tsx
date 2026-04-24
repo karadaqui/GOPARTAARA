@@ -102,6 +102,38 @@ const AMAZON_DEALS = [
 ];
 const AMAZON_ALL_URL = "https://www.amazon.co.uk/b?node=248877031&tag=gopartara-21";
 
+// ───────── Classic & Vintage Parts ─────────
+const CLASSIC_DEALS = [
+  {
+    icon: "🔌",
+    title: "Spark Plugs & Ignition",
+    subtitle: "NGK, Bosch, Champion & period-correct",
+    url: "https://www.gsparkplug.com/",
+    badge: "Green Spark Plug Co.",
+  },
+  {
+    icon: "🛞",
+    title: "Classic Tyres",
+    subtitle: "Michelin XAS, Avon, Pirelli vintage",
+    url: "https://www.ebay.co.uk/sch/i.html?_nkw=classic+car+tyres",
+    badge: "Period correct",
+  },
+  {
+    icon: "🛠️",
+    title: "Restoration Parts",
+    subtitle: "Trim, badges, body panels & seals",
+    url: "https://www.ebay.co.uk/b/Vintage-Classic-Car-Parts/3438",
+    badge: "Restorers",
+  },
+  {
+    icon: "📚",
+    title: "Workshop Manuals",
+    subtitle: "Haynes, factory & owner's handbooks",
+    url: "https://www.ebay.co.uk/sch/i.html?_nkw=classic+car+workshop+manual",
+    badge: "Reference",
+  },
+];
+
 const Deals = () => {
   return (
     <div className="min-h-screen bg-background">
