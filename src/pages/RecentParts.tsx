@@ -37,7 +37,7 @@ const RecentParts = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <SEOHead title="Recently Viewed Parts — GOPARTARA" description="Parts you've browsed recently on GOPARTARA." path="/recent" />
+      <SEOHead title="Recently Viewed Parts — GOPARTARA" description="Parts you've browsed recently on GOPARTARA." path="/recent" noindex />
       <Navbar />
       <main className="pt-24 pb-16 px-4">
         <div className="container max-w-6xl mx-auto">
