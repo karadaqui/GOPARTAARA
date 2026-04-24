@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { Search } from "lucide-react";
+import { Search, Clock, X } from "lucide-react";
+import {
+  getRecentSearches,
+  removeRecentSearch,
+  clearRecentSearches,
+} from "@/lib/recentSearches";
 
 export const POPULAR_SEARCHES = [
   "BMW E46 brake pads",
@@ -34,6 +39,29 @@ export const POPULAR_SEARCHES = [
   "Toyota Corolla cabin filter",
   "Nissan Juke catalytic converter",
   "Honda Jazz steering rack",
+  "Peugeot 308 alternator",
+  "Renault Clio radiator",
+  "Toyota Corolla timing chain",
+  "Mercedes A-Class suspension arm",
+  "Audi A3 alternator",
+  "BMW 3 Series water pump",
+  "Ford Fiesta clutch",
+  "Vauxhall Insignia DPF filter",
+  "Volkswagen Passat gearbox mount",
+  "Honda Jazz brake discs",
+  "Kia Sportage shock absorbers",
+  "Hyundai Tucson air mass sensor",
+  "SEAT Ibiza starter motor",
+  "Skoda Octavia coolant pump",
+  "Volvo XC60 serpentine belt",
+  "Mazda 6 catalytic converter",
+  "Subaru Forester head gasket",
+  "Mini Cooper S turbocharger",
+  "Jaguar XF air suspension compressor",
+  "Range Rover Sport brake caliper",
+  "Porsche Cayenne oil cooler",
+  "Fiat 500 timing belt kit",
+  "Alfa Romeo Giulia lambda sensor",
 ];
 
 const QUICK_CHIPS = [
