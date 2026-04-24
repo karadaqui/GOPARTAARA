@@ -182,17 +182,40 @@ const PricingSection = () => {
   const isLoading = (id: string | null) => id !== null && loadingId === id;
 
 
+  // Compute annual savings (in £/yr) per plan for the "Save £X/year" indicator
+  const annualSavings = (monthly: string, annualPerMonth: string): number => {
+    const m = parseFloat(monthly.replace(/[^\d.]/g, "")) || 0;
+    const a = parseFloat(annualPerMonth.replace(/[^\d.]/g, "")) || 0;
+    return Math.round((m - a) * 12);
+  };
+
   return (
     <section id="pricing" className="py-12 md:py-16">
       <div className="container max-w-5xl px-4 mx-auto">
         {/* Header */}
-        <div className="text-center mb-8 space-y-4">
+        <div className="text-center mb-6 space-y-3">
+          <p className="text-xs font-bold tracking-[0.18em] uppercase text-[#cc1111]">
+            Pricing
+          </p>
           <h2 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
             Simple, transparent <span className="text-primary">pricing</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto">
             Choose the plan that works for you. Upgrade, downgrade, or cancel anytime.
           </p>
+        </div>
+
+        {/* Trust signals */}
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-10">
+          {["Cancel anytime", "First month free", "No hidden fees"].map((t) => (
+            <span
+              key={t}
+              className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-[#111111] border border-[#1f1f1f] text-zinc-300"
+            >
+              <Check size={12} className="text-emerald-400" strokeWidth={3} />
+              {t}
+            </span>
+          ))}
         </div>
 
         {/* Annual / Monthly Toggle */}
@@ -212,6 +235,9 @@ const PricingSection = () => {
           {individualPlans.map((plan) => {
             const effectivePriceId = annual && plan.annualPriceId ? plan.annualPriceId : plan.priceId;
             const proTrialCta = plan.name === "Pro" && !hadTrial;
+            const yearlySaving = annual && plan.annualPrice !== plan.monthlyPrice
+              ? annualSavings(plan.monthlyPrice, plan.annualPrice)
+              : 0;
             return (
               <PlanCard
                 key={plan.name}
@@ -222,9 +248,13 @@ const PricingSection = () => {
                 billedNote={annual ? plan.annualBilled : undefined}
                 period={plan.period}
                 features={plan.features}
+                useCase={plan.useCase}
                 cta={proTrialCta ? "Start Free — 1 Month Pro" : plan.cta}
                 ctaSubtext={proTrialCta ? "No credit card required" : undefined}
                 popular={plan.popular}
+                bestValue={plan.bestValue}
+                annual={annual}
+                yearlySaving={yearlySaving}
                 loading={isLoading(effectivePriceId)}
                 slowWarning={slowWarning}
                 onSelect={proTrialCta ? async () => {
@@ -243,6 +273,7 @@ const PricingSection = () => {
                   } catch { toast({ title: 'Connection error', variant: 'destructive' }); }
                 } : () => startCheckout(effectivePriceId)}
               />
+
             );
           })}
         </div>
