@@ -609,7 +609,7 @@ const SearchResults = () => {
     const low = sorted[Math.floor(sorted.length * 0.25)];
     const high = sorted[Math.floor(sorted.length * 0.75)];
     if (price <= low) return { label: locale.t("great_price"), variant: "great" as const };
-    if (price >= high) return { label: locale.t("high_price"), variant: "high" as const };
+    if (price >= high) return null;
     return { label: locale.t("good_price"), variant: "good" as const };
   };
 
