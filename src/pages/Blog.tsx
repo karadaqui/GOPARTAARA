@@ -134,42 +134,78 @@ const Blog = () => {
       />
       <Navbar />
 
-      <div className="container max-w-5xl px-4 pb-20">
-        {/* Header */}
-        <div className="text-center py-16 px-4 max-w-2xl mx-auto">
-          <h1 className="font-display text-4xl font-black text-foreground mb-3">
-            <span style={{ color: '#cc1111' }}>GO</span>PARTARA Blog
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Expert guides, maintenance tips & industry insights
+      <div className="container max-w-6xl px-4 pb-20">
+        {/* Editorial Header */}
+        <div
+          className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6"
+          style={{ padding: "60px 0 40px", borderBottom: "1px solid #1f1f1f" }}
+        >
+          <div>
+            <div
+              className="font-display text-white"
+              style={{ fontSize: "clamp(28px, 4vw, 40px)", fontWeight: 600, letterSpacing: "-0.02em", lineHeight: 1 }}
+            >
+              The GOPARTARA
+            </div>
+            <div
+              className="font-display text-white"
+              style={{
+                fontSize: "clamp(56px, 7vw, 96px)",
+                fontWeight: 900,
+                letterSpacing: "-0.04em",
+                lineHeight: 1,
+                marginTop: "4px",
+              }}
+            >
+              Blog
+            </div>
+          </div>
+          <p style={{ fontSize: "16px", color: "#71717a", maxWidth: "280px", lineHeight: 1.5 }}>
+            Expert guides, savings tips & industry insights for UK car owners.
           </p>
         </div>
 
         {/* Category filter */}
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-4 max-w-5xl mx-auto">
-          {CATS.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
-                activeCategory === cat
-                  ? 'bg-primary border-primary text-primary-foreground'
-                  : 'bg-card border-border text-muted-foreground hover:border-muted-foreground/50'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide" style={{ paddingTop: "28px", paddingBottom: "16px" }}>
+          {CATS.map((cat) => {
+            const active = activeCategory === cat;
+            return (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className="flex-shrink-0 transition-colors"
+                style={{
+                  padding: "6px 16px",
+                  borderRadius: "999px",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  border: `1px solid ${active ? "#cc1111" : "#27272a"}`,
+                  background: active ? "#cc1111" : "transparent",
+                  color: active ? "white" : "#71717a",
+                }}
+              >
+                {cat}
+              </button>
+            );
+          })}
         </div>
 
         {/* Search */}
-        <div className="mb-8 mt-2">
+        <div className="mb-10 mt-2">
           <input
             type="text"
-            placeholder="Search articles..."
+            placeholder={`Search ${posts.length} articles...`}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-card border border-border rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none focus:border-muted-foreground/50 transition-colors"
+            className="w-full outline-none focus:border-zinc-600 transition-colors"
+            style={{
+              background: "#111111",
+              border: "1px solid #27272a",
+              borderRadius: "12px",
+              padding: "12px 16px",
+              fontSize: "14px",
+              color: "white",
+            }}
           />
         </div>
 
@@ -207,30 +243,61 @@ const Blog = () => {
 
           return (
             <>
-              {/* Featured post */}
-              <div className="relative group mb-8">
+              {/* Featured post — hero card */}
+              <div className="relative group mb-10">
                 <Link
                   to={`/blog/${featured.slug}`}
-                  className="block p-6 bg-card border border-border rounded-2xl hover:border-muted-foreground/40 transition-colors"
+                  className="block transition-colors"
+                  style={{
+                    background: "linear-gradient(135deg, #1a0000 0%, #111111 100%)",
+                    border: "1px solid #1f1f1f",
+                    borderRadius: "16px",
+                    padding: "40px",
+                  }}
                 >
-                  <div className="flex items-center gap-2 mb-3 flex-wrap">
+                  <div className="flex items-center gap-3 mb-4 flex-wrap">
                     {featured.category && (
-                      <span className={`text-xs rounded-full px-2 py-0.5 font-semibold ${categoryColor(featured.category)}`}>
+                      <span
+                        style={{
+                          background: "#cc1111",
+                          color: "white",
+                          fontSize: "11px",
+                          fontWeight: 600,
+                          padding: "4px 10px",
+                          borderRadius: "999px",
+                          letterSpacing: "0.04em",
+                          textTransform: "uppercase",
+                        }}
+                      >
                         {featured.category}
                       </span>
                     )}
-                    <span className="text-muted-foreground text-xs">
+                    <span style={{ color: "#71717a", fontSize: "13px" }}>
                       {formatDate(featured.published_at)}
                       {featured.read_time && <> · {featured.read_time}</>}
                     </span>
                   </div>
-                  <h2 className="font-display text-2xl font-black text-foreground mb-2 group-hover:text-primary transition-colors">
+                  <h2
+                    className="font-display text-white group-hover:text-primary transition-colors"
+                    style={{
+                      fontSize: "clamp(24px, 3.5vw, 32px)",
+                      fontWeight: 800,
+                      letterSpacing: "-0.02em",
+                      lineHeight: 1.15,
+                      marginBottom: "12px",
+                    }}
+                  >
                     {featured.title}
                   </h2>
-                  <p className="text-muted-foreground text-sm leading-relaxed mb-4 max-w-2xl">
+                  <p
+                    className="line-clamp-2 max-w-2xl"
+                    style={{ color: "#71717a", fontSize: "15px", lineHeight: 1.6, marginBottom: "20px" }}
+                  >
                     {featured.preview}
                   </p>
-                  <span className="text-primary text-sm font-semibold">Read article →</span>
+                  <span style={{ color: "#cc1111", fontSize: "14px", fontWeight: 600 }}>
+                    Read article →
+                  </span>
                 </Link>
                 {isAdmin && (
                   <button
@@ -243,40 +310,60 @@ const Blog = () => {
                 )}
               </div>
 
-              {/* Grid of remaining posts */}
+              {/* Grid of remaining posts — premium minimal */}
               {rest.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-0">
                   {rest.map((post) => (
-                    <div key={post.id} className="relative group">
+                    <div key={post.id} className="relative group" style={{ borderBottom: "1px solid #1f1f1f" }}>
                       <Link
                         to={`/blog/${post.slug}`}
-                        className="flex flex-col h-full p-5 bg-card border border-border rounded-2xl hover:border-muted-foreground/40 hover:-translate-y-0.5 transition-[colors,transform]"
+                        className="flex flex-col h-full"
+                        style={{ padding: "24px 0" }}
                       >
                         <div className="flex items-center gap-2 mb-3">
                           {post.category && (
-                            <span className="text-[10px] bg-secondary border border-border text-muted-foreground rounded-full px-2 py-0.5">
+                            <span
+                              style={{
+                                background: "rgba(204,17,17,0.1)",
+                                color: "#cc1111",
+                                fontSize: "11px",
+                                fontWeight: 600,
+                                padding: "3px 10px",
+                                borderRadius: "999px",
+                                letterSpacing: "0.02em",
+                              }}
+                            >
                               {post.category}
                             </span>
                           )}
-                          {post.read_time && (
-                            <span className="text-muted-foreground text-[10px] ml-auto">{post.read_time}</span>
-                          )}
                         </div>
-                        <h3 className="text-foreground font-bold text-sm mb-2 leading-snug group-hover:text-primary transition-colors line-clamp-2">
+                        <h3
+                          className="line-clamp-2 transition-colors group-hover:text-primary"
+                          style={{
+                            fontSize: "17px",
+                            fontWeight: 700,
+                            color: "white",
+                            lineHeight: 1.3,
+                            marginBottom: "8px",
+                          }}
+                        >
                           {post.title}
                         </h3>
-                        <p className="text-muted-foreground text-xs leading-relaxed flex-1 line-clamp-3 mb-3">
+                        <p
+                          className="line-clamp-2 flex-1"
+                          style={{ fontSize: "13px", color: "#71717a", lineHeight: 1.55, marginBottom: "12px" }}
+                        >
                           {post.preview}
                         </p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-muted-foreground text-[10px]">{formatDate(post.published_at)}</span>
-                          <span className="text-muted-foreground group-hover:text-primary text-xs transition-colors">→</span>
+                        <div style={{ fontSize: "12px", color: "#52525b" }}>
+                          {formatDate(post.published_at)}
+                          {post.read_time && <> · {post.read_time}</>}
                         </div>
                       </Link>
                       {isAdmin && (
                         <button
                           onClick={(e) => { e.preventDefault(); setDeleteId(post.id); }}
-                          className="absolute top-3 right-3 w-7 h-7 rounded-lg bg-destructive/10 flex items-center justify-center text-destructive hover:bg-destructive/20 transition-colors opacity-0 group-hover:opacity-100"
+                          className="absolute top-5 right-0 w-7 h-7 rounded-lg bg-destructive/10 flex items-center justify-center text-destructive hover:bg-destructive/20 transition-colors opacity-0 group-hover:opacity-100"
                           title="Delete post"
                         >
                           <Trash2 size={12} />
