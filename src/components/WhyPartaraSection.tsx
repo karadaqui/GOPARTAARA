@@ -136,7 +136,7 @@ const WhyPartaraSection = () => {
                             background: isPartara ? "rgba(204,17,17,0.04)" : undefined,
                           }}
                         >
-                          {renderCell(value, isPartara)}
+                          {renderCell(value, isPartara, row.feature)}
                         </td>
                       );
                     })}
@@ -145,6 +145,33 @@ const WhyPartaraSection = () => {
               })}
             </tbody>
           </table>
+        </div>
+
+        <div className="text-center mt-8">
+          <p
+            style={{
+              fontSize: "13px",
+              color: "#a1a1aa",
+              marginBottom: "12px",
+            }}
+          >
+            GOPARTARA searches more suppliers than anyone. For free.
+          </p>
+          <a
+            href="/search"
+            className="inline-flex items-center justify-center transition-opacity hover:opacity-90"
+            style={{
+              background: "#cc1111",
+              color: "#ffffff",
+              fontSize: "14px",
+              fontWeight: 600,
+              padding: "12px 24px",
+              borderRadius: "10px",
+              textDecoration: "none",
+            }}
+          >
+            Start Searching Free →
+          </a>
         </div>
 
         <p
