@@ -264,6 +264,8 @@ const SearchResults = () => {
   const [vinError, setVinError] = useState("");
   const [vinVehicle, setVinVehicle] = useState<Record<string, string | null> | null>(null);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const [autoOpen, setAutoOpen] = useState(false);
   const [compareParts, setCompareParts] = useState<CompareItem[]>([]);
   const [showCompare, setShowCompare] = useState(false);
   const [liveResults, setLiveResults] = useState<any[]>([]);
