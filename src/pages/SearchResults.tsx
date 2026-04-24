@@ -265,6 +265,7 @@ const SearchResults = () => {
   const [showCompare, setShowCompare] = useState(false);
   const [liveResults, setLiveResults] = useState<any[]>([]);
   const [liveLoading, setLiveLoading] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [savingId, setSavingId] = useState<string | null>(null);
   const [vehicleInfo, setVehicleInfo] = useState<VehicleInfo | null>(null);
@@ -315,6 +316,13 @@ const SearchResults = () => {
     const timer = setTimeout(parseTwemoji, 100);
     return () => clearTimeout(timer);
   }, [liveResults]);
+
+  // ── Initial-load grace period: avoid showing "No results" before the first response arrives ──
+  useEffect(() => {
+    setIsInitialLoad(true);
+    const timer = setTimeout(() => setIsInitialLoad(false), 3000);
+    return () => clearTimeout(timer);
+  }, [activeQuery]);
 
   // ── URL sync ──
   useEffect(() => {
@@ -1384,7 +1392,23 @@ const SearchResults = () => {
                   <GreenSparkResultsRow searchQuery={activeQuery} />
                 )}
               </div>
-            ) : !liveLoading ? (
+            ) : (liveLoading || isInitialLoad) ? (
+              /* ── Loading State (also covers initial-load grace period) ── */
+              <div className="flex flex-col items-center justify-center py-20 mb-8">
+                <div className="text-6xl mb-4 opacity-30 animate-pulse">🔍</div>
+                <p className="text-lg font-semibold text-white mb-1 animate-pulse">
+                  Searching 6,000,000+ parts across all suppliers…
+                </p>
+                <p className="text-sm text-zinc-500 mb-6 text-center max-w-md">
+                  Hang tight — comparing prices from every supplier we track.
+                </p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-3xl">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="h-48 rounded-2xl bg-white/[0.03] border border-white/5 animate-pulse" />
+                  ))}
+                </div>
+              </div>
+            ) : (
               /* ── Empty / Error State ── */
               <div className="flex flex-col items-center justify-center py-20 mb-8">
                 <div className="text-6xl mb-4 opacity-30">🔍</div>
@@ -1405,7 +1429,7 @@ const SearchResults = () => {
                   </div>
                 )}
               </div>
-            ) : null}
+            )}
 
           </>
         ) : (
