@@ -101,14 +101,19 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-colors ${
-          scrolled
-            ? "glass-strong shadow-lg shadow-background/50"
-            : "bg-transparent backdrop-blur-md border-b border-transparent"
-        }`}
-        style={{ WebkitTransform: "translateZ(0)", transform: "translateZ(0)", willChange: "transform" }}
+        className="fixed top-0 left-0 right-0 z-50 transition-colors"
+        style={{
+          WebkitTransform: "translateZ(0)",
+          transform: "translateZ(0)",
+          willChange: "transform",
+          backgroundColor: scrolled ? "rgba(0,0,0,0.85)" : "transparent",
+          backdropFilter: scrolled ? "blur(20px)" : "none",
+          WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
+          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
+        }}
       >
-        <div className="container flex h-16 items-center justify-between">
+        <div className="container flex items-center justify-between" style={{ height: "56px" }}>
+          {/* Left: Logo */}
           <a
             href="/"
             onClick={(e) => {
@@ -128,9 +133,9 @@ const Navbar = () => {
                 e.preventDefault();
               }
             }}
-            className="no-underline group"
+            className="no-underline group flex-shrink-0"
           >
-            <span className="logo-text text-2xl">
+            <span className="logo-text text-xl">
               <span className="logo-go">GO</span>
               <span className="logo-part transition-colors group-hover:drop-shadow-[0_0_8px_hsl(0_85%_50%/0.6)]">
                 PART
@@ -139,94 +144,185 @@ const Navbar = () => {
             </span>
           </a>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-8">
-              {primaryLinks.map((l) => {
-                const isActive =
-                  pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
-                return (
-                  <button
-                    key={l.label}
-                    onClick={() => handleNavClick(l.href)}
-                    className={`nav-link text-sm py-1 transition-colors ${
-                      isActive ? "text-white font-semibold" : "text-zinc-400 hover:text-white"
-                    }`}
-                  >
-                    {l.label}
-                  </button>
-                );
-              })}
-
-              <div className="relative" onMouseEnter={handleMoreEnter} onMouseLeave={handleMoreLeave}>
-                <button className="nav-link text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1 py-1">
-                  More
-                  <ChevronDown
-                    size={14}
-                    className={`transition-transform duration-300 ${moreOpen ? "rotate-180" : ""}`}
-                  />
+          {/* Center: Primary nav links */}
+          <div className="hidden md:flex items-center gap-7 absolute left-1/2 -translate-x-1/2">
+            {primaryLinks.map((l) => {
+              const isActive =
+                pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
+              return (
+                <button
+                  key={l.label}
+                  onClick={() => handleNavClick(l.href)}
+                  className="transition-colors"
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: isActive ? 500 : 400,
+                    color: isActive ? "#ffffff" : "#a1a1aa",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: "4px 0",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) e.currentTarget.style.color = "#ffffff";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) e.currentTarget.style.color = "#a1a1aa";
+                  }}
+                >
+                  {l.label}
                 </button>
+              );
+            })}
 
-                {moreOpen && (
-                  <div className="absolute top-full right-0 pt-2 w-48">
-                    <div className="rounded-xl border border-border/60 bg-popover/95 backdrop-blur-xl p-1.5 shadow-xl shadow-background/40 animate-in fade-in-0 zoom-in-95">
-                      {moreLinks.map((l) => {
-                        const isActive =
-                          pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
-                        return (
-                          <button
-                            key={l.href}
-                            onClick={() => handleNavClick(l.href)}
-                            className={`w-full rounded-lg px-3 py-2.5 text-left text-sm transition-colors ${
-                              isActive
-                                ? "text-white font-semibold"
-                                : "text-zinc-400 hover:bg-accent/10 hover:text-white"
-                            }`}
-                          >
-                            {l.label}
-                          </button>
-                        );
-                      })}
-                    </div>
+            <div className="relative" onMouseEnter={handleMoreEnter} onMouseLeave={handleMoreLeave}>
+              <button
+                className="transition-colors flex items-center gap-1"
+                style={{
+                  fontSize: "14px",
+                  fontWeight: 400,
+                  color: "#a1a1aa",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: "4px 0",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+              >
+                More
+                <ChevronDown
+                  size={13}
+                  className={`transition-transform duration-300 ${moreOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+
+              {moreOpen && (
+                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 w-44">
+                  <div
+                    className="rounded-lg p-1 animate-in fade-in-0 zoom-in-95"
+                    style={{
+                      backgroundColor: "rgba(10,10,10,0.95)",
+                      backdropFilter: "blur(20px)",
+                      WebkitBackdropFilter: "blur(20px)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+                    }}
+                  >
+                    {moreLinks.map((l) => {
+                      const isActive =
+                        pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
+                      return (
+                        <button
+                          key={l.href}
+                          onClick={() => handleNavClick(l.href)}
+                          className="w-full rounded-md px-3 py-2 text-left transition-colors"
+                          style={{
+                            fontSize: "14px",
+                            fontWeight: isActive ? 500 : 400,
+                            color: isActive ? "#ffffff" : "#a1a1aa",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.color = "#ffffff";
+                            e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.05)";
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isActive) e.currentTarget.style.color = "#a1a1aa";
+                            e.currentTarget.style.backgroundColor = "transparent";
+                          }}
+                        >
+                          {l.label}
+                        </button>
+                      );
+                    })}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
+          </div>
 
-              {!loading &&
-                (user ? (
-                  <div className="flex items-center gap-3">
+          {/* Right: Utilities + auth */}
+          <div className="flex items-center gap-2">
+            <CountrySelector />
+            {!loading && user && <MessageBubble />}
+            {!loading && user && <NotificationBell />}
+
+            {!loading && (
+              <div className="hidden md:flex items-center gap-2 ml-1">
+                {user ? (
+                  <>
                     {user.email === ADMIN_EMAIL && (
                       <button
                         onClick={() => navigate("/admin")}
-                        className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5 font-medium"
+                        className="transition-colors"
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: 500,
+                          color: "#a1a1aa",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          padding: "6px 8px",
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
                       >
-                        <Shield size={14} />
                         Admin
                       </button>
                     )}
 
                     <button
                       onClick={() => navigate("/dashboard")}
-                      className="nav-link text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 py-1"
+                      className="transition-colors rounded-md"
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 400,
+                        color: "#e4e4e7",
+                        background: "transparent",
+                        border: "1px solid #27272a",
+                        cursor: "pointer",
+                        padding: "6px 12px",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = "#3f3f46";
+                        e.currentTarget.style.color = "#ffffff";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "#27272a";
+                        e.currentTarget.style.color = "#e4e4e7";
+                      }}
                     >
-                      <User size={14} />
                       Dashboard
                     </button>
 
-                    <Button size="sm" variant="outline" onClick={signOut} className="gap-1.5 rounded-xl">
-                      <LogOut size={14} />
+                    <button
+                      onClick={signOut}
+                      className="transition-colors"
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: 400,
+                        color: "#a1a1aa",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        padding: "6px 8px",
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                    >
                       Sign Out
-                    </Button>
-                  </div>
+                    </button>
+                  </>
                 ) : (
-                  <Button size="sm" onClick={() => navigate("/auth")} className="rounded-xl btn-glow">
+                  <Button size="sm" onClick={() => navigate("/auth")} className="rounded-md btn-glow h-8">
                     Get Started
                   </Button>
-                ))}
-            </div>
-
-            <CountrySelector />
-            {!loading && user && <MessageBubble />}
-            {!loading && user && <NotificationBell />}
+                )}
+              </div>
+            )}
 
             <button
               type="button"
