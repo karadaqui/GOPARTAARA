@@ -19,7 +19,7 @@ import {
   Truck, Bookmark, BookmarkCheck, Clock,
   Heart, AlertCircle, Zap, Globe,
   ChevronLeft, ChevronRight, ChevronDown, Pencil, Calendar, Palette, Fuel, Gauge,
-  ShieldCheck, Receipt, Check,
+  ShieldCheck, Receipt, Check, Share2,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import { useAuth } from "@/contexts/AuthContext";
