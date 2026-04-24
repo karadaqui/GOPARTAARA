@@ -480,87 +480,73 @@ const HeroSection = () => {
               </button>
             </div>
 
-            {/* Tabs — Desktop (centered) */}
-            <div className="hidden md:flex md:items-center md:justify-center md:gap-2 md:mb-5">
-              <button
-                onClick={() => setActiveTab("part")}
-                style={{
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                  padding: "8px 16px",
-                  borderRadius: "999px",
-                  border: activeTab === "part" ? "none" : "1px solid rgba(255,255,255,0.1)",
-                  background: activeTab === "part" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
-                  color: activeTab === "part" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
-                  fontSize: "13px",
-                  fontWeight: activeTab === "part" ? 600 : 500,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                <Search size={14} style={{ flexShrink: 0 }} />
-                Parts
-              </button>
-              <button
-                onClick={() => setActiveTab("plate")}
-                style={{
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                  padding: "8px 16px",
-                  borderRadius: "999px",
-                  border: activeTab === "plate" ? "none" : "1px solid rgba(255,255,255,0.1)",
-                  background: activeTab === "plate" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
-                  color: activeTab === "plate" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
-                  fontSize: "13px",
-                  fontWeight: activeTab === "plate" ? 600 : 500,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                <Car size={14} style={{ flexShrink: 0 }} />
-                Reg Plate UK
-              </button>
-              <button
-                onClick={() => setActiveTab("vin")}
-                style={{
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                  padding: "8px 16px",
-                  borderRadius: "999px",
-                  border: activeTab === "vin" ? "none" : "1px solid rgba(255,255,255,0.1)",
-                  background: activeTab === "vin" ? "hsl(var(--primary))" : "rgba(255,255,255,0.05)",
-                  color: activeTab === "vin" ? "hsl(var(--primary-foreground))" : "rgba(255,255,255,0.55)",
-                  fontSize: "13px",
-                  fontWeight: activeTab === "vin" ? 600 : 500,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                }}
-              >
-                🌍 VIN
-              </button>
+            {/* Tabs — Desktop (clean underline) */}
+            <div
+              className="hidden md:flex md:items-center md:justify-center md:gap-7 md:mb-5"
+              style={{ borderBottom: "1px solid #1f1f1f" }}
+            >
+              {[
+                { key: "part", label: "Parts", icon: <Search size={14} style={{ flexShrink: 0 }} /> },
+                { key: "plate", label: "Reg Plate UK", icon: <Car size={14} style={{ flexShrink: 0 }} /> },
+                { key: "vin", label: "VIN", icon: <span style={{ fontSize: 13 }}>🌍</span> },
+              ].map((tab) => {
+                const isActive = activeTab === tab.key;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key as "part" | "plate" | "vin")}
+                    style={{
+                      flexShrink: 0,
+                      whiteSpace: "nowrap",
+                      padding: "8px 2px",
+                      paddingBottom: "8px",
+                      marginBottom: "-1px",
+                      background: "transparent",
+                      border: "none",
+                      borderBottom: isActive ? "2px solid #cc1111" : "2px solid transparent",
+                      color: isActive ? "#ffffff" : "#52525b",
+                      fontSize: "13px",
+                      fontWeight: isActive ? 600 : 400,
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "6px",
+                      transition: "color 150ms ease, border-color 150ms ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) e.currentTarget.style.color = "#a1a1aa";
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) e.currentTarget.style.color = "#52525b";
+                    }}
+                  >
+                    {tab.icon}
+                    {tab.label}
+                  </button>
+                );
+              })}
               <button
                 onClick={() => navigate("/tyres")}
                 style={{
                   flexShrink: 0,
                   whiteSpace: "nowrap",
-                  padding: "8px 16px",
-                  borderRadius: "999px",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  background: "rgba(255,255,255,0.05)",
-                  color: "rgba(255,255,255,0.55)",
+                  padding: "8px 2px",
+                  paddingBottom: "8px",
+                  marginBottom: "-1px",
+                  background: "transparent",
+                  border: "none",
+                  borderBottom: "2px solid transparent",
+                  color: "#52525b",
                   fontSize: "13px",
-                  fontWeight: 500,
+                  fontWeight: 400,
                   cursor: "pointer",
                   display: "flex",
                   alignItems: "center",
                   gap: "6px",
+                  transition: "color 150ms ease",
                 }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#52525b")}
               >
                 <img
                   src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
