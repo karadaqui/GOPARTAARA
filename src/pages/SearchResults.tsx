@@ -607,10 +607,10 @@ const SearchResults = () => {
     if (!price || allPrices.length < 2) return null;
     const sorted = [...allPrices].sort((a, b) => a - b);
     const low = sorted[Math.floor(sorted.length * 0.25)];
-    const median = sorted[Math.floor(sorted.length * 0.5)];
+    const high = sorted[Math.floor(sorted.length * 0.75)];
     if (price <= low) return { label: locale.t("great_price"), variant: "great" as const };
-    if (price < median) return { label: locale.t("good_price"), variant: "good" as const };
-    return null;
+    if (price >= high) return null;
+    return { label: locale.t("good_price"), variant: "good" as const };
   };
 
   const getFlag = (code: string) => countryBadges[code] || "🌍";
@@ -1113,6 +1113,12 @@ const SearchResults = () => {
                     const priceBadge = getPriceBadge(item.price);
                     const conditionNorm = (item.condition || "").trim().toLowerCase();
                     void conditionNorm;
+                    const priceBadgeStyles = {
+                      great: { text: "text-emerald-400", icon: "✦" },
+                      good: { text: "text-blue-400", icon: "✦" },
+                      high: { text: "text-red-400", icon: "↑" },
+                      top: { text: "text-amber-400", icon: "★" },
+                    };
                     return (
                       <div key={item.id}
                         onClick={() => {
@@ -1134,18 +1140,10 @@ const SearchResults = () => {
                             localStorage.setItem('partara_recent_views', JSON.stringify(updated));
                           } catch(e) {}
                         }}
-                        className="ebay-card group rounded-2xl overflow-hidden flex flex-col relative cursor-pointer animate-fade-in"
-                        style={{
-                          background: "#111111",
-                          border: "1px solid #1f1f1f",
-                          animationDelay: `${idx * 50}ms`,
-                          transition: "transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease",
-                        }}>
-                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="block relative" style={{ padding: "8px" }}>
-                          <div
-                            className="h-[140px] sm:h-[180px] lg:h-[200px] overflow-hidden relative"
-                            style={{ background: "#161616", borderRadius: "10px" }}
-                          >
+                        className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-[colors,transform] flex flex-col relative cursor-pointer animate-fade-in"
+                        style={{ animationDelay: `${idx * 50}ms` }}>
+                        <a href={item.url} target="_blank" rel="noopener noreferrer" className="block relative">
+                          <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
                             <img src={item.imageUrl} alt={item.partName} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }} />
                             <span className="absolute bottom-2 right-2 text-xl" title={isGlobal ? (item.itemCountry || "Global") : country.name}>
                               {isGlobal ? (
@@ -1159,42 +1157,28 @@ const SearchResults = () => {
                             </span>
                           </div>
                         </a>
-                        <div className="p-4 pt-2 flex-1 flex flex-col gap-3">
+                        <div className="p-4 flex-1 flex flex-col gap-3">
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
-                            <p
-                              className="line-clamp-2 group-hover:text-white transition-colors"
-                              style={{
-                                fontSize: "13px",
-                                color: "#d4d4d8",
-                                lineHeight: 1.4,
-                                fontWeight: 500,
-                                minHeight: "2.6em",
-                              }}
-                            >
-                              {item.partName}
-                            </p>
+                            <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.partName}</p>
                           </a>
                           <div>
-                            <span style={{ fontSize: "20px", fontWeight: 700, color: "#ffffff" }}>
-                              {locale.formatPrice(item.price)}
-                            </span>
+                            <span className="text-2xl font-bold text-red-500">{locale.formatPrice(item.price)}</span>
                             {(() => {
                               const conv = locale.convertPrice(item.price);
                               return conv ? <p className="text-xs text-zinc-500 mt-0.5">≈ {conv.symbol}{conv.converted.toFixed(2)}</p> : null;
                             })()}
                           </div>
                           {priceBadge && (
-                            <div className={`w-fit inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold ${
-                              priceBadge.variant === "great"
-                                ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25"
-                                : "bg-blue-500/15 text-blue-400 border border-blue-500/25"
+                            <div className={`w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold mt-1 ${
+                              priceBadge.variant === "great" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/25" :
+                              "bg-blue-500/15 text-blue-400 border border-blue-500/25"
                             }`}>
-                              <span>✦</span>
+                              <span>{priceBadgeStyles[priceBadge.variant as keyof typeof priceBadgeStyles]?.icon || "✦"}</span>
                               {priceBadge.label}
                             </div>
                           )}
                           {!priceBadge && item.topRatedSeller && (
-                            <div className="w-fit inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-500/15 text-amber-400 border border-amber-500/25">
+                            <div className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold mt-1 bg-amber-500/15 text-amber-400 border border-amber-500/25">
                               <span>★</span> {locale.t("top_rated")}
                             </div>
                           )}
@@ -1233,31 +1217,21 @@ const SearchResults = () => {
                           {item.quantityAvailable != null && item.quantityAvailable > 5 && (
                             <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-400">✓ {locale.t("in_stock")}</span>
                           )}
-                          <div
-                            className="flex items-center gap-1.5 pt-3 mt-auto"
-                            style={{ borderTop: "1px solid #1f1f1f", fontSize: "12px", color: "#52525b" }}
-                          >
-                            <Star size={11} style={{ color: "#cc1111", fill: "#cc1111", flexShrink: 0 }} />
-                            <span style={{ color: "#52525b" }}>{item.sellerPositivePercent?.toFixed(0)}%</span>
-                            <span className="font-medium truncate max-w-[110px]" style={{ color: "#a1a1aa" }}>{item.sellerUsername}</span>
-                            <span style={{ color: "#52525b" }}>({item.sellerFeedbackScore})</span>
+                          <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
+                            <span className="flex items-center gap-0.5 text-amber-400">
+                              <Star size={11} className="fill-amber-400" /> {item.sellerPositivePercent?.toFixed(0)}%
+                            </span>
+                            <span className="font-medium truncate max-w-[100px] text-zinc-400">{item.sellerUsername}</span>
+                            <span className="text-zinc-600">({item.sellerFeedbackScore})</span>
                             {item.watchCount > 0 && (
-                              <span className="flex items-center gap-0.5 ml-auto" style={{ color: "#52525b" }}><Heart size={10} /> {item.watchCount}</span>
+                              <span className="flex items-center gap-0.5 text-zinc-600 ml-auto"><Heart size={10} /> {item.watchCount}</span>
                             )}
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-col sm:flex-row gap-2">
                             <a href={buildEbayAffiliateUrl(item.url)} target="_blank" rel="noopener noreferrer"
-                              className="ebay-cta-btn flex-1 flex items-center justify-center gap-1.5 transition-colors duration-150"
-                              style={{
-                                background: "#cc1111",
-                                color: "#ffffff",
-                                height: "40px",
-                                borderRadius: "8px",
-                                fontSize: "13px",
-                                fontWeight: 600,
-                              }}
+                              className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors duration-150"
                               title="Buying through this link supports GOPARTARA at no extra cost to you ">
-                              View on eBay <span aria-hidden style={{ fontSize: "14px", lineHeight: 1 }}>→</span>
+                              <ExternalLink size={14} /> View on eBay
                             </a>
                             <button onClick={() => {
                               const isSelected = compareParts.some((p) => p.id === item.id);
@@ -1265,14 +1239,14 @@ const SearchResults = () => {
                               else if (compareParts.length < 3) setCompareParts((prev) => [...prev, { id: item.id, title: item.partName, price: item.price, condition: item.condition, sellerName: item.sellerUsername, sellerRating: item.sellerPositivePercent, freeShipping: item.freeShipping, shippingCost: item.shippingCost, location: item.itemLocation, itemCountry: item.itemCountry, url: item.url, imageUrl: item.imageUrl, source: "ebay" as const }]);
                             }}
                               aria-label="Compare this part"
-                              className={`ebay-icon-btn flex items-center justify-center transition-colors ${compareParts.some((p) => p.id === item.id) ? "is-active" : ""}`}
+                              className={`min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-xl border flex items-center justify-center transition-colors ${compareParts.some((p) => p.id === item.id) ? "border-red-500 bg-red-500/20 text-red-400" : "border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] text-zinc-400 hover:text-white"}`}
                               title={compareParts.some((p) => p.id === item.id) ? "Remove" : "Compare"}
                               disabled={!compareParts.some((p) => p.id === item.id) && compareParts.length >= 3}>
                               <Scale size={14} />
                             </button>
                             <button onClick={() => handleSave(item)} disabled={savingId === item.id}
                               aria-label="Save this part"
-                              className="ebay-icon-btn flex items-center justify-center transition-colors">
+                              className="min-w-[44px] min-h-[44px] sm:w-9 sm:h-9 sm:min-w-0 sm:min-h-0 rounded-xl border border-white/[0.06] bg-[#1a1a1a] hover:bg-[#222] flex items-center justify-center transition-colors text-zinc-400 hover:text-white">
                               {savingId === item.id ? <Loader2 size={14} className="animate-spin" /> : savedIds.has(item.partNumber) ? <BookmarkCheck size={14} className="text-red-500" /> : <Bookmark size={14} />}
                             </button>
                             <PriceAlertDialog supplierName="eBay Motors" partQuery={item.partName} supplierUrl={item.url} ebayItemId={item.id} currentPrice={item.price} />
