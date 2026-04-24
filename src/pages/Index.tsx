@@ -52,6 +52,7 @@ const Index = () => {
       />
       <Navbar />
       <HeroSection />
+      <SocialProofStats />
 
       <Link
         to="/deals"
