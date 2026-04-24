@@ -720,35 +720,60 @@ const SearchResults = () => {
               msOverflowStyle: "none",
             }}
           >
-            <button onClick={() => setSearchMode("text")}
-              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
-              className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-colors ${searchMode === "text" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
-              <Search size={14} style={{ flexShrink: 0 }} />
-              <span><span className="hidden sm:inline">Part </span>Search</span>
-            </button>
-            <button onClick={() => setSearchMode("reg")}
-              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
-              className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-colors ${searchMode === "reg" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
-              <Car size={14} style={{ flexShrink: 0 }} /> Reg Plate <span className="text-[10px] bg-blue-900/40 border border-blue-500/30 text-blue-300 px-1.5 py-0.5 rounded font-bold tracking-wider leading-none">UK</span>
-            </button>
-            <button onClick={() => setSearchMode("vin")}
-              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
-              className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-colors ${searchMode === "vin" ? "bg-red-600 text-white shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] text-zinc-400 hover:text-white"}`}>
-              <Search size={14} style={{ flexShrink: 0 }} /> VIN 🌍
-            </button>
-            <button onClick={() => navigate('/tyres')}
-              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full text-sm font-medium bg-zinc-800/80 text-zinc-400 hover:bg-zinc-700 hover:text-white border border-zinc-700/50 transition-colors">
-              <img
-                src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
-                width={16}
-                height={16}
-                alt="tyre"
-                loading="lazy"
-                style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0 }}
-              />
-              <span>Tyre Search</span>
-            </button>
+            {(() => {
+              const tabBase = "flex items-center gap-1.5 px-3 sm:px-4 transition-colors";
+              const activeStyle: React.CSSProperties = {
+                flexShrink: 0,
+                whiteSpace: "nowrap",
+                height: 36,
+                borderRadius: 8,
+                fontSize: 13,
+                fontWeight: 600,
+                background: "#cc1111",
+                color: "#ffffff",
+                border: "1px solid #cc1111",
+              };
+              const inactiveStyle: React.CSSProperties = {
+                flexShrink: 0,
+                whiteSpace: "nowrap",
+                height: 36,
+                borderRadius: 8,
+                fontSize: 13,
+                fontWeight: 500,
+                background: "transparent",
+                color: "#52525b",
+                border: "1px solid #1f1f1f",
+              };
+              const styleFor = (active: boolean) => (active ? activeStyle : inactiveStyle);
+              const cls = (active: boolean) =>
+                `${tabBase} ${active ? "" : "search-tab-inactive"}`;
+              return (
+                <>
+                  <button onClick={() => setSearchMode("text")} style={styleFor(searchMode === "text")} className={cls(searchMode === "text")}>
+                    <Search size={14} style={{ flexShrink: 0 }} />
+                    <span><span className="hidden sm:inline">Part </span>Search</span>
+                  </button>
+                  <button onClick={() => setSearchMode("reg")} style={styleFor(searchMode === "reg")} className={cls(searchMode === "reg")}>
+                    <Car size={14} style={{ flexShrink: 0 }} /> Reg Plate
+                    <span style={{ fontSize: 9, padding: "1px 4px", lineHeight: 1.2, fontWeight: 700, letterSpacing: "0.05em", borderRadius: 3 }} className="bg-blue-900/40 border border-blue-500/30 text-blue-300">UK</span>
+                  </button>
+                  <button onClick={() => setSearchMode("vin")} style={styleFor(searchMode === "vin")} className={cls(searchMode === "vin")}>
+                    <Search size={14} style={{ flexShrink: 0 }} /> VIN 🌍
+                  </button>
+                  <button onClick={() => navigate('/tyres')} style={inactiveStyle} className={`${tabBase} search-tab-inactive`}>
+                    <img
+                      src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
+                      width={16}
+                      height={16}
+                      alt="tyre"
+                      loading="lazy"
+                      style={{ display: "inline-block", verticalAlign: "middle", flexShrink: 0 }}
+                    />
+                    <span>Tyre Search</span>
+                  </button>
+                </>
+              );
+            })()}
           </div>
 
           {searchMode === "text" ? (
