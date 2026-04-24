@@ -281,6 +281,8 @@ const SearchResults = () => {
   const [searchLimitModalType, setSearchLimitModalType] = useState<"free" | "guest">("free");
   const [supplierBannerDismissed, setSupplierBannerDismissed] = useState(() => localStorage.getItem("supplier_banner_dismissed") === "1");
   const resultsRef = useRef<HTMLDivElement>(null);
+  const supplierBannerRef = useRef<HTMLDivElement>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
   const userPlan = useUserPlan();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [upgradeFeature, setUpgradeFeature] = useState("");
@@ -292,6 +294,7 @@ const SearchResults = () => {
   const [garageVehicleLabel, setGarageVehicleLabel] = useState<string | null>(null);
   const [vinCountryInfo, setVinCountryInfo] = useState<VinCountryInfo | null>(null);
   const [vinCountryModalOpen, setVinCountryModalOpen] = useState(false);
+
 
 
   // ── Filter & Sort State ──
@@ -680,6 +683,69 @@ const SearchResults = () => {
     setSortBy("best_match");
   };
 
+  // Live supplier count for header context row (only the green/live ones)
+  const liveSupplierCount = SUPPLIERS.filter((s) => s.status === "live").length;
+
+  // Map supplier id → brandFilter value (must match labels used in FilterBar brand options)
+  const SUPPLIER_BRAND_MAP: Record<string, string> = {
+    ebay: "eBay",
+    greensparkplug: "Green Spark Plug Co.",
+  };
+  const activeSupplierId = (() => {
+    if (brandFilter === "All") return null;
+    const found = Object.entries(SUPPLIER_BRAND_MAP).find(([, v]) => v === brandFilter);
+    return found ? found[0] : null;
+  })();
+  const handleSupplierClick = (supplier: typeof SUPPLIERS[number]) => {
+    if (supplier.status !== "live") return;
+    const brand = SUPPLIER_BRAND_MAP[supplier.id];
+    if (!brand) {
+      // Supplier not directly filterable yet — just scroll back to results
+      setBrandFilter("All");
+      return;
+    }
+    if (brandFilter === brand) setBrandFilter("All");
+    else setBrandFilter(brand);
+  };
+
+  const scrollToSuppliers = () => {
+    if (supplierBannerDismissed) {
+      setSupplierBannerDismissed(false);
+      localStorage.removeItem("supplier_banner_dismissed");
+    }
+    setTimeout(() => {
+      supplierBannerRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 50);
+  };
+
+  // Active filter pill descriptors
+  const activeFilterPills: { key: string; label: string; clear: () => void }[] = [];
+  if (conditionFilter !== "All") activeFilterPills.push({ key: "condition", label: conditionFilter, clear: () => setConditionFilter("All") });
+  if (shippingFilter !== "All") activeFilterPills.push({ key: "shipping", label: shippingFilter, clear: () => setShippingFilter("All") });
+  if (priceRangeIdx !== 0) activeFilterPills.push({ key: "price", label: PRICE_RANGES[priceRangeIdx].label, clear: () => setPriceRangeIdx(0) });
+  if (brandFilter !== "All") activeFilterPills.push({ key: "brand", label: brandFilter, clear: () => setBrandFilter("All") });
+  if (categoryFilter !== "All Parts") activeFilterPills.push({ key: "category", label: categoryFilter, clear: () => setCategoryFilter("All Parts") });
+
+  // Detect reg-plate / garage searches → enables "Fits [reg]" badge
+  const fitRegLabel = (() => {
+    if (vehicleInfo?.registrationNumber) return vehicleInfo.registrationNumber;
+    if (isFromGarage && garageVehicleLabel) return garageVehicleLabel;
+    return null;
+  })();
+
+  // Premium "Load more" handler — advances page; data fetch handles itself via deps
+  const handleLoadMore = async () => {
+    if (currentPage >= totalPages || loadingMore) return;
+    setLoadingMore(true);
+    setCurrentPage(currentPage + 1);
+    window.scrollTo({ top: window.scrollY + 200, behavior: "smooth" });
+  };
+  // Reset loadingMore once new results arrive
+  useEffect(() => {
+    if (!liveLoading) setLoadingMore(false);
+  }, [liveLoading, liveResults]);
+
+
   // Vehicle model confirm handler
   const confirmModel = useCallback(() => {
     if (vehicleModelInput.trim() && vehicleInfo) {
@@ -893,26 +959,56 @@ const SearchResults = () => {
 
         {/* ── Supplier Sources Banner ── */}
         {!supplierBannerDismissed && (
-          <div className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3">
+          <div ref={supplierBannerRef} className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3 scroll-mt-24">
             <div className="flex items-center gap-2 shrink-0 flex-wrap">
-              {SUPPLIERS.map((supplier, idx) => (
-                <span key={supplier.id} className="flex items-center gap-1.5">
-                  {idx > 0 && <span className="text-[10px] text-zinc-600">•</span>}
-                  {supplier.status === 'live' ? (
-                    <span className="flex items-center gap-1.5 font-medium text-white" style={{ fontSize: "12px", fontWeight: 500 }}>
-                      <span className="rounded-full bg-emerald-400 inline-block" style={{ width: "6px", height: "6px" }} />
-                      {supplier.label}
+              {SUPPLIERS.map((supplier, idx) => {
+                const isActive = activeSupplierId === supplier.id;
+                const isFilterable = !!SUPPLIER_BRAND_MAP[supplier.id];
+                const dimmed = activeSupplierId !== null && !isActive;
+                if (supplier.status !== "live") {
+                  return (
+                    <span key={supplier.id} className="flex items-center gap-1.5">
+                      {idx > 0 && <span className="text-[10px] text-zinc-600">•</span>}
+                      <span className="opacity-50 flex items-center gap-1" style={{ fontSize: "12px", color: "#71717a" }}>
+                        <span className="rounded-full bg-zinc-600 inline-block" style={{ width: "6px", height: "6px" }} />
+                        {supplier.label}
+                      </span>
                     </span>
-                  ) : (
-                    <span className="opacity-50 flex items-center gap-1" style={{ fontSize: "12px", color: "#71717a" }}>
-                      <span className="rounded-full bg-zinc-600 inline-block" style={{ width: "6px", height: "6px" }} />
+                  );
+                }
+                return (
+                  <span key={supplier.id} className="flex items-center gap-1.5">
+                    {idx > 0 && <span className="text-[10px] text-zinc-600">•</span>}
+                    <button
+                      type="button"
+                      onClick={() => handleSupplierClick(supplier)}
+                      disabled={!isFilterable}
+                      title={isFilterable ? (isActive ? "Click to clear filter" : `Show only ${supplier.label}`) : `${supplier.label} (live source)`}
+                      className={`flex items-center gap-1.5 font-medium transition-all ${
+                        isFilterable ? "cursor-pointer hover:text-white" : "cursor-default"
+                      } ${
+                        isActive
+                          ? "text-[#cc1111] border-b-2 border-[#cc1111] -mb-[2px] pb-[1px]"
+                          : dimmed
+                            ? "text-white opacity-50"
+                            : "text-white"
+                      }`}
+                      style={{ fontSize: "12px", fontWeight: 500 }}
+                    >
+                      {isActive ? (
+                        <Check size={11} className="text-[#cc1111]" strokeWidth={3} />
+                      ) : (
+                        <span className="rounded-full bg-emerald-400 inline-block" style={{ width: "6px", height: "6px" }} />
+                      )}
                       {supplier.label}
-                    </span>
-                  )}
-                </span>
-              ))}
+                    </button>
+                  </span>
+                );
+              })}
             </div>
-            <p className="text-xs text-zinc-500 flex-1 hidden sm:block">More suppliers coming soon</p>
+            <p className="text-xs text-zinc-500 flex-1 hidden sm:block">
+              {activeSupplierId ? "Filtering by supplier — click again to clear" : "More suppliers coming soon"}
+            </p>
             <button
               onClick={() => { setSupplierBannerDismissed(true); localStorage.setItem("supplier_banner_dismissed", "1"); }}
               className="shrink-0 p-1 rounded-lg hover:bg-white/5 text-zinc-600 hover:text-zinc-400 transition-colors"
@@ -922,6 +1018,7 @@ const SearchResults = () => {
             </button>
           </div>
         )}
+
 
         {activeQuery ? (
           <>
@@ -1007,15 +1104,60 @@ const SearchResults = () => {
                   <span className="text-red-500">"</span>{activeQuery}<span className="text-red-500">"</span>
                 </h1>
                 {totalResults > 0 && !liveLoading && (
-                  <p className="mt-2 flex items-center gap-2" style={{ fontSize: "13px", color: "#52525b" }}>
-                    <span className="rounded-full bg-emerald-500 animate-pulse" style={{ width: "6px", height: "6px" }} />
-                    {activeFilterCount > 0
-                      ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
-                      : `${startItem.toLocaleString()}-${endItem.toLocaleString()} of ${totalResults.toLocaleString()} listings`}
-                  </p>
+                  <>
+                    <p className="mt-2 flex items-center gap-2" style={{ fontSize: "13px", color: "#52525b" }}>
+                      <span className="rounded-full bg-emerald-500 animate-pulse" style={{ width: "6px", height: "6px" }} />
+                      {activeFilterCount > 0
+                        ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
+                        : `${startItem.toLocaleString()}-${endItem.toLocaleString()} of ${totalResults.toLocaleString()} listings`}
+                    </p>
+                    <p className="mt-1.5" style={{ fontSize: "12px", color: "#52525b" }}>
+                      from{" "}
+                      <button
+                        type="button"
+                        onClick={scrollToSuppliers}
+                        className="text-zinc-400 hover:text-[#cc1111] underline-offset-2 hover:underline transition-colors"
+                      >
+                        {liveSupplierCount} suppliers
+                      </button>{" "}
+                      · Last updated just now
+                    </p>
+                  </>
                 )}
               </div>
             </div>
+
+            {/* ── Active Filter Pills ── */}
+            {activeFilterPills.length > 0 && !liveLoading && (
+              <div className="mb-3 flex items-center gap-2 flex-wrap">
+                {activeFilterPills.map((pill) => (
+                  <button
+                    key={pill.key}
+                    type="button"
+                    onClick={pill.clear}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-colors"
+                    style={{
+                      background: "rgba(204,17,17,0.10)",
+                      color: "#cc1111",
+                      border: "1px solid rgba(204,17,17,0.20)",
+                    }}
+                  >
+                    {pill.label}
+                    <X size={11} strokeWidth={2.5} />
+                  </button>
+                ))}
+                {activeFilterPills.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={clearAllFilters}
+                    className="text-xs text-zinc-500 hover:text-white transition-colors ml-1"
+                  >
+                    Clear all
+                  </button>
+                )}
+              </div>
+            )}
+
 
             {/* ── Sort & Filter Bar ── */}
             {liveResults.length > 0 && !liveLoading && (
@@ -1162,6 +1304,21 @@ const SearchResults = () => {
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
                             <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.partName}</p>
                           </a>
+                          {fitRegLabel && (
+                            <span
+                              className="inline-flex items-center gap-1 px-1.5 py-0.5 w-fit text-[11px] font-semibold"
+                              style={{
+                                background: "rgba(34,197,94,0.10)",
+                                color: "#4ade80",
+                                borderRadius: "4px",
+                              }}
+                              title={`Compatible with ${fitRegLabel}`}
+                            >
+                              <Check size={10} strokeWidth={3} />
+                              Fits {fitRegLabel}
+                            </span>
+                          )}
+
                           <div>
                             <span className="text-2xl font-bold text-red-500">{locale.formatPrice(item.price)}</span>
                             {(() => {
@@ -1329,9 +1486,55 @@ const SearchResults = () => {
                   );
                 })()}
 
-                {/* Pagination */}
+                {/* Premium "Load more" button */}
+                {currentPage < totalPages && (
+                  <div className="mt-10 mb-2">
+                    <button
+                      type="button"
+                      onClick={handleLoadMore}
+                      disabled={loadingMore || liveLoading}
+                      className="w-full flex items-center justify-center gap-2 transition-colors disabled:cursor-not-allowed group"
+                      style={{
+                        height: "48px",
+                        background: "transparent",
+                        border: "1px solid #27272a",
+                        borderRadius: "10px",
+                        color: "#a1a1aa",
+                        fontSize: "14px",
+                        fontWeight: 600,
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!loadingMore && !liveLoading) {
+                          e.currentTarget.style.borderColor = "#3f3f46";
+                          e.currentTarget.style.color = "#ffffff";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "#27272a";
+                        e.currentTarget.style.color = "#a1a1aa";
+                      }}
+                    >
+                      {loadingMore || liveLoading ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          Loading more results…
+                        </>
+                      ) : (
+                        <>
+                          Load {Math.min(ITEMS_PER_PAGE, totalResults - endItem)} more results
+                          <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
+                        </>
+                      )}
+                    </button>
+                    <p className="text-center mt-2.5" style={{ fontSize: "12px", color: "#52525b" }}>
+                      Showing {endItem.toLocaleString()} of {totalResults.toLocaleString()} results
+                    </p>
+                  </div>
+                )}
+
+                {/* Pagination (page jump for power users) */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-1 mt-8 flex-wrap">
+                  <div className="flex items-center justify-center gap-1 mt-6 flex-wrap">
                     <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="flex items-center gap-0.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border border-white/[0.06]"><ChevronLeft size={14} /> Prev</button>
                     {getPageNumbers().map((page, i) => page === "..." ? (
                       <span key={`e-${i}`} className="px-2 py-2 text-sm text-zinc-600">...</span>
@@ -1342,6 +1545,7 @@ const SearchResults = () => {
                     <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="flex items-center gap-0.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border border-white/[0.06]">Next <ChevronRight size={14} /></button>
                   </div>
                 )}
+
 
                 {/* Amazon Affiliate Banner */}
                 {activeQuery && (
@@ -1400,27 +1604,83 @@ const SearchResults = () => {
                 </div>
               </div>
             ) : (
-              /* ── Empty / Error State ── */
-              <div className="flex flex-col items-center justify-center py-20 mb-8">
-                <div className="text-6xl mb-4 opacity-30">🔍</div>
-                <p className="text-lg font-semibold text-white mb-1">
-                  {ebayFallback ? "eBay search temporarily unavailable" : `No results found for "${activeQuery}"`}
+              /* ── Empty / Error State (premium) ── */
+              <div className="flex flex-col items-center justify-center py-20 mb-8 px-4">
+                <Search size={80} strokeWidth={1.25} className="mb-6" style={{ color: "#3f3f46" }} />
+                <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 text-center">
+                  {ebayFallback ? "eBay search temporarily unavailable" : <>No results for <span className="text-[#cc1111]">"{activeQuery}"</span></>}
+                </h2>
+                <p className="text-sm text-zinc-500 mb-8 text-center max-w-md">
+                  {ebayFallback
+                    ? "The service is experiencing high demand. Try again in a moment."
+                    : "Try: broader terms · check spelling · remove filters"}
                 </p>
-                <p className="text-sm text-zinc-500 mb-6 text-center max-w-md">
-                  {ebayFallback ? "The service is experiencing high demand. Search suppliers directly below." : "Try a different search term or change your marketplace"}
-                </p>
-                <button onClick={() => { setQuery(""); setActiveQuery(""); setSearchParams({}); }}
-                  className="px-5 py-2.5 rounded-xl bg-[#1a1a1a] border border-white/10 text-sm font-medium text-zinc-300 hover:bg-[#222] hover:border-white/20 transition-colors">
-                  Clear search
-                </button>
+
+                {!ebayFallback && (
+                  <>
+                    {/* Suggestion chips */}
+                    <div className="flex flex-wrap items-center justify-center gap-2 mb-8 max-w-xl">
+                      <span className="text-[11px] uppercase tracking-wider text-zinc-600 mr-1">Try:</span>
+                      {["BMW brake pads", "Ford Focus clutch", "VW Golf filters"].map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => {
+                            setQuery(s);
+                            setActiveQuery(s);
+                            setSelectedCategory(null);
+                            setCurrentPage(1);
+                            setSearchParams({ q: s });
+                          }}
+                          className="px-3 py-1.5 rounded-full text-xs font-medium bg-[#111111] border border-[#27272a] text-zinc-300 hover:text-white hover:border-[#3f3f46] transition-colors"
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center gap-2 mb-8">
+                      {activeFilterCount > 0 && (
+                        <button
+                          onClick={clearAllFilters}
+                          className="px-4 py-2 rounded-xl bg-[#cc1111] hover:bg-[#b30e0e] text-white text-sm font-semibold transition-colors"
+                        >
+                          Clear filters
+                        </button>
+                      )}
+                      <button
+                        onClick={() => { setQuery(""); setActiveQuery(""); setSearchParams({}); }}
+                        className="px-4 py-2 rounded-xl bg-[#1a1a1a] border border-white/10 text-sm font-medium text-zinc-300 hover:bg-[#222] hover:border-white/20 transition-colors"
+                      >
+                        Clear search
+                      </button>
+                    </div>
+
+                    {/* Search tips collapsible */}
+                    <details className="w-full max-w-md group">
+                      <summary className="cursor-pointer flex items-center justify-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors list-none [&::-webkit-details-marker]:hidden">
+                        <ChevronDown size={14} className="transition-transform group-open:rotate-180" />
+                        Search tips
+                      </summary>
+                      <ul className="mt-4 space-y-2 text-xs text-zinc-500 leading-relaxed border border-[#1f1f1f] bg-[#0f0f0f] rounded-xl p-4">
+                        <li>• Use the part name + brand, e.g. <span className="text-zinc-300">"BMW brake pads"</span></li>
+                        <li>• Search by reg plate from the homepage to get fitment-checked results</li>
+                        <li>• Try the OEM part number if you know it (printed on the old part)</li>
+                        <li>• Remove model year if you're getting too few matches</li>
+                        <li>• Switch your country in the marketplace selector for more results</li>
+                      </ul>
+                    </details>
+                  </>
+                )}
+
                 {ebayFallback && (
-                  <div className="mt-8 w-full max-w-lg text-center">
-                    <p className="text-xs text-zinc-500 mb-3 font-medium">eBay search is temporarily unavailable. Please try again in a moment.</p>
+                  <div className="mt-2 w-full max-w-lg text-center">
                     <a href="/contact" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">Need help? Contact us →</a>
                   </div>
                 )}
               </div>
             )}
+
 
           </>
         ) : (
