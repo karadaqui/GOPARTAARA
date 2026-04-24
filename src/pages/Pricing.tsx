@@ -93,7 +93,7 @@ const Pricing = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Pricing Plans — GOPARTARA | First Month Free"
+        title="Pricing Plans | GOPARTARA — First Month Free"
         description="Simple, transparent pricing for GOPARTARA. Free, Pro £9.99/mo, Elite £19.99/mo. Start with 10 free searches. No credit card needed."
         path="/pricing"
         jsonLd={{

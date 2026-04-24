@@ -25,7 +25,7 @@ const NotFound = () => {
   return (
     <>
       <SEOHead
-        title="Part Not Found — GOPARTARA"
+        title="Page Not Found | GOPARTARA"
         description="The page you're looking for doesn't exist. Head back to GOPARTARA to find any car part instantly."
         path={location.pathname}
       />
