@@ -37,7 +37,7 @@ const HowItWorksSection = () => (
           How It Works
         </span>
         <h2 className="font-display text-2xl md:text-5xl font-bold mb-5 tracking-tight">
-          Four Simple Steps
+          Find &amp; Save in Minutes
         </h2>
         <p className="text-muted-foreground max-w-xl mx-auto text-base md:text-lg leading-relaxed">
           Finding the right car part shouldn't take hours. With GOPARTARA, it takes seconds.
