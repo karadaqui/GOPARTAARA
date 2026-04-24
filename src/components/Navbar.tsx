@@ -145,7 +145,7 @@ const Navbar = () => {
           </a>
 
           {/* Center: Primary nav links */}
-          <div className="hidden md:flex items-center justify-center gap-7">
+          <div className="hidden md:flex items-center justify-center gap-5 lg:gap-6">
             {primaryLinks.map((l) => {
               const isActive =
                 pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
@@ -155,13 +155,14 @@ const Navbar = () => {
                   onClick={() => handleNavClick(l.href)}
                   className="transition-colors"
                   style={{
-                    fontSize: "14px",
+                    fontSize: "13px",
                     fontWeight: isActive ? 500 : 400,
                     color: isActive ? "#ffffff" : "#a1a1aa",
                     background: "none",
                     border: "none",
                     cursor: "pointer",
                     padding: "4px 0",
+                    whiteSpace: "nowrap",
                   }}
                   onMouseEnter={(e) => {
                     if (!isActive) e.currentTarget.style.color = "#ffffff";
@@ -179,13 +180,14 @@ const Navbar = () => {
               <button
                 className="transition-colors flex items-center gap-1"
                 style={{
-                  fontSize: "14px",
+                  fontSize: "13px",
                   fontWeight: 400,
                   color: "#a1a1aa",
                   background: "none",
                   border: "none",
                   cursor: "pointer",
                   padding: "4px 0",
+                  whiteSpace: "nowrap",
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
@@ -218,12 +220,13 @@ const Navbar = () => {
                           onClick={() => handleNavClick(l.href)}
                           className="w-full rounded-md px-3 py-2 text-left transition-colors"
                           style={{
-                            fontSize: "14px",
+                            fontSize: "13px",
                             fontWeight: isActive ? 500 : 400,
                             color: isActive ? "#ffffff" : "#a1a1aa",
                             background: "none",
                             border: "none",
                             cursor: "pointer",
+                            whiteSpace: "nowrap",
                           }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.color = "#ffffff";
@@ -257,15 +260,16 @@ const Navbar = () => {
                     {user.email === ADMIN_EMAIL && (
                       <button
                         onClick={() => navigate("/admin")}
-                        className="transition-colors"
+                        className="transition-colors hidden lg:inline-flex"
                         style={{
-                          fontSize: "14px",
+                          fontSize: "13px",
                           fontWeight: 500,
                           color: "#a1a1aa",
                           background: "none",
                           border: "none",
                           cursor: "pointer",
                           padding: "6px 8px",
+                          whiteSpace: "nowrap",
                         }}
                         onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
                         onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
@@ -278,13 +282,14 @@ const Navbar = () => {
                       onClick={() => navigate("/dashboard")}
                       className="transition-colors rounded-md"
                       style={{
-                        fontSize: "14px",
+                        fontSize: "13px",
                         fontWeight: 400,
                         color: "#e4e4e7",
                         background: "transparent",
                         border: "1px solid #27272a",
                         cursor: "pointer",
                         padding: "6px 12px",
+                        whiteSpace: "nowrap",
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.borderColor = "#3f3f46";
@@ -302,13 +307,14 @@ const Navbar = () => {
                       onClick={signOut}
                       className="transition-colors"
                       style={{
-                        fontSize: "14px",
+                        fontSize: "13px",
                         fontWeight: 400,
                         color: "#a1a1aa",
                         background: "none",
                         border: "none",
                         cursor: "pointer",
                         padding: "6px 8px",
+                        whiteSpace: "nowrap",
                       }}
                       onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
                       onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
