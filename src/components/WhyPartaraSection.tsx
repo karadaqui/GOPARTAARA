@@ -14,17 +14,18 @@ const ROWS: { feature: string; values: [Cell, Cell, Cell, Cell] }[] = [
   { feature: "P2P Marketplace", values: [true, false, false, true] },
 ];
 
-const renderCell = (value: Cell, isPartara: boolean) => {
+const renderCell = (value: Cell, isPartara: boolean, feature?: string) => {
   if (value === true) {
     return <span style={{ color: "#4ade80", fontSize: "18px", fontWeight: 700 }}>✓</span>;
   }
   if (value === false) {
     return <span style={{ color: "#3f3f46", fontSize: "18px" }}>✗</span>;
   }
+  const isSuppliersGopartara = isPartara && feature === "Suppliers searched";
   return (
     <span
       style={{
-        color: isPartara ? "#ffffff" : "#a1a1aa",
+        color: isSuppliersGopartara ? "#4ade80" : isPartara ? "#ffffff" : "#a1a1aa",
         fontSize: "14px",
         fontWeight: isPartara ? 700 : 500,
       }}
@@ -71,7 +72,7 @@ const WhyPartaraSection = () => {
         >
           <table className="w-full min-w-[680px]" style={{ borderCollapse: "collapse" }}>
             <thead>
-              <tr style={{ borderBottom: "1px solid #1f1f1f" }}>
+              <tr style={{ borderBottom: "1px solid #1f1f1f", background: "#161616" }}>
                 <th
                   className="text-left"
                   style={{
@@ -94,11 +95,10 @@ const WhyPartaraSection = () => {
                       style={{
                         padding: "20px 16px",
                         fontSize: isPartara ? "14px" : "13px",
-                        fontWeight: isPartara ? 700 : 600,
-                        color: isPartara ? "#cc1111" : "#d4d4d8",
+                        fontWeight: isPartara ? 700 : 500,
+                        color: isPartara ? "#cc1111" : "#a1a1aa",
                         borderLeft: isPartara ? "2px solid #cc1111" : undefined,
-                        background: isPartara ? "rgba(204,17,17,0.04)" : undefined,
-                        textTransform: isPartara ? undefined : "lowercase",
+                        background: isPartara ? "rgba(204,17,17,0.08)" : undefined,
                         letterSpacing: isPartara ? "0.02em" : undefined,
                         whiteSpace: "nowrap",
                       }}
@@ -136,7 +136,7 @@ const WhyPartaraSection = () => {
                             background: isPartara ? "rgba(204,17,17,0.04)" : undefined,
                           }}
                         >
-                          {renderCell(value, isPartara)}
+                          {renderCell(value, isPartara, row.feature)}
                         </td>
                       );
                     })}
@@ -145,6 +145,33 @@ const WhyPartaraSection = () => {
               })}
             </tbody>
           </table>
+        </div>
+
+        <div className="text-center mt-8">
+          <p
+            style={{
+              fontSize: "13px",
+              color: "#a1a1aa",
+              marginBottom: "12px",
+            }}
+          >
+            GOPARTARA searches more suppliers than anyone. For free.
+          </p>
+          <a
+            href="/search"
+            className="inline-flex items-center justify-center transition-opacity hover:opacity-90"
+            style={{
+              background: "#cc1111",
+              color: "#ffffff",
+              fontSize: "14px",
+              fontWeight: 600,
+              padding: "12px 24px",
+              borderRadius: "10px",
+              textDecoration: "none",
+            }}
+          >
+            Start Searching Free →
+          </a>
         </div>
 
         <p
