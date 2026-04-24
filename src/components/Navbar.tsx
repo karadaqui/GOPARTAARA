@@ -427,53 +427,96 @@ const Navbar = () => {
               </button>
             </div>
 
-            {/* Links */}
+            {/* Links — grouped with section separators */}
             <div style={{ padding: "12px", flex: 1 }}>
               {[
-                { label: "Home", href: "/", icon: "🏠" },
-                { label: "Search Parts", href: "/search", icon: "🔍" },
-                { label: "Tyres", href: "/tyres", icon: "tyre" },
-                { label: "Deals", href: "/deals", icon: "🔥" },
-                { label: "Marketplace", href: "/marketplace", icon: "🏪" },
-                { label: "Pricing", href: "/pricing", icon: "💰" },
-                { label: "Blog", href: "/blog", icon: "📝" },
-                { label: "For Business", href: "/business", icon: "🏢" },
-                { label: "Dashboard", href: "/dashboard", icon: "📊" },
-              ].map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => handleMobileLinkClick(e, link.href)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    padding: "13px 12px",
-                    color: "#ffffff",
-                    textDecoration: "none",
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    borderRadius: "10px",
-                    marginBottom: "2px",
-                    WebkitTapHighlightColor: "transparent",
-                  }}
-                >
-                  {link.icon === "tyre" ? (
-                    <img
-                      src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
-                      width={18}
-                      height={18}
-                      alt=""
-                      loading="lazy"
-                      style={{ display: "inline-block", verticalAlign: "middle" }}
+                {
+                  title: "Browse",
+                  items: [
+                    { label: "Home", href: "/", icon: "🏠" },
+                    { label: "Search Parts", href: "/search", icon: "🔍" },
+                    { label: "Tyres", href: "/tyres", icon: "tyre" },
+                    { label: "Deals", href: "/deals", icon: "🔥" },
+                    { label: "Marketplace", href: "/marketplace", icon: "🏪" },
+                  ],
+                },
+                {
+                  title: "Account",
+                  items: [
+                    { label: "Pricing", href: "/pricing", icon: "💰" },
+                    { label: "Dashboard", href: "/dashboard", icon: "📊" },
+                  ],
+                },
+                {
+                  title: "Company",
+                  items: [
+                    { label: "Blog", href: "/blog", icon: "📝" },
+                    { label: "For Business", href: "/business", icon: "🏢" },
+                    { label: "Help Center", href: "/help", icon: "❓" },
+                    { label: "About", href: "/about", icon: "ℹ️" },
+                    { label: "Contact", href: "/contact", icon: "✉️" },
+                  ],
+                },
+              ].map((section, sIdx) => (
+                <div key={section.title} style={{ marginTop: sIdx === 0 ? 0 : 12 }}>
+                  <div
+                    style={{
+                      fontSize: "11px",
+                      fontWeight: 600,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: "#52525b",
+                      padding: "8px 12px 6px",
+                    }}
+                  >
+                    {section.title}
+                  </div>
+                  {section.items.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      onClick={(e) => handleMobileLinkClick(e, link.href)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        padding: "13px 12px",
+                        color: "#ffffff",
+                        textDecoration: "none",
+                        fontSize: "15px",
+                        fontWeight: 600,
+                        borderRadius: "10px",
+                        marginBottom: "2px",
+                        WebkitTapHighlightColor: "transparent",
+                      }}
+                    >
+                      {link.icon === "tyre" ? (
+                        <img
+                          src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
+                          width={18}
+                          height={18}
+                          alt=""
+                          loading="lazy"
+                          style={{ display: "inline-block", verticalAlign: "middle" }}
+                        />
+                      ) : (
+                        <span style={{ fontSize: "18px", width: "20px", textAlign: "center" }}>
+                          {link.icon}
+                        </span>
+                      )}
+                      {link.label}
+                    </a>
+                  ))}
+                  {sIdx < 2 && (
+                    <div
+                      style={{
+                        height: "1px",
+                        background: "#1f1f1f",
+                        margin: "8px 12px 0",
+                      }}
                     />
-                  ) : (
-                    <span style={{ fontSize: "18px", width: "20px", textAlign: "center" }}>
-                      {link.icon}
-                    </span>
                   )}
-                  {link.label}
-                </a>
+                </div>
               ))}
             </div>
 
