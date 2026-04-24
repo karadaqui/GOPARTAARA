@@ -434,6 +434,7 @@ const Dashboard = () => {
             icon={<BellIcon size={20} style={{ color: "#cc1111" }} />}
             label="Price Alerts"
             value={String(priceAlertsCount)}
+            onClick={() => navigate("/alerts")}
           />
         </div>
 
