@@ -292,12 +292,12 @@ const HeroSection = () => {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary/6 blur-[180px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-primary/4 blur-[140px] pointer-events-none" />
 
-      <div className="container relative z-10 text-center px-4 py-12 sm:py-0">
+      <div className="container relative z-10 text-center px-4 py-20 sm:py-24">
         {/* Badge */}
         <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md text-xs text-zinc-400 mb-10">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            ⚡ 1,000,000+ parts searchable · Free to compare
+            1,000,000+ parts searchable · Free to compare
           </div>
         </div>
 
