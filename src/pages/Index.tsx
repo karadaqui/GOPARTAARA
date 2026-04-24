@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import SocialProofStats from "@/components/SocialProofStats";
+import HomeCTASection from "@/components/HomeCTASection";
 
 // Below-the-fold: lazy-load to keep initial JS small and defer their data fetches
 const FeaturesSection = lazy(() => import("@/components/FeaturesSection"));
@@ -78,6 +79,8 @@ const Index = () => {
         <FeaturesSection />
         <PricingSection />
       </Suspense>
+
+      <HomeCTASection />
 
       <Footer />
       <BackToTop />

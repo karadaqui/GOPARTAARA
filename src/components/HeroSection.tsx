@@ -293,8 +293,8 @@ const HeroSection = () => {
       style={{
         minHeight: "70vh",
         backgroundImage:
-          "radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px)",
-        backgroundSize: "28px 28px",
+          "radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)",
+        backgroundSize: "24px 24px",
       }}
     >
       {/* Background glow orbs */}
