@@ -239,6 +239,88 @@ const SearchAutocomplete = ({ query, open, onSelect, onClose, inputRef }: Props)
         )
       ) : (
         <div className="p-3">
+          {recents.length > 0 && (
+            <div className="mb-3">
+              <div className="flex items-center justify-between mb-1.5 px-1">
+                <span
+                  style={{
+                    fontSize: 12,
+                    color: "#71717a",
+                    fontWeight: 500,
+                  }}
+                >
+                  Recent searches
+                </span>
+                <button
+                  type="button"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    clearRecentSearches();
+                    setRecents([]);
+                  }}
+                  style={{
+                    fontSize: 12,
+                    color: "#71717a",
+                    cursor: "pointer",
+                    background: "transparent",
+                    border: "none",
+                    padding: 0,
+                  }}
+                  className="hover:!text-zinc-300 transition-colors"
+                >
+                  Clear all
+                </button>
+              </div>
+              <ul>
+                {recents.map((r) => (
+                  <li
+                    key={r}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      onSelect(r);
+                    }}
+                    className="flex items-center justify-between cursor-pointer transition-colors hover:bg-white/5"
+                    style={{
+                      height: 38,
+                      padding: "0 8px",
+                      borderRadius: 6,
+                    }}
+                  >
+                    <span className="flex items-center gap-2.5 min-w-0">
+                      <Clock size={13} style={{ color: "#52525b", flexShrink: 0 }} />
+                      <span
+                        className="text-sm truncate"
+                        style={{ color: "#a1a1aa" }}
+                      >
+                        {r}
+                      </span>
+                    </span>
+                    <button
+                      type="button"
+                      aria-label={`Remove ${r}`}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        removeRecentSearch(r);
+                        setRecents((prev) => prev.filter((it) => it !== r));
+                      }}
+                      className="opacity-50 hover:opacity-100 transition-opacity"
+                      style={{
+                        background: "transparent",
+                        border: "none",
+                        color: "#71717a",
+                        cursor: "pointer",
+                        padding: 4,
+                        marginRight: -4,
+                      }}
+                    >
+                      <X size={13} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <p
             className="mb-2 px-1"
             style={{
