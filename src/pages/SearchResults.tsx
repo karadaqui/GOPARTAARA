@@ -29,6 +29,7 @@ import SearchCounter from "@/components/SearchCounter";
 import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsComparison";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { toast as sonnerToast } from "sonner";
 import { useSearchLimit, isSameQuery, setLastSearch, getGuestSearchCount, incrementGuestSearch } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
 import LocationNudge from "@/components/LocationNudge";
