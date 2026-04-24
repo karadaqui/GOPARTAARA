@@ -58,6 +58,7 @@ const Business = lazy(() => import("./pages/Business.tsx"));
 const Compare = lazy(() => import("./pages/Compare.tsx"));
 const Help = lazy(() => import("./pages/Help.tsx"));
 const Cookies = lazy(() => import("./pages/Cookies.tsx"));
+const Alerts = lazy(() => import("./pages/Alerts.tsx"));
 
 const queryClient = new QueryClient();
 
