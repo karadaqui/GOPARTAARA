@@ -650,7 +650,7 @@ const HeroSection = () => {
                       <button
                         type="submit"
                         disabled={identifying}
-                        className="shrink-0 flex-1 sm:flex-none transition-colors disabled:opacity-60"
+                        className="shrink-0 flex-1 sm:flex-none transition-transform disabled:opacity-60 hover:scale-[1.02]"
                         style={{
                           background: "#cc1111",
                           color: "#ffffff",
@@ -661,6 +661,7 @@ const HeroSection = () => {
                           padding: "0 24px",
                           border: "none",
                           cursor: identifying ? "not-allowed" : "pointer",
+                          transitionDuration: "150ms",
                         }}
                       >
                         Search
