@@ -573,7 +573,38 @@ const SearchResults = () => {
         }
         await supabase.from("saved_parts").insert({ user_id: user.id, part_name: item.partName, part_number: item.partNumber, price: item.price, supplier: "eBay Motors", url: item.url, image_url: item.imageUrl });
         setSavedIds((prev) => new Set(prev).add(item.partNumber));
-        toast({ title: "Part saved!" });
+        // Premium saved-part toast — sonner, bottom-left
+        sonnerToast.custom(
+          (id) => (
+            <div
+              className="flex items-center gap-3 px-4 py-3 rounded-lg shadow-2xl"
+              style={{
+                background: "#111111",
+                border: "1px solid #1f1f1f",
+                borderLeft: "3px solid #4ade80",
+                minWidth: "280px",
+              }}
+            >
+              <div
+                className="flex items-center justify-center rounded-full shrink-0"
+                style={{ width: 24, height: 24, background: "rgba(74,222,128,0.15)" }}
+              >
+                <Check size={14} style={{ color: "#4ade80" }} strokeWidth={3} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-white">Part saved to your list</p>
+              </div>
+              <button
+                onClick={() => { sonnerToast.dismiss(id); navigate("/saved-parts"); }}
+                className="text-xs font-semibold whitespace-nowrap hover:underline"
+                style={{ color: "#cc1111" }}
+              >
+                View saved parts
+              </button>
+            </div>
+          ),
+          { duration: 3000, position: "bottom-left" }
+        );
       }
     } catch { toast({ title: "Failed to save", variant: "destructive" }); }
     finally { setSavingId(null); }
