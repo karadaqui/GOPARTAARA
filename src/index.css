@@ -178,16 +178,63 @@ html, body {
     box-shadow: 0 20px 40px -15px hsl(0 0% 0% / 0.4);
   }
 
-  /* Scroll reveal — always visible to prevent hidden content / black voids */
-  .reveal,
+  /* Scroll reveal — fades + slides into view via IntersectionObserver */
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    will-change: opacity, transform;
+  }
   .reveal.revealed {
     opacity: 1;
-    transform: none;
+    transform: translateY(0);
   }
-  .reveal-delay-1,
-  .reveal-delay-2,
-  .reveal-delay-3,
-  .reveal-delay-4 { transition-delay: 0s; }
+  .reveal-delay-1.revealed { transition-delay: 0.1s; }
+  .reveal-delay-2.revealed { transition-delay: 0.2s; }
+  .reveal-delay-3.revealed { transition-delay: 0.3s; }
+  .reveal-delay-4.revealed { transition-delay: 0.4s; }
+
+  /* Stagger children inside a .reveal-stagger when revealed */
+  .reveal-stagger.revealed > *:nth-child(1) { transition-delay: 0s; }
+  .reveal-stagger.revealed > *:nth-child(2) { transition-delay: 0.1s; }
+  .reveal-stagger.revealed > *:nth-child(3) { transition-delay: 0.2s; }
+  .reveal-stagger.revealed > *:nth-child(4) { transition-delay: 0.3s; }
+  .reveal-stagger.revealed > *:nth-child(5) { transition-delay: 0.4s; }
+  .reveal-stagger.revealed > *:nth-child(6) { transition-delay: 0.5s; }
+
+  /* Search result card stagger entrance — animation-driven, indexed via --i */
+  @keyframes resultCardEnter {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .result-card-enter {
+    opacity: 0;
+    animation: resultCardEnter 0.3s ease-out forwards;
+    animation-delay: calc(var(--i, 0) * 50ms);
+  }
+
+  /* Auto-stagger children of a results grid (no per-card props needed) */
+  .results-grid-stagger > * {
+    opacity: 0;
+    animation: resultCardEnter 0.3s ease-out forwards;
+  }
+  .results-grid-stagger > *:nth-child(1)  { animation-delay: 0ms; }
+  .results-grid-stagger > *:nth-child(2)  { animation-delay: 50ms; }
+  .results-grid-stagger > *:nth-child(3)  { animation-delay: 100ms; }
+  .results-grid-stagger > *:nth-child(4)  { animation-delay: 150ms; }
+  .results-grid-stagger > *:nth-child(5)  { animation-delay: 200ms; }
+  .results-grid-stagger > *:nth-child(6)  { animation-delay: 250ms; }
+  .results-grid-stagger > *:nth-child(7)  { animation-delay: 300ms; }
+  .results-grid-stagger > *:nth-child(8)  { animation-delay: 350ms; }
+  .results-grid-stagger > *:nth-child(9)  { animation-delay: 400ms; }
+  .results-grid-stagger > *:nth-child(10) { animation-delay: 450ms; }
+  .results-grid-stagger > *:nth-child(11) { animation-delay: 500ms; }
+  .results-grid-stagger > *:nth-child(12) { animation-delay: 550ms; }
+  .results-grid-stagger > *:nth-child(n+13) { animation-delay: 600ms; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .results-grid-stagger > * { animation: none; opacity: 1; }
+  }
 
   /* Animated gradient bg for hero */
   .animated-gradient-bg {
@@ -481,8 +528,9 @@ nav a, nav button, button, a {
 .logo-part {
   font-size: 1em;
   font-weight: 800;
-  color: #cc1111;
+  color: #ffffff;
   letter-spacing: -0.03em;
+  transition: color 0.2s ease;
 }
 
 .logo-ara {

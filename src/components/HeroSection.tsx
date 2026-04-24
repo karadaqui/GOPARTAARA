@@ -480,85 +480,9 @@ const HeroSection = () => {
               </button>
             </div>
 
-            {/* Tabs — Desktop (clean underline) */}
-            <div
-              className="hidden md:flex md:items-center md:justify-center md:gap-7 md:mb-5"
-              style={{ borderBottom: "1px solid #1f1f1f" }}
-            >
-              {[
-                { key: "part", label: "Parts", icon: <Search size={14} style={{ flexShrink: 0 }} /> },
-                { key: "plate", label: "Reg Plate UK", icon: <Car size={14} style={{ flexShrink: 0 }} /> },
-                { key: "vin", label: "VIN", icon: <span style={{ fontSize: 13 }}>🌍</span> },
-              ].map((tab) => {
-                const isActive = activeTab === tab.key;
-                return (
-                  <button
-                    key={tab.key}
-                    onClick={() => setActiveTab(tab.key as "part" | "plate" | "vin")}
-                    style={{
-                      flexShrink: 0,
-                      whiteSpace: "nowrap",
-                      padding: "8px 2px",
-                      paddingBottom: "8px",
-                      marginBottom: "-1px",
-                      background: "transparent",
-                      border: "none",
-                      borderBottom: isActive ? "2px solid #cc1111" : "2px solid transparent",
-                      color: isActive ? "#ffffff" : "#52525b",
-                      fontSize: "13px",
-                      fontWeight: isActive ? 600 : 400,
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      transition: "color 150ms ease, border-color 150ms ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isActive) e.currentTarget.style.color = "#a1a1aa";
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive) e.currentTarget.style.color = "#52525b";
-                    }}
-                  >
-                    {tab.icon}
-                    {tab.label}
-                  </button>
-                );
-              })}
-              <button
-                onClick={() => navigate("/tyres")}
-                style={{
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                  padding: "8px 2px",
-                  paddingBottom: "8px",
-                  marginBottom: "-1px",
-                  background: "transparent",
-                  border: "none",
-                  borderBottom: "2px solid transparent",
-                  color: "#52525b",
-                  fontSize: "13px",
-                  fontWeight: 400,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  transition: "color 150ms ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#a1a1aa")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#52525b")}
-              >
-                <img
-                  src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
-                  width={14}
-                  height={14}
-                  alt=""
-                  loading="lazy"
-                  style={{ flexShrink: 0 }}
-                />
-                Tyres
-              </button>
-            </div>
+            {/* Tabs — Desktop (animated underline) */}
+            <DesktopTabsBar activeTab={activeTab} setActiveTab={setActiveTab} navigate={navigate} />
+
 
             {/* Part search */}
             {activeTab === "part" ? (
@@ -650,7 +574,7 @@ const HeroSection = () => {
                       <button
                         type="submit"
                         disabled={identifying}
-                        className="shrink-0 flex-1 sm:flex-none transition-colors disabled:opacity-60"
+                        className="shrink-0 flex-1 sm:flex-none transition-transform disabled:opacity-60 hover:scale-[1.02]"
                         style={{
                           background: "#cc1111",
                           color: "#ffffff",
@@ -661,6 +585,7 @@ const HeroSection = () => {
                           padding: "0 24px",
                           border: "none",
                           cursor: identifying ? "not-allowed" : "pointer",
+                          transitionDuration: "150ms",
                         }}
                       >
                         Search
@@ -1090,3 +1015,112 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+
+/* ── Desktop tab bar with smoothly sliding underline ─────────────────── */
+type TabKey = "part" | "plate" | "vin";
+const DESKTOP_TABS: { key: TabKey | "tyres"; label: string; icon: React.ReactNode }[] = [
+  { key: "part", label: "Parts", icon: <Search size={14} style={{ flexShrink: 0 }} /> },
+  { key: "plate", label: "Reg Plate UK", icon: <Car size={14} style={{ flexShrink: 0 }} /> },
+  { key: "vin", label: "VIN", icon: <span style={{ fontSize: 13 }}>🌍</span> },
+  {
+    key: "tyres",
+    label: "Tyres",
+    icon: (
+      <img
+        src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
+        width={14}
+        height={14}
+        alt=""
+        loading="lazy"
+        style={{ flexShrink: 0 }}
+      />
+    ),
+  },
+];
+
+const DesktopTabsBar = ({
+  activeTab,
+  setActiveTab,
+  navigate,
+}: {
+  activeTab: TabKey;
+  setActiveTab: (t: TabKey) => void;
+  navigate: (path: string) => void;
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const [indicator, setIndicator] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
+
+  useEffect(() => {
+    const el = tabRefs.current[activeTab];
+    const wrap = containerRef.current;
+    if (!el || !wrap) return;
+    const elRect = el.getBoundingClientRect();
+    const wrapRect = wrap.getBoundingClientRect();
+    setIndicator({ left: elRect.left - wrapRect.left, width: elRect.width });
+  }, [activeTab]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="hidden md:flex md:items-center md:justify-center md:gap-7 md:mb-5 relative"
+      style={{ borderBottom: "1px solid #1f1f1f" }}
+    >
+      {DESKTOP_TABS.map((tab) => {
+        const isActive = tab.key === activeTab;
+        const handleClick = () => {
+          if (tab.key === "tyres") {
+            navigate("/tyres");
+          } else {
+            setActiveTab(tab.key as TabKey);
+          }
+        };
+        return (
+          <button
+            key={tab.key}
+            ref={(el) => (tabRefs.current[tab.key] = el)}
+            onClick={handleClick}
+            style={{
+              flexShrink: 0,
+              whiteSpace: "nowrap",
+              padding: "8px 2px",
+              background: "transparent",
+              border: "none",
+              color: isActive ? "#ffffff" : "#52525b",
+              fontSize: "13px",
+              fontWeight: isActive ? 600 : 400,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              transition: "color 200ms ease",
+            }}
+            onMouseEnter={(e) => {
+              if (!isActive) e.currentTarget.style.color = "#a1a1aa";
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive) e.currentTarget.style.color = "#52525b";
+            }}
+          >
+            {tab.icon}
+            {tab.label}
+          </button>
+        );
+      })}
+      <span
+        aria-hidden
+        style={{
+          position: "absolute",
+          bottom: -1,
+          left: indicator.left,
+          width: indicator.width,
+          height: 2,
+          background: "#cc1111",
+          borderRadius: 2,
+          transition: "left 300ms cubic-bezier(0.4, 0, 0.2, 1), width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+          pointerEvents: "none",
+        }}
+      />
+    </div>
+  );
+};
