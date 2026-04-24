@@ -123,6 +123,13 @@ const SearchAutocomplete = ({ query, open, onSelect, onClose, inputRef }: Props)
       ).slice(0, 8)
     : [];
 
+  const [recents, setRecents] = useState<string[]>([]);
+  useEffect(() => {
+    if (open && !showSuggestions) {
+      setRecents(getRecentSearches().slice(0, 5));
+    }
+  }, [open, showSuggestions]);
+
   // Reset highlight when query changes
   useEffect(() => {
     setActiveIdx(-1);
