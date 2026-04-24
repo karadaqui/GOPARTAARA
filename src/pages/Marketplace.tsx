@@ -436,34 +436,6 @@ const Marketplace = () => {
               </>
             )}
 
-            {/* Why list on GOPARTARA */}
-            <div className="mt-12">
-              <h2 className="font-display text-xl font-bold mb-1 text-center">Why list on GOPARTARA?</h2>
-              <p className="text-muted-foreground text-sm text-center mb-6">Reach buyers actively searching for car parts</p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[
-                  { icon: Tag, title: "Free to list", desc: "List up to 5 parts free — no commission, no listing fees." },
-                  { icon: Users, title: "50,000+ potential buyers", desc: "UK drivers and mechanics browse the marketplace daily." },
-                  { icon: Zap, title: "Instant visibility", desc: "Listings go live immediately after our quick approval." },
-                ].map(({ icon: Icon, title, desc }) => (
-                  <div
-                    key={title}
-                    className="rounded-2xl p-5 transition-colors hover:border-white/15"
-                    style={{ background: "#111111", border: "1px solid #1f1f1f" }}
-                  >
-                    <div
-                      className="flex items-center justify-center mb-3 rounded-lg"
-                      style={{ width: 40, height: 40, background: "rgba(204,17,17,0.1)" }}
-                    >
-                      <Icon size={20} style={{ color: "#cc1111" }} />
-                    </div>
-                    <h3 className="font-display text-base font-bold text-white mb-1">{title}</h3>
-                    <p className="text-sm text-zinc-500 leading-relaxed">{desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             <div className="glass rounded-2xl p-8 mt-8 text-center">
               <h2 className="font-display text-xl font-bold mb-2">Sell Your Parts on GOPARTARA</h2>
               <p className="text-muted-foreground mb-4">Reach thousands of car owners and mechanics.</p>
