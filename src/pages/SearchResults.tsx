@@ -1304,6 +1304,21 @@ const SearchResults = () => {
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
                             <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.partName}</p>
                           </a>
+                          {fitRegLabel && (
+                            <span
+                              className="inline-flex items-center gap-1 px-1.5 py-0.5 w-fit text-[11px] font-semibold"
+                              style={{
+                                background: "rgba(34,197,94,0.10)",
+                                color: "#4ade80",
+                                borderRadius: "4px",
+                              }}
+                              title={`Compatible with ${fitRegLabel}`}
+                            >
+                              <Check size={10} strokeWidth={3} />
+                              Fits {fitRegLabel}
+                            </span>
+                          )}
+
                           <div>
                             <span className="text-2xl font-bold text-red-500">{locale.formatPrice(item.price)}</span>
                             {(() => {
