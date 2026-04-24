@@ -324,9 +324,8 @@ const HeroSection = () => {
           <div id="search" className="max-w-3xl mx-auto">
             {/* Tabs — Mobile (scrollable) */}
             <div
-              className="md:hidden tab-scroll-container"
+              className="md:hidden tab-scroll-container flex"
               style={{
-                display: "flex",
                 gap: "8px",
                 paddingLeft: "16px",
                 paddingRight: "16px",
