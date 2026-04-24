@@ -1671,19 +1671,7 @@ const SearchResults = () => {
                   </div>
                 )}
 
-                {/* Pagination (page jump for power users) */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-1 mt-6 flex-wrap">
-                    <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="flex items-center gap-0.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border border-white/[0.06]"><ChevronLeft size={14} /> Prev</button>
-                    {getPageNumbers().map((page, i) => page === "..." ? (
-                      <span key={`e-${i}`} className="px-2 py-2 text-sm text-zinc-600">...</span>
-                    ) : (
-                      <button key={page} onClick={() => handlePageChange(page as number)}
-                        className={`min-w-[36px] h-9 rounded-xl text-sm font-medium transition-colors border ${currentPage === page ? "bg-red-600 text-white border-red-600 shadow-lg shadow-red-600/25" : "bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border-white/[0.06]"}`}>{page}</button>
-                    ))}
-                    <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="flex items-center gap-0.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border border-white/[0.06]">Next <ChevronRight size={14} /></button>
-                  </div>
-                )}
+                {/* Page-jump pagination removed in favor of "Load more" append flow */}
 
 
                 {/* Amazon Affiliate Banner */}
