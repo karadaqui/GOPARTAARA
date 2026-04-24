@@ -47,7 +47,7 @@ const Navbar = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
@@ -106,10 +106,11 @@ const Navbar = () => {
           WebkitTransform: "translateZ(0)",
           transform: "translateZ(0)",
           willChange: "transform",
-          backgroundColor: scrolled ? "rgba(0,0,0,0.85)" : "transparent",
+          backgroundColor: scrolled ? "rgba(8,8,8,0.85)" : "transparent",
           backdropFilter: scrolled ? "blur(20px)" : "none",
           WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
           borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
+          transition: "background-color 200ms ease, border-color 200ms ease, backdrop-filter 200ms ease",
         }}
       >
         <div className="container grid grid-cols-[auto_1fr_auto] items-center gap-4" style={{ height: "56px" }}>
@@ -137,10 +138,9 @@ const Navbar = () => {
           >
             <span className="logo-text text-xl">
               <span className="logo-go">GO</span>
-              <span className="logo-part transition-colors group-hover:drop-shadow-[0_0_8px_hsl(0_85%_50%/0.6)]">
-                PART
+              <span className="logo-part transition-colors duration-200 group-hover:text-zinc-400">
+                PARTARA
               </span>
-              <span className="logo-ara">ARA</span>
             </span>
           </a>
 
