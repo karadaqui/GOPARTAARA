@@ -490,8 +490,9 @@ const HeroSection = () => {
             {/* Part search */}
             {activeTab === "part" ? (
               <>
+                <div className="relative">
                 <form
-                  onSubmit={handleSearch}
+                  onSubmit={(e) => { setAutoOpen(false); handleSearch(e); }}
                   className="hero-search-form flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2"
                   style={{
                     background: "rgba(255,255,255,0.04)",
@@ -504,10 +505,12 @@ const HeroSection = () => {
                     <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
                     <Search style={{ color: "#52525b", flexShrink: 0 }} size={18} />
                     <input
+                      ref={heroInputRef}
                       type="text"
                       placeholder="e.g. BMW E46 brake pads, Ford Focus clutch..."
                       value={query}
-                      onChange={(e) => setQuery(e.target.value)}
+                      onChange={(e) => { setQuery(e.target.value); setAutoOpen(true); }}
+                      onFocus={() => setAutoOpen(true)}
                       className="hero-search-input w-full bg-transparent outline-none text-sm sm:text-[15px] py-3"
                       style={{ color: "#ffffff" }}
                       disabled={identifying}
@@ -596,6 +599,24 @@ const HeroSection = () => {
                     )}
                   </div>
                 </form>
+                <SearchAutocomplete
+                  query={query}
+                  open={autoOpen}
+                  inputRef={heroInputRef}
+                  onClose={() => setAutoOpen(false)}
+                  onSelect={(q) => {
+                    setQuery(q);
+                    setAutoOpen(false);
+                    if (!user) { setAuthGateOpen(true); return; }
+                    if (searchLimit.limitReached) {
+                      toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" });
+                      navigate("/pricing");
+                      return;
+                    }
+                    navigate(`/search?q=${encodeURIComponent(q)}`);
+                  }}
+                />
+                </div>
                 <div className="flex flex-col items-center mt-4 gap-2">
                   <p
                     style={{
