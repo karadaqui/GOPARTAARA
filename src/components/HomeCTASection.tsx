@@ -15,7 +15,7 @@ const HomeCTASection = () => {
       <div className="max-w-3xl mx-auto">
         <h2
           style={{
-            fontSize: "clamp(36px, 5vw, 56px)",
+            fontSize: "clamp(28px, 7vw, 56px)",
             fontWeight: 800,
             letterSpacing: "-0.03em",
             color: "white",
@@ -34,11 +34,12 @@ const HomeCTASection = () => {
           Join 50,000+ drivers saving money every week.
         </p>
         <div
-          className="flex flex-wrap justify-center"
+          className="flex flex-col sm:flex-row sm:flex-wrap justify-center items-center"
           style={{ gap: "12px", marginTop: "32px" }}
         >
           <Link
             to="/search"
+            className="w-full sm:w-auto justify-center"
             style={{
               background: "#cc1111",
               color: "white",
@@ -48,6 +49,7 @@ const HomeCTASection = () => {
               fontWeight: 600,
               display: "inline-flex",
               alignItems: "center",
+              maxWidth: "300px",
               transition: "background-color 150ms ease",
             }}
             onMouseEnter={(e) => (e.currentTarget.style.background = "#b30f0f")}
@@ -57,7 +59,7 @@ const HomeCTASection = () => {
           </Link>
           <Link
             to="/pricing"
-            className="home-cta-secondary"
+            className="home-cta-secondary w-full sm:w-auto justify-center"
             style={{
               background: "transparent",
               border: "1px solid #27272a",
@@ -68,6 +70,7 @@ const HomeCTASection = () => {
               fontWeight: 600,
               display: "inline-flex",
               alignItems: "center",
+              maxWidth: "300px",
               transition: "color 150ms ease, border-color 150ms ease",
             }}
           >
