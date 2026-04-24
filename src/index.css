@@ -530,3 +530,12 @@ input, textarea, select {
 .hero-search-input::placeholder { color: #52525b; opacity: 1; }
 .hero-photo-btn:hover { background: rgba(255,255,255,0.08) !important; }
 .hero-cta-btn:not(:disabled):hover { background: #dd1414 !important; }
+
+/* Premium search result cards */
+.premium-result-card:hover {
+  border-color: #2a2a2a !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.premium-cta-btn:hover { background: #dd1414 !important; }
+.premium-icon-btn:not(:disabled):hover { background: #3f3f46 !important; color: #ffffff !important; }
