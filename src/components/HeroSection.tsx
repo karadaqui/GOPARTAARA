@@ -613,16 +613,48 @@ const HeroSection = () => {
                     )}
                   </div>
                 </form>
-                <div className="flex flex-col items-center mt-4 gap-2">
+                <div className="flex flex-col items-center mt-5 gap-3">
+                  {/* Trust badges */}
+                  <div className="flex flex-wrap items-center justify-center gap-2 mb-1">
+                    {["✓ Free to use", "✓ No registration required", "✓ 1M+ parts"].map((b) => (
+                      <span
+                        key={b}
+                        className="rounded-full"
+                        style={{
+                          background: "#27272a",
+                          color: "#a1a1aa",
+                          padding: "4px 12px",
+                          fontSize: "12px",
+                          fontWeight: 400,
+                          letterSpacing: "0.01em",
+                        }}
+                      >
+                        {b}
+                      </span>
+                    ))}
+                  </div>
+
                   <p
                     style={{
-                      color: "#555555",
-                      fontSize: "12px",
-                      marginTop: "8px",
+                      color: "#71717a",
+                      fontSize: "13px",
                       textAlign: "center",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
                     }}
                   >
-                    🟢 {viewers} people searching right now
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: "8px",
+                        height: "8px",
+                        borderRadius: "999px",
+                        background: "#22c55e",
+                        boxShadow: "0 0 8px rgba(34,197,94,0.6)",
+                      }}
+                    />
+                    {viewers} people searching right now
                   </p>
                   <p
                     className="text-xs text-muted-foreground flex items-center justify-center gap-1.5 text-center leading-tight"
