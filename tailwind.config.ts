@@ -26,6 +26,17 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          hover: "hsl(var(--primary-hover))",
+        },
+        // Design system v2 — semantic levels
+        surface: "hsl(var(--card))",         /* #111111 */
+        elevated: "hsl(var(--popover))",     /* #161616 */
+        "border-hover": "hsl(var(--border-hover))", /* #2a2a2a */
+        text: {
+          primary: "hsl(var(--text-primary))",
+          secondary: "hsl(var(--text-secondary))",
+          tertiary: "hsl(var(--text-tertiary))",
+          disabled: "hsl(var(--text-disabled))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
