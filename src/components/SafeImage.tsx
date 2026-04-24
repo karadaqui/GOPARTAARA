@@ -5,12 +5,16 @@ interface SafeImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallbackClassName?: string;
 }
 
-const SafeImage = ({ fallbackClassName, className, alt, ...props }: SafeImageProps) => {
+const SafeImage = ({ fallbackClassName, className, alt, style, onLoad, ...props }: SafeImageProps) => {
   const [error, setError] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   if (error) {
     return (
-      <div className={`flex items-center justify-center bg-zinc-800 ${fallbackClassName || className || ""}`}>
+      <div
+        className={`flex items-center justify-center ${fallbackClassName || className || ""}`}
+        style={{ background: "#161616" }}
+      >
         <Package className="h-8 w-8 text-zinc-600" />
       </div>
     );
@@ -23,9 +27,20 @@ const SafeImage = ({ fallbackClassName, className, alt, ...props }: SafeImagePro
       className={className}
       loading="lazy"
       decoding="async"
+      style={{
+        background: "#161616",
+        opacity: loaded ? 1 : 0,
+        transition: "opacity 0.3s ease",
+        ...style,
+      }}
+      onLoad={(e) => {
+        setLoaded(true);
+        onLoad?.(e);
+      }}
       onError={() => setError(true)}
     />
   );
 };
 
 export default SafeImage;
+
