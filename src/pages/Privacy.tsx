@@ -306,7 +306,7 @@ const Privacy = () => (
               or have a complaint, please contact us:
             </p>
             <div className="mt-4 rounded-xl border border-border bg-card p-6">
-              <p className="font-semibold mb-1">PARTARA</p>
+              <p className="font-semibold mb-1">GOPARTARA</p>
               <p className="text-sm text-muted-foreground">
                 Email:{" "}
                 <a href="mailto:info@gopartara.com" className="text-primary hover:underline">

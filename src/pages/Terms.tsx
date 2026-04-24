@@ -46,7 +46,7 @@ const Terms = () => (
                 For search results from external suppliers, we act as a <strong>comparison platform</strong> — all purchases are made directly with the supplier. We are not a party to transactions between you and external suppliers.
               </li>
               <li>
-                The <strong>PARTARA Marketplace</strong> connects independent sellers with buyers. Transactions for marketplace listings are between you and the seller.
+                The <strong>GOPARTARA Marketplace</strong> connects independent sellers with buyers. Transactions for marketplace listings are between you and the seller.
               </li>
               <li>
                 We make reasonable efforts to display accurate information, but pricing, availability,
@@ -82,7 +82,7 @@ const Terms = () => (
           </Section>
 
           <Section title="4. Subscription Plans &amp; Payments">
-            <p>PARTARA offers the following subscription tiers for users:</p>
+            <p>GOPARTARA offers the following subscription tiers for users:</p>
             <div className="grid sm:grid-cols-3 gap-4 mt-4">
               <PlanCard
                 name="Free"
@@ -242,7 +242,7 @@ const Terms = () => (
           <Section title="8. Affiliate Disclosure">
             <div className="rounded-xl border border-border bg-card p-6">
               <p>
-                <strong>PARTARA earns affiliate commissions</strong> when you click through to a
+                <strong>GOPARTARA earns affiliate commissions</strong> when you click through to a
                 supplier's website and make a purchase. We participate in the following affiliate programmes:
               </p>
               <ul className="list-disc pl-5 space-y-2 mt-3">
@@ -491,7 +491,7 @@ const Terms = () => (
           <Section title="19. Contact Us">
             <p>If you have questions about these Terms, please contact us:</p>
             <div className="mt-4 rounded-xl border border-border bg-card p-6">
-              <p className="font-semibold mb-1">PARTARA</p>
+              <p className="font-semibold mb-1">GOPARTARA</p>
               <p className="text-sm text-muted-foreground">
                 Email:{" "}
                 <a href="mailto:info@gopartara.com" className="text-primary hover:underline">

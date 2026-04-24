@@ -41,7 +41,7 @@ const ListYourParts = () => {
       <div className="container max-w-3xl pt-24 pb-20 px-4 mx-auto">
         <div className="text-center mb-12 space-y-4">
           <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
-            List Your Parts on <span className="text-primary">PARTARA</span> — It's Free
+            List Your Parts on <span className="text-primary">GOPARTARA</span> — It's Free
           </h1>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             Reach thousands of UK car owners and mechanics.
