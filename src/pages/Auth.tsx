@@ -125,36 +125,157 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
+    <div className="min-h-screen flex" style={{ background: "#080808" }}>
+      {/* LEFT BRAND PANEL — desktop only */}
+      <div
+        className="hidden lg:flex flex-col justify-between relative overflow-hidden"
+        style={{
+          width: "40%",
+          background: "#0a0a0a",
+          padding: "48px",
+          borderRight: "1px solid #1a1a1a",
+        }}
+      >
+        {/* Subtle dot grid */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0)",
+            backgroundSize: "24px 24px",
+          }}
+        />
+        {/* Soft red glow */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            top: "30%",
+            left: "-20%",
+            width: "500px",
+            height: "500px",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(204,17,17,0.12) 0%, transparent 70%)",
+            filter: "blur(60px)",
+          }}
+        />
 
-      <div className="relative z-10 w-full max-w-md">
+        {/* Logo */}
+        <a href="/" className="relative z-10 inline-block">
+          <span className="logo-text" style={{ fontSize: "28px" }}>
+            <span className="logo-go">GO</span>
+            <span className="logo-part">PART</span>
+            <span className="logo-ara">ARA</span>
+          </span>
+        </a>
+
+        {/* Headline + bullets */}
+        <div className="relative z-10">
+          <h2
+            className="font-display"
+            style={{
+              fontSize: "40px",
+              fontWeight: 800,
+              letterSpacing: "-0.03em",
+              lineHeight: 1.05,
+              color: "white",
+            }}
+          >
+            Find any car part.
+            <br />
+            <span style={{ color: "#cc1111" }}>Save every time.</span>
+          </h2>
+
+          <ul className="mt-8 flex flex-col gap-3">
+            {[
+              "Search 1,000,000+ parts instantly",
+              "Compare prices across 7 UK suppliers",
+              "Price alerts when parts drop in price",
+            ].map((line) => (
+              <li
+                key={line}
+                className="flex items-start gap-3"
+                style={{ fontSize: "14px", color: "#a1a1aa" }}
+              >
+                <span
+                  className="shrink-0 inline-flex items-center justify-center rounded-full"
+                  style={{
+                    width: "20px",
+                    height: "20px",
+                    background: "rgba(204,17,17,0.15)",
+                    color: "#cc1111",
+                    fontSize: "12px",
+                    marginTop: "1px",
+                  }}
+                >
+                  ✓
+                </span>
+                {line}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Testimonial */}
+        <div
+          className="relative z-10"
+          style={{
+            background: "rgba(255,255,255,0.04)",
+            borderRadius: "12px",
+            padding: "16px",
+            border: "1px solid rgba(255,255,255,0.06)",
+          }}
+        >
+          <p style={{ fontSize: "14px", color: "white", lineHeight: 1.5 }}>
+            "Saved £40 on brake pads in minutes."
+          </p>
+          <p style={{ fontSize: "12px", color: "#71717a", marginTop: "8px" }}>
+            — James T., Leeds UK <span style={{ color: "#fbbf24" }}>★★★★★</span>
+          </p>
+        </div>
+      </div>
+
+      {/* RIGHT FORM PANEL */}
+      <div className="flex-1 flex items-center justify-center px-4 py-10 relative">
         <button
           onClick={() => navigate("/")}
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8"
+          className="absolute top-6 left-6 flex items-center gap-2 text-sm transition-colors"
+          style={{ color: "#71717a" }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "white")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "#71717a")}
         >
           <ArrowLeft size={16} />
           Back to home
         </button>
 
-        <div className="glass rounded-2xl p-8 glow-red">
+        <div className="w-full" style={{ maxWidth: "400px" }}>
           {showForgot ? (
             <ForgotPassword onBack={() => setShowForgot(false)} />
           ) : (
             <>
-              <div className="text-center mb-8">
-                <a href="/" className="inline-block mb-2">
-                  <span className="logo-text text-2xl">
-                    <span className="logo-go">GO</span>
-                    <span className="logo-part">PART</span>
-                    <span className="logo-ara">ARA</span>
-                  </span>
-                </a>
-                <h1 className="font-display text-xl font-semibold">
-                  {isLogin ? "Welcome back" : "Create an account"}
+              {/* Mobile-only logo */}
+              <a href="/" className="lg:hidden inline-block mb-8">
+                <span className="logo-text text-2xl">
+                  <span className="logo-go">GO</span>
+                  <span className="logo-part">PART</span>
+                  <span className="logo-ara">ARA</span>
+                </span>
+              </a>
+
+              <div className="mb-8">
+                <h1
+                  className="font-display"
+                  style={{
+                    fontSize: "28px",
+                    fontWeight: 700,
+                    letterSpacing: "-0.02em",
+                    color: "white",
+                  }}
+                >
+                  {isLogin ? "Sign in" : "Create your account"}
                 </h1>
-                <p className="text-muted-foreground text-sm mt-1">
-                  {isLogin ? "Sign in to your account" : "Start finding parts faster"}
+                <p style={{ fontSize: "14px", color: "#71717a", marginTop: "8px" }}>
+                  {isLogin
+                    ? "Welcome back. Find parts and track prices."
+                    : "Free forever. No credit card needed."}
                 </p>
               </div>
 
@@ -188,18 +309,29 @@ const Auth = () => {
               )}
 
               {/* Social login buttons */}
-              <div className="space-y-3 mb-6">
+              <div className="space-y-2.5 mb-6">
                 <button
                   type="button"
                   onClick={() => handleOAuth("google")}
                   disabled={!!oauthLoading}
-                  className="w-full h-12 rounded-xl flex items-center justify-center gap-3 bg-white text-gray-700 font-medium text-sm border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-3 transition-colors disabled:opacity-50"
+                  style={{
+                    height: "44px",
+                    borderRadius: "8px",
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid #27272a",
+                    color: "white",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                  }}
+                  onMouseEnter={(e) => !oauthLoading && (e.currentTarget.style.background = "rgba(255,255,255,0.07)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.04)")}
                 >
                   {oauthLoading === "google" ? (
                     "Connecting..."
                   ) : (
                     <>
-                      <svg width="20" height="20" viewBox="0 0 24 24">
+                      <svg width="18" height="18" viewBox="0 0 24 24">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
                         <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
                         <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
@@ -214,13 +346,24 @@ const Auth = () => {
                   type="button"
                   onClick={() => handleOAuth("apple")}
                   disabled={!!oauthLoading}
-                  className="w-full h-12 rounded-xl flex items-center justify-center gap-3 bg-black text-white font-medium text-sm border border-black hover:bg-gray-900 transition-colors disabled:opacity-50"
+                  className="w-full flex items-center justify-center gap-3 transition-colors disabled:opacity-50"
+                  style={{
+                    height: "44px",
+                    borderRadius: "8px",
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid #27272a",
+                    color: "white",
+                    fontSize: "14px",
+                    fontWeight: 500,
+                  }}
+                  onMouseEnter={(e) => !oauthLoading && (e.currentTarget.style.background = "rgba(255,255,255,0.07)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.04)")}
                 >
                   {oauthLoading === "apple" ? (
                     "Connecting..."
                   ) : (
                     <>
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
                         <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
                       </svg>
                       Continue with Apple
@@ -231,39 +374,39 @@ const Auth = () => {
 
               {/* Divider */}
               <div className="flex items-center gap-3 mb-6">
-                <div className="flex-1 h-px bg-border" />
-                <span className="text-xs text-muted-foreground">or continue with email</span>
-                <div className="flex-1 h-px bg-border" />
+                <div className="flex-1 h-px" style={{ background: "#1f1f1f" }} />
+                <span style={{ fontSize: "12px", color: "#52525b" }}>or</span>
+                <div className="flex-1 h-px" style={{ background: "#1f1f1f" }} />
               </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-3">
                 {!isLogin && (
                   <div className="relative">
-                    <User size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                    <User size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#52525b" }} />
                     <Input
                       type="text"
                       placeholder="Display name"
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
-                      className="pl-10 bg-secondary border-border h-12 rounded-xl"
+                      className="auth-input pl-10"
                     />
                   </div>
                 )}
 
                 <div className="relative">
-                  <Mail size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#52525b" }} />
                   <Input
                     type="email"
                     placeholder="Email address"
                     value={email}
                     onChange={(e) => { setEmail(e.target.value); setAlreadyRegistered(false); }}
                     required
-                    className="pl-10 bg-secondary border-border h-12 rounded-xl"
+                    className="auth-input pl-10"
                   />
                 </div>
 
                 <div className="relative">
-                  <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#52525b" }} />
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
@@ -271,14 +414,15 @@ const Auth = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="pl-10 pr-10 bg-secondary border-border h-12 rounded-xl"
+                    className="auth-input pl-10 pr-10"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                    style={{ color: "#52525b" }}
                   >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
                 </div>
 
@@ -287,27 +431,54 @@ const Auth = () => {
                     <button
                       type="button"
                       onClick={() => setShowForgot(true)}
-                      className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                      className="transition-colors"
+                      style={{ fontSize: "12px", color: "#71717a" }}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = "#cc1111")}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = "#71717a")}
                     >
                       Forgot password?
                     </button>
                   </div>
                 )}
 
-                <Button type="submit" disabled={submitting} className="w-full h-12 rounded-xl text-sm font-semibold">
-                  {submitting ? "Please wait..." : isLogin ? "Sign In" : "Create Account"}
-                </Button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="w-full transition-opacity disabled:opacity-60"
+                  style={{
+                    height: "44px",
+                    borderRadius: "8px",
+                    background: "#cc1111",
+                    color: "white",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    marginTop: "4px",
+                  }}
+                >
+                  {submitting ? "Please wait..." : isLogin ? "Sign In →" : "Create Account →"}
+                </button>
               </form>
 
               <div className="mt-6 text-center">
                 <button
                   onClick={() => { setIsLogin(!isLogin); setAlreadyRegistered(false); }}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="transition-colors"
+                  style={{ fontSize: "13px", color: "#71717a" }}
                 >
                   {isLogin ? "Don't have an account? " : "Already have an account? "}
-                  <span className="text-primary font-medium">{isLogin ? "Sign up" : "Sign in"}</span>
+                  <span style={{ color: "#cc1111", fontWeight: 600 }}>{isLogin ? "Sign up" : "Sign in"}</span>
                 </button>
               </div>
+
+              <p
+                className="text-center mt-6"
+                style={{ fontSize: "12px", color: "#52525b", lineHeight: 1.5 }}
+              >
+                By continuing, you agree to our{" "}
+                <a href="/terms" style={{ color: "#71717a", textDecoration: "underline" }}>Terms</a>
+                {" "}&{" "}
+                <a href="/privacy" style={{ color: "#71717a", textDecoration: "underline" }}>Privacy Policy</a>
+              </p>
             </>
           )}
         </div>
