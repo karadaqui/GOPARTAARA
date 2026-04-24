@@ -359,6 +359,74 @@ const Deals = () => {
             {" "}
           </p>
         </section>
+
+        {/* SECTION 3 — Classic & Vintage Parts */}
+        <section className="px-4 pb-24 max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <img
+                src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f697.png"
+                width={32}
+                height={32}
+                loading="lazy"
+                decoding="async"
+                alt="classic car"
+                className="rounded-xl"
+              />
+              <div>
+                <h2 className="text-foreground font-bold text-lg">Classic &amp; Vintage Parts</h2>
+                <p className="text-muted-foreground text-xs">
+                  Featuring <span className="text-emerald-400 font-semibold">Green Spark Plug Co.</span> · Restoration & period spares
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {CLASSIC_DEALS.map((deal) => (
+              <a
+                key={deal.title}
+                href={deal.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${deal.title} — Classic & vintage parts`}
+                className="group relative flex flex-col p-4 bg-card border border-border hover:border-red-500/30 rounded-2xl overflow-hidden transition-[colors,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)]"
+              >
+                <div className="absolute top-2 right-2 max-w-[60%]">
+                  <span className="block truncate text-[9px] md:text-[10px] bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 group-hover:bg-gradient-to-r group-hover:from-red-600/30 group-hover:to-red-500/20 group-hover:border-red-500/60 group-hover:text-red-300 rounded-full px-2 py-0.5 font-bold transition-colors">
+                    {deal.badge}
+                  </span>
+                </div>
+                <div className="text-2xl mb-3">{deal.icon}</div>
+                <p className="text-foreground font-bold text-sm mb-1 pr-2">{deal.title}</p>
+                <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
+                <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
+                  <span className="text-xs font-semibold">View deal</span>
+                  <span className="text-xs group-hover:translate-x-0.5 transition-transform">→</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        {/* BOTTOM CTA */}
+        <section className="px-4 pb-24 max-w-3xl mx-auto">
+          <div className="text-center bg-zinc-900/60 border border-zinc-800 rounded-2xl px-6 py-10">
+            <h3 className="text-white text-xl sm:text-2xl font-black mb-2">
+              Missing a deal?
+            </h3>
+            <p className="text-zinc-400 text-sm mb-5">
+              Search our full parts database — over 1M listings from trusted suppliers.
+            </p>
+            <Link
+              to="/search"
+              className="inline-flex items-center gap-2 bg-[#cc1111] hover:bg-red-500 text-white font-bold text-sm px-5 py-3 rounded-xl shadow-lg shadow-red-950/30 transition-colors"
+            >
+              Search Parts
+              <span>→</span>
+            </Link>
+          </div>
+        </section>
       </main>
 
       <Footer />
