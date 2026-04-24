@@ -1,6 +1,15 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ChevronDown } from "lucide-react";
+import {
+  ChevronDown,
+  CircleDot,
+  Briefcase,
+  BookOpen,
+  HelpCircle,
+  Info,
+  Mail as MailIcon,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationBell from "@/components/NotificationBell";
@@ -14,25 +23,19 @@ const primaryLinks = [
   { label: "Pricing", href: "/pricing" },
 ];
 
-const moreLinks = [
-  { label: "Tyres", href: "/tyres" },
-  { label: "For Business", href: "/business" },
-  { label: "Compare", href: "/compare" },
-  { label: "Blog", href: "/blog" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-];
+type MoreLink = {
+  label: string;
+  href: string;
+  Icon: LucideIcon;
+};
 
-const mobileLinks = [
-  { label: "Home", href: "/", icon: "🏠" },
-  { label: "Search Parts", href: "/", icon: "🔍" },
-  { label: "Tyres", href: "/tyres", icon: "🛞" },
-  { label: "Deals", href: "/deals", icon: "🔥" },
-  { label: "Marketplace", href: "/marketplace", icon: "🏪" },
-  { label: "Pricing", href: "/pricing", icon: "💰" },
-  { label: "Blog", href: "/blog", icon: "📝" },
-  { label: "For Business", href: "/business", icon: "🏢" },
-  { label: "Dashboard", href: "/dashboard", icon: "📊" },
+const moreLinks: MoreLink[] = [
+  { label: "Tyres", href: "/tyres", Icon: CircleDot },
+  { label: "For Business", href: "/business", Icon: Briefcase },
+  { label: "Blog", href: "/blog", Icon: BookOpen },
+  { label: "Help Center", href: "/help", Icon: HelpCircle },
+  { label: "About", href: "/about", Icon: Info },
+  { label: "Contact", href: "/contact", Icon: MailIcon },
 ];
 
 const ADMIN_EMAIL = "info@gopartara.com";
@@ -214,11 +217,12 @@ const Navbar = () => {
                     {moreLinks.map((l) => {
                       const isActive =
                         pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
+                      const Icon = l.Icon;
                       return (
                         <button
                           key={l.href}
                           onClick={() => handleNavClick(l.href)}
-                          className="w-full rounded-md px-3 py-2 text-left transition-colors"
+                          className="w-full rounded-md px-3 py-2 text-left transition-colors flex items-center gap-2.5"
                           style={{
                             fontSize: "13px",
                             fontWeight: isActive ? 500 : 400,
@@ -237,6 +241,7 @@ const Navbar = () => {
                             e.currentTarget.style.backgroundColor = "transparent";
                           }}
                         >
+                          <Icon size={14} className="opacity-70" />
                           {l.label}
                         </button>
                       );
@@ -422,53 +427,96 @@ const Navbar = () => {
               </button>
             </div>
 
-            {/* Links */}
+            {/* Links — grouped with section separators */}
             <div style={{ padding: "12px", flex: 1 }}>
               {[
-                { label: "Home", href: "/", icon: "🏠" },
-                { label: "Search Parts", href: "/search", icon: "🔍" },
-                { label: "Tyres", href: "/tyres", icon: "tyre" },
-                { label: "Deals", href: "/deals", icon: "🔥" },
-                { label: "Marketplace", href: "/marketplace", icon: "🏪" },
-                { label: "Pricing", href: "/pricing", icon: "💰" },
-                { label: "Blog", href: "/blog", icon: "📝" },
-                { label: "For Business", href: "/business", icon: "🏢" },
-                { label: "Dashboard", href: "/dashboard", icon: "📊" },
-              ].map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  onClick={(e) => handleMobileLinkClick(e, link.href)}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    padding: "13px 12px",
-                    color: "#ffffff",
-                    textDecoration: "none",
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    borderRadius: "10px",
-                    marginBottom: "2px",
-                    WebkitTapHighlightColor: "transparent",
-                  }}
-                >
-                  {link.icon === "tyre" ? (
-                    <img
-                      src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
-                      width={18}
-                      height={18}
-                      alt=""
-                      loading="lazy"
-                      style={{ display: "inline-block", verticalAlign: "middle" }}
+                {
+                  title: "Browse",
+                  items: [
+                    { label: "Home", href: "/", icon: "🏠" },
+                    { label: "Search Parts", href: "/search", icon: "🔍" },
+                    { label: "Tyres", href: "/tyres", icon: "tyre" },
+                    { label: "Deals", href: "/deals", icon: "🔥" },
+                    { label: "Marketplace", href: "/marketplace", icon: "🏪" },
+                  ],
+                },
+                {
+                  title: "Account",
+                  items: [
+                    { label: "Pricing", href: "/pricing", icon: "💰" },
+                    { label: "Dashboard", href: "/dashboard", icon: "📊" },
+                  ],
+                },
+                {
+                  title: "Company",
+                  items: [
+                    { label: "Blog", href: "/blog", icon: "📝" },
+                    { label: "For Business", href: "/business", icon: "🏢" },
+                    { label: "Help Center", href: "/help", icon: "❓" },
+                    { label: "About", href: "/about", icon: "ℹ️" },
+                    { label: "Contact", href: "/contact", icon: "✉️" },
+                  ],
+                },
+              ].map((section, sIdx) => (
+                <div key={section.title} style={{ marginTop: sIdx === 0 ? 0 : 12 }}>
+                  <div
+                    style={{
+                      fontSize: "11px",
+                      fontWeight: 600,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: "#52525b",
+                      padding: "8px 12px 6px",
+                    }}
+                  >
+                    {section.title}
+                  </div>
+                  {section.items.map((link) => (
+                    <a
+                      key={link.href}
+                      href={link.href}
+                      onClick={(e) => handleMobileLinkClick(e, link.href)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "12px",
+                        padding: "13px 12px",
+                        color: "#ffffff",
+                        textDecoration: "none",
+                        fontSize: "15px",
+                        fontWeight: 600,
+                        borderRadius: "10px",
+                        marginBottom: "2px",
+                        WebkitTapHighlightColor: "transparent",
+                      }}
+                    >
+                      {link.icon === "tyre" ? (
+                        <img
+                          src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
+                          width={18}
+                          height={18}
+                          alt=""
+                          loading="lazy"
+                          style={{ display: "inline-block", verticalAlign: "middle" }}
+                        />
+                      ) : (
+                        <span style={{ fontSize: "18px", width: "20px", textAlign: "center" }}>
+                          {link.icon}
+                        </span>
+                      )}
+                      {link.label}
+                    </a>
+                  ))}
+                  {sIdx < 2 && (
+                    <div
+                      style={{
+                        height: "1px",
+                        background: "#1f1f1f",
+                        margin: "8px 12px 0",
+                      }}
                     />
-                  ) : (
-                    <span style={{ fontSize: "18px", width: "20px", textAlign: "center" }}>
-                      {link.icon}
-                    </span>
                   )}
-                  {link.label}
-                </a>
+                </div>
               ))}
             </div>
 

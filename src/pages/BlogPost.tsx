@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { ArrowLeft, Loader2, ArrowRight, Link as LinkIcon, Check, ThumbsUp, ThumbsDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -216,6 +217,15 @@ const BlogPost = () => {
 
           {/* Article column */}
           <article className="mx-auto w-full max-w-[720px]">
+            <Breadcrumbs
+              className="mb-6"
+              items={[
+                { label: "Home", href: "/" },
+                { label: "Blog", href: "/blog" },
+                { label: post.title },
+              ]}
+            />
+
             {/* Back button */}
             <button
               onClick={() => navigate("/blog")}
