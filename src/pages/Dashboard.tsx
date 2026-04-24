@@ -287,8 +287,12 @@ const Dashboard = () => {
   const hasDisplayName = !!profile?.display_name?.trim();
   const needsDisplayName = !isAdmin && !hasDisplayName;
 
-  const referralCode = (profile as any)?.referral_code || "";
-  const referralLink = `https://gopartara.com/auth?ref=${referralCode}`;
+  const referralCode =
+    (profile as any)?.referral_code ||
+    (user?.id ? user.id.replace(/-/g, "").slice(0, 8).toUpperCase() : "");
+  const referralLink = referralCode
+    ? `https://gopartara.com/auth?ref=${referralCode}`
+    : "https://gopartara.com/auth";
 
   const copyReferralLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -386,7 +390,13 @@ const Dashboard = () => {
                 {planBadge()}
               </div>
               <p style={{ fontSize: "13px", color: "#71717a", marginTop: "4px" }}>
-                Member since {profile?.created_at ? new Date(profile.created_at).toLocaleDateString("en-GB", { month: "long", year: "numeric" }) : "—"}
+                {(() => {
+                  const d = profile?.created_at || (user as any)?.created_at;
+                  if (d) {
+                    return `Member since ${new Date(d).toLocaleDateString("en-GB", { month: "long", year: "numeric" })}`;
+                  }
+                  return "Member since recently";
+                })()}
               </p>
             </div>
 

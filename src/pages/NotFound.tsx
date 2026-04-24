@@ -2,6 +2,8 @@ import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const NotFound = () => {
   const location = useLocation();
@@ -29,11 +31,12 @@ const NotFound = () => {
         description="The page you're looking for doesn't exist. Head back to GOPARTARA to find any car part instantly."
         path={location.pathname}
       />
-      <div
-        className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
-        style={{ background: "#080808" }}
-      >
-        {/* Subtle dot grid */}
+      <div className="min-h-screen flex flex-col" style={{ background: "#080808" }}>
+        <Navbar />
+        <div
+          className="relative flex-1 flex flex-col items-center justify-center overflow-hidden"
+        >
+          {/* Subtle dot grid */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -57,19 +60,6 @@ const NotFound = () => {
             filter: "blur(80px)",
           }}
         />
-
-        {/* Logo */}
-        <Link
-          to="/"
-          className="absolute top-8 left-8 z-10"
-          style={{ fontSize: "20px" }}
-        >
-          <span className="logo-text">
-            <span className="logo-go">GO</span>
-            <span className="logo-part">PART</span>
-            <span className="logo-ara">ARA</span>
-          </span>
-        </Link>
 
         <div className="relative z-10 w-full max-w-xl px-4 text-center">
           {/* Decorative 404 + overlay text */}
@@ -183,6 +173,8 @@ const NotFound = () => {
             </Link>
           </div>
         </div>
+        </div>
+        <Footer />
       </div>
     </>
   );
