@@ -1522,7 +1522,7 @@ const SearchResults = () => {
                       ) : (
                         <>
                           Load {Math.min(ITEMS_PER_PAGE, totalResults - endItem)} more results
-                          <ArrowRightArrow />
+                          <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
                         </>
                       )}
                     </button>
