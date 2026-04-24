@@ -33,8 +33,10 @@ import {
   FolderPlus,
   FolderInput,
   X,
+  Bookmark,
 } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import EmptyState from "@/components/EmptyState";
 
 type SavedPart = Tables<"saved_parts">;
 
@@ -243,23 +245,21 @@ const SavedParts = () => {
 
         {/* Parts grid */}
         {filteredParts.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-4xl mb-4">🔖</p>
-            <p className="text-muted-foreground font-medium">
-              {activeFolder ? "No parts in this folder" : "No saved parts yet"}
-            </p>
-            <p className="text-muted-foreground/60 text-sm mt-1">
-              Save parts from search results to find them quickly later
-            </p>
-            {!activeFolder && (
-              <button
-                onClick={() => navigate("/search")}
-                className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-destructive text-destructive-foreground text-sm rounded-lg hover:bg-destructive/90 transition-colors"
-              >
-                <Search size={14} /> Start Searching
-              </button>
-            )}
-          </div>
+          activeFolder ? (
+            <EmptyState
+              icon={Bookmark}
+              title="No parts in this folder"
+              description="Move or save parts into this folder to organise them by project or vehicle."
+            />
+          ) : (
+            <EmptyState
+              icon={Bookmark}
+              title="No saved parts yet"
+              description="Save parts while searching to compare later."
+              actionLabel="Start Searching →"
+              actionTo="/search"
+            />
+          )
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {filteredParts.map((part) => (

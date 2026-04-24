@@ -30,6 +30,7 @@ import VehicleNotes from "@/components/dashboard/VehicleNotes";
 import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { findDealByBrand, isUKUser } from "@/data/ebayDeals";
+import EmptyState from "@/components/EmptyState";
 
 interface Vehicle {
   id: string;
@@ -485,10 +486,14 @@ const Garage = () => {
 
         {/* Vehicle cards */}
         {user && !loading && vehicles.length === 0 && !showForm && (
-          <div className="glass rounded-2xl p-12 text-center">
-            <Car size={48} className="text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">No vehicles saved yet. Add your first car!</p>
-          </div>
+          <EmptyState
+            icon={Car}
+            iconSize={100}
+            title="Your garage is empty"
+            description="Add your first vehicle to get personalised part recommendations."
+            actionLabel="Add Vehicle →"
+            onAction={handleAddClick}
+          />
         )}
 
         <div className="grid gap-4 sm:grid-cols-2">

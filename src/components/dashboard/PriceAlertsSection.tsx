@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { Loader2, Package } from "lucide-react";
+import { Loader2, Package, Bell } from "lucide-react";
+import EmptyState from "@/components/EmptyState";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
@@ -140,9 +141,13 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
           <Loader2 size={20} className="animate-spin text-muted-foreground" />
         </div>
       ) : alerts.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-8">
-          No price alerts yet. Search for parts and click the bell icon to set one!
-        </p>
+        <EmptyState
+          icon={Bell}
+          title="No price alerts set"
+          description="Set a target price and we'll email you when any part drops below it."
+          actionLabel="Search Parts →"
+          actionTo="/search"
+        />
       ) : (
         <div className="grid grid-cols-1 gap-3">
           {alerts.map((alert) => {

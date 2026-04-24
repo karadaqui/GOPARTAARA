@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import VehicleSelector from "@/components/VehicleSelector";
 import CategoryTagSelector from "@/components/CategoryTagSelector";
+import EmptyState from "@/components/EmptyState";
 
 interface SellerProfile {
   id: string;
@@ -943,14 +944,14 @@ const MyMarket = () => {
 
         {/* Listings grid */}
         {listings.length === 0 ? (
-          <div className="glass rounded-2xl p-12 text-center">
-            <Package size={48} className="text-muted-foreground mx-auto mb-4" />
-            <h3 className="font-display text-lg font-bold mb-2">No listings yet</h3>
-            <p className="text-muted-foreground mb-4">Add your first part listing to start selling.</p>
-            <Button onClick={() => openListingForm()} className="rounded-xl gap-1.5">
-              <Plus size={16} /> Add Your First Listing
-            </Button>
-          </div>
+          <EmptyState
+            icon={Package}
+            iconSize={80}
+            title="No listings yet"
+            description="Be the first to sell — list a part in under 2 minutes."
+            actionLabel="List Your First Part →"
+            onAction={() => openListingForm()}
+          />
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {listings.map(listing => (

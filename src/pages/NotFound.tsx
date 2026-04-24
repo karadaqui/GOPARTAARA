@@ -1,76 +1,187 @@
-import { useLocation, Link } from "react-router-dom";
-import { useEffect } from "react";
-import { Home, Search, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Search } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
 
 const NotFound = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    console.error(
+      "404 Error: User attempted to access non-existent route:",
+      location.pathname,
+    );
   }, [location.pathname]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = query.trim();
+    if (q) navigate(`/search?q=${encodeURIComponent(q)}`);
+    else navigate("/search");
+  };
 
   return (
     <>
       <SEOHead
-        title="Page Not Found | GOPARTARA"
+        title="Part Not Found — GOPARTARA"
         description="The page you're looking for doesn't exist. Head back to GOPARTARA to find any car part instantly."
         path={location.pathname}
       />
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
-        <div className="text-center max-w-md animate-fade-in">
-          {/* Logo */}
-          <Link to="/" className="inline-block mb-8">
-            <span className="font-display text-2xl font-black tracking-tight">
-              <span className="text-primary">PART</span>ARA
-            </span>
-          </Link>
+      <div
+        className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+        style={{ background: "#080808" }}
+      >
+        {/* Subtle dot grid */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0)",
+            backgroundSize: "24px 24px",
+          }}
+        />
+        {/* Soft red glow */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            top: "30%",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "600px",
+            height: "600px",
+            borderRadius: "50%",
+            background:
+              "radial-gradient(circle, rgba(204,17,17,0.10) 0%, transparent 70%)",
+            filter: "blur(80px)",
+          }}
+        />
 
-          {/* Big 404 */}
-          <div className="relative mb-8">
-            <span className="text-[140px] sm:text-[180px] font-display font-black leading-none text-primary/10 select-none">
+        {/* Logo */}
+        <Link
+          to="/"
+          className="absolute top-8 left-8 z-10"
+          style={{ fontSize: "20px" }}
+        >
+          <span className="logo-text">
+            <span className="logo-go">GO</span>
+            <span className="logo-part">PART</span>
+            <span className="logo-ara">ARA</span>
+          </span>
+        </Link>
+
+        <div className="relative z-10 w-full max-w-xl px-4 text-center">
+          {/* Decorative 404 + overlay text */}
+          <div className="relative" style={{ height: "180px" }}>
+            <span
+              className="font-display absolute inset-0 flex items-center justify-center select-none"
+              style={{
+                fontSize: "clamp(120px, 18vw, 180px)",
+                fontWeight: 900,
+                color: "rgba(204,17,17,0.15)",
+                letterSpacing: "-0.05em",
+                lineHeight: 1,
+              }}
+            >
               404
             </span>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-5xl sm:text-6xl font-display font-black text-primary">
-                404
-              </span>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <h1
+                className="font-display"
+                style={{
+                  fontSize: "clamp(26px, 4vw, 32px)",
+                  fontWeight: 800,
+                  color: "white",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                Part not found.
+              </h1>
+              <p
+                style={{
+                  fontSize: "17px",
+                  color: "#71717a",
+                  marginTop: "8px",
+                }}
+              >
+                Looks like this page drove off without us.
+              </p>
             </div>
           </div>
 
-          <h1 className="font-display text-2xl font-bold mb-3 text-foreground">
-            Page not found
-          </h1>
-          <p className="text-muted-foreground mb-8 leading-relaxed">
-            This page doesn't exist or has been moved.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button asChild size="lg" className="rounded-xl gap-2 w-full sm:w-auto">
-              <Link to="/">
-                <Home size={16} /> Go to Homepage
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="rounded-xl gap-2 w-full sm:w-auto">
-              <Link to="/search">
-                <Search size={16} /> Search for parts →
-              </Link>
-            </Button>
-          </div>
-
-          <button
-            onClick={() => window.history.back()}
-            className="mt-6 text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 mx-auto"
+          {/* Search bar */}
+          <form
+            onSubmit={handleSearch}
+            className="relative w-full mt-10"
+            style={{ maxWidth: "520px", marginLeft: "auto", marginRight: "auto" }}
           >
-            <ArrowLeft size={14} /> Go back
-          </button>
-        </div>
+            <Search
+              size={18}
+              className="absolute left-4 top-1/2 -translate-y-1/2"
+              style={{ color: "#52525b" }}
+            />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Try searching for a car part instead..."
+              className="w-full outline-none transition-colors"
+              style={{
+                height: "52px",
+                paddingLeft: "44px",
+                paddingRight: "16px",
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid #27272a",
+                borderRadius: "12px",
+                color: "white",
+                fontSize: "14px",
+              }}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "rgba(204,17,17,0.5)";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(204,17,17,0.12)";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "#27272a";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            />
+          </form>
 
-        <div className="absolute bottom-8">
-          <span className="font-display text-xs font-bold tracking-[4px] text-muted-foreground/40 uppercase">
-            GOPARTARA
-          </span>
+          {/* Action buttons */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
+            <Link
+              to="/"
+              className="inline-flex items-center justify-center w-full sm:w-auto transition-opacity hover:opacity-90"
+              style={{
+                height: "44px",
+                padding: "0 24px",
+                background: "#cc1111",
+                color: "white",
+                fontSize: "14px",
+                fontWeight: 600,
+                borderRadius: "10px",
+              }}
+            >
+              Go Home
+            </Link>
+            <Link
+              to="/search"
+              className="inline-flex items-center justify-center w-full sm:w-auto transition-colors"
+              style={{
+                height: "44px",
+                padding: "0 24px",
+                background: "transparent",
+                color: "white",
+                fontSize: "14px",
+                fontWeight: 600,
+                borderRadius: "10px",
+                border: "1px solid #27272a",
+              }}
+            >
+              Search Parts
+            </Link>
+          </div>
         </div>
       </div>
     </>
