@@ -345,16 +345,25 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* Section 1 — Welcome Header */}
-        <div className="glass rounded-2xl p-6 sm:p-8 mb-6">
+        {/* Section 1 — Welcome Header (premium) */}
+        <div
+          className="rounded-2xl p-5 sm:p-6 mb-6"
+          style={{
+            background: "linear-gradient(135deg, rgba(204,17,17,0.08) 0%, transparent 60%), #0a0a0a",
+            border: "1px solid rgba(204,17,17,0.15)",
+          }}
+        >
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             {/* Avatar */}
             <div className="relative group shrink-0">
-              <div className="w-16 h-16 rounded-full bg-secondary border-2 border-border overflow-hidden flex items-center justify-center">
+              <div
+                className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center text-white font-bold"
+                style={{ background: avatarSignedUrl ? "transparent" : "#cc1111", fontSize: "18px" }}
+              >
                 {avatarSignedUrl ? (
                   <img src={avatarSignedUrl} alt="Avatar" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 ) : (
-                  <User size={28} className="text-muted-foreground" />
+                  (welcomeName || "U").trim().slice(0, 2).toUpperCase()
                 )}
               </div>
               <button
@@ -362,93 +371,145 @@ const Dashboard = () => {
                 disabled={uploading}
                 className="absolute inset-0 rounded-full bg-background/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
               >
-                {uploading ? <Loader2 size={16} className="animate-spin text-foreground" /> : <Camera size={16} className="text-foreground" />}
+                {uploading ? <Loader2 size={14} className="animate-spin text-foreground" /> : <Camera size={14} className="text-foreground" />}
               </button>
               <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
             </div>
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="font-display text-2xl sm:text-3xl font-bold truncate">
-                  Welcome back, {welcomeName}!
+                <h1 className="font-bold text-white truncate" style={{ fontSize: "18px", fontWeight: 700 }}>
+                  {welcomeName}
                 </h1>
                 {planBadge()}
               </div>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p style={{ fontSize: "13px", color: "#71717a", marginTop: "4px" }}>
                 Member since {profile?.created_at ? new Date(profile.created_at).toLocaleDateString("en-GB", { month: "long", year: "numeric" }) : "—"}
               </p>
             </div>
 
-            {isFree && !isAdmin && (
-              <Button className="rounded-xl gap-2 shrink-0" onClick={() => navigate("/pricing")}>
-                <Sparkles size={14} />
-                Upgrade to Pro →
+            <div className="flex items-center gap-2 shrink-0">
+              {isFree && !isAdmin && (
+                <Button className="rounded-xl gap-2 text-white" onClick={() => navigate("/pricing")} style={{ background: "#cc1111" }}>
+                  <Sparkles size={14} />
+                  Upgrade to Pro →
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-xl text-zinc-400 hover:text-white hover:bg-white/5"
+                onClick={() => {
+                  const el = document.getElementById("display-name-input");
+                  if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.focus(); }
+                }}
+              >
+                Edit Profile
               </Button>
-            )}
+            </div>
           </div>
         </div>
 
-        {/* Section 2 — Usage Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+        {/* Section 2 — Usage Stats (premium metric cards) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           <StatCard
-            icon={<Search size={18} className="text-primary" />}
+            icon={<Search size={20} style={{ color: "#cc1111" }} />}
             label="Searches This Month"
             value={isAdmin || isPro ? "Unlimited" : `${monthlySearchCount}/5`}
+            valueColor={isAdmin || isPro ? "#4ade80" : "white"}
           />
           <StatCard
-            icon={<ShoppingBag size={18} className="text-primary" />}
+            icon={<ShoppingBag size={20} style={{ color: "#cc1111" }} />}
             label="Active Listings"
             value={String(activeListingsCount)}
           />
           <StatCard
-            icon={<Bookmark size={18} className="text-primary" />}
+            icon={<Bookmark size={20} style={{ color: "#cc1111" }} />}
             label="Saved Parts"
             value={String(savedPartsCount)}
           />
           <StatCard
-            icon={<BellIcon size={18} className="text-primary" />}
+            icon={<BellIcon size={20} style={{ color: "#cc1111" }} />}
             label="Price Alerts"
             value={String(priceAlertsCount)}
           />
         </div>
 
-        {/* Section 3 — Quick Actions */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-          <QuickAction icon="🔍" label="New Search" onClick={() => navigate("/search")} />
-          <QuickAction icon="🚗" label="My Garage" onClick={() => navigate("/garage")} />
-          <QuickAction icon="📦" label="My Listings" onClick={() => navigate("/my-market")} />
-          {!isEliteUser && (
-            <QuickAction icon="💰" label="Upgrade Plan" onClick={() => navigate("/pricing")} />
-          )}
+        {/* Section 3 — Quick Actions (premium horizontal cards) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+          <QuickAction
+            icon={<Search size={20} style={{ color: "#cc1111" }} />}
+            label="New Search"
+            onClick={() => navigate("/search")}
+          />
+          <QuickAction
+            icon={<Car size={20} style={{ color: "#cc1111" }} />}
+            label="My Garage"
+            onClick={() => navigate("/garage")}
+          />
+          <QuickAction
+            icon={<Package size={20} style={{ color: "#cc1111" }} />}
+            label="My Listings"
+            onClick={() => navigate("/my-market")}
+          />
         </div>
 
 
-        <div className="glass rounded-2xl p-6 sm:p-8 mb-6">
-          <h2 className="font-display text-lg font-semibold mb-1">🎁 Refer a Friend — Give 1 Month Pro, Get 1 Month Pro</h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            Share your unique link. When a friend signs up and subscribes to Pro, they get their first month free — and so do you.
+        {/* Referral Section — premium */}
+        <div
+          className="rounded-2xl p-6 sm:p-8 mb-6"
+          style={{
+            background: "linear-gradient(135deg, #0d0000 0%, #1a0000 100%)",
+            border: "1px solid rgba(204,17,17,0.2)",
+          }}
+        >
+          <h2 className="font-display font-bold text-white mb-1" style={{ fontSize: "20px" }}>
+            🎁 Refer & Earn
+          </h2>
+          <p style={{ fontSize: "13px", color: "#71717a", marginBottom: "6px" }}>
+            For every friend who subscribes, you both get 1 month Pro free.
+          </p>
+          <p style={{ fontSize: "12px", color: "#52525b", marginBottom: "20px" }}>
+            Share your unique link below and start earning rewards today.
           </p>
           <div className="flex items-center gap-2 mb-4">
             <Input
               value={referralLink}
               readOnly
-              className="bg-secondary border-border h-10 rounded-xl text-sm font-mono"
+              className="h-11 rounded-xl text-sm font-mono"
+              style={{ background: "#0a0a0a", border: "1px solid #27272a", color: "white" }}
             />
-            <Button variant="outline" size="sm" className="rounded-xl gap-1.5 shrink-0" onClick={copyReferralLink}>
+            <Button
+              size="sm"
+              className="rounded-xl gap-1.5 shrink-0 h-11 px-4 text-white hover:opacity-90"
+              style={{ background: "#cc1111", border: "1px solid #cc1111" }}
+              onClick={copyReferralLink}
+            >
               <Copy size={14} />
               Copy
             </Button>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="rounded-xl gap-1.5 text-xs" onClick={shareWhatsApp}>
+            <Button
+              size="sm"
+              className="rounded-xl gap-1.5 text-xs text-white hover:opacity-90"
+              style={{ background: "#25D366", border: "1px solid #25D366" }}
+              onClick={shareWhatsApp}
+            >
               WhatsApp
             </Button>
-            <Button variant="outline" size="sm" className="rounded-xl gap-1.5 text-xs" onClick={shareTwitter}>
+            <Button
+              size="sm"
+              variant="outline"
+              className="rounded-xl gap-1.5 text-xs text-white"
+              style={{ background: "transparent", border: "1px solid #27272a" }}
+              onClick={shareTwitter}
+            >
               X / Twitter
             </Button>
           </div>
           {(profile as any)?.bonus_searches > 0 && (
-            <p className="text-xs text-muted-foreground mt-3">
+            <p style={{ fontSize: "12px", color: "#71717a", marginTop: "16px" }}>
               🎉 You've earned {(profile as any).bonus_searches} bonus searches from referrals!
             </p>
           )}
