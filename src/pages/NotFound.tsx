@@ -173,6 +173,8 @@ const NotFound = () => {
             </Link>
           </div>
         </div>
+        </div>
+        <Footer />
       </div>
     </>
   );
