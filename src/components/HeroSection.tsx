@@ -99,15 +99,21 @@ const HeroSection = () => {
     return () => clearTimeout(t);
   }, []);
 
-  // Live viewer counter — updates every 15s with small fluctuations
+  // Live viewer counter — gentle fluctuations every 5–10s
   useEffect(() => {
-    const interval = setInterval(() => {
+    let timeoutId: number;
+    const tick = () => {
       setViewers((prev) => {
-        const change = Math.floor(Math.random() * 21) - 10;
-        return Math.max(150, Math.min(400, prev + change));
+        const magnitude = Math.floor(Math.random() * 5) + 1; // 1..5
+        const direction = Math.random() < 0.5 ? -1 : 1;
+        const next = prev + magnitude * direction;
+        return Math.max(150, Math.min(400, next));
       });
-    }, 15000);
-    return () => clearInterval(interval);
+      const delay = 5000 + Math.floor(Math.random() * 5000); // 5–10s
+      timeoutId = window.setTimeout(tick, delay);
+    };
+    timeoutId = window.setTimeout(tick, 5000 + Math.floor(Math.random() * 5000));
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   // Fetch user's first garage vehicle (deduped per session)

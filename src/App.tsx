@@ -16,6 +16,7 @@ import DevToolsGuard from "./components/DevToolsGuard.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
 import TopProgressBar from "./components/TopProgressBar.tsx";
 import MobileAppBanner from "./components/MobileAppBanner.tsx";
+import SocialProofPopup from "./components/SocialProofPopup.tsx";
 import MotTaxReminderRunner from "./components/garage/MotTaxReminderRunner.tsx";
 
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
@@ -129,6 +130,7 @@ const App = () => {
             </ErrorBoundary>
             <CookieConsent />
             <PWAInstallPrompt />
+            <SocialProofPopup />
             <DevToolsGuard />
             
             </LocaleProvider>

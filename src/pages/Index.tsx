@@ -22,6 +22,7 @@ import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
 import WelcomeModal from "@/components/WelcomeModal";
 import LocationBanner from "@/components/LocationBanner";
+import ExitIntentBanner from "@/components/ExitIntentBanner";
 
 const Index = () => {
   const location = useLocation();
@@ -151,6 +152,7 @@ const Index = () => {
       <BackToTop />
       <WelcomeModal />
       <LocationBanner />
+      <ExitIntentBanner />
     </div>
   );
 };

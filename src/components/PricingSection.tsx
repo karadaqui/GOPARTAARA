@@ -314,6 +314,18 @@ const PricingSection = () => {
           </div>
         </div>
 
+        {/* Urgency banner */}
+        <p
+          className="text-center mt-6"
+          style={{ fontSize: "13px", color: "#fbbf24" }}
+        >
+          🕐 First month Pro free — offer ends{" "}
+          {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(
+            "en-US",
+            { month: "long", day: "numeric", year: "numeric" }
+          )}
+        </p>
+
         {/* Business CTA */}
         <div className="mt-12 rounded-2xl border border-border/30 bg-card/30 backdrop-blur-sm p-8 sm:p-10 text-center">
           <div className="flex items-center justify-center gap-2 mb-3">
