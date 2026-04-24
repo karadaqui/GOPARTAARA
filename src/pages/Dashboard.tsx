@@ -9,7 +9,7 @@ import { useUserPlan } from "@/hooks/useUserPlan";
 import {
   Camera, Save, User, Mail, Crown, Bookmark, Loader2,
   Search, X, ExternalLink, CreditCard, Download, Lock, Copy,
-  Bell as BellIcon, ShoppingBag, Sparkles, ArrowRight, Car, Package, TrendingUp,
+  Bell as BellIcon, ShoppingBag, Sparkles, ArrowRight, Car, Package,
 } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
