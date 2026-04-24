@@ -434,8 +434,20 @@ const SearchResults = () => {
               if (data?.error === "SEARCH_LIMIT_REACHED") { setSearchLimitModalType("free"); setSearchLimitModalOpen(true); searchLimit.refresh(); return; }
               if (data?.fallback) { setEbayFallback(true); setLiveResults([]); setTotalResults(0); }
               else {
-                setLiveResults(data?.results || []); setTotalResults(data?.totalResults || 0); searchLimit.refresh();
-                setCachedSearch(cacheKey, { results: data?.results, totalResults: data?.totalResults, fallback: false });
+                const incoming = data?.results || [];
+                // APPEND when paginating beyond page 1; REPLACE on first page (filter/query change)
+                if (currentPage > 1) {
+                  setLiveResults((prev) => {
+                    const seen = new Set(prev.map((r: any) => r.id));
+                    const merged = [...prev];
+                    for (const r of incoming) if (!seen.has(r.id)) merged.push(r);
+                    return merged;
+                  });
+                } else {
+                  setLiveResults(incoming);
+                }
+                setTotalResults(data?.totalResults || 0); searchLimit.refresh();
+                setCachedSearch(cacheKey, { results: incoming, totalResults: data?.totalResults, fallback: false });
               }
             }
           }
