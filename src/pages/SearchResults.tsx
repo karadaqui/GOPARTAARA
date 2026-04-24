@@ -1602,49 +1602,72 @@ const SearchResults = () => {
                   );
                 })()}
 
-                {/* Premium "Load more" button */}
-                {currentPage < totalPages && (
+                {/* Premium "Load more" button (append-style pagination) */}
+                {liveResults.length > 0 && (
                   <div className="mt-10 mb-2">
-                    <button
-                      type="button"
-                      onClick={handleLoadMore}
-                      disabled={loadingMore || liveLoading}
-                      className="w-full flex items-center justify-center gap-2 transition-colors disabled:cursor-not-allowed group"
-                      style={{
-                        height: "48px",
-                        background: "transparent",
-                        border: "1px solid #27272a",
-                        borderRadius: "10px",
-                        color: "#a1a1aa",
-                        fontSize: "14px",
-                        fontWeight: 600,
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!loadingMore && !liveLoading) {
-                          e.currentTarget.style.borderColor = "#3f3f46";
-                          e.currentTarget.style.color = "#ffffff";
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "#27272a";
-                        e.currentTarget.style.color = "#a1a1aa";
-                      }}
-                    >
-                      {loadingMore || liveLoading ? (
-                        <>
-                          <Loader2 size={16} className="animate-spin" />
-                          Loading more results…
-                        </>
-                      ) : (
-                        <>
-                          Load {Math.min(ITEMS_PER_PAGE, totalResults - endItem)} more results
-                          <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
-                        </>
-                      )}
-                    </button>
-                    <p className="text-center mt-2.5" style={{ fontSize: "12px", color: "#52525b" }}>
-                      Showing {endItem.toLocaleString()} of {totalResults.toLocaleString()} results
-                    </p>
+                    {currentPage < totalPages ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={handleLoadMore}
+                          disabled={loadingMore || liveLoading}
+                          className="flex items-center justify-center gap-2 transition-colors disabled:cursor-not-allowed group"
+                          style={{
+                            display: "flex",
+                            width: "100%",
+                            maxWidth: "600px",
+                            margin: "40px auto 0",
+                            height: "52px",
+                            background: "transparent",
+                            border: "1px solid #27272a",
+                            borderRadius: "12px",
+                            color: "#a1a1aa",
+                            fontSize: "15px",
+                            fontWeight: 500,
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!loadingMore && !liveLoading) {
+                              e.currentTarget.style.borderColor = "#3f3f46";
+                              e.currentTarget.style.color = "#ffffff";
+                              e.currentTarget.style.background = "#111111";
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = "#27272a";
+                            e.currentTarget.style.color = "#a1a1aa";
+                            e.currentTarget.style.background = "transparent";
+                          }}
+                        >
+                          {loadingMore || liveLoading ? (
+                            <>
+                              <Loader2 size={16} className="animate-spin" />
+                              Loading...
+                            </>
+                          ) : (
+                            <>Load {Math.min(ITEMS_PER_PAGE, totalResults - endItem)} more results</>
+                          )}
+                        </button>
+                        <p className="text-center mt-3" style={{ fontSize: "13px", color: "#52525b" }}>
+                          Showing {endItem.toLocaleString()} of {totalResults.toLocaleString()} results · 7 suppliers searched
+                        </p>
+                        <div className="text-center mt-2">
+                          <button
+                            type="button"
+                            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                            className="transition-colors"
+                            style={{ fontSize: "13px", color: "#52525b", background: "transparent", border: "none", cursor: "pointer" }}
+                            onMouseEnter={(e) => { e.currentTarget.style.color = "#ffffff"; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.color = "#52525b"; }}
+                          >
+                            ↑ Back to top
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="text-center mt-10" style={{ fontSize: "13px", color: "#71717a" }}>
+                        You've seen all {totalResults.toLocaleString()} results
+                      </p>
+                    )}
                   </div>
                 )}
 
