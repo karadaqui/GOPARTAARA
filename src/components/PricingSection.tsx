@@ -379,6 +379,33 @@ const PricingSection = () => {
             ))}
           </Accordion>
         </div>
+
+        {/* Enterprise / Garage callout */}
+        <div
+          className="mt-12 max-w-3xl mx-auto rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5"
+          style={{
+            background: "#111111",
+            border: "1px solid #1f1f1f",
+            padding: "32px",
+          }}
+        >
+          <div className="flex-1">
+            <h4 className="font-display font-bold text-white" style={{ fontSize: "20px" }}>
+              Running a garage or fleet?
+            </h4>
+            <p className="mt-1.5" style={{ fontSize: "14px", color: "#71717a", lineHeight: 1.55 }}>
+              Get a custom plan with team access, bulk discounts, and API integration.
+            </p>
+          </div>
+          <Link
+            to="/business"
+            className="shrink-0 inline-flex items-center gap-2 px-5 h-11 rounded-xl border border-[#27272a] hover:border-[#3f3f46] text-white text-sm font-semibold transition-colors hover:bg-white/[0.03]"
+          >
+            Talk to us
+            <span aria-hidden>→</span>
+          </Link>
+        </div>
+
       </div>
     </section>
   );
