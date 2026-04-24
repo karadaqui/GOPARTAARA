@@ -1112,13 +1112,7 @@ const SearchResults = () => {
                     // ── eBay Card ──
                     const priceBadge = getPriceBadge(item.price);
                     const conditionNorm = (item.condition || "").trim().toLowerCase();
-                    const conditionBarStyle = conditionNorm === "new"
-                      ? { background: "#14532d", color: "#4ade80" }
-                      : conditionNorm === "used" || conditionNorm.includes("pre-owned")
-                      ? { background: "#78350f", color: "#fbbf24" }
-                      : conditionNorm.includes("refurb")
-                      ? { background: "#1e3a5f", color: "#60a5fa" }
-                      : { background: "#27272a", color: "#a1a1aa" };
+                    void conditionNorm;
                     const priceBadgeStyles = {
                       great: { text: "text-emerald-400", icon: "✦" },
                       good: { text: "text-blue-400", icon: "✦" },
