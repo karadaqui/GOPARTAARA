@@ -480,85 +480,9 @@ const HeroSection = () => {
               </button>
             </div>
 
-            {/* Tabs — Desktop (clean underline) */}
-            <div
-              className="hidden md:flex md:items-center md:justify-center md:gap-7 md:mb-5"
-              style={{ borderBottom: "1px solid #1f1f1f" }}
-            >
-              {[
-                { key: "part", label: "Parts", icon: <Search size={14} style={{ flexShrink: 0 }} /> },
-                { key: "plate", label: "Reg Plate UK", icon: <Car size={14} style={{ flexShrink: 0 }} /> },
-                { key: "vin", label: "VIN", icon: <span style={{ fontSize: 13 }}>🌍</span> },
-              ].map((tab) => {
-                const isActive = activeTab === tab.key;
-                return (
-                  <button
-                    key={tab.key}
-                    onClick={() => setActiveTab(tab.key as "part" | "plate" | "vin")}
-                    style={{
-                      flexShrink: 0,
-                      whiteSpace: "nowrap",
-                      padding: "8px 2px",
-                      paddingBottom: "8px",
-                      marginBottom: "-1px",
-                      background: "transparent",
-                      border: "none",
-                      borderBottom: isActive ? "2px solid #cc1111" : "2px solid transparent",
-                      color: isActive ? "#ffffff" : "#52525b",
-                      fontSize: "13px",
-                      fontWeight: isActive ? 600 : 400,
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "6px",
-                      transition: "color 150ms ease, border-color 150ms ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isActive) e.currentTarget.style.color = "#a1a1aa";
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive) e.currentTarget.style.color = "#52525b";
-                    }}
-                  >
-                    {tab.icon}
-                    {tab.label}
-                  </button>
-                );
-              })}
-              <button
-                onClick={() => navigate("/tyres")}
-                style={{
-                  flexShrink: 0,
-                  whiteSpace: "nowrap",
-                  padding: "8px 2px",
-                  paddingBottom: "8px",
-                  marginBottom: "-1px",
-                  background: "transparent",
-                  border: "none",
-                  borderBottom: "2px solid transparent",
-                  color: "#52525b",
-                  fontSize: "13px",
-                  fontWeight: 400,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  transition: "color 150ms ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#a1a1aa")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#52525b")}
-              >
-                <img
-                  src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
-                  width={14}
-                  height={14}
-                  alt=""
-                  loading="lazy"
-                  style={{ flexShrink: 0 }}
-                />
-                Tyres
-              </button>
-            </div>
+            {/* Tabs — Desktop (animated underline) */}
+            <DesktopTabsBar activeTab={activeTab} setActiveTab={setActiveTab} navigate={navigate} />
+
 
             {/* Part search */}
             {activeTab === "part" ? (
