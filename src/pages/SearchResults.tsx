@@ -361,6 +361,7 @@ const SearchResults = () => {
     const timer = setTimeout(() => setIsInitialLoad(false), 3000);
     if (activeQuery && activeQuery.trim()) {
       addRecentSearch(activeQuery.trim());
+      addRecentSearchV2(activeQuery.trim());
     }
     return () => clearTimeout(timer);
   }, [activeQuery]);
