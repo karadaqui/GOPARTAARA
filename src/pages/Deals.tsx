@@ -135,6 +135,33 @@ const CLASSIC_DEALS = [
 ];
 
 const Deals = () => {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const { lastUpdatedLabel, countdownLabel } = useMemo(() => {
+    // "Updated daily" → assume midnight UK refresh
+    const midnight = new Date(now);
+    midnight.setHours(24, 0, 0, 0);
+    const diffMs = midnight.getTime() - now.getTime();
+    const h = Math.floor(diffMs / 3_600_000);
+    const m = Math.floor((diffMs % 3_600_000) / 60_000);
+    const s = Math.floor((diffMs % 60_000) / 1000);
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    return {
+      lastUpdatedLabel: now.toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      countdownLabel: `${pad(h)}h ${pad(m)}m ${pad(s)}s`,
+    };
+  }, [now]);
+
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
