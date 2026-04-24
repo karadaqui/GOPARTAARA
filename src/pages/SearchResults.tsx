@@ -1486,9 +1486,55 @@ const SearchResults = () => {
                   );
                 })()}
 
-                {/* Pagination */}
+                {/* Premium "Load more" button */}
+                {currentPage < totalPages && (
+                  <div className="mt-10 mb-2">
+                    <button
+                      type="button"
+                      onClick={handleLoadMore}
+                      disabled={loadingMore || liveLoading}
+                      className="w-full flex items-center justify-center gap-2 transition-colors disabled:cursor-not-allowed group"
+                      style={{
+                        height: "48px",
+                        background: "transparent",
+                        border: "1px solid #27272a",
+                        borderRadius: "10px",
+                        color: "#a1a1aa",
+                        fontSize: "14px",
+                        fontWeight: 600,
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!loadingMore && !liveLoading) {
+                          e.currentTarget.style.borderColor = "#3f3f46";
+                          e.currentTarget.style.color = "#ffffff";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "#27272a";
+                        e.currentTarget.style.color = "#a1a1aa";
+                      }}
+                    >
+                      {loadingMore || liveLoading ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          Loading more results…
+                        </>
+                      ) : (
+                        <>
+                          Load {Math.min(ITEMS_PER_PAGE, totalResults - endItem)} more results
+                          <ArrowRightArrow />
+                        </>
+                      )}
+                    </button>
+                    <p className="text-center mt-2.5" style={{ fontSize: "12px", color: "#52525b" }}>
+                      Showing {endItem.toLocaleString()} of {totalResults.toLocaleString()} results
+                    </p>
+                  </div>
+                )}
+
+                {/* Pagination (page jump for power users) */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-1 mt-8 flex-wrap">
+                  <div className="flex items-center justify-center gap-1 mt-6 flex-wrap">
                     <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="flex items-center gap-0.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border border-white/[0.06]"><ChevronLeft size={14} /> Prev</button>
                     {getPageNumbers().map((page, i) => page === "..." ? (
                       <span key={`e-${i}`} className="px-2 py-2 text-sm text-zinc-600">...</span>
@@ -1499,6 +1545,7 @@ const SearchResults = () => {
                     <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="flex items-center gap-0.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed bg-[#1a1a1a] hover:bg-[#222] text-zinc-300 border border-white/[0.06]">Next <ChevronRight size={14} /></button>
                   </div>
                 )}
+
 
                 {/* Amazon Affiliate Banner */}
                 {activeQuery && (
