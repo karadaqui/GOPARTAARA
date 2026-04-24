@@ -102,6 +102,20 @@ const Pricing = () => {
           "url": "https://gopartara.com/pricing",
           "description": "Compare GOPARTARA subscription plans for car parts search."
         }}
+        additionalJsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": faqItems.map((item) => ({
+              "@type": "Question",
+              "name": item.q,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": item.a,
+              },
+            })),
+          },
+        ]}
       />
       <Navbar />
       <div className="pt-24">
