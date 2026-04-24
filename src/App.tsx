@@ -58,6 +58,7 @@ const Business = lazy(() => import("./pages/Business.tsx"));
 const Compare = lazy(() => import("./pages/Compare.tsx"));
 const Help = lazy(() => import("./pages/Help.tsx"));
 const Cookies = lazy(() => import("./pages/Cookies.tsx"));
+const Alerts = lazy(() => import("./pages/Alerts.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -84,6 +85,7 @@ const App = () => {
                 
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/search" element={<SearchResults />} />
+                <Route path="/alerts" element={<ProtectedRoute><Alerts /></ProtectedRoute>} />
                 <Route path="/saved" element={<ProtectedRoute><SavedParts /></ProtectedRoute>} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/about" element={<About />} />
