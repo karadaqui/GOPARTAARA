@@ -607,10 +607,10 @@ const SearchResults = () => {
     if (!price || allPrices.length < 2) return null;
     const sorted = [...allPrices].sort((a, b) => a - b);
     const low = sorted[Math.floor(sorted.length * 0.25)];
-    const high = sorted[Math.floor(sorted.length * 0.75)];
+    const median = sorted[Math.floor(sorted.length * 0.5)];
     if (price <= low) return { label: locale.t("great_price"), variant: "great" as const };
-    if (price >= high) return { label: locale.t("high_price"), variant: "high" as const };
-    return { label: locale.t("good_price"), variant: "good" as const };
+    if (price < median) return { label: locale.t("good_price"), variant: "good" as const };
+    return null;
   };
 
   const getFlag = (code: string) => countryBadges[code] || "🌍";
