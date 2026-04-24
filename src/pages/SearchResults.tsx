@@ -946,6 +946,7 @@ const SearchResults = () => {
                     onChange={(e) => { setQuery(e.target.value); setAutoOpen(true); }}
                     onFocus={() => setAutoOpen(true)}
                     placeholder="Search car parts..."
+                    title="Press / to focus · Esc to clear"
                     autoComplete="off"
                     className="w-full pl-14 pr-4 h-14 rounded-2xl bg-[#141414] border border-white/10 text-white placeholder:text-zinc-500 focus:outline-none focus:border-red-500/50 focus:shadow-[0_0_0_3px_rgba(220,38,38,0.1)] transition-colors text-sm"
                   />
