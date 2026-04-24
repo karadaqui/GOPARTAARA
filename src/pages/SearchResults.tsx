@@ -869,6 +869,16 @@ const SearchResults = () => {
               <div className="sm:hidden flex justify-center mt-1">
                 {user && <SearchCounter limitData={searchLimit} />}
               </div>
+              {!activeQuery && (
+                <RecentSearches
+                  onSelect={(q) => {
+                    setQuery(q);
+                    setActiveQuery(q);
+                    setCurrentPage(1);
+                    setSearchParams({ q });
+                  }}
+                />
+              )}
             </div>
           ) : searchMode === "reg" ? (
             <VehicleLookup onLookupStart={handleVehicleLookupStart} onVehicleFound={handleVehicleLookupSuccess} />
