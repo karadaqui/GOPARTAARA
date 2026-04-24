@@ -74,7 +74,7 @@ const App = () => {
             <MotTaxReminderRunner />
             <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
-              <div className="pb-20 md:pb-0">
+              <div className="pb-20 md:pb-0 overflow-x-hidden w-full max-w-[100vw]">
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/auth" element={<Auth />} />
