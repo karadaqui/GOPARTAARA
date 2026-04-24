@@ -287,7 +287,7 @@ const HeroSection = () => {
 
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center pt-16 overflow-x-visible overflow-y-hidden animated-gradient-bg">
+    <section id="home" className="relative min-h-[75vh] flex items-center justify-center pt-16 overflow-x-visible overflow-y-hidden animated-gradient-bg">
       {/* Background glow orbs */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary/6 blur-[180px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-primary/4 blur-[140px] pointer-events-none" />
