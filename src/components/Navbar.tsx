@@ -8,7 +8,6 @@ import MessageBubble from "@/components/MessageBubble";
 import CountrySelector from "@/components/CountrySelector";
 
 const primaryLinks = [
-  { label: "Home", href: "/" },
   { label: "Search", href: "/search" },
   { label: "Marketplace", href: "/marketplace" },
   { label: "Deals", href: "/deals" },
