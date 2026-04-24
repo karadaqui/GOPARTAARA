@@ -42,6 +42,7 @@ import { findDealByBrand, EBAY_ALL_DEALS_URL, isUKUser } from "@/data/ebayDeals"
 import GreenSparkFeaturedCard, { isClassicPartSearch } from "@/components/GreenSparkFeaturedCard";
 import GreenSparkResultsRow from "@/components/GreenSparkResultsRow";
 import GreenSparkProductCard, { useGspProducts } from "@/components/GreenSparkProductCard";
+import RecentSearches, { addRecentSearch } from "@/components/RecentSearches";
 
 
 // ── Twemoji helper ──
