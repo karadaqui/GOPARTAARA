@@ -3,24 +3,18 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
-import { Mail, Send, MessageSquare, Clock, CheckCircle } from "lucide-react";
+import { Mail, Twitter, CheckCircle } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const SUBJECTS = [
-  "General Enquiry",
-  "Technical Support",
-  "Billing",
-  "Partnership / Business",
-  "Report an Issue",
+  "General",
+  "Bug Report",
+  "Partnership",
+  "Press",
 ];
 
 const contactSchema = z.object({
@@ -30,8 +24,18 @@ const contactSchema = z.object({
   message: z.string().trim().min(1, "Message is required").max(2000),
 });
 
+const SECTION_LABEL: React.CSSProperties = {
+  fontSize: "11px",
+  fontWeight: 600,
+  letterSpacing: "0.12em",
+  color: "#cc1111",
+  textTransform: "uppercase",
+  marginBottom: "12px",
+  display: "inline-block",
+};
+
 const Contact = () => {
-  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", subject: "General", message: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -53,7 +57,6 @@ const Contact = () => {
 
     setSending(true);
     try {
-      // Save to contact_messages table
       const { error: dbError } = await supabase.from("contact_messages" as any).insert({
         name: result.data.name,
         email: result.data.email,
@@ -63,7 +66,6 @@ const Contact = () => {
 
       if (dbError) throw dbError;
 
-      // Send notification emails
       const submissionId = crypto.randomUUID();
       await supabase.functions.invoke("send-transactional-email", {
         body: {
@@ -89,7 +91,7 @@ const Contact = () => {
       });
 
       setSent(true);
-      setForm({ name: "", email: "", subject: "", message: "" });
+      setForm({ name: "", email: "", subject: "General", message: "" });
     } catch {
       toast({ title: "Error", description: "Failed to send message. Please try again.", variant: "destructive" });
     } finally {
@@ -100,109 +102,274 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
-        title="Contact Us | GOPARTARA"
+        title="Contact GOPARTARA — We respond within 24 hours"
         description="Get in touch with the GOPARTARA team. Have a question about car parts, pricing, or our platform? We'd love to hear from you."
         path="/contact"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "ContactPage",
           "name": "Contact GOPARTARA",
-          "url": "https://gopartara.com/contact"
+          "url": "https://gopartara.com/contact",
         }}
       />
       <Navbar />
+
       <main className="pt-24 pb-16">
-        <div className="container px-4 max-w-4xl mx-auto">
-          <div className="text-center mb-14">
-            <span className="inline-block text-xs font-semibold uppercase tracking-widest text-primary mb-4">
-              Contact Us
-            </span>
-            <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">Get in Touch</h1>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-              Have a question, suggestion, or need help finding a part? Drop us a message and we'll get back to you.
+        <div className="container px-4 max-w-5xl mx-auto">
+          {/* Header */}
+          <div style={{ paddingTop: "20px", paddingBottom: "48px" }}>
+            <span style={SECTION_LABEL}>Contact</span>
+            <h1
+              className="font-display"
+              style={{
+                fontSize: "clamp(36px, 5vw, 56px)",
+                fontWeight: 800,
+                letterSpacing: "-0.03em",
+                color: "white",
+                lineHeight: 1.05,
+              }}
+            >
+              Get in Touch
+            </h1>
+            <p style={{ fontSize: "16px", color: "#71717a", marginTop: "16px" }}>
+              We respond within 24 hours.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-5 gap-10">
-            <div className="md:col-span-2 space-y-5">
-              <div className="rounded-2xl border border-border bg-card p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4">
-                  <Mail size={20} />
-                </div>
-                <h3 className="font-semibold mb-1">Email Us</h3>
-                <a href="mailto:info@gopartara.com" className="text-sm text-primary hover:underline">
-                  info@gopartara.com
+          {/* Two columns */}
+          <div className="grid md:grid-cols-2 gap-10 lg:gap-16">
+            {/* LEFT — contact methods */}
+            <div>
+              <span style={SECTION_LABEL}>Reach Us</span>
+              <div className="mt-2">
+                <ContactMethod
+                  icon={<Mail size={18} style={{ color: "#cc1111" }} />}
+                  label="Email"
+                  value="info@gopartara.com"
+                  href="mailto:info@gopartara.com"
+                />
+                <ContactMethod
+                  icon={<Twitter size={18} style={{ color: "#cc1111" }} />}
+                  label="Twitter / X"
+                  value="@gopartara"
+                  href="https://twitter.com/gopartara"
+                />
+              </div>
+
+              <p
+                style={{
+                  fontSize: "13px",
+                  color: "#71717a",
+                  lineHeight: 1.6,
+                  marginTop: "32px",
+                  paddingTop: "24px",
+                  borderTop: "1px solid #1f1f1f",
+                }}
+              >
+                For business enquiries and partnerships, email{" "}
+                <a
+                  href="mailto:partnerships@gopartara.com"
+                  style={{ color: "#cc1111", textDecoration: "none", fontWeight: 600 }}
+                >
+                  partnerships@gopartara.com
                 </a>
-              </div>
-              <div className="rounded-2xl border border-border bg-card p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4">
-                  <Clock size={20} />
-                </div>
-                <h3 className="font-semibold mb-1">Response Time</h3>
-                <p className="text-sm text-muted-foreground">We typically respond within 24 hours on business days.</p>
-              </div>
-              <div className="rounded-2xl border border-border bg-card p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4">
-                  <MessageSquare size={20} />
-                </div>
-                <h3 className="font-semibold mb-1">Feedback Welcome</h3>
-                <p className="text-sm text-muted-foreground">We're always improving — your feedback helps us build a better GOPARTARA.</p>
-              </div>
+                .
+              </p>
             </div>
 
-            <div className="md:col-span-3">
+            {/* RIGHT — form */}
+            <div>
               {sent ? (
-                <div className="rounded-2xl border border-border bg-card p-8 text-center">
-                  <CheckCircle size={48} className="text-emerald-400 mx-auto mb-4" />
-                  <h3 className="font-display text-xl font-bold mb-2">Message sent!</h3>
-                  <p className="text-sm text-muted-foreground mb-6">
-                    ✅ We'll get back to you within 24 hours.
+                <div
+                  className="text-center"
+                  style={{
+                    background: "#0a0a0a",
+                    border: "1px solid #1f1f1f",
+                    borderRadius: "16px",
+                    padding: "40px 32px",
+                  }}
+                >
+                  <CheckCircle size={40} className="mx-auto mb-4" style={{ color: "#4ade80" }} />
+                  <h3 className="font-display text-white" style={{ fontSize: "20px", fontWeight: 700, marginBottom: "8px" }}>
+                    Message sent
+                  </h3>
+                  <p style={{ fontSize: "14px", color: "#71717a", marginBottom: "20px" }}>
+                    We'll get back to you within 24 hours.
                   </p>
-                  <Button variant="outline" className="rounded-xl" onClick={() => setSent(false)}>
-                    Send Another Message
-                  </Button>
+                  <button
+                    onClick={() => setSent(false)}
+                    style={{
+                      fontSize: "13px",
+                      color: "#cc1111",
+                      fontWeight: 600,
+                      background: "transparent",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Send another message →
+                  </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="rounded-2xl border border-border bg-card p-8 space-y-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" placeholder="Your name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} maxLength={100} />
-                    {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" placeholder="you@example.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} maxLength={255} />
-                    {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="subject">Subject</Label>
-                    <Select value={form.subject} onValueChange={(v) => setForm({ ...form, subject: v })}>
-                      <SelectTrigger className="rounded-xl"><SelectValue placeholder="Select a subject" /></SelectTrigger>
-                      <SelectContent>
-                        {SUBJECTS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                    {errors.subject && <p className="text-sm text-destructive">{errors.subject}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="message">Message</Label>
-                    <Textarea id="message" placeholder="How can we help?" rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} maxLength={2000} />
-                    {errors.message && <p className="text-sm text-destructive">{errors.message}</p>}
-                  </div>
-                  <Button type="submit" disabled={sending} className="w-full gap-2">
-                    <Send size={16} />
-                    {sending ? "Sending…" : "Send Message"}
-                  </Button>
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  <Field label="Name" error={errors.name}>
+                    <Input
+                      placeholder="Your name"
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      maxLength={100}
+                      className="auth-input"
+                    />
+                  </Field>
+
+                  <Field label="Email" error={errors.email}>
+                    <Input
+                      type="email"
+                      placeholder="you@example.com"
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      maxLength={255}
+                      className="auth-input"
+                    />
+                  </Field>
+
+                  <Field label="Subject" error={errors.subject}>
+                    <select
+                      value={form.subject}
+                      onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                      className="auth-input w-full px-3 appearance-none cursor-pointer"
+                      style={{
+                        backgroundImage:
+                          "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "right 12px center",
+                        paddingRight: "36px",
+                      }}
+                    >
+                      {SUBJECTS.map((s) => (
+                        <option key={s} value={s} style={{ background: "#0a0a0a" }}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+
+                  <Field label="Message" error={errors.message}>
+                    <Textarea
+                      placeholder="How can we help?"
+                      rows={4}
+                      value={form.message}
+                      onChange={(e) => setForm({ ...form, message: e.target.value })}
+                      maxLength={2000}
+                      className="auth-input"
+                      style={{ height: "auto", paddingTop: "12px", paddingBottom: "12px", resize: "vertical" }}
+                    />
+                  </Field>
+
+                  <button
+                    type="submit"
+                    disabled={sending}
+                    className="w-full transition-opacity disabled:opacity-60"
+                    style={{
+                      height: "44px",
+                      borderRadius: "8px",
+                      background: "#cc1111",
+                      color: "white",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      marginTop: "8px",
+                    }}
+                  >
+                    {sending ? "Sending…" : "Send Message →"}
+                  </button>
                 </form>
               )}
             </div>
           </div>
         </div>
       </main>
+
       <Footer />
       <BackToTop />
     </div>
   );
 };
+
+/* ── Sub-components ─────────────────────────────────────── */
+
+const ContactMethod = ({
+  icon,
+  label,
+  value,
+  href,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  href: string;
+}) => (
+  <a
+    href={href}
+    target={href.startsWith("http") ? "_blank" : undefined}
+    rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+    className="flex items-center gap-4 group"
+    style={{
+      padding: "20px 0",
+      borderBottom: "1px solid #1f1f1f",
+    }}
+  >
+    <div
+      className="shrink-0 flex items-center justify-center rounded-lg"
+      style={{ width: "40px", height: "40px", background: "rgba(204,17,17,0.1)" }}
+    >
+      {icon}
+    </div>
+    <div className="flex-1 min-w-0">
+      <p style={{ fontSize: "12px", color: "#52525b", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+        {label}
+      </p>
+      <p
+        className="group-hover:text-[#cc1111] transition-colors"
+        style={{ fontSize: "15px", color: "white", fontWeight: 500, marginTop: "2px" }}
+      >
+        {value}
+      </p>
+    </div>
+    <span
+      className="text-zinc-700 group-hover:text-zinc-400 transition-colors"
+      style={{ fontSize: "16px" }}
+    >
+      →
+    </span>
+  </a>
+);
+
+const Field = ({
+  label,
+  error,
+  children,
+}: {
+  label: string;
+  error?: string;
+  children: React.ReactNode;
+}) => (
+  <div>
+    <label
+      className="block"
+      style={{
+        fontSize: "12px",
+        fontWeight: 500,
+        color: "#a1a1aa",
+        marginBottom: "6px",
+      }}
+    >
+      {label}
+    </label>
+    {children}
+    {error && (
+      <p style={{ fontSize: "12px", color: "#ef4444", marginTop: "4px" }}>{error}</p>
+    )}
+  </div>
+);
 
 export default Contact;
