@@ -14,17 +14,18 @@ const ROWS: { feature: string; values: [Cell, Cell, Cell, Cell] }[] = [
   { feature: "P2P Marketplace", values: [true, false, false, true] },
 ];
 
-const renderCell = (value: Cell, isPartara: boolean) => {
+const renderCell = (value: Cell, isPartara: boolean, feature?: string) => {
   if (value === true) {
     return <span style={{ color: "#4ade80", fontSize: "18px", fontWeight: 700 }}>✓</span>;
   }
   if (value === false) {
     return <span style={{ color: "#3f3f46", fontSize: "18px" }}>✗</span>;
   }
+  const isSuppliersGopartara = isPartara && feature === "Suppliers searched";
   return (
     <span
       style={{
-        color: isPartara ? "#ffffff" : "#a1a1aa",
+        color: isSuppliersGopartara ? "#4ade80" : isPartara ? "#ffffff" : "#a1a1aa",
         fontSize: "14px",
         fontWeight: isPartara ? 700 : 500,
       }}
