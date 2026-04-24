@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -100,7 +102,66 @@ const AMAZON_DEALS = [
 ];
 const AMAZON_ALL_URL = "https://www.amazon.co.uk/b?node=248877031&tag=gopartara-21";
 
+// ───────── Classic & Vintage Parts ─────────
+const CLASSIC_DEALS = [
+  {
+    icon: "🔌",
+    title: "Spark Plugs & Ignition",
+    subtitle: "NGK, Bosch, Champion & period-correct",
+    url: "https://www.gsparkplug.com/",
+    badge: "Green Spark Plug Co.",
+  },
+  {
+    icon: "🛞",
+    title: "Classic Tyres",
+    subtitle: "Michelin XAS, Avon, Pirelli vintage",
+    url: "https://www.ebay.co.uk/sch/i.html?_nkw=classic+car+tyres",
+    badge: "Period correct",
+  },
+  {
+    icon: "🛠️",
+    title: "Restoration Parts",
+    subtitle: "Trim, badges, body panels & seals",
+    url: "https://www.ebay.co.uk/b/Vintage-Classic-Car-Parts/3438",
+    badge: "Restorers",
+  },
+  {
+    icon: "📚",
+    title: "Workshop Manuals",
+    subtitle: "Haynes, factory & owner's handbooks",
+    url: "https://www.ebay.co.uk/sch/i.html?_nkw=classic+car+workshop+manual",
+    badge: "Reference",
+  },
+];
+
 const Deals = () => {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const { lastUpdatedLabel, countdownLabel } = useMemo(() => {
+    // "Updated daily" → assume midnight UK refresh
+    const midnight = new Date(now);
+    midnight.setHours(24, 0, 0, 0);
+    const diffMs = midnight.getTime() - now.getTime();
+    const h = Math.floor(diffMs / 3_600_000);
+    const m = Math.floor((diffMs % 3_600_000) / 60_000);
+    const s = Math.floor((diffMs % 60_000) / 1000);
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    return {
+      lastUpdatedLabel: now.toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      countdownLabel: `${pad(h)}h ${pad(m)}m ${pad(s)}s`,
+    };
+  }, [now]);
+
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
@@ -112,9 +173,14 @@ const Deals = () => {
 
       <main className="pt-16">
         {/* HERO */}
-        <section className="relative overflow-hidden pt-24 pb-16 px-4">
+        <section className="relative overflow-hidden pt-24 pb-12 px-4">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
           <div className="relative text-center max-w-2xl mx-auto">
+            <p className="text-[12px] text-zinc-500 mb-4">
+              Last updated: <span className="text-zinc-300 font-medium">{lastUpdatedLabel}</span>
+              <span className="mx-2">·</span>
+              Next update in: <span className="text-zinc-300 font-mono font-semibold">{countdownLabel}</span>
+            </p>
             <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-full px-4 py-1.5 mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               <span className="text-primary text-xs font-semibold tracking-wider uppercase">
@@ -124,11 +190,54 @@ const Deals = () => {
             <h1 className="text-5xl sm:text-6xl font-black text-foreground mb-4 tracking-tight">
               Deals &amp; Savings
             </h1>
-            <p className="text-muted-foreground text-lg leading-relaxed">
+            <p className="text-muted-foreground text-lg leading-relaxed mb-5">
               Curated affiliate deals from the UK's most trusted automotive retailers.
               Handpicked daily.
             </p>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              {["Verified deals", "Real prices", "Updated daily"].map((label) => (
+                <span
+                  key={label}
+                  className="inline-flex items-center gap-1.5 bg-zinc-900/60 border border-zinc-800 rounded-full px-3 py-1 text-[12px] text-zinc-300"
+                >
+                  <span className="text-emerald-400 font-bold">✓</span>
+                  {label}
+                </span>
+              ))}
+            </div>
           </div>
+        </section>
+
+        {/* FEATURED DEAL */}
+        <section className="px-4 pb-12 max-w-5xl mx-auto">
+          <a
+            href={EBAY_ALL_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group block rounded-2xl overflow-hidden border transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-red-950/40"
+            style={{
+              background: "linear-gradient(135deg, #0d0000, #1a0000)",
+              borderColor: "rgba(204,17,17,0.3)",
+            }}
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 p-6 sm:p-8">
+              <div className="flex-1 min-w-0">
+                <span className="inline-flex items-center gap-1.5 bg-red-600/15 border border-red-600/40 text-red-400 text-[11px] font-bold uppercase tracking-wider rounded-full px-2.5 py-1 mb-3">
+                  🔥 Featured Deal
+                </span>
+                <h2 className="text-white text-2xl sm:text-3xl font-black tracking-tight mb-1.5">
+                  Up to 50% off Car Parts &amp; Accessories
+                </h2>
+                <p className="text-zinc-400 text-sm">Limited time · eBay UK</p>
+              </div>
+              <span
+                className="inline-flex items-center justify-center gap-2 bg-[#cc1111] hover:bg-red-500 text-white font-bold text-sm px-5 py-3 rounded-xl shadow-lg shadow-red-950/40 transition-colors whitespace-nowrap"
+              >
+                View Deal
+                <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+              </span>
+            </div>
+          </a>
         </section>
 
         {/* SECTION 1 — eBay UK */}
@@ -168,10 +277,10 @@ const Deals = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${deal.title} — eBay UK deal`}
-                className="group relative flex flex-col p-4 bg-card border border-border hover:border-border/80 hover:bg-card/80 rounded-2xl overflow-hidden transition-[colors,transform] hover:shadow-xl hover:shadow-background/40 hover:-translate-y-0.5"
+                className="group relative flex flex-col p-4 bg-card border border-border hover:border-red-500/30 rounded-2xl overflow-hidden transition-[colors,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)]"
               >
                 <div className="absolute top-2 right-2 max-w-[55%]">
-                  <span className="block truncate text-[9px] md:text-[10px] bg-primary/15 border border-primary/30 text-primary rounded-full px-2 py-0.5 font-bold">
+                  <span className="block truncate text-[9px] md:text-[10px] bg-primary/15 border border-primary/30 text-primary group-hover:bg-gradient-to-r group-hover:from-red-600/30 group-hover:to-red-500/20 group-hover:border-red-500/60 group-hover:text-red-300 rounded-full px-2 py-0.5 font-bold transition-colors">
                     {deal.badge}
                   </span>
                 </div>
@@ -228,10 +337,10 @@ const Deals = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${deal.title} — Amazon UK deal`}
-                className="group relative flex flex-col p-4 bg-card border border-border hover:border-border/80 hover:bg-card/80 rounded-2xl overflow-hidden transition-[colors,transform] hover:shadow-xl hover:shadow-background/40 hover:-translate-y-0.5"
+                className="group relative flex flex-col p-4 bg-card border border-border hover:border-red-500/30 rounded-2xl overflow-hidden transition-[colors,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)]"
               >
                 <div className="absolute top-2 right-2 max-w-[55%]">
-                  <span className="block truncate text-[9px] md:text-[10px] bg-primary/15 border border-primary/30 text-primary rounded-full px-2 py-0.5 font-bold">
+                  <span className="block truncate text-[9px] md:text-[10px] bg-primary/15 border border-primary/30 text-primary group-hover:bg-gradient-to-r group-hover:from-red-600/30 group-hover:to-red-500/20 group-hover:border-red-500/60 group-hover:text-red-300 rounded-full px-2 py-0.5 font-bold transition-colors">
                     {deal.badge}
                   </span>
                 </div>
@@ -249,6 +358,74 @@ const Deals = () => {
           <p className="text-muted-foreground/60 text-xs text-center mt-4">
             {" "}
           </p>
+        </section>
+
+        {/* SECTION 3 — Classic & Vintage Parts */}
+        <section className="px-4 pb-24 max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <img
+                src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f697.png"
+                width={32}
+                height={32}
+                loading="lazy"
+                decoding="async"
+                alt="classic car"
+                className="rounded-xl"
+              />
+              <div>
+                <h2 className="text-foreground font-bold text-lg">Classic &amp; Vintage Parts</h2>
+                <p className="text-muted-foreground text-xs">
+                  Featuring <span className="text-emerald-400 font-semibold">Green Spark Plug Co.</span> · Restoration & period spares
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {CLASSIC_DEALS.map((deal) => (
+              <a
+                key={deal.title}
+                href={deal.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${deal.title} — Classic & vintage parts`}
+                className="group relative flex flex-col p-4 bg-card border border-border hover:border-red-500/30 rounded-2xl overflow-hidden transition-[colors,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)]"
+              >
+                <div className="absolute top-2 right-2 max-w-[60%]">
+                  <span className="block truncate text-[9px] md:text-[10px] bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 group-hover:bg-gradient-to-r group-hover:from-red-600/30 group-hover:to-red-500/20 group-hover:border-red-500/60 group-hover:text-red-300 rounded-full px-2 py-0.5 font-bold transition-colors">
+                    {deal.badge}
+                  </span>
+                </div>
+                <div className="text-2xl mb-3">{deal.icon}</div>
+                <p className="text-foreground font-bold text-sm mb-1 pr-2">{deal.title}</p>
+                <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
+                <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
+                  <span className="text-xs font-semibold">View deal</span>
+                  <span className="text-xs group-hover:translate-x-0.5 transition-transform">→</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+
+        {/* BOTTOM CTA */}
+        <section className="px-4 pb-24 max-w-3xl mx-auto">
+          <div className="text-center bg-zinc-900/60 border border-zinc-800 rounded-2xl px-6 py-10">
+            <h3 className="text-white text-xl sm:text-2xl font-black mb-2">
+              Missing a deal?
+            </h3>
+            <p className="text-zinc-400 text-sm mb-5">
+              Search our full parts database — over 1M listings from trusted suppliers.
+            </p>
+            <Link
+              to="/search"
+              className="inline-flex items-center gap-2 bg-[#cc1111] hover:bg-red-500 text-white font-bold text-sm px-5 py-3 rounded-xl shadow-lg shadow-red-950/30 transition-colors"
+            >
+              Search Parts
+              <span>→</span>
+            </Link>
+          </div>
         </section>
       </main>
 
