@@ -57,7 +57,8 @@ const Index = () => {
 
       <Link
         to="/deals"
-        className="flex items-center justify-between px-5 py-3 mx-4 mb-6 max-w-4xl md:mx-auto bg-gradient-to-r from-card to-card/50 border border-border/60 rounded-2xl hover:border-border transition-colors group"
+        className="flex items-center justify-between px-5 py-3 mx-4 mb-6 max-w-4xl md:mx-auto rounded-2xl transition-colors group"
+        style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
       >
         <div className="flex items-center gap-3">
           <span className="text-xl">🔥</span>
@@ -68,7 +69,7 @@ const Index = () => {
             </p>
           </div>
         </div>
-        <span className="text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-[colors,transform] text-sm">
+        <span className="group-hover:translate-x-0.5 transition-transform text-sm font-semibold" style={{ color: "#cc1111" }}>
           View deals →
         </span>
       </Link>
