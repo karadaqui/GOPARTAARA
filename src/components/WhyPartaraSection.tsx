@@ -72,14 +72,14 @@ const WhyPartaraSection = () => {
         >
           <table className="w-full min-w-[680px]" style={{ borderCollapse: "collapse" }}>
             <thead>
-              <tr style={{ borderBottom: "1px solid #1f1f1f", background: "#161616" }}>
+              <tr style={{ borderBottom: "1px solid #1f1f1f", background: "#0a0a0a" }}>
                 <th
                   className="text-left"
                   style={{
                     padding: "20px 24px",
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    color: "#d4d4d8",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    color: "#52525b",
                     textTransform: "uppercase",
                     letterSpacing: "0.05em",
                   }}
@@ -94,9 +94,9 @@ const WhyPartaraSection = () => {
                       className="text-center"
                       style={{
                         padding: "20px 16px",
-                        fontSize: isPartara ? "14px" : "13px",
-                        fontWeight: isPartara ? 700 : 500,
-                        color: isPartara ? "#cc1111" : "#a1a1aa",
+                        fontSize: isPartara ? "14px" : "11px",
+                        fontWeight: isPartara ? 700 : 400,
+                        color: isPartara ? "#cc1111" : "#3f3f46",
                         borderLeft: isPartara ? "2px solid #cc1111" : undefined,
                         background: isPartara ? "rgba(204,17,17,0.08)" : undefined,
                         letterSpacing: isPartara ? "0.02em" : undefined,
@@ -148,29 +148,21 @@ const WhyPartaraSection = () => {
         </div>
 
         <div className="text-center mt-8">
-          <p
-            style={{
-              fontSize: "13px",
-              color: "#a1a1aa",
-              marginBottom: "12px",
-            }}
-          >
-            GOPARTARA searches more suppliers than anyone. For free.
-          </p>
           <a
             href="/search"
-            className="inline-flex items-center justify-center transition-opacity hover:opacity-90"
+            className="inline-flex items-center justify-center transition-colors hover:bg-[rgba(204,17,17,0.08)]"
             style={{
-              background: "#cc1111",
-              color: "#ffffff",
-              fontSize: "14px",
+              background: "transparent",
+              color: "#cc1111",
+              fontSize: "13px",
               fontWeight: 600,
-              padding: "12px 24px",
+              padding: "10px 20px",
               borderRadius: "10px",
+              border: "1px solid rgba(204,17,17,0.3)",
               textDecoration: "none",
             }}
           >
-            Start Searching Free →
+            Start searching free — we cover all 7 suppliers →
           </a>
         </div>
 
