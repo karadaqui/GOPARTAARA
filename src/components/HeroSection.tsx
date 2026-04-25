@@ -326,7 +326,7 @@ const HeroSection = () => {
   return (
     <section
       id="home"
-      className="relative flex items-center justify-center pt-16 overflow-x-visible overflow-y-hidden animated-gradient-bg"
+      className="relative pt-16 overflow-x-visible overflow-y-hidden animated-gradient-bg"
       style={{
         minHeight: "70vh",
         backgroundImage:
@@ -339,10 +339,19 @@ const HeroSection = () => {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary/6 blur-[180px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-primary/4 blur-[140px] pointer-events-none" />
 
-      <div className="container relative z-10 text-center px-4 py-10 sm:py-14">
+      <div
+        className="hero-grid relative z-10 mx-auto px-6 md:px-10 py-14 md:py-24"
+        style={{
+          maxWidth: "1280px",
+          display: "grid",
+          gap: "56px",
+          alignItems: "center",
+        }}
+      >
+        <div className="hero-left text-left">
         {/* Badge */}
         <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
+          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             ⚡ 1,000,000+ parts searchable · Free to compare
           </div>
@@ -351,18 +360,17 @@ const HeroSection = () => {
         {/* Heading */}
         <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <h1
-            className="font-display mb-5"
+            className="font-display mb-6"
             style={{
-              fontSize: "clamp(44px, 5.5vw, 72px)",
-              fontWeight: 800,
-              letterSpacing: "-0.04em",
-              lineHeight: 1.0,
+              fontSize: "clamp(44px, 6vw, 72px)",
+              fontWeight: 900,
+              letterSpacing: "-0.045em",
+              lineHeight: 0.98,
               color: "#ffffff",
             }}
           >
             Find Any Car Part
-            <br />
-            <span style={{ color: "#cc1111", letterSpacing: "-0.04em" }}>Instantly.</span>
+            <span style={{ color: "#cc1111", display: "block", letterSpacing: "-0.045em" }}>Instantly.</span>
           </h1>
         </div>
 
@@ -370,12 +378,12 @@ const HeroSection = () => {
         <div className={`transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
           <p
             style={{
-              fontSize: "17px",
+              fontSize: "18px",
               color: "#71717a",
               fontWeight: 400,
-              maxWidth: "460px",
-              margin: "0 auto",
-              lineHeight: 1.65,
+              maxWidth: "480px",
+              margin: "0",
+              lineHeight: 1.7,
             }}
           >
             Search 1,000,000+ parts from trusted UK & global suppliers.
@@ -397,8 +405,8 @@ const HeroSection = () => {
 
         {/* Trust strip */}
         <div
-          className={`flex justify-center transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          style={{ gap: "8px", margin: "16px 0", flexWrap: "wrap" }}
+          className={`flex transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+          style={{ gap: "8px", margin: "20px 0 4px", flexWrap: "wrap" }}
         >
           {["✓ Free to use", "✓ No account needed", "✓ 1M+ parts"].map((label) => (
             <span
