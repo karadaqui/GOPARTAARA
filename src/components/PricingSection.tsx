@@ -367,6 +367,25 @@ const PricingSection = () => {
           </div>
         </div>
 
+        {/* Urgency banner — first month free, dynamic 30-day deadline */}
+        <div
+          className="mt-8 mx-auto max-w-2xl"
+          style={{
+            display: "block",
+            textAlign: "center",
+            padding: "12px",
+            fontSize: "13px",
+            color: "#fbbf24",
+          }}
+        >
+          🕐 First month free on Pro — offer ends{" "}
+          {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          })}
+        </div>
+
         {/* Money Back Guarantee */}
         <div className="mt-16 flex items-center justify-center gap-2.5 py-4 px-6 rounded-xl border border-border/30 bg-card/20 mx-auto max-w-2xl">
           <Shield size={18} className="text-primary shrink-0" />
