@@ -280,6 +280,8 @@ const SearchResults = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
   const [ebayFallback, setEbayFallback] = useState(false);
+  const [liveError, setLiveError] = useState(false);
+  const [retryNonce, setRetryNonce] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
    const internalSearchRef = useRef(false);
   const [authGateOpen, setAuthGateOpen] = useState(false);
