@@ -9,6 +9,7 @@ import SEOHead from "@/components/SEOHead";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Bell, Package, Loader2, X, Search, Mail, Pencil, Check, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import AlertPriceHistoryChart from "@/components/AlertPriceHistoryChart";
 import {
   AlertDialog,
   AlertDialogAction,
