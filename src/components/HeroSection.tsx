@@ -99,21 +99,34 @@ const HeroSection = () => {
     return () => clearTimeout(t);
   }, []);
 
-  // Live viewer counter — gentle fluctuations every 5–10s
+  // Live viewer counter — fluctuate every 8s by -3..+5, clamp 180–350
   useEffect(() => {
-    let timeoutId: number;
-    const tick = () => {
+    const intervalId = window.setInterval(() => {
       setViewers((prev) => {
-        const magnitude = Math.floor(Math.random() * 5) + 1; // 1..5
-        const direction = Math.random() < 0.5 ? -1 : 1;
-        const next = prev + magnitude * direction;
-        return Math.max(150, Math.min(400, next));
+        const change = Math.floor(Math.random() * 9) - 3; // -3..+5
+        const next = prev + change;
+        return Math.max(180, Math.min(350, next));
       });
-      const delay = 5000 + Math.floor(Math.random() * 5000); // 5–10s
-      timeoutId = window.setTimeout(tick, delay);
-    };
-    timeoutId = window.setTimeout(tick, 5000 + Math.floor(Math.random() * 5000));
-    return () => window.clearTimeout(timeoutId);
+    }, 8000);
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  // Returning visitor detection
+  const [isReturning, setIsReturning] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const firstVisit = localStorage.getItem("first_visit");
+      if (!firstVisit) {
+        localStorage.setItem("first_visit", String(Date.now()));
+      }
+      const prev = parseInt(localStorage.getItem("visit_count") || "0", 10) || 0;
+      const next = prev + 1;
+      localStorage.setItem("visit_count", String(next));
+      if (next > 1) setIsReturning(true);
+    } catch {
+      /* ignore storage errors */
+    }
   }, []);
 
   // Fetch user's first garage vehicle (deduped per session)
@@ -626,13 +639,30 @@ const HeroSection = () => {
                 <div className="flex flex-col items-center mt-4 gap-2">
                   <p
                     style={{
-                      color: "#555555",
+                      color: "#71717a",
                       fontSize: "12px",
                       marginTop: "8px",
                       textAlign: "center",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "6px",
                     }}
                   >
-                    🟢 {viewers} people searching right now
+                    <span
+                      style={{
+                        width: "8px",
+                        height: "8px",
+                        borderRadius: "999px",
+                        background: "#4ade80",
+                        boxShadow: "0 0 8px rgba(74,222,128,0.6)",
+                        display: "inline-block",
+                      }}
+                      className="animate-pulse"
+                    />
+                    <span key={viewers} style={{ color: "#d4d4d8", fontWeight: 500 }} className="animate-fade-in">
+                      {viewers}
+                    </span>
+                    people searching right now
                   </p>
                   <p
                     className="text-xs text-muted-foreground flex items-center justify-center gap-1.5 text-center leading-tight"
