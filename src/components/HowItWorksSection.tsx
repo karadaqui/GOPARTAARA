@@ -44,20 +44,39 @@ const HowItWorksSection = () => (
         </p>
       </ScrollReveal>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-10 max-w-5xl mx-auto">
-        {steps.map((s, i) => (
-          <ScrollReveal key={s.title} delay={i + 1} threshold={0.05}>
-            <div className="relative text-center group mb-6 md:mb-16">
-              <div className="mx-auto mb-4 md:mb-6 flex h-14 w-14 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-[colors,transform] group-hover:bg-primary/20 group-hover:scale-110">
-                <s.icon size={26} />
+        {steps.map((s, i) => {
+          const isSearch = s.title === "Search";
+          const handleClick = () => {
+            if (!isSearch) return;
+            const el = document.getElementById("search");
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+          };
+          return (
+            <ScrollReveal key={s.title} delay={i + 1} threshold={0.05}>
+              <div
+                role={isSearch ? "button" : undefined}
+                tabIndex={isSearch ? 0 : undefined}
+                onClick={handleClick}
+                onKeyDown={(e) => {
+                  if (isSearch && (e.key === "Enter" || e.key === " ")) {
+                    e.preventDefault();
+                    handleClick();
+                  }
+                }}
+                className={`relative text-center group mb-6 md:mb-16 ${isSearch ? "cursor-pointer" : ""}`}
+              >
+                <div className="mx-auto mb-4 md:mb-6 flex h-14 w-14 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-[colors,transform] group-hover:bg-primary/20 group-hover:scale-110">
+                  <s.icon size={26} />
+                </div>
+                <span className="absolute -top-2 right-4 md:top-0 md:right-4 text-5xl md:text-6xl font-black text-muted/15 select-none pointer-events-none">
+                  {s.number}
+                </span>
+                <h3 className="font-display text-lg md:text-xl font-bold mb-2 md:mb-3">{s.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{s.desc}</p>
               </div>
-              <span className="absolute -top-2 right-4 md:top-0 md:right-4 text-5xl md:text-6xl font-black text-muted/15 select-none pointer-events-none">
-                {s.number}
-              </span>
-              <h3 className="font-display text-lg md:text-xl font-bold mb-2 md:mb-3">{s.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{s.desc}</p>
-            </div>
-          </ScrollReveal>
-        ))}
+            </ScrollReveal>
+          );
+        })}
       </div>
     </div>
   </section>
