@@ -1285,9 +1285,9 @@ const SearchResults = () => {
                           ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
                           : `${startItem.toLocaleString()}-${endItem.toLocaleString()} of ${totalResults.toLocaleString()} listings`}
                       </span>
-                    </p>
-                    <p className="mt-1" style={{ fontSize: "12px", color: "#3f3f46" }}>
-                      ✓ Prices verified in the last 24 hours · Sorted by best match
+                      <span style={{ fontSize: "12px", color: "#3f3f46", marginLeft: "8px" }}>
+                        ✓ Prices verified · Best match first
+                      </span>
                     </p>
                     <p className="mt-1.5" style={{ fontSize: "12px", color: "#52525b" }}>
                       from{" "}
