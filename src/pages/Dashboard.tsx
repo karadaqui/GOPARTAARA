@@ -16,6 +16,7 @@ import type { Tables } from "@/integrations/supabase/types";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
 import PriceAlertsSection from "@/components/dashboard/PriceAlertsSection";
 import MyGarageSection from "@/components/dashboard/MyGarageSection";
+import GarageAnalyticsSection from "@/components/dashboard/GarageAnalyticsSection";
 import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
 
 import EliteFeatureGate from "@/components/dashboard/BusinessFeatureGate";
@@ -748,6 +749,11 @@ const Dashboard = () => {
               isBusinessUser={isEliteUser}
             />
           </div>
+        )}
+
+        {/* Garage Analytics — Elite, with upgrade banner for others */}
+        {user && (
+          <GarageAnalyticsSection userId={user.id} isElite={isEliteUser} />
         )}
 
         {/* Price Alerts */}
