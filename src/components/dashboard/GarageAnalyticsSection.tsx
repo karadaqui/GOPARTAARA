@@ -257,7 +257,7 @@ const GarageAnalyticsSection = ({ userId, isElite }: Props) => {
 
   if (!isElite) {
     return (
-      <section className="mb-6">
+      <section id="garage-analytics" className="mb-6 scroll-mt-24">
         <SectionHeader />
         <UpgradeBanner />
       </section>
@@ -266,7 +266,7 @@ const GarageAnalyticsSection = ({ userId, isElite }: Props) => {
 
   if (loading) {
     return (
-      <section className="mb-6">
+      <section id="garage-analytics" className="mb-6 scroll-mt-24">
         <SectionHeader />
         <div
           className="rounded-2xl flex items-center justify-center"
@@ -279,7 +279,7 @@ const GarageAnalyticsSection = ({ userId, isElite }: Props) => {
   }
 
   return (
-    <section className="mb-6">
+    <section id="garage-analytics" className="mb-6 scroll-mt-24">
       <SectionHeader />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
