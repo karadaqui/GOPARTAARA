@@ -131,15 +131,29 @@ Deno.serve(async (req) => {
       }
 
       const { price: currentPrice, title, url } = itemData;
+      const checkedAt = new Date().toISOString();
 
       // Update current price and last checked time
       await supabase
         .from("price_alerts")
         .update({
           current_price: currentPrice,
-          last_checked_at: new Date().toISOString(),
+          last_checked_at: checkedAt,
         } as any)
         .eq("id", alert.id);
+
+      // Record price history point for 30-day chart (Elite feature)
+      try {
+        await supabase.from("price_history").insert({
+          alert_id: alert.id,
+          user_id: alert.user_id,
+          item_id: alert.ebay_item_id,
+          price: currentPrice,
+          checked_at: checkedAt,
+        } as any);
+      } catch (histErr) {
+        console.error(`[check-alerts] price_history insert failed for ${alert.id}:`, histErr);
+      }
 
       // Check if price dropped below target
       if (currentPrice <= alert.target_price) {
