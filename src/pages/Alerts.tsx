@@ -245,6 +245,8 @@ const Alerts = () => {
                   key={a.id}
                   alert={a}
                   onRemove={() => setConfirmDeleteId(a.id)}
+                  isElite={eliteAccess}
+                  isPro={isPro}
                 />
               ))}
             </div>
