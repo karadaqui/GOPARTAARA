@@ -8,10 +8,12 @@ import {
   HelpCircle,
   Info,
   Mail as MailIcon,
+  Scale,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserPlan } from "@/hooks/useUserPlan";
 import NotificationBell from "@/components/NotificationBell";
 import MessageBubble from "@/components/MessageBubble";
 import CountrySelector from "@/components/CountrySelector";
