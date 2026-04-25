@@ -280,6 +280,8 @@ const SearchResults = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [totalResults, setTotalResults] = useState(0);
   const [ebayFallback, setEbayFallback] = useState(false);
+  const [liveError, setLiveError] = useState(false);
+  const [retryNonce, setRetryNonce] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
    const internalSearchRef = useRef(false);
   const [authGateOpen, setAuthGateOpen] = useState(false);
@@ -412,7 +414,7 @@ const SearchResults = () => {
 
   // ── eBay search ──
   useEffect(() => {
-    if (!activeQuery.trim()) { setLiveResults([]); setTotalResults(0); setEbayFallback(false); return; }
+    if (!activeQuery.trim()) { setLiveResults([]); setTotalResults(0); setEbayFallback(false); setLiveError(false); return; }
     if (!user) { setAuthGateOpen(true); setLiveResults([]); setTotalResults(0); return; }
     let cancelled = false;
 
@@ -428,6 +430,7 @@ const SearchResults = () => {
         if (!cached) {
           setLiveLoading(true);
           setEbayFallback(false);
+          setLiveError(false);
         } else {
           setLiveResults(cached.results || []);
           setTotalResults(cached.totalResults || 0);
@@ -494,6 +497,7 @@ const SearchResults = () => {
             setLiveResults([]);
             setTotalResults(0);
             setEbayFallback(true);
+            setLiveError(true);
           }
         } finally { if (!cancelled) setLiveLoading(false); }
       };
@@ -502,7 +506,7 @@ const SearchResults = () => {
 
     return () => { cancelled = true; clearTimeout(debounceTimer); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter, vinCountryInfo]);
+  }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter, vinCountryInfo, retryNonce]);
 
 
   // ── Saved parts ──
@@ -1382,7 +1386,64 @@ const SearchResults = () => {
             )}
 
             {/* ── Results Grid ── */}
-            {liveLoading ? (
+            {liveError && !liveLoading ? (
+              <div className="flex flex-col items-center justify-center py-16 mb-8 px-4">
+                <div
+                  className="flex items-center justify-center rounded-full mb-5"
+                  style={{
+                    width: "56px",
+                    height: "56px",
+                    background: "rgba(204,17,17,0.1)",
+                    border: "1px solid rgba(204,17,17,0.25)",
+                  }}
+                >
+                  <AlertCircle size={24} style={{ color: "#cc1111" }} />
+                </div>
+                <h2 style={{ fontSize: "18px", fontWeight: 600, color: "#ffffff", marginBottom: "6px" }}>
+                  Something went wrong
+                </h2>
+                <p style={{ fontSize: "14px", color: "#71717a", marginBottom: "20px", textAlign: "center", maxWidth: "380px" }}>
+                  We couldn't load results. This is usually temporary.
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => { setLiveError(false); setEbayFallback(false); setRetryNonce((n) => n + 1); }}
+                    className="inline-flex items-center gap-2 transition-opacity hover:opacity-90"
+                    style={{
+                      background: "#cc1111",
+                      color: "#ffffff",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      padding: "10px 18px",
+                      borderRadius: "10px",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Try Again
+                  </button>
+                  <a
+                    href={`https://www.ebay.co.uk/sch/i.html?_nkw=${encodeURIComponent(activeQuery)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 transition-colors hover:text-white hover:border-zinc-500"
+                    style={{
+                      background: "transparent",
+                      color: "#a1a1aa",
+                      fontSize: "14px",
+                      fontWeight: 500,
+                      padding: "10px 18px",
+                      borderRadius: "10px",
+                      border: "1px solid #3f3f46",
+                      textDecoration: "none",
+                    }}
+                  >
+                    Search eBay directly →
+                  </a>
+                </div>
+              </div>
+            ) : liveLoading ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-10">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
