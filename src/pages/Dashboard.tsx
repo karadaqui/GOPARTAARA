@@ -10,7 +10,7 @@ import SEOHead from "@/components/SEOHead";
 import {
   Camera, Save, User, Mail, Crown, Bookmark, Loader2,
   Search, X, ExternalLink, CreditCard, Download, Lock, Copy,
-  Bell as BellIcon, ShoppingBag, Sparkles, ArrowRight, Car, Package,
+  Bell as BellIcon, ShoppingBag, Sparkles, ArrowRight, Car, Package, ArrowDownToLine,
 } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
@@ -257,23 +257,36 @@ const Dashboard = () => {
 
   const exportSearchHistoryCSV = async () => {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("search_history")
-        .select("*")
+        .select("query, created_at")
         .eq("user_id", user!.id)
-        .order("created_at", { ascending: false });
-      if (!data || data.length === 0) return;
-      const csv = "Date,Search Query\n" + data.map((r) =>
-        `"${new Date(r.created_at).toLocaleDateString("en-GB")}","${r.query.replace(/"/g, '""')}"`
-      ).join("\n");
+        .order("created_at", { ascending: false })
+        .limit(500);
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        toast({ title: "No search history to export yet." });
+        return;
+      }
+      const rows = data.map((r) => {
+        const d = new Date(r.created_at);
+        const date = d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+        const time = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+        const q = (r.query ?? "").replace(/"/g, '""');
+        return `"${q}","${date}","${time}"`;
+      });
+      const csv = `"Search Query","Date","Time"\n${rows.join("\n")}`;
       const blob = new Blob([csv], { type: "text/csv" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `partara-search-history-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = "gopartara-search-history.csv";
       a.click();
       URL.revokeObjectURL(url);
-    } catch { /* silently ignore */ }
+      toast({ title: "✓ Search history exported!" });
+    } catch (e: any) {
+      toast({ title: "Export failed", description: e?.message ?? "Please try again.", variant: "destructive" });
+    }
   };
 
   const userPlan = useUserPlan();
@@ -757,25 +770,22 @@ const Dashboard = () => {
                 <Search size={18} className="text-primary" />
                 Recent Searches
               </h2>
-              <div className="flex items-center gap-2">
-                {isEliteUser ? (
-                  <button
-                    onClick={exportSearchHistoryCSV}
-                    title="Export search history as CSV"
-                    className="w-7 h-7 rounded-lg border border-border bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors text-primary"
-                  >
-                    <Download size={14} />
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => navigate("/pricing")}
-                    title="Export search history (Elite plan)"
-                    className="w-7 h-7 rounded-lg border border-border bg-secondary/50 flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground relative"
-                  >
-                    <Download size={14} />
-                    <Lock size={8} className="absolute -top-1 -right-1 text-muted-foreground" />
-                  </button>
-                )}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={exportSearchHistoryCSV}
+                  title="Export search history as CSV"
+                  className="inline-flex items-center gap-1.5 hover:text-foreground hover:border-zinc-700 transition-colors"
+                  style={{
+                    border: "1px solid #27272a",
+                    color: "#71717a",
+                    padding: "4px 12px",
+                    fontSize: "12px",
+                    borderRadius: "6px",
+                  }}
+                >
+                  <ArrowDownToLine size={12} />
+                  Export CSV
+                </button>
                 {searchHistory.length > 0 && (
                   <button onClick={clearAllHistory} className="text-xs text-muted-foreground hover:text-destructive transition-colors">
                     Clear all
