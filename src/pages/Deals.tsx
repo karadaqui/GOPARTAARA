@@ -86,21 +86,16 @@ const EBAY_DEALS = [
 
 const EBAY_ALL_URL = ebayAff("https://www.ebay.co.uk/deals/automotive");
 
-// ───────── Amazon ─────────
+// ───────── Amazon UK ─────────
 const AMAZON_DEALS = [
-  { icon: "🏍️", title: "Motorbike Accessories & Parts", subtitle: "Helmets, gear & bike parts", url: "https://www.amazon.co.uk/b?node=301311031&tag=gopartara-21", badge: "Bikers" },
-  { icon: "🚗", title: "Car Accessories", subtitle: "Mounts, covers, organizers & more", url: "https://www.amazon.co.uk/b?node=301308031&tag=gopartara-21", badge: "Top picks" },
-  { icon: "🔧", title: "Car Parts", subtitle: "Brakes, filters, exhausts & more", url: "https://www.amazon.co.uk/b?node=301309031&tag=gopartara-21", badge: "Essentials" },
-  { icon: "✨", title: "Car & Motorbike Care", subtitle: "Cleaning, wax, polish & detailing", url: "https://www.amazon.co.uk/b?node=303891031&tag=gopartara-21", badge: "Detailing" },
-  { icon: "🛢️", title: "Oils & Fluids", subtitle: "Engine oil, coolant, brake fluid", url: "https://www.amazon.co.uk/b?node=301315031&tag=gopartara-21", badge: "Essentials" },
-  { icon: "🔩", title: "Tools & Equipment", subtitle: "Garage tools, jacks, diagnostic kits", url: "https://www.amazon.co.uk/b?node=301312031&tag=gopartara-21", badge: "Workshop" },
-  { icon: "👶", title: "Baby Car Seats", subtitle: "Group 0, 1, 2 & 3 seats", url: "https://www.amazon.co.uk/b?node=60036031&tag=gopartara-21", badge: "Family" },
-  { icon: "🛞", title: "Tyres & Rims", subtitle: "All-season, winter & summer tyres", url: "https://www.amazon.co.uk/b?node=307675031&tag=gopartara-21", badge: "Big savings" },
-  { icon: "🎁", title: "Gifts & Merchandise", subtitle: "Car-themed gifts & accessories", url: "https://www.amazon.co.uk/b?node=301310031&tag=gopartara-21", badge: "Gift ideas" },
-  { icon: "📱", title: "Vehicle Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: "https://www.amazon.co.uk/b?node=3013843031&tag=gopartara-21", badge: "Hot deals" },
-  { icon: "🏕️", title: "Motorhome", subtitle: "Caravan & motorhome accessories", url: "https://www.amazon.co.uk/b?node=301314031&tag=gopartara-21", badge: "Adventure" },
+  { icon: "⚙️", title: "Car Parts & Accessories", subtitle: "Brakes, filters, exhausts & more", url: "https://www.amazon.co.uk/s?k=car+parts&tag=gopartara-21", badge: "Top picks" },
+  { icon: "🔧", title: "Tools & Equipment", subtitle: "Garage tools, jacks, diagnostic kits", url: "https://www.amazon.co.uk/s?k=car+tools&tag=gopartara-21", badge: "Workshop" },
+  { icon: "🧴", title: "Car Care & Cleaning", subtitle: "Wax, polish & detailing essentials", url: "https://www.amazon.co.uk/s?k=car+cleaning&tag=gopartara-21", badge: "Detailing" },
+  { icon: "🛞", title: "Tyres & Wheels", subtitle: "All-season, winter & summer tyres", url: "https://www.amazon.co.uk/s?k=tyres&tag=gopartara-21", badge: "Big savings" },
+  { icon: "📻", title: "Car Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: "https://www.amazon.co.uk/s?k=car+electronics&tag=gopartara-21", badge: "Hot deals" },
+  { icon: "⚡", title: "Performance Parts", subtitle: "Tuning, exhausts & styling kits", url: "https://www.amazon.co.uk/s?k=performance+car+parts&tag=gopartara-21", badge: "Performance" },
 ];
-const AMAZON_ALL_URL = "https://www.amazon.co.uk/b?node=248877031&tag=gopartara-21";
+const AMAZON_ALL_URL = "https://www.amazon.co.uk/s?k=car+parts&tag=gopartara-21";
 
 // ───────── Classic & Vintage Parts ─────────
 const CLASSIC_DEALS = [
@@ -302,20 +297,22 @@ const Deals = () => {
 
         {/* SECTION 2 — Amazon UK */}
         <section className="px-4 pb-24 max-w-5xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-3">
-              <img
-                src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4b0.png"
-                width={32}
-                height={32}
-                loading="lazy"
-                decoding="async"
-                alt="deals"
-                className="rounded-xl"
-              />
+              <span
+                className="font-display"
+                style={{
+                  fontSize: 22,
+                  fontWeight: 800,
+                  color: "#ff9900",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                amazon
+              </span>
               <div>
-                <h2 className="text-foreground font-bold text-lg">Amazon UK</h2>
-                <p className="text-muted-foreground text-xs">Deals & Savings · Updated daily</p>
+                <h2 className="text-foreground font-bold text-lg">amazon.co.uk</h2>
+                <p className="text-muted-foreground text-xs">Car parts & accessories on Amazon UK</p>
               </div>
             </div>
             <a
@@ -329,14 +326,14 @@ const Deals = () => {
             </a>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-6">
             {AMAZON_DEALS.map((deal) => (
               <a
                 key={deal.title}
                 href={deal.url}
                 target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${deal.title} — Amazon UK deal`}
+                rel="noopener noreferrer sponsored"
+                aria-label={`${deal.title} — Amazon UK`}
                 className="group relative flex flex-col p-4 bg-card border border-border hover:border-red-500/30 rounded-2xl overflow-hidden transition-[colors,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)]"
               >
                 <div className="absolute top-2 right-2 max-w-[55%]">
@@ -348,7 +345,7 @@ const Deals = () => {
                 <p className="text-foreground font-bold text-sm mb-1 pr-2">{deal.title}</p>
                 <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
                 <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
-                  <span className="text-xs font-semibold">View deal</span>
+                  <span className="text-xs font-semibold">View on Amazon</span>
                   <span className="text-xs group-hover:translate-x-0.5 transition-transform">→</span>
                 </div>
               </a>
@@ -356,7 +353,7 @@ const Deals = () => {
           </div>
 
           <p className="text-muted-foreground/60 text-xs text-center mt-4">
-            {" "}
+            We may earn a commission on qualifying purchases.
           </p>
         </section>
 

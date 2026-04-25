@@ -1869,10 +1869,31 @@ const SearchResults = () => {
           </>
         ) : (
           /* ── No query state ── */
-          <div className="flex flex-col items-center justify-center py-24 text-center">
-            <Search size={48} className="text-zinc-800 mb-4" />
-            <h2 className="text-xl font-semibold text-white mb-2">Search for car parts</h2>
-            <p className="text-sm text-zinc-500 max-w-md">Enter a part name, number, or vehicle model above to compare prices across multiple suppliers.</p>
+          <div className="flex flex-col items-center justify-center py-24 text-center px-4">
+            <Search size={64} strokeWidth={1.25} className="text-zinc-800 mb-6" />
+            <h2 className="text-2xl font-semibold text-white mb-3">Search for car parts</h2>
+            <p className="text-sm text-zinc-500 max-w-md mb-8">
+              Enter a part name, number, or vehicle model above to compare prices across multiple suppliers.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-2 max-w-xl">
+              <span className="text-[11px] uppercase tracking-wider text-zinc-600 mr-1">Try:</span>
+              {["BMW brake pads", "Clutch kit", "Oil filter", "Tyres"].map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => {
+                    setQuery(s);
+                    setActiveQuery(s);
+                    setSelectedCategory(null);
+                    setCurrentPage(1);
+                    setSearchParams({ q: s });
+                  }}
+                  className="px-3 py-1.5 rounded-full text-xs font-medium bg-[#111111] border border-[#27272a] text-zinc-300 hover:text-white hover:border-[#3f3f46] transition-colors"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
