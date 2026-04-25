@@ -11,6 +11,8 @@ interface SEOHeadProps {
   additionalJsonLd?: Record<string, any>[];
   /** When true, set robots noindex,nofollow (private pages) */
   noindex?: boolean;
+  /** Optional comma-separated meta keywords for SEO */
+  keywords?: string;
 }
 
 const BASE_URL = "https://gopartara.com";
