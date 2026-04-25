@@ -10,7 +10,7 @@ import SEOHead from "@/components/SEOHead";
 import {
   Camera, Save, User, Mail, Crown, Bookmark, Loader2,
   Search, X, ExternalLink, CreditCard, Download, Lock, Copy,
-  Bell as BellIcon, ShoppingBag, Sparkles, ArrowRight, Car, Package, ArrowDownToLine,
+  Bell as BellIcon, ShoppingBag, Sparkles, ArrowRight, Car, Package, ArrowDownToLine, Scale, BarChart3,
 } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
@@ -21,7 +21,7 @@ import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
 
 import EliteFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import PrioritySupportButton from "@/components/dashboard/PrioritySupportButton";
-import ComingSoonFeatures from "@/components/dashboard/ComingSoonFeatures";
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -866,11 +866,50 @@ const Dashboard = () => {
           </EliteFeatureGate>
         </div>
 
-        {/* Coming Soon — Elite only */}
+        {/* Elite Features — quick links to live Elite tools */}
         {isEliteUser && (
-          <div className="mb-6">
-            <ComingSoonFeatures />
-          </div>
+          <section className="mb-6">
+            <div className="mb-4">
+              <p
+                style={{
+                  fontSize: 11,
+                  color: "#fbbf24",
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  fontWeight: 700,
+                }}
+              >
+                Elite
+              </p>
+              <h2
+                className="font-display mt-1"
+                style={{ fontSize: 22, fontWeight: 700, color: "#ffffff" }}
+              >
+                Elite Features
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <QuickAction
+                icon={<Scale size={20} style={{ color: "#cc1111" }} />}
+                label="Bulk Compare"
+                onClick={() => navigate("/compare")}
+              />
+              <QuickAction
+                icon={<BarChart3 size={20} style={{ color: "#cc1111" }} />}
+                label="Garage Analytics"
+                onClick={() => {
+                  document
+                    .getElementById("garage-analytics")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+              />
+              <QuickAction
+                icon={<ArrowDownToLine size={20} style={{ color: "#cc1111" }} />}
+                label="Export History"
+                onClick={exportSearchHistoryCSV}
+              />
+            </div>
+          </section>
         )}
       </div>
       <Footer />

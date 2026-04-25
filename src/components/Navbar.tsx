@@ -8,10 +8,12 @@ import {
   HelpCircle,
   Info,
   Mail as MailIcon,
+  Scale,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserPlan } from "@/hooks/useUserPlan";
 import NotificationBell from "@/components/NotificationBell";
 import MessageBubble from "@/components/MessageBubble";
 import CountrySelector from "@/components/CountrySelector";
@@ -27,9 +29,11 @@ type MoreLink = {
   label: string;
   href: string;
   Icon: LucideIcon;
+  elite?: boolean;
 };
 
 const moreLinks: MoreLink[] = [
+  { label: "Bulk Compare", href: "/compare", Icon: Scale, elite: true },
   { label: "Tyres", href: "/tyres", Icon: CircleDot },
   { label: "For Business", href: "/business", Icon: Briefcase },
   { label: "Blog", href: "/blog", Icon: BookOpen },
@@ -46,6 +50,8 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const moreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { user, signOut, loading } = useAuth();
+  const { isElite, isAdmin } = useUserPlan();
+  const eliteAccess = isElite || isAdmin;
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -203,7 +209,7 @@ const Navbar = () => {
               </button>
 
               {moreOpen && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 w-44">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 w-52">
                   <div
                     className="rounded-lg p-1 animate-in fade-in-0 zoom-in-95"
                     style={{
@@ -218,6 +224,7 @@ const Navbar = () => {
                       const isActive =
                         pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
                       const Icon = l.Icon;
+                      const showEliteBadge = l.elite && !eliteAccess;
                       return (
                         <button
                           key={l.href}
@@ -242,7 +249,24 @@ const Navbar = () => {
                           }}
                         >
                           <Icon size={14} className="opacity-70" />
-                          {l.label}
+                          <span className="flex-1">{l.label}</span>
+                          {showEliteBadge && (
+                            <span
+                              style={{
+                                fontSize: 9,
+                                fontWeight: 700,
+                                letterSpacing: "0.08em",
+                                textTransform: "uppercase",
+                                color: "#fbbf24",
+                                background: "rgba(251,191,36,0.12)",
+                                border: "1px solid rgba(251,191,36,0.25)",
+                                padding: "2px 6px",
+                                borderRadius: 999,
+                              }}
+                            >
+                              Elite
+                            </span>
+                          )}
                         </button>
                       );
                     })}
