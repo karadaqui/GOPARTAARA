@@ -709,22 +709,28 @@ export type Database = {
       }
       price_history: {
         Row: {
+          alert_id: string | null
           checked_at: string
           id: string
           item_id: string
           price: number
+          user_id: string | null
         }
         Insert: {
+          alert_id?: string | null
           checked_at?: string
           id?: string
           item_id: string
           price: number
+          user_id?: string | null
         }
         Update: {
+          alert_id?: string | null
           checked_at?: string
           id?: string
           item_id?: string
           price?: number
+          user_id?: string | null
         }
         Relationships: []
       }
