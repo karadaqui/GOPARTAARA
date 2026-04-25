@@ -21,6 +21,7 @@ const applyAnalytics = (accepted: boolean) => {
 };
 
 const CookieConsent = () => {
+  const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
   const { user, loading } = useAuth();
 
@@ -28,57 +29,91 @@ const CookieConsent = () => {
     if (loading) return;
     // Don't show to logged-in users
     if (user) {
+      setMounted(false);
       setVisible(false);
       return;
     }
     const stored = localStorage.getItem(CONSENT_KEY) || localStorage.getItem(LEGACY_KEY);
     if (!stored) {
       (window as any)["ga-disable-G-YRZ3243HF0"] = true;
-      setVisible(true);
-    } else {
-      const accepted = stored === "accepted" || stored.includes("\"analytics\":true");
-      applyAnalytics(accepted);
+      // Show after a 2s delay to be less intrusive
+      const showTimer = window.setTimeout(() => {
+        setMounted(true);
+        // Next tick: trigger the slide-up transition
+        window.requestAnimationFrame(() => setVisible(true));
+      }, 2000);
+      return () => window.clearTimeout(showTimer);
     }
+    const accepted = stored === "accepted" || stored.includes("\"analytics\":true");
+    applyAnalytics(accepted);
   }, [user, loading]);
 
   const choose = (decision: "accepted" | "declined") => {
     localStorage.setItem(CONSENT_KEY, decision);
     applyAnalytics(decision === "accepted");
+    // Slide back down, then unmount
     setVisible(false);
+    window.setTimeout(() => setMounted(false), 320);
   };
 
-  if (!visible) return null;
+  if (!mounted) return null;
 
   return (
     <div
-      className="fixed bottom-0 inset-x-0 z-[100]"
+      role="dialog"
+      aria-label="Cookie consent"
+      className="fixed bottom-0 left-0 right-0 z-[100]"
       style={{
-        background: "#111111",
+        background: "rgba(17,17,17,0.92)",
         borderTop: "1px solid #1f1f1f",
         padding: "16px 24px",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
+        transform: visible ? "translateY(0)" : "translateY(100%)",
+        transition: "transform 0.3s ease",
       }}
     >
-      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <p className="text-sm text-zinc-300 leading-relaxed">
-          We use cookies to improve your experience.{" "}
-          <Link to="/privacy" className="hover:underline" style={{ color: "#cc1111" }}>
-            Privacy Policy
-          </Link>
-        </p>
+      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <p style={{ fontSize: "14px", color: "#a1a1aa", lineHeight: 1.5 }}>
+            🍪 We use cookies to improve your experience and analyse site traffic.
+          </p>
+          <p style={{ fontSize: "13px", color: "#71717a", marginTop: "4px" }}>
+            Read our{" "}
+            <Link to="/privacy" className="hover:underline" style={{ color: "#cc1111" }}>
+              Privacy Policy
+            </Link>
+          </p>
+        </div>
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => choose("declined")}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-zinc-300 hover:text-white transition-colors"
-            style={{ border: "1px solid #27272a", background: "transparent" }}
+            className="transition-colors hover:text-white"
+            style={{
+              border: "1px solid #27272a",
+              background: "transparent",
+              color: "#71717a",
+              padding: "8px 16px",
+              borderRadius: "8px",
+              fontSize: "13px",
+            }}
           >
             Decline
           </button>
           <button
             onClick={() => choose("accepted")}
-            className="px-4 py-2 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            style={{ background: "#cc1111" }}
+            className="transition-opacity hover:opacity-90"
+            style={{
+              background: "#cc1111",
+              color: "#ffffff",
+              padding: "8px 16px",
+              borderRadius: "8px",
+              fontSize: "13px",
+              fontWeight: 600,
+              border: "none",
+            }}
           >
-            Accept
+            Accept All
           </button>
         </div>
       </div>
