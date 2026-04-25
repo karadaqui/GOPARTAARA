@@ -27,6 +27,7 @@ const SEOHead = ({
   jsonLd,
   additionalJsonLd,
   noindex = false,
+  keywords,
 }: SEOHeadProps) => {
   const fullTitle = /GOPARTARA/i.test(title) ? title : `${title} | GOPARTARA`;
   const url = `${BASE_URL}${path}`;
