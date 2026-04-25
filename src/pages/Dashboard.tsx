@@ -751,6 +751,11 @@ const Dashboard = () => {
           </div>
         )}
 
+        {/* Garage Analytics — Elite, with upgrade banner for others */}
+        {user && (
+          <GarageAnalyticsSection userId={user.id} isElite={isEliteUser} />
+        )}
+
         {/* Price Alerts */}
         {user && (
           <div className="mb-6">
