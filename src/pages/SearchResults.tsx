@@ -1472,7 +1472,7 @@ const SearchResults = () => {
                           </div>
                         </a>
                         <div className="p-4 flex-1 flex flex-col gap-3">
-                          <a href={item.url} target="_blank" rel="noopener noreferrer" className="block">
+                          <a href={item.url} target="_blank" rel="noopener noreferrer" className="block" title={item.partName}>
                             <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.partName}</p>
                           </a>
                           {fitRegLabel && (
