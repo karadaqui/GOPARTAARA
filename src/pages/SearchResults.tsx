@@ -414,7 +414,7 @@ const SearchResults = () => {
 
   // ── eBay search ──
   useEffect(() => {
-    if (!activeQuery.trim()) { setLiveResults([]); setTotalResults(0); setEbayFallback(false); return; }
+    if (!activeQuery.trim()) { setLiveResults([]); setTotalResults(0); setEbayFallback(false); setLiveError(false); return; }
     if (!user) { setAuthGateOpen(true); setLiveResults([]); setTotalResults(0); return; }
     let cancelled = false;
 
@@ -430,6 +430,7 @@ const SearchResults = () => {
         if (!cached) {
           setLiveLoading(true);
           setEbayFallback(false);
+          setLiveError(false);
         } else {
           setLiveResults(cached.results || []);
           setTotalResults(cached.totalResults || 0);
@@ -496,6 +497,7 @@ const SearchResults = () => {
             setLiveResults([]);
             setTotalResults(0);
             setEbayFallback(true);
+            setLiveError(true);
           }
         } finally { if (!cancelled) setLiveLoading(false); }
       };
