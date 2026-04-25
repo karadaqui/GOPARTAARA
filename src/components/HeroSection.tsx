@@ -99,6 +99,21 @@ const HeroSection = () => {
     return () => clearTimeout(t);
   }, []);
 
+  // Global "/" shortcut → focus hero search bar
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement | null)?.tagName;
+      const isTyping = tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable;
+      if (e.key === "/" && !isTyping && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        e.preventDefault();
+        heroInputRef.current?.focus();
+        heroInputRef.current?.select();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   // Live viewer counter — fluctuate every 8s by -3..+5, clamp 180–350
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -550,6 +565,7 @@ const HeroSection = () => {
                       autoCorrect="off"
                       autoCapitalize="off"
                       spellCheck={false}
+                      title="Press / to search"
                     />
                   </div>
                   <div className="flex items-center gap-2 px-1">
