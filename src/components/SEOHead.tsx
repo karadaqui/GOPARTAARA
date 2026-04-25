@@ -11,6 +11,8 @@ interface SEOHeadProps {
   additionalJsonLd?: Record<string, any>[];
   /** When true, set robots noindex,nofollow (private pages) */
   noindex?: boolean;
+  /** Optional comma-separated meta keywords for SEO */
+  keywords?: string;
 }
 
 const BASE_URL = "https://gopartara.com";
@@ -25,6 +27,7 @@ const SEOHead = ({
   jsonLd,
   additionalJsonLd,
   noindex = false,
+  keywords,
 }: SEOHeadProps) => {
   const fullTitle = /GOPARTARA/i.test(title) ? title : `${title} | GOPARTARA`;
   const url = `${BASE_URL}${path}`;
@@ -45,6 +48,12 @@ const SEOHead = ({
 
     setMeta("name", "description", description);
     setMeta("name", "robots", noindex ? "noindex, nofollow" : "index, follow");
+    if (keywords) {
+      setMeta("name", "keywords", keywords);
+    } else {
+      const existing = document.querySelector('meta[name="keywords"]');
+      if (existing) existing.remove();
+    }
     setMeta("property", "og:title", fullTitle);
     setMeta("property", "og:description", description);
     setMeta("property", "og:url", url);
@@ -84,7 +93,7 @@ const SEOHead = ({
     return () => {
       document.querySelectorAll('script[data-seo-jsonld]').forEach((n) => n.remove());
     };
-  }, [fullTitle, description, url, type, ogImage, jsonLd, additionalJsonLd, noindex]);
+  }, [fullTitle, description, url, type, ogImage, jsonLd, additionalJsonLd, noindex, keywords]);
 
   return null;
 };

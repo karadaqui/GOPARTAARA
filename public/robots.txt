@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /dashboard
 Disallow: /admin
+Disallow: /alerts
 Disallow: /my-market
 Disallow: /complete-profile
 Disallow: /saved-parts
