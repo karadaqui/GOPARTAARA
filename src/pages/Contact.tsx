@@ -155,9 +155,9 @@ const Contact = () => {
                 />
                 <ContactMethod
                   icon={<Twitter size={18} style={{ color: "#cc1111" }} />}
-                  label="Twitter / X"
+                  label="X (Twitter)"
                   value="@gopartara"
-                  href="https://twitter.com/gopartara"
+                  href="https://x.com/gopartara"
                 />
               </div>
 

@@ -304,7 +304,7 @@ const Dashboard = () => {
   };
 
   const shareTwitter = () => {
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`I use @GOPARTARA to compare car part prices. Sign up with my link and get 1 month Pro free! ${referralLink}`)}`, "_blank");
+    window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(`I use @GOPARTARA to compare car part prices. Sign up with my link and get 1 month Pro free! ${referralLink}`)}`, "_blank");
   };
 
   // Admin: show full email. Regular: show display_name only (required).
@@ -518,7 +518,7 @@ const Dashboard = () => {
               style={{ background: "transparent", border: "1px solid #27272a" }}
               onClick={shareTwitter}
             >
-              X / Twitter
+              X (Twitter)
             </Button>
           </div>
           {(profile as any)?.bonus_searches > 0 && (
