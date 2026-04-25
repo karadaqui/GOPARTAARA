@@ -364,6 +364,19 @@ const HeroSection = () => {
           >
             Search 1,000,000+ parts from trusted UK & global suppliers.
           </p>
+          {isReturning && (
+            <p
+              className="animate-fade-in"
+              style={{
+                fontSize: "13px",
+                color: "#a1a1aa",
+                marginTop: "10px",
+                fontWeight: 500,
+              }}
+            >
+              👋 Welcome back! Ready to find your part?
+            </p>
+          )}
         </div>
 
         {/* Trust strip */}
