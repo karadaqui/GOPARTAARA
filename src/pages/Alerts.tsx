@@ -46,7 +46,8 @@ const EMAIL_OVERRIDE_KEY = "partara_alert_email_override";
 const Alerts = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { isFree, isPro, isAdmin, loading: planLoading } = useUserPlan();
+  const { isFree, isPro, isElite, isAdmin, loading: planLoading } = useUserPlan();
+  const eliteAccess = isElite || isAdmin;
 
   const [alerts, setAlerts] = useState<PriceAlert[]>([]);
   const [loading, setLoading] = useState(true);
