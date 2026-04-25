@@ -468,7 +468,7 @@ const EmptyAlertsState = ({ onBrowse }: { onBrowse: () => void }) => (
 );
 
 // ── Alert card ──
-const AlertCard = ({ alert, onRemove }: { alert: PriceAlert; onRemove: () => void }) => {
+const AlertCard = ({ alert, onRemove, isElite, isPro }: { alert: PriceAlert; onRemove: () => void; isElite: boolean; isPro: boolean }) => {
   const target = Number(alert.target_price);
   const current = alert.current_price != null ? Number(alert.current_price) : null;
 
