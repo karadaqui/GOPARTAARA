@@ -282,6 +282,40 @@ const BlogPost = () => {
               </a>
             </div>
 
+            {/* Contextual GOPARTARA CTA */}
+            {(() => {
+              const topic = (post.keywords && post.keywords[0]) || post.category || "car parts";
+              const topicLabel = topic.toLowerCase();
+              const searchHref = `/search?q=${encodeURIComponent(topicLabel)}`;
+              return (
+                <div
+                  className="mt-8"
+                  style={{
+                    background: "rgba(204,17,17,0.05)",
+                    border: "1px solid rgba(204,17,17,0.15)",
+                    borderRadius: 12,
+                    padding: "20px 24px",
+                  }}
+                >
+                  <div className="flex items-start gap-3">
+                    <span style={{ fontSize: 22, lineHeight: 1 }}>🔍</span>
+                    <div className="flex-1">
+                      <p className="text-sm text-zinc-300 mb-2">
+                        Ready to find the best price? Compare {topicLabel} on GOPARTARA across 7 trusted suppliers.
+                      </p>
+                      <Link
+                        to={searchHref}
+                        style={{ color: "#cc1111", fontWeight: 600, fontSize: 15 }}
+                        className="hover:underline"
+                      >
+                        Compare prices now →
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
             {/* Was this helpful? */}
             <div className="mt-12 pt-8 border-t border-[#1f1f1f]">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
