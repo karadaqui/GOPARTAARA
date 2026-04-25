@@ -48,6 +48,12 @@ const SEOHead = ({
 
     setMeta("name", "description", description);
     setMeta("name", "robots", noindex ? "noindex, nofollow" : "index, follow");
+    if (keywords) {
+      setMeta("name", "keywords", keywords);
+    } else {
+      const existing = document.querySelector('meta[name="keywords"]');
+      if (existing) existing.remove();
+    }
     setMeta("property", "og:title", fullTitle);
     setMeta("property", "og:description", description);
     setMeta("property", "og:url", url);
