@@ -50,6 +50,8 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const moreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { user, signOut, loading } = useAuth();
+  const { isElite, isAdmin } = useUserPlan();
+  const eliteAccess = isElite || isAdmin;
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
