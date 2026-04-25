@@ -209,7 +209,7 @@ const Navbar = () => {
               </button>
 
               {moreOpen && (
-                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 w-44">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 w-52">
                   <div
                     className="rounded-lg p-1 animate-in fade-in-0 zoom-in-95"
                     style={{
