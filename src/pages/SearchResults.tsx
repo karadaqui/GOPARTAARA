@@ -1746,6 +1746,54 @@ const SearchResults = () => {
                             ↑ Back to top
                           </button>
                         </div>
+
+                        {/* Auto-load more toggle */}
+                        <div className="flex items-center justify-center gap-2 mt-3">
+                          <label
+                            className="inline-flex items-center gap-2 cursor-pointer select-none"
+                            style={{ fontSize: "12px", color: "#71717a" }}
+                          >
+                            <span
+                              className="relative inline-flex items-center"
+                              style={{
+                                width: 28,
+                                height: 16,
+                                borderRadius: 999,
+                                background: autoLoadMore ? "#cc1111" : "#27272a",
+                                transition: "background 150ms ease",
+                              }}
+                            >
+                              <span
+                                style={{
+                                  position: "absolute",
+                                  top: 2,
+                                  left: autoLoadMore ? 14 : 2,
+                                  width: 12,
+                                  height: 12,
+                                  borderRadius: "50%",
+                                  background: "#ffffff",
+                                  transition: "left 150ms ease",
+                                }}
+                              />
+                            </span>
+                            <input
+                              type="checkbox"
+                              className="sr-only"
+                              checked={autoLoadMore}
+                              onChange={(e) => {
+                                const next = e.target.checked;
+                                setAutoLoadMore(next);
+                                try {
+                                  localStorage.setItem("auto_load_results", next ? "1" : "0");
+                                } catch {/* ignore */}
+                              }}
+                            />
+                            Auto-load more results
+                          </label>
+                        </div>
+
+                        {/* Sentinel for IntersectionObserver */}
+                        <div ref={loadMoreSentinelRef} aria-hidden style={{ height: 1, width: "100%" }} />
                       </>
                     ) : (
                       <p className="text-center mt-10" style={{ fontSize: "13px", color: "#71717a" }}>
