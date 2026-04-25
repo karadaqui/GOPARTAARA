@@ -1100,6 +1100,114 @@ const HeroSection = () => {
             </div>
           </section>
         </div>
+        </div>
+        {/* RIGHT COLUMN — Live Results Preview */}
+        <div className="hero-right hidden lg:flex justify-center">
+          <div
+            className="hero-preview-card animate-hero-float"
+            style={{
+              width: "100%",
+              maxWidth: "440px",
+              background: "#111111",
+              border: "1px solid #1f1f1f",
+              borderRadius: "16px",
+              padding: "24px",
+              boxShadow:
+                "0 0 60px rgba(204,17,17,0.08), 0 20px 40px rgba(0,0,0,0.4)",
+            }}
+          >
+            {/* Header row */}
+            <div className="flex items-center justify-between mb-5">
+              <span style={{ color: "#71717a", fontSize: "12px", fontWeight: 500 }}>
+                Live search results
+              </span>
+              <span
+                className="inline-flex items-center gap-1.5"
+                style={{
+                  fontSize: "10px",
+                  fontWeight: 700,
+                  color: "#4ade80",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                <span
+                  className="animate-pulse"
+                  style={{
+                    width: "6px",
+                    height: "6px",
+                    borderRadius: "999px",
+                    background: "#4ade80",
+                    boxShadow: "0 0 8px rgba(74,222,128,0.6)",
+                  }}
+                />
+                LIVE
+              </span>
+            </div>
+
+            {/* Mini result rows */}
+            {[
+              { name: "BMW E46 brake pads — front set", price: "£24.99" },
+              { name: "Ford Focus MK3 oil filter", price: "£8.49" },
+              { name: "VW Golf MK7 timing belt kit", price: "£89.00" },
+            ].map((row, i, arr) => (
+              <div key={row.name}>
+                <div className="flex items-center gap-3 py-3">
+                  <div
+                    style={{
+                      width: "48px",
+                      height: "48px",
+                      borderRadius: "10px",
+                      background: "linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%)",
+                      border: "1px solid #262626",
+                      flexShrink: 0,
+                    }}
+                  />
+                  <span
+                    style={{
+                      flex: 1,
+                      color: "#e4e4e7",
+                      fontSize: "13px",
+                      fontWeight: 500,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {row.name}
+                  </span>
+                  <span
+                    style={{
+                      color: "#cc1111",
+                      fontSize: "15px",
+                      fontWeight: 800,
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    {row.price}
+                  </span>
+                </div>
+                {i < arr.length - 1 && (
+                  <div style={{ height: "1px", background: "#1f1f1f" }} />
+                )}
+              </div>
+            ))}
+
+            {/* Footer */}
+            <div
+              style={{
+                marginTop: "16px",
+                paddingTop: "14px",
+                borderTop: "1px solid #1f1f1f",
+                color: "#52525b",
+                fontSize: "11px",
+                fontWeight: 500,
+                letterSpacing: "0.02em",
+              }}
+            >
+              from 7 suppliers · Updated just now
+            </div>
+          </div>
+        </div>
       </div>
 
       <AuthGateModal
