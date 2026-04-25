@@ -550,6 +550,7 @@ const HeroSection = () => {
                       autoCorrect="off"
                       autoCapitalize="off"
                       spellCheck={false}
+                      title="Press / to search"
                     />
                   </div>
                   <div className="flex items-center gap-2 px-1">
