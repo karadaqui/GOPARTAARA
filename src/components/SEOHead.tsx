@@ -93,7 +93,7 @@ const SEOHead = ({
     return () => {
       document.querySelectorAll('script[data-seo-jsonld]').forEach((n) => n.remove());
     };
-  }, [fullTitle, description, url, type, ogImage, jsonLd, additionalJsonLd, noindex]);
+  }, [fullTitle, description, url, type, ogImage, jsonLd, additionalJsonLd, noindex, keywords]);
 
   return null;
 };
