@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 
 const CONSENT_KEY = "cookie_consent";
 const LEGACY_KEY = "partara_cookie_consent";
@@ -23,10 +22,9 @@ const applyAnalytics = (accepted: boolean) => {
 const CookieConsent = () => {
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
-  const { user, loading } = useAuth();
 
   useEffect(() => {
-    if (loading) return;
+    if (typeof window === "undefined") return;
 
     const stored = localStorage.getItem(CONSENT_KEY) || localStorage.getItem(LEGACY_KEY);
     if (stored) {
@@ -35,18 +33,16 @@ const CookieConsent = () => {
       return;
     }
 
-    // Don't show to logged-in users without an explicit prior choice either,
-    // but per spec, show to all visitors who haven't consented.
+    // Default: disable analytics until user consents
     (window as any)["ga-disable-G-YRZ3243HF0"] = true;
 
     const showTimer = window.setTimeout(() => {
       setMounted(true);
-      // next frame: trigger transition from translateY(100%) → translateY(0)
       window.requestAnimationFrame(() => setVisible(true));
     }, 2000);
 
     return () => window.clearTimeout(showTimer);
-  }, [user, loading]);
+  }, []);
 
   const choose = (decision: "accepted" | "declined") => {
     localStorage.setItem(CONSENT_KEY, decision);
