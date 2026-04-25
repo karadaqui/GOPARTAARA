@@ -126,7 +126,7 @@ const Footer = () => {
 
             <div className="flex items-center gap-3">
               <a
-                href="https://instagram.com/gopartara"
+                href="https://www.instagram.com/gopartara"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group relative flex items-center justify-center w-11 h-11 rounded-full bg-muted/50 hover:bg-primary/10 transition-colors"
