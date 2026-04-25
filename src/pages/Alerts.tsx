@@ -9,6 +9,7 @@ import SEOHead from "@/components/SEOHead";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Bell, Package, Loader2, X, Search, Mail, Pencil, Check, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import AlertPriceHistoryChart from "@/components/AlertPriceHistoryChart";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,7 +46,8 @@ const EMAIL_OVERRIDE_KEY = "partara_alert_email_override";
 const Alerts = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { isFree, isPro, isAdmin, loading: planLoading } = useUserPlan();
+  const { isFree, isPro, isElite, isAdmin, loading: planLoading } = useUserPlan();
+  const eliteAccess = isElite || isAdmin;
 
   const [alerts, setAlerts] = useState<PriceAlert[]>([]);
   const [loading, setLoading] = useState(true);
@@ -243,6 +245,8 @@ const Alerts = () => {
                   key={a.id}
                   alert={a}
                   onRemove={() => setConfirmDeleteId(a.id)}
+                  isElite={eliteAccess}
+                  isPro={isPro}
                 />
               ))}
             </div>
@@ -464,7 +468,7 @@ const EmptyAlertsState = ({ onBrowse }: { onBrowse: () => void }) => (
 );
 
 // ── Alert card ──
-const AlertCard = ({ alert, onRemove }: { alert: PriceAlert; onRemove: () => void }) => {
+const AlertCard = ({ alert, onRemove, isElite, isPro }: { alert: PriceAlert; onRemove: () => void; isElite: boolean; isPro: boolean }) => {
   const target = Number(alert.target_price);
   const current = alert.current_price != null ? Number(alert.current_price) : null;
 
@@ -630,6 +634,14 @@ const AlertCard = ({ alert, onRemove }: { alert: PriceAlert; onRemove: () => voi
           )}
         </div>
       </div>
+
+      {/* 30-day price history chart (Elite only) */}
+      <AlertPriceHistoryChart
+        alertId={alert.id}
+        targetPrice={target}
+        isElite={isElite}
+        isPro={isPro}
+      />
     </div>
   );
 };
