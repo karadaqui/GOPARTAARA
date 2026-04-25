@@ -634,6 +634,14 @@ const AlertCard = ({ alert, onRemove, isElite, isPro }: { alert: PriceAlert; onR
           )}
         </div>
       </div>
+
+      {/* 30-day price history chart (Elite only) */}
+      <AlertPriceHistoryChart
+        alertId={alert.id}
+        targetPrice={target}
+        isElite={isElite}
+        isPro={isPro}
+      />
     </div>
   );
 };
