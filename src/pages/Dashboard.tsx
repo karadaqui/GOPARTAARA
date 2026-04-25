@@ -21,7 +21,7 @@ import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
 
 import EliteFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import PrioritySupportButton from "@/components/dashboard/PrioritySupportButton";
-import ComingSoonFeatures from "@/components/dashboard/ComingSoonFeatures";
+
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
