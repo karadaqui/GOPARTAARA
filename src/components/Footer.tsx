@@ -135,7 +135,7 @@ const Footer = () => {
                 <Instagram size={20} style={{ color: "#52525b" }} className="group-hover:!text-white transition-colors" />
               </a>
               <a
-                href="https://tiktok.com/@gopartara"
+                href="https://www.tiktok.com/@gopartara"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group relative flex items-center justify-center w-11 h-11 rounded-full bg-muted/50 hover:bg-primary/10 transition-colors"
