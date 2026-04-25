@@ -29,9 +29,11 @@ type MoreLink = {
   label: string;
   href: string;
   Icon: LucideIcon;
+  elite?: boolean;
 };
 
 const moreLinks: MoreLink[] = [
+  { label: "Bulk Compare", href: "/compare", Icon: Scale, elite: true },
   { label: "Tyres", href: "/tyres", Icon: CircleDot },
   { label: "For Business", href: "/business", Icon: Briefcase },
   { label: "Blog", href: "/blog", Icon: BookOpen },
