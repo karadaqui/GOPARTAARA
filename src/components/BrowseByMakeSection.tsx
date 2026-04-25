@@ -18,20 +18,19 @@ const BrowseByMakeSection = () => {
 
   return (
     <section className="px-4 mb-10">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <p
           style={{
-            color: "#cc1111",
+            color: "#52525b",
             fontSize: "12px",
-            fontWeight: 700,
-            letterSpacing: "0.18em",
-            textTransform: "uppercase",
-            marginBottom: "14px",
+            fontWeight: 600,
+            letterSpacing: "0.04em",
+            marginBottom: "20px",
           }}
         >
-          BROWSE BY MAKE
+          03 — Browse by make
         </p>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
           {MAKES.map((make) => (
             <button
               key={make}
@@ -39,25 +38,68 @@ const BrowseByMakeSection = () => {
               onClick={() => navigate(`/search?q=${encodeURIComponent(`${make} parts`)}`)}
               className="make-card text-left"
               style={{
-                background: "#111111",
-                border: "1px solid #1f1f1f",
-                borderRadius: "10px",
-                padding: "12px 16px",
-                fontSize: "14px",
-                fontWeight: 600,
-                color: "#a1a1aa",
+                background: "#0d0d0d",
+                border: "1px solid #1a1a1a",
+                borderRadius: "12px",
+                padding: "16px 20px",
                 cursor: "pointer",
-                transition: "border-color 150ms, color 150ms",
+                display: "flex",
+                alignItems: "center",
+                gap: "14px",
+                transition: "border-color 200ms, background-color 200ms",
               }}
             >
-              {make}
+              <span
+                className="make-monogram"
+                style={{
+                  background: "#151515",
+                  border: "1px solid #222222",
+                  borderRadius: "8px",
+                  width: "44px",
+                  height: "44px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#ffffff",
+                  fontSize: "20px",
+                  fontWeight: 900,
+                  flexShrink: 0,
+                  letterSpacing: "-0.02em",
+                  transition: "background-color 200ms, border-color 200ms, color 200ms",
+                }}
+              >
+                {make[0]}
+              </span>
+              <span style={{ display: "flex", flexDirection: "column", gap: "2px", minWidth: 0 }}>
+                <span
+                  style={{
+                    color: "#ffffff",
+                    fontSize: "15px",
+                    fontWeight: 700,
+                    letterSpacing: "-0.01em",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {make}
+                </span>
+                <span style={{ color: "#52525b", fontSize: "12px", fontWeight: 500 }}>
+                  View parts →
+                </span>
+              </span>
             </button>
           ))}
         </div>
       </div>
       <style>{`
         .make-card:hover {
-          border-color: #2a2a2a !important;
+          border-color: #cc1111 !important;
+          background: #101010 !important;
+        }
+        .make-card:hover .make-monogram {
+          background: rgba(204,17,17,0.1) !important;
+          border-color: rgba(204,17,17,0.3) !important;
           color: #ffffff !important;
         }
       `}</style>
