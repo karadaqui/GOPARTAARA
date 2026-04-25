@@ -1251,11 +1251,16 @@ const SearchResults = () => {
                 </h1>
                 {totalResults > 0 && !liveLoading && (
                   <>
-                    <p className="mt-2 flex items-center gap-2" style={{ fontSize: "13px", color: "#52525b" }}>
+                    <p className="mt-2 flex items-center gap-2 flex-wrap" style={{ fontSize: "13px", color: "#52525b" }}>
                       <span className="rounded-full bg-emerald-500 animate-pulse" style={{ width: "6px", height: "6px" }} />
-                      {activeFilterCount > 0
-                        ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
-                        : `${startItem.toLocaleString()}-${endItem.toLocaleString()} of ${totalResults.toLocaleString()} listings`}
+                      <span>
+                        {activeFilterCount > 0
+                          ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
+                          : `${startItem.toLocaleString()}-${endItem.toLocaleString()} of ${totalResults.toLocaleString()} listings`}
+                      </span>
+                      <span style={{ fontSize: "12px", color: "#3f3f46", marginLeft: "8px" }}>
+                        ✓ Prices verified · Best match first
+                      </span>
                     </p>
                     <p className="mt-1.5" style={{ fontSize: "12px", color: "#52525b" }}>
                       from{" "}
