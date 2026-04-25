@@ -770,25 +770,22 @@ const Dashboard = () => {
                 <Search size={18} className="text-primary" />
                 Recent Searches
               </h2>
-              <div className="flex items-center gap-2">
-                {isEliteUser ? (
-                  <button
-                    onClick={exportSearchHistoryCSV}
-                    title="Export search history as CSV"
-                    className="w-7 h-7 rounded-lg border border-border bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-colors text-primary"
-                  >
-                    <Download size={14} />
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => navigate("/pricing")}
-                    title="Export search history (Elite plan)"
-                    className="w-7 h-7 rounded-lg border border-border bg-secondary/50 flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground relative"
-                  >
-                    <Download size={14} />
-                    <Lock size={8} className="absolute -top-1 -right-1 text-muted-foreground" />
-                  </button>
-                )}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={exportSearchHistoryCSV}
+                  title="Export search history as CSV"
+                  className="inline-flex items-center gap-1.5 hover:text-foreground hover:border-zinc-700 transition-colors"
+                  style={{
+                    border: "1px solid #27272a",
+                    color: "#71717a",
+                    padding: "4px 12px",
+                    fontSize: "12px",
+                    borderRadius: "6px",
+                  }}
+                >
+                  <ArrowDownToLine size={12} />
+                  Export CSV
+                </button>
                 {searchHistory.length > 0 && (
                   <button onClick={clearAllHistory} className="text-xs text-muted-foreground hover:text-destructive transition-colors">
                     Clear all
