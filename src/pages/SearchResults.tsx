@@ -289,6 +289,11 @@ const SearchResults = () => {
   const resultsRef = useRef<HTMLDivElement>(null);
   const supplierBannerRef = useRef<HTMLDivElement>(null);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [autoLoadMore, setAutoLoadMore] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("auto_load_results") === "1";
+  });
+  const loadMoreSentinelRef = useRef<HTMLDivElement>(null);
   const userPlan = useUserPlan();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [upgradeFeature, setUpgradeFeature] = useState("");
