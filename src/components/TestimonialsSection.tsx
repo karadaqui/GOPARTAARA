@@ -134,31 +134,6 @@ const TestimonialsSection = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.02] to-transparent pointer-events-none" />
 
       <ScrollReveal className="text-center mb-10 px-4">
-        {/* Aggregate review */}
-        <div className="flex flex-col items-center gap-1 mb-6">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center" style={{ gap: 2 }}>
-              {[1, 2, 3, 4, 5].map((s) => (
-                <Star
-                  key={s}
-                  size={20}
-                  className="fill-current"
-                  style={{ color: "#cc1111" }}
-                />
-              ))}
-            </div>
-            <span
-              className="text-white"
-              style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.01em" }}
-            >
-              4.8/5 from 2,847 reviews
-            </span>
-          </div>
-          <p style={{ fontSize: 13, color: "#52525b" }}>
-            Verified by users across the UK & Europe
-          </p>
-        </div>
-
         <span
           className="inline-block uppercase"
           style={{
