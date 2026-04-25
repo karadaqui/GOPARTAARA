@@ -6,7 +6,7 @@ import BackToTop from "@/components/BackToTop";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Twitter, CheckCircle } from "lucide-react";
+import { Mail, Twitter, Youtube, CheckCircle } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -158,6 +158,12 @@ const Contact = () => {
                   label="X (Twitter)"
                   value="@gopartara"
                   href="https://x.com/gopartara"
+                />
+                <ContactMethod
+                  icon={<Youtube size={18} style={{ color: "#cc1111" }} />}
+                  label="YouTube"
+                  value="@gopartara"
+                  href="https://www.youtube.com/@gopartara"
                 />
               </div>
 
