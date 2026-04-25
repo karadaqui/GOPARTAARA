@@ -116,7 +116,7 @@ const Navbar = () => {
           transition: "background-color 200ms ease, border-color 200ms ease, backdrop-filter 200ms ease",
         }}
       >
-        <div className="container grid grid-cols-[auto_1fr_auto] items-center gap-4" style={{ height: "56px" }}>
+        <div className="container relative flex items-center gap-4" style={{ height: "56px" }}>
           {/* Left: Logo */}
           <a
             href="/"
@@ -147,8 +147,8 @@ const Navbar = () => {
             </span>
           </a>
 
-          {/* Center: Primary nav links */}
-          <div className="hidden md:flex items-center justify-center gap-5 lg:gap-6">
+          {/* Center: Primary nav links — absolutely centered to viewport */}
+          <div className="hidden md:flex items-center gap-5 lg:gap-6 absolute left-1/2 -translate-x-1/2">
             {primaryLinks.map((l) => {
               const isActive =
                 pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
@@ -253,7 +253,7 @@ const Navbar = () => {
           </div>
 
           {/* Right: Utilities + auth */}
-          <div className="flex items-center gap-2 justify-self-end">
+          <div className="flex items-center gap-2 ml-auto flex-shrink-0">
             {!loading && user && <MessageBubble />}
             {!loading && user && <NotificationBell />}
             <CountrySelector />
