@@ -151,7 +151,7 @@ const Footer = () => {
                 </svg>
               </a>
               <a
-                href="https://twitter.com/gopartara"
+                href="https://x.com/gopartara"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group relative flex items-center justify-center w-11 h-11 rounded-full bg-muted/50 hover:bg-primary/10 transition-colors"

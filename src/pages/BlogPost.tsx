@@ -348,7 +348,7 @@ const BlogPost = () => {
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-sm text-zinc-400 mr-1">Share this article:</span>
                   <a
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent("https://gopartara.com/blog/" + post.slug)}`}
+                    href={`https://x.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent("https://gopartara.com/blog/" + post.slug)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="share-pill"
