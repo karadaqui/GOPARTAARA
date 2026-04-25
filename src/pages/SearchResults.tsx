@@ -833,6 +833,28 @@ const SearchResults = () => {
     if (!liveLoading) setLoadingMore(false);
   }, [liveLoading, liveResults]);
 
+  // Auto-load more via IntersectionObserver when toggle is enabled
+  useEffect(() => {
+    if (!autoLoadMore) return;
+    const node = loadMoreSentinelRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries[0]?.isIntersecting &&
+          currentPage < totalPages &&
+          !loadingMore &&
+          !liveLoading
+        ) {
+          handleLoadMore();
+        }
+      },
+      { rootMargin: "200px 0px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [autoLoadMore, currentPage, totalPages, loadingMore, liveLoading]);
+
   // ── Scroll position memory: save before user clicks an outbound link, restore on back nav ──
   const saveScrollPosition = useCallback(() => {
     try {
