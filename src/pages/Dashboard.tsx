@@ -257,23 +257,36 @@ const Dashboard = () => {
 
   const exportSearchHistoryCSV = async () => {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("search_history")
-        .select("*")
+        .select("query, created_at")
         .eq("user_id", user!.id)
-        .order("created_at", { ascending: false });
-      if (!data || data.length === 0) return;
-      const csv = "Date,Search Query\n" + data.map((r) =>
-        `"${new Date(r.created_at).toLocaleDateString("en-GB")}","${r.query.replace(/"/g, '""')}"`
-      ).join("\n");
+        .order("created_at", { ascending: false })
+        .limit(500);
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        toast({ title: "No search history to export yet." });
+        return;
+      }
+      const rows = data.map((r) => {
+        const d = new Date(r.created_at);
+        const date = d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+        const time = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+        const q = (r.query ?? "").replace(/"/g, '""');
+        return `"${q}","${date}","${time}"`;
+      });
+      const csv = `"Search Query","Date","Time"\n${rows.join("\n")}`;
       const blob = new Blob([csv], { type: "text/csv" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `partara-search-history-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = "gopartara-search-history.csv";
       a.click();
       URL.revokeObjectURL(url);
-    } catch { /* silently ignore */ }
+      toast({ title: "✓ Search history exported!" });
+    } catch (e: any) {
+      toast({ title: "Export failed", description: e?.message ?? "Please try again.", variant: "destructive" });
+    }
   };
 
   const userPlan = useUserPlan();
