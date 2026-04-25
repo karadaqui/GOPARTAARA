@@ -7,7 +7,7 @@ type Stat = {
 const stats: Stat[] = [
   { label: "Parts searchable", display: "1,000,000+" },
   { label: "Live suppliers", display: "7" },
-  { label: "Users worldwide", display: "50,000+" },
+  { label: "Always available", display: "24/7" },
   { label: "Always free to use", display: "Free" },
 ];
 
