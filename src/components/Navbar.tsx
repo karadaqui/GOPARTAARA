@@ -224,6 +224,7 @@ const Navbar = () => {
                       const isActive =
                         pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
                       const Icon = l.Icon;
+                      const showEliteBadge = l.elite && !eliteAccess;
                       return (
                         <button
                           key={l.href}
@@ -248,7 +249,24 @@ const Navbar = () => {
                           }}
                         >
                           <Icon size={14} className="opacity-70" />
-                          {l.label}
+                          <span className="flex-1">{l.label}</span>
+                          {showEliteBadge && (
+                            <span
+                              style={{
+                                fontSize: 9,
+                                fontWeight: 700,
+                                letterSpacing: "0.08em",
+                                textTransform: "uppercase",
+                                color: "#fbbf24",
+                                background: "rgba(251,191,36,0.12)",
+                                border: "1px solid rgba(251,191,36,0.25)",
+                                padding: "2px 6px",
+                                borderRadius: 999,
+                              }}
+                            >
+                              Elite
+                            </span>
+                          )}
                         </button>
                       );
                     })}
