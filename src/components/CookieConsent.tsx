@@ -27,31 +27,30 @@ const CookieConsent = () => {
 
   useEffect(() => {
     if (loading) return;
-    // Don't show to logged-in users
-    if (user) {
-      setMounted(false);
-      setVisible(false);
+
+    const stored = localStorage.getItem(CONSENT_KEY) || localStorage.getItem(LEGACY_KEY);
+    if (stored) {
+      const accepted = stored === "accepted" || stored.includes('"analytics":true');
+      applyAnalytics(accepted);
       return;
     }
-    const stored = localStorage.getItem(CONSENT_KEY) || localStorage.getItem(LEGACY_KEY);
-    if (!stored) {
-      (window as any)["ga-disable-G-YRZ3243HF0"] = true;
-      // Show after a 2s delay to be less intrusive
-      const showTimer = window.setTimeout(() => {
-        setMounted(true);
-        // Next tick: trigger the slide-up transition
-        window.requestAnimationFrame(() => setVisible(true));
-      }, 2000);
-      return () => window.clearTimeout(showTimer);
-    }
-    const accepted = stored === "accepted" || stored.includes("\"analytics\":true");
-    applyAnalytics(accepted);
+
+    // Don't show to logged-in users without an explicit prior choice either,
+    // but per spec, show to all visitors who haven't consented.
+    (window as any)["ga-disable-G-YRZ3243HF0"] = true;
+
+    const showTimer = window.setTimeout(() => {
+      setMounted(true);
+      // next frame: trigger transition from translateY(100%) → translateY(0)
+      window.requestAnimationFrame(() => setVisible(true));
+    }, 2000);
+
+    return () => window.clearTimeout(showTimer);
   }, [user, loading]);
 
   const choose = (decision: "accepted" | "declined") => {
     localStorage.setItem(CONSENT_KEY, decision);
     applyAnalytics(decision === "accepted");
-    // Slide back down, then unmount
     setVisible(false);
     window.setTimeout(() => setMounted(false), 320);
   };
@@ -60,58 +59,40 @@ const CookieConsent = () => {
 
   return (
     <div
-      role="dialog"
-      aria-label="Cookie consent"
-      className="fixed bottom-0 left-0 right-0 z-[100]"
+      className="fixed left-0 right-0 bottom-0"
       style={{
-        background: "rgba(17,17,17,0.92)",
-        borderTop: "1px solid #1f1f1f",
-        padding: "16px 24px",
+        zIndex: 9999,
+        background: "rgba(17,17,17,0.95)",
         backdropFilter: "blur(10px)",
         WebkitBackdropFilter: "blur(10px)",
+        borderTop: "1px solid #1f1f1f",
+        padding: "16px 24px",
         transform: visible ? "translateY(0)" : "translateY(100%)",
         transition: "transform 0.3s ease",
       }}
     >
-      <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <p style={{ fontSize: "14px", color: "#a1a1aa", lineHeight: 1.5 }}>
-            🍪 We use cookies to improve your experience and analyse site traffic.
-          </p>
-          <p style={{ fontSize: "13px", color: "#71717a", marginTop: "4px" }}>
-            Read our{" "}
-            <Link to="/privacy" className="hover:underline" style={{ color: "#cc1111" }}>
-              Privacy Policy
-            </Link>
-          </p>
-        </div>
+      <div
+        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+        style={{ maxWidth: 1440, margin: "0 auto" }}
+      >
+        <p className="leading-relaxed" style={{ fontSize: 14, color: "#a1a1aa" }}>
+          🍪 We use cookies to improve your experience.{" "}
+          <Link to="/privacy" className="hover:underline" style={{ color: "#cc1111" }}>
+            Privacy Policy
+          </Link>
+        </p>
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => choose("declined")}
-            className="transition-colors hover:text-white"
-            style={{
-              border: "1px solid #27272a",
-              background: "transparent",
-              color: "#71717a",
-              padding: "8px 16px",
-              borderRadius: "8px",
-              fontSize: "13px",
-            }}
+            className="px-4 py-2 rounded-lg text-sm transition-colors hover:text-white"
+            style={{ border: "1px solid #27272a", background: "transparent", color: "#71717a" }}
           >
             Decline
           </button>
           <button
             onClick={() => choose("accepted")}
-            className="transition-opacity hover:opacity-90"
-            style={{
-              background: "#cc1111",
-              color: "#ffffff",
-              padding: "8px 16px",
-              borderRadius: "8px",
-              fontSize: "13px",
-              fontWeight: 600,
-              border: "none",
-            }}
+            className="px-4 py-2 rounded-lg text-sm text-white transition-opacity hover:opacity-90"
+            style={{ background: "#cc1111", fontWeight: 600 }}
           >
             Accept All
           </button>

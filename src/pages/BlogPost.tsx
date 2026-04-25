@@ -267,36 +267,8 @@ const BlogPost = () => {
               dangerouslySetInnerHTML={{ __html: processedHtml }}
             />
 
-            {/* Internal link to search — boosts SEO crawl + conversion */}
-            {(() => {
-              const part =
-                (post.keywords && post.keywords[0]) ||
-                post.category ||
-                "car parts";
-              const partLabel = part.toLowerCase();
-              return (
-                <div className="mt-12 px-5 py-4 bg-[#0f0f0f] border border-[#1f1f1f] rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <p className="text-sm text-zinc-300">
-                    Ready to find the best price?
-                  </p>
-                  <Link
-                    to={`/search?q=${encodeURIComponent(partLabel)}`}
-                    style={{
-                      color: "#cc1111",
-                      fontWeight: 600,
-                      fontSize: "14px",
-                      textDecoration: "none",
-                    }}
-                    className="hover:underline"
-                  >
-                    Search for {partLabel} on GOPARTARA →
-                  </Link>
-                </div>
-              );
-            })()}
-
             {/* Amazon affiliate */}
-            <div className="mt-6 p-5 bg-[#111111] border border-[#1f1f1f] rounded-2xl">
+            <div className="mt-12 p-5 bg-[#111111] border border-[#1f1f1f] rounded-2xl">
               <p className="text-sm font-semibold text-zinc-300 mb-2">
                 🛒 Find related parts on Amazon UK
               </p>

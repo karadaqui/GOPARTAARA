@@ -76,15 +76,6 @@ const Help = () => {
         title="Help Center | GOPARTARA"
         description="Find answers to common questions about searching, price alerts, the marketplace, your garage and your account on GOPARTARA."
         path="/help"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "FAQPage",
-          "mainEntity": faqs.map((f) => ({
-            "@type": "Question",
-            "name": f.q,
-            "acceptedAnswer": { "@type": "Answer", "text": f.a },
-          })),
-        }}
       />
       <Navbar />
 

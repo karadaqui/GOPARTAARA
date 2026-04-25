@@ -43,7 +43,6 @@ const Index = () => {
         title="GOPARTARA — Compare Car Parts Prices UK | 1M+ Parts"
         description="Compare car parts prices from 1,000,000+ listings across 7 UK & global suppliers. Search by part name, reg plate, VIN, or photo. Free to use."
         path="/"
-        keywords="car parts UK, compare car parts prices, cheap car parts, eBay car parts, car parts search engine, UK car parts suppliers, auto parts comparison"
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "WebApplication",
