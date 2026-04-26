@@ -126,7 +126,7 @@ const App = () => {
                 <Route path="/help" element={<Help />} />
                 <Route path="/help/:slug" element={<HelpCategoryRoute />} />
                 <Route path="/cookies" element={<Cookies />} />
-                <Route path="*" element={<NotFound />} />
+                <Route path="*" element={<PartSearchRedirect />} />
               </Routes>
               </div>
             </Suspense>
