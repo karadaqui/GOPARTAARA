@@ -133,26 +133,49 @@ Deno.serve(async (req) => {
     const { query, category, offset, marketplace, conditionFilter, shippingFilter, priceMin, priceMax, sortBy, categoryFilter, brandFilter, skipCredit } = parsed.data;
     const ebayMarketplace = (marketplace && VALID_MARKETPLACES.includes(marketplace)) ? marketplace : "EBAY_GB";
 
-    if (!isUnlimited && offset === 0) {
-      const startOfMonth = new Date();
-      startOfMonth.setDate(1);
-      startOfMonth.setHours(0, 0, 0, 0);
+    // ── Server-side enforced search limit (using search_usage table) ──
+    // Only counts NEW searches (offset === 0, not pagination, not skipCredit)
+    const shouldCountSearch = offset === 0 && !skipCredit;
 
-      const { count } = await supabaseAdmin
-        .from("search_history")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", auth.userId)
-        .gte("created_at", startOfMonth.toISOString());
-
+    if (!isUnlimited && shouldCountSearch) {
+      const now = new Date();
+      const monthYear = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
       const totalAllowed = FREE_LIMIT + bonusSearches;
-      if ((count || 0) >= totalAllowed) {
-        await logSecurityEvent("search_limit_exceeded", req, auth.userId, "search-parts", { count, totalAllowed });
+
+      const { data: usageRow } = await supabaseAdmin
+        .from("search_usage")
+        .select("search_count")
+        .eq("user_id", auth.userId)
+        .eq("month_year", monthYear)
+        .maybeSingle();
+
+      const currentCount = usageRow?.search_count || 0;
+
+      if (currentCount >= totalAllowed) {
+        await logSecurityEvent("search_limit_exceeded", req, auth.userId, "search-parts", { currentCount, totalAllowed });
+
+        // Compute first day of next month for reset display
+        const nextMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
+
         return jsonResponse({
           error: "SEARCH_LIMIT_REACHED",
-          message: `You've used all ${totalAllowed} searches this month. Upgrade to Pro for unlimited searches.`,
+          message: `You've used all ${totalAllowed} free searches this month. Upgrade to Pro for unlimited searches.`,
+          upgradeUrl: "/pricing",
           remaining: 0,
-        }, 403, corsHeaders);
+          searchCount: currentCount,
+          totalAllowed,
+          resetsAt: nextMonth.toISOString(),
+        }, 429, corsHeaders);
       }
+
+      // Increment count atomically (upsert with new total)
+      const newCount = currentCount + 1;
+      await supabaseAdmin
+        .from("search_usage")
+        .upsert(
+          { user_id: auth.userId, month_year: monthYear, search_count: newCount, updated_at: new Date().toISOString() },
+          { onConflict: "user_id,month_year" }
+        );
     }
 
     // Build search query with category/brand appended
