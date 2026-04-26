@@ -1399,7 +1399,68 @@ const SearchResults = () => {
             )}
 
             {/* ── Results Grid ── */}
-            {liveError && !liveLoading ? (
+            {serverLimitReached && !liveLoading ? (
+              (() => {
+                const now = new Date();
+                const nextMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
+                const resetLabel = nextMonth.toLocaleDateString(undefined, { month: "long", day: "numeric" });
+                return (
+                  <div
+                    className="flex flex-col items-center justify-center mb-8"
+                    style={{ textAlign: "center", padding: "60px 40px" }}
+                  >
+                    <div style={{ fontSize: "48px", marginBottom: "16px", lineHeight: 1 }} aria-hidden="true">🔒</div>
+                    <h2 style={{ fontSize: "22px", fontWeight: 800, color: "#ffffff", marginBottom: "8px" }}>
+                      Monthly search limit reached
+                    </h2>
+                    <p
+                      style={{
+                        fontSize: "14px",
+                        color: "#71717a",
+                        marginBottom: "32px",
+                        maxWidth: "440px",
+                      }}
+                    >
+                      You've used all 10 free searches this month. Upgrade to Pro for unlimited searches.
+                    </p>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                      <a
+                        href="/pricing"
+                        onClick={(e) => { e.preventDefault(); navigate("/pricing"); }}
+                        style={{
+                          background: "#cc1111",
+                          color: "#ffffff",
+                          padding: "14px 32px",
+                          borderRadius: "10px",
+                          fontSize: "15px",
+                          fontWeight: 700,
+                          textDecoration: "none",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        Upgrade to Pro — £9.99/mo
+                      </a>
+                      <span
+                        style={{
+                          background: "transparent",
+                          border: "1px solid #27272a",
+                          color: "#71717a",
+                          padding: "14px 32px",
+                          borderRadius: "10px",
+                          fontSize: "13px",
+                          cursor: "default",
+                          userSelect: "none",
+                        }}
+                      >
+                        Resets on {resetLabel}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })()
+            ) : liveError && !liveLoading ? (
               <div className="flex flex-col items-center justify-center py-16 mb-8 px-4">
                 <div
                   className="flex items-center justify-center rounded-full mb-5"
