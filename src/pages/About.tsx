@@ -39,11 +39,32 @@ const About = () => (
       path="/about"
       jsonLd={{
         "@context": "https://schema.org",
-        "@type": "AboutPage",
-        "name": "About GOPARTARA",
-        "url": "https://gopartara.com/about",
-        "description": "Learn how GOPARTARA is revolutionising car part search in the UK.",
+        "@type": "Organization",
+        "name": "GOPARTARA Ltd",
+        "url": "https://gopartara.com",
+        "logo": "https://gopartara.com/logo.png",
+        "description": "GOPARTARA is a UK car parts price comparison platform that searches 7 suppliers simultaneously.",
+        "foundingDate": "2026",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "email": "info@gopartara.com",
+          "contactType": "customer service",
+          "availableLanguage": "English",
+        },
+        "sameAs": [
+          "https://twitter.com/gopartara",
+          "https://www.youtube.com/@gopartara",
+        ],
       }}
+      additionalJsonLd={[
+        {
+          "@context": "https://schema.org",
+          "@type": "AboutPage",
+          "name": "About GOPARTARA",
+          "url": "https://gopartara.com/about",
+          "description": "Learn how GOPARTARA is revolutionising car part search in the UK.",
+        },
+      ]}
     />
     <Navbar />
 
