@@ -282,6 +282,7 @@ const SearchResults = () => {
   const [totalResults, setTotalResults] = useState(0);
   const [ebayFallback, setEbayFallback] = useState(false);
   const [liveError, setLiveError] = useState(false);
+  const [serverLimitReached, setServerLimitReached] = useState(false);
   const [retryNonce, setRetryNonce] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
    const internalSearchRef = useRef(false);
