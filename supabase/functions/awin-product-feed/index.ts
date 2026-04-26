@@ -399,7 +399,7 @@ Deno.serve(async (req) => {
             mergedSpecs[k] = v;
           }
         }
-        return { ...product, specs: mergedSpecs as typeof product.specs };
+        return { ...product, specs: mergedSpecs as unknown as typeof product.specs };
       }),
     );
 
