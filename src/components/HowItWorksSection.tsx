@@ -27,7 +27,21 @@ const steps = [
 const HowItWorksSection = () => (
   <section className="animated-gradient-bg py-12 md:py-16 relative overflow-hidden">
     <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/[0.02] to-transparent pointer-events-none" />
-    <div className="container px-4 md:px-6 lg:px-8 relative">
+    <div
+      aria-hidden="true"
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: "200px",
+        background:
+          "radial-gradient(ellipse 60% 30% at 50% 0%, rgba(204, 17, 17, 0.06) 0%, transparent 70%)",
+        pointerEvents: "none",
+        zIndex: 0,
+      }}
+    />
+    <div className="container px-4 md:px-6 lg:px-8 relative" style={{ zIndex: 1 }}>
       <ScrollReveal className="text-center mb-8 md:mb-10" threshold={0.05}>
         <span className="inline-block uppercase" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em", color: "#cc1111", marginBottom: "12px" }}>
           How It Works

@@ -6,6 +6,7 @@ import SocialProofStats from "@/components/SocialProofStats";
 import HomeCTASection from "@/components/HomeCTASection";
 import PopularSearchesStrip from "@/components/PopularSearchesStrip";
 import BrowseByMakeSection from "@/components/BrowseByMakeSection";
+import SectionDivider from "@/components/SectionDivider";
 
 import HomeShareRow from "@/components/HomeShareRow";
 
@@ -80,10 +81,13 @@ const Index = () => {
       />
       <Navbar />
       <HeroSection />
+      <SectionDivider />
       <PopularSearchesStrip />
+      <SectionDivider />
       <BrowseByMakeSection />
-      
+      <SectionDivider />
       <SocialProofStats />
+      <SectionDivider />
 
       {/* Trust bar */}
       <section className="px-4 mb-8 mt-2">
@@ -138,11 +142,17 @@ const Index = () => {
 
       <Suspense fallback={<div className="h-32" />}>
         <ScrollReveal><HowItWorksSection /></ScrollReveal>
+        <SectionDivider />
         <ScrollReveal><FeaturesSection /></ScrollReveal>
+        <SectionDivider />
         <ScrollReveal><WhyPartaraSection /></ScrollReveal>
+        <SectionDivider />
         <ScrollReveal><TestimonialsSection /></ScrollReveal>
+        <SectionDivider />
         <ScrollReveal><PricingSection /></ScrollReveal>
       </Suspense>
+
+      <SectionDivider />
 
       <ScrollReveal><HomeCTASection /></ScrollReveal>
 
