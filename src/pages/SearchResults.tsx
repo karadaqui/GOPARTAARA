@@ -27,6 +27,7 @@ import VehicleLookup from "@/components/VehicleLookup";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
 import SearchCounter from "@/components/SearchCounter";
 import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsComparison";
+import { usePersistentCompare } from "@/hooks/usePersistentCompare";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { toast as sonnerToast } from "sonner";
@@ -267,7 +268,7 @@ const SearchResults = () => {
   const photoInputRef = useRef<HTMLInputElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [autoOpen, setAutoOpen] = useState(false);
-  const [compareParts, setCompareParts] = useState<CompareItem[]>([]);
+  const [compareParts, setCompareParts] = usePersistentCompare();
   const [showCompare, setShowCompare] = useState(false);
   const [liveResults, setLiveResults] = useState<any[]>([]);
   const [liveLoading, setLiveLoading] = useState(false);

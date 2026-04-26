@@ -12,6 +12,7 @@ import { Search, Store, Eye, Package, Scale, Star, Wrench, Bookmark } from "luci
 import VerifiedSellerBadge from "@/components/badges/VerifiedSellerBadge";
 import SafeImage from "@/components/SafeImage";
 import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsComparison";
+import { usePersistentCompare } from "@/hooks/usePersistentCompare";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthGateModal from "@/components/AuthGateModal";
@@ -84,7 +85,7 @@ const Marketplace = () => {
   const [category, setCategory] = useState("All");
   const [vehicleFilter, setVehicleFilter] = useState("");
   const [authGateOpen, setAuthGateOpen] = useState(false);
-  const [compareParts, setCompareParts] = useState<CompareItem[]>([]);
+  const [compareParts, setCompareParts] = usePersistentCompare();
   const [showCompare, setShowCompare] = useState(false);
 
   useEffect(() => {
