@@ -366,17 +366,17 @@ const Navbar = () => {
               onClick={() => setMenuOpen(true)}
               className="md:hidden flex items-center justify-center"
               style={{
-                background: "none",
-                border: "none",
+                width: "40px",
+                height: "40px",
+                background: "transparent",
+                border: "1px solid #27272a",
+                borderRadius: "8px",
                 cursor: "pointer",
                 color: "white",
-                padding: "8px",
-                minWidth: "44px",
-                minHeight: "44px",
               }}
               aria-label="Open navigation menu"
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                 <line x1="3" y1="6" x2="21" y2="6" />
                 <line x1="3" y1="12" x2="21" y2="12" />
                 <line x1="3" y1="18" x2="21" y2="18" />
