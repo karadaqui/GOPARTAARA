@@ -41,13 +41,72 @@ const popularArticles: Article[] = [
   { title: "How to delete your account and data", category: "Account & Privacy", href: "/help/account-privacy" },
 ];
 
-const faqs = [
-  { q: "Is GOPARTARA free to use?", a: "Yes. You can search up to 10 times per month, save 5 parts, and set 5 price alerts completely free. No credit card needed. Pro (£9.99/mo) and Elite (£19.99/mo) plans offer more features." },
-  { q: "Which suppliers do you search?", a: "We currently search eBay Global, mytyres.co.uk, Tyres UK, Green Spark Plug Co., neumaticos-online.es, Pneumatici IT, and ReifenDirekt EE — 7 suppliers simultaneously." },
-  { q: "How do price alerts work?", a: "Click the bell icon on any search result. Set your target price. We check that listing's price every 6 hours and email you at your registered address when it drops below your target." },
-  { q: "Can I sell parts on GOPARTARA?", a: "Yes. All registered users can list up to 5 parts for free on our marketplace. Pro and Elite subscribers get unlimited listings and up to 10 photos per listing." },
-  { q: "Do I need an account to use GOPARTARA?", a: "No account needed for basic searching. However, you'll need a free account to save parts, set price alerts, use My Garage, or list on the marketplace." },
-  { q: "How do I cancel my subscription?", a: "Go to Dashboard → Subscription → Cancel Plan. You can cancel anytime. Your plan stays active until the billing period ends." },
+const faqLinkStyle: React.CSSProperties = {
+  color: "#cc1111",
+  textDecoration: "underline",
+  fontWeight: 500,
+  cursor: "pointer",
+};
+
+const FaqLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
+  <a
+    href={href}
+    style={faqLinkStyle}
+    onMouseOver={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#e01111")}
+    onMouseOut={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#cc1111")}
+  >
+    {children}
+  </a>
+);
+
+const faqs: { q: string; a: React.ReactNode }[] = [
+  {
+    q: "Is GOPARTARA free to use?",
+    a: (
+      <>
+        Yes. You can search up to 10 times per month, save 5 parts, and set 5 price alerts completely free. No credit card needed.{" "}
+        <FaqLink href="/pricing">Pro (£9.99/mo)</FaqLink> and{" "}
+        <FaqLink href="/pricing">Elite (£19.99/mo)</FaqLink> plans offer more features.
+      </>
+    ),
+  },
+  {
+    q: "Which suppliers do you search?",
+    a: "We currently search eBay Global, mytyres.co.uk, Tyres UK, Green Spark Plug Co., neumaticos-online.es, Pneumatici IT, and ReifenDirekt EE — 7 suppliers simultaneously.",
+  },
+  {
+    q: "How do price alerts work?",
+    a: "Click the bell icon on any search result. Set your target price. We check that listing's price every 6 hours and email you at your registered address when it drops below your target.",
+  },
+  {
+    q: "Can I sell parts on GOPARTARA?",
+    a: (
+      <>
+        Yes. All registered users can list up to 5 parts for free on our{" "}
+        <FaqLink href="/marketplace">marketplace</FaqLink>.{" "}
+        <FaqLink href="/pricing">Pro and Elite subscribers</FaqLink> get unlimited listings and up to 10 photos per listing.
+      </>
+    ),
+  },
+  {
+    q: "Do I need an account to use GOPARTARA?",
+    a: (
+      <>
+        No account needed for basic searching. However, you'll need a{" "}
+        <FaqLink href="/auth">free account</FaqLink> to save parts, set price alerts, use{" "}
+        <FaqLink href="/garage">My Garage</FaqLink>, or list on the{" "}
+        <FaqLink href="/marketplace">marketplace</FaqLink>.
+      </>
+    ),
+  },
+  {
+    q: "How do I cancel my subscription?",
+    a: (
+      <>
+        Go to <FaqLink href="/dashboard">Dashboard</FaqLink> → Subscription → Cancel Plan. You can cancel anytime. Your plan stays active until the billing period ends.
+      </>
+    ),
+  },
 ];
 
 const Help = () => {
