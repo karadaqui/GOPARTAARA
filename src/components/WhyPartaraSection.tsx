@@ -37,8 +37,22 @@ const renderCell = (value: Cell, isPartara: boolean, feature?: string) => {
 
 const WhyPartaraSection = () => {
   return (
-    <section className="animated-gradient-bg px-4 py-20 md:py-28">
-      <div className="max-w-6xl mx-auto">
+    <section className="animated-gradient-bg px-4 py-20 md:py-28 relative overflow-hidden">
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "200px",
+          background:
+            "radial-gradient(ellipse 60% 30% at 50% 0%, rgba(204, 17, 17, 0.06) 0%, transparent 70%)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+      <div className="max-w-6xl mx-auto relative" style={{ zIndex: 1 }}>
         {/* Header */}
         <div className="text-center mb-12">
           <p
