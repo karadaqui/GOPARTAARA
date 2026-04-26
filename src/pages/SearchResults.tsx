@@ -461,18 +461,29 @@ const SearchResults = () => {
             if (isFromGarage) body.skipCredit = true;
 
             const { data, error } = await supabase.functions.invoke("search-parts", { body });
+            // Detect server-enforced limit (HTTP 429) — supabase-js puts FunctionsHttpError on `error`
+            // but body is still parsed into `data` in newer SDK versions.
+            const limitFromData = data?.error === "SEARCH_LIMIT_REACHED";
+            const limitFromError = error && typeof (error as any)?.message === "string" &&
+              ((error as any).message.includes("SEARCH_LIMIT_REACHED") || (error as any).message.includes("429"));
+            if (limitFromData || limitFromError) {
+              if (!cancelled) {
+                setServerLimitReached(true);
+                setLiveResults([]);
+                setTotalResults(0);
+                setLiveError(false);
+                searchLimit.refresh();
+              }
+              return;
+            }
             if (error) {
               const msg = (error as any)?.message || "";
               if (msg.includes("UNAUTHORIZED") || msg.includes("401")) { if (!cancelled) setAuthGateOpen(true); return; }
-              if (msg.includes("SEARCH_LIMIT_REACHED") || msg.includes("403")) {
-                if (!cancelled) { setSearchLimitModalType("free"); setSearchLimitModalOpen(true); searchLimit.refresh(); }
-                return;
-              }
               throw error;
             }
             if (!cancelled) {
               if (data?.error === "UNAUTHORIZED") { setAuthGateOpen(true); return; }
-              if (data?.error === "SEARCH_LIMIT_REACHED") { setSearchLimitModalType("free"); setSearchLimitModalOpen(true); searchLimit.refresh(); return; }
+              setServerLimitReached(false);
               if (data?.fallback) { setEbayFallback(true); setLiveResults([]); setTotalResults(0); }
               else {
                 const incoming = data?.results || [];
