@@ -7,7 +7,7 @@ const stats = [
 ];
 
 const StatsSection = () => (
-  <section className="py-20 md:py-24">
+  <section className="py-10 md:py-12">
     <div className="container px-4">
       <ScrollReveal>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">

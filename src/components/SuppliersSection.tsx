@@ -29,14 +29,14 @@ const stats = [
 ];
 
 const SuppliersSection = () => (
-  <section className="relative py-20 md:py-28">
+  <section className="relative py-12 md:py-16">
     {/* Subtle glow behind section */}
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
       <div className="w-[600px] h-[300px] rounded-full bg-primary/5 blur-[120px]" />
     </div>
 
     {/* Separator */}
-    <div className="container px-4 mb-16">
+    <div className="container px-4 mb-10">
       <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
     </div>
 
