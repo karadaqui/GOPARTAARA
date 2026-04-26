@@ -38,7 +38,79 @@ const HowItWorksSection = () => (
           Finding the right car part shouldn't take hours. With GOPARTARA, it takes seconds.
         </p>
       </ScrollReveal>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-10 max-w-5xl mx-auto">
+      {/* Desktop: 4 columns with vertical dividers */}
+      <div
+        className="hidden md:grid max-w-5xl mx-auto"
+        style={{
+          gridTemplateColumns: "1fr 1px 1fr 1px 1fr 1px 1fr",
+          gap: 0,
+          padding: "0 40px",
+        }}
+      >
+        {steps.map((s, i) => {
+          const isSearch = s.title === "Search";
+          const handleClick = () => {
+            if (!isSearch) return;
+            const el = document.getElementById("search");
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+          };
+          return (
+            <>
+              <ScrollReveal key={s.title} delay={i + 1} threshold={0.05}>
+                <div
+                  role={isSearch ? "button" : undefined}
+                  tabIndex={isSearch ? 0 : undefined}
+                  onClick={handleClick}
+                  onKeyDown={(e) => {
+                    if (isSearch && (e.key === "Enter" || e.key === " ")) {
+                      e.preventDefault();
+                      handleClick();
+                    }
+                  }}
+                  className={isSearch ? "cursor-pointer px-6" : "px-6"}
+                >
+                  <div
+                    style={{
+                      fontSize: "11px",
+                      color: "#3f3f46",
+                      fontWeight: 700,
+                      letterSpacing: "0.1em",
+                    }}
+                  >
+                    {s.number}
+                  </div>
+                  <h3
+                    style={{
+                      fontSize: "20px",
+                      fontWeight: 700,
+                      color: "#ffffff",
+                      marginTop: "16px",
+                    }}
+                  >
+                    {s.title}
+                  </h3>
+                  <p
+                    style={{
+                      color: "#71717a",
+                      fontSize: "14px",
+                      lineHeight: 1.7,
+                      marginTop: "8px",
+                    }}
+                  >
+                    {s.desc}
+                  </p>
+                </div>
+              </ScrollReveal>
+              {i < steps.length - 1 && (
+                <div key={`divider-${i}`} style={{ width: "1px", background: "#1a1a1a", height: "100%" }} />
+              )}
+            </>
+          );
+        })}
+      </div>
+
+      {/* Mobile: stacked 2-column grid */}
+      <div className="grid grid-cols-2 gap-6 md:hidden max-w-5xl mx-auto px-4">
         {steps.map((s, i) => {
           const isSearch = s.title === "Search";
           const handleClick = () => {
@@ -58,16 +130,17 @@ const HowItWorksSection = () => (
                     handleClick();
                   }
                 }}
-                className={`relative text-center group mb-6 md:mb-16 ${isSearch ? "cursor-pointer" : ""}`}
+                className={isSearch ? "cursor-pointer" : ""}
               >
-                <div className="mx-auto mb-4 md:mb-6 flex h-14 w-14 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-[colors,transform] group-hover:bg-primary/20 group-hover:scale-110">
-                  <s.icon size={26} />
-                </div>
-                <span className="absolute -top-2 right-4 md:top-0 md:right-4 text-5xl md:text-6xl font-black text-muted/15 select-none pointer-events-none">
+                <div style={{ fontSize: "11px", color: "#3f3f46", fontWeight: 700, letterSpacing: "0.1em" }}>
                   {s.number}
-                </span>
-                <h3 className="font-display text-lg md:text-xl font-bold mb-2 md:mb-3">{s.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{s.desc}</p>
+                </div>
+                <h3 style={{ fontSize: "20px", fontWeight: 700, color: "#ffffff", marginTop: "16px" }}>
+                  {s.title}
+                </h3>
+                <p style={{ color: "#71717a", fontSize: "14px", lineHeight: 1.7, marginTop: "8px" }}>
+                  {s.desc}
+                </p>
               </div>
             </ScrollReveal>
           );
