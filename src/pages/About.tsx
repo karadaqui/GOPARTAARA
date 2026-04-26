@@ -35,7 +35,7 @@ const About = () => (
   <div className="min-h-screen bg-background">
     <SEOHead
       title="About GOPARTARA — UK Car Parts Price Comparison"
-      description="GOPARTARA is an independent UK car parts comparison platform. We search 1M+ parts from trusted suppliers to find you the best price."
+      description="GOPARTARA was built to end car parts confusion. We search 7 suppliers simultaneously so you always get the best price. Transparent, unbiased, always free to browse."
       path="/about"
       jsonLd={{
         "@context": "https://schema.org",
