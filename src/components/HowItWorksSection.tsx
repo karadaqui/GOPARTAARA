@@ -25,7 +25,7 @@ const steps = [
 ];
 
 const HowItWorksSection = () => (
-  <section className="py-12 md:py-16 relative overflow-hidden">
+  <section className="animated-gradient-bg py-12 md:py-16 relative overflow-hidden">
     <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/[0.02] to-transparent pointer-events-none" />
     <div className="container px-4 md:px-6 lg:px-8 relative">
       <ScrollReveal className="text-center mb-8 md:mb-10" threshold={0.05}>
