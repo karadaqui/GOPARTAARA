@@ -395,7 +395,7 @@ const PricingSection = () => {
         </div>
 
         {/* FAQ Section */}
-        <div className="mt-20 max-w-2xl mx-auto">
+        <div className="mt-12 max-w-2xl mx-auto">
           <h3 className="font-display text-2xl font-bold text-center mb-8 tracking-tight">Frequently asked questions</h3>
           <Accordion type="single" collapsible className="space-y-2">
             {faqItems.map((item, i) => (
