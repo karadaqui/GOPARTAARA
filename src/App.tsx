@@ -60,6 +60,7 @@ const AffiliateDisclosure = lazy(() => import("./pages/AffiliateDisclosure.tsx")
 const Business = lazy(() => import("./pages/Business.tsx"));
 const Compare = lazy(() => import("./pages/Compare.tsx"));
 const Help = lazy(() => import("./pages/Help.tsx"));
+const HelpCategoryRoute = lazy(() => import("./pages/HelpCategoryRoute.tsx"));
 const Cookies = lazy(() => import("./pages/Cookies.tsx"));
 const Alerts = lazy(() => import("./pages/Alerts.tsx"));
 
@@ -122,6 +123,7 @@ const App = () => {
                 <Route path="/business" element={<Business />} />
                 <Route path="/compare" element={<Compare />} />
                 <Route path="/help" element={<Help />} />
+                <Route path="/help/:slug" element={<HelpCategoryRoute />} />
                 <Route path="/cookies" element={<Cookies />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

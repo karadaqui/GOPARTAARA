@@ -22,32 +22,32 @@ interface Article {
 }
 
 const categories: Category[] = [
-  { id: "getting-started", icon: <Sparkles size={28} className="text-[#cc1111]" />, title: "Getting Started", description: "Search, reg plate lookup, photo search", count: 8 },
-  { id: "pricing", icon: <CreditCard size={28} className="text-[#cc1111]" />, title: "Pricing & Plans", description: "Free, Pro and Elite plan details", count: 6 },
-  { id: "alerts", icon: <Bell size={28} className="text-[#cc1111]" />, title: "Price Alerts", description: "Setting up and managing price alerts", count: 5 },
-  { id: "garage", icon: <Car size={28} className="text-[#cc1111]" />, title: "My Garage", description: "Adding vehicles, MOT reminders", count: 7 },
-  { id: "marketplace", icon: <ShoppingBag size={28} className="text-[#cc1111]" />, title: "Marketplace", description: "Buying and selling parts", count: 9 },
-  { id: "account", icon: <Shield size={28} className="text-[#cc1111]" />, title: "Account & Privacy", description: "Account settings, data, GDPR", count: 6 },
+  { id: "getting-started", icon: <Sparkles size={28} className="text-[#cc1111]" />, title: "Getting Started", description: "Search, reg plate lookup, photo search", count: 4 },
+  { id: "pricing-plans", icon: <CreditCard size={28} className="text-[#cc1111]" />, title: "Pricing & Plans", description: "Free, Pro and Elite plan details", count: 4 },
+  { id: "price-alerts", icon: <Bell size={28} className="text-[#cc1111]" />, title: "Price Alerts", description: "Setting up and managing price alerts", count: 3 },
+  { id: "my-garage", icon: <Car size={28} className="text-[#cc1111]" />, title: "My Garage", description: "Adding vehicles, MOT reminders", count: 3 },
+  { id: "marketplace", icon: <ShoppingBag size={28} className="text-[#cc1111]" />, title: "Marketplace", description: "Buying and selling parts", count: 4 },
+  { id: "account-privacy", icon: <Shield size={28} className="text-[#cc1111]" />, title: "Account & Privacy", description: "Account settings, data, GDPR", count: 3 },
 ];
 
 const popularArticles: Article[] = [
-  { title: "How to search for car parts using your reg plate", category: "Getting Started", href: "/blog" },
-  { title: "Setting up your first price alert", category: "Price Alerts", href: "/blog" },
-  { title: "Comparing Free, Pro and Elite plans", category: "Pricing & Plans", href: "/pricing" },
-  { title: "Adding a vehicle to your garage", category: "My Garage", href: "/garage" },
-  { title: "How to list a part for sale on the marketplace", category: "Marketplace", href: "/list-your-parts" },
-  { title: "Understanding price quality badges", category: "Getting Started", href: "/blog" },
-  { title: "Managing MOT and tax reminders", category: "My Garage", href: "/garage" },
-  { title: "How to delete your account and data", category: "Account & Privacy", href: "/privacy" },
+  { title: "How to search using your reg plate", category: "Getting Started", href: "/help/getting-started" },
+  { title: "Setting up your first price alert", category: "Price Alerts", href: "/help/price-alerts" },
+  { title: "Comparing Free, Pro and Elite plans", category: "Pricing & Plans", href: "/help/pricing-plans" },
+  { title: "Adding a vehicle to your garage", category: "My Garage", href: "/help/my-garage" },
+  { title: "How to list a part for sale", category: "Marketplace", href: "/help/marketplace" },
+  { title: "Understanding price quality badges", category: "Getting Started", href: "/help/getting-started" },
+  { title: "Managing MOT and tax reminders", category: "My Garage", href: "/help/my-garage" },
+  { title: "How to delete your account and data", category: "Account & Privacy", href: "/help/account-privacy" },
 ];
 
 const faqs = [
-  { q: "Is GOPARTARA free to use?", a: "Yes — searching for car parts is completely free. You can compare prices from over a million parts across multiple suppliers without signing up. Free accounts also unlock saved parts, 1 garage vehicle and basic price alerts. Pro and Elite plans add advanced features like unlimited alerts and priority support." },
-  { q: "Which suppliers do you search?", a: "We aggregate live prices from eBay Global, mytyres.co.uk, Tyres UK, Autodoc, Amazon UK and a growing list of trusted parts retailers. Our marketplace also lets independent sellers list parts directly, giving you both retail and peer-to-peer options in one place." },
-  { q: "How do price alerts work?", a: "Set a target price for any part you're tracking and we'll email you the moment a matching listing drops to that price or below. Free users can set up to 3 active alerts; Pro users get unlimited alerts plus instant notifications." },
-  { q: "Can I sell parts on GOPARTARA?", a: "Yes — all registered members can list up to 5 parts free on our marketplace. Listings are reviewed for quality before going live. Need to list more? Boost packages and seller plans unlock unlimited listings, featured placement and verified seller badges." },
-  { q: "Do I need an account to use GOPARTARA?", a: "No account is needed for the first 3 searches. Sign up for free to unlock unlimited searches, saved parts, your garage and price alerts. Sign-up takes under 30 seconds with email or Google." },
-  { q: "How do I cancel my subscription?", a: "You can cancel any time from your dashboard under Subscription → Manage. Your plan stays active until the end of the current billing period — no questions asked, no cancellation fees." },
+  { q: "Is GOPARTARA free to use?", a: "Yes. You can search up to 10 times per month, save 5 parts, and set 5 price alerts completely free. No credit card needed. Pro (£9.99/mo) and Elite (£19.99/mo) plans offer more features." },
+  { q: "Which suppliers do you search?", a: "We currently search eBay Global, mytyres.co.uk, Tyres UK, Green Spark Plug Co., neumaticos-online.es, Pneumatici IT, and ReifenDirekt EE — 7 suppliers simultaneously." },
+  { q: "How do price alerts work?", a: "Click the bell icon on any search result. Set your target price. We check that listing's price every 6 hours and email you at your registered address when it drops below your target." },
+  { q: "Can I sell parts on GOPARTARA?", a: "Yes. All registered users can list up to 5 parts for free on our marketplace. Pro and Elite subscribers get unlimited listings and up to 10 photos per listing." },
+  { q: "Do I need an account to use GOPARTARA?", a: "No account needed for basic searching. However, you'll need a free account to save parts, set price alerts, use My Garage, or list on the marketplace." },
+  { q: "How do I cancel my subscription?", a: "Go to Dashboard → Subscription → Cancel Plan. You can cancel anytime. Your plan stays active until the billing period ends." },
 ];
 
 const Help = () => {
@@ -131,9 +131,9 @@ const Help = () => {
         <div className="mx-auto max-w-5xl">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredCategories.map((c) => (
-              <a
+              <Link
                 key={c.id}
-                href={`#${c.id}`}
+                to={`/help/${c.id}`}
                 className="group block rounded-xl border border-[#1f1f1f] bg-[#0f0f0f] hover:bg-[#111111] hover:border-[#2a2a2a] transition-colors p-6"
               >
                 <div className="mb-4">{c.icon}</div>
@@ -142,7 +142,7 @@ const Help = () => {
                 </h3>
                 <p className="mt-1.5 text-[13px] text-zinc-500 leading-relaxed">{c.description}</p>
                 <p className="mt-4 text-[13px] text-[#52525b]">{c.count} articles</p>
-              </a>
+              </Link>
             ))}
             {filteredCategories.length === 0 && (
               <div className="col-span-full text-center text-sm text-zinc-500 py-10">
