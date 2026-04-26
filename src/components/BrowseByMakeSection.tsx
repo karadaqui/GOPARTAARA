@@ -19,35 +19,24 @@ const BrowseByMakeSection = () => {
   return (
     <section className="px-4 mb-10">
       <div className="max-w-4xl mx-auto">
-        <p
-          style={{
-            color: "#cc1111",
-            fontSize: "12px",
-            fontWeight: 700,
-            letterSpacing: "0.18em",
-            textTransform: "uppercase",
-            marginBottom: "14px",
-          }}
-        >
-          BROWSE BY MAKE
-        </p>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5">
           {MAKES.map((make) => (
             <button
               key={make}
               type="button"
               onClick={() => navigate(`/search?q=${encodeURIComponent(`${make} parts`)}`)}
-              className="make-card text-left"
+              className="make-card"
               style={{
-                background: "#111111",
+                background: "#0d0d0d",
                 border: "1px solid #1f1f1f",
-                borderRadius: "10px",
-                padding: "12px 16px",
+                borderRadius: "8px",
+                padding: "14px 20px",
                 fontSize: "14px",
                 fontWeight: 600,
                 color: "#a1a1aa",
                 cursor: "pointer",
-                transition: "border-color 150ms, color 150ms",
+                transition: "all 0.15s ease",
+                textAlign: "left",
               }}
             >
               {make}
@@ -57,8 +46,9 @@ const BrowseByMakeSection = () => {
       </div>
       <style>{`
         .make-card:hover {
-          border-color: #2a2a2a !important;
+          border-color: #333333 !important;
           color: #ffffff !important;
+          background: #111111 !important;
         }
       `}</style>
     </section>
