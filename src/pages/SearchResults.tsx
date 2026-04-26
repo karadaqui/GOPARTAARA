@@ -2151,4 +2151,67 @@ const SearchResults = () => {
   );
 };
 
+function EbayAutoRetry({ onRetry }: { onRetry: () => void }) {
+  const [countdown, setCountdown] = useState(8);
+  const onRetryRef = useRef(onRetry);
+  useEffect(() => { onRetryRef.current = onRetry; }, [onRetry]);
+
+  useEffect(() => {
+    if (countdown <= 0) {
+      onRetryRef.current();
+      return;
+    }
+    const t = setTimeout(() => setCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [countdown]);
+
+  return (
+    <div style={{ textAlign: "center", padding: "60px 40px" }}>
+      <Loader2
+        size={48}
+        className="animate-spin mx-auto"
+        style={{ color: "#52525b", marginBottom: "24px" }}
+      />
+      <h2 style={{ fontSize: "20px", fontWeight: 700, color: "white", marginBottom: "8px" }}>
+        Fetching results...
+      </h2>
+      <p style={{ fontSize: "14px", color: "#71717a", marginBottom: "32px" }}>
+        eBay is loading — results will appear automatically.
+      </p>
+      <p style={{ fontSize: "13px", color: "#52525b" }}>
+        Retrying in {countdown}...
+      </p>
+      <button
+        type="button"
+        onClick={() => {
+          setCountdown(8);
+          onRetryRef.current();
+        }}
+        style={{
+          background: "transparent",
+          border: "1px solid #27272a",
+          color: "#a1a1aa",
+          padding: "10px 24px",
+          borderRadius: "8px",
+          fontSize: "14px",
+          fontWeight: 500,
+          cursor: "pointer",
+          marginTop: "16px",
+          transition: "border-color 0.2s, color 0.2s",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = "#3f3f46";
+          e.currentTarget.style.color = "white";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = "#27272a";
+          e.currentTarget.style.color = "#a1a1aa";
+        }}
+      >
+        Try Now
+      </button>
+    </div>
+  );
+}
+
 export default SearchResults;
