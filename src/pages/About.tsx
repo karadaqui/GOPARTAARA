@@ -27,7 +27,7 @@ const VALUES = [
   },
   {
     title: "Savings",
-    desc: "Our users save an average of £30 per part search by comparing across the full UK market.",
+    desc: "Compare prices from 7 live suppliers in one search — no more overpaying without knowing it.",
   },
 ];
 

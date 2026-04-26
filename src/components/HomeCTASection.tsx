@@ -22,7 +22,7 @@ const HomeCTASection = () => {
             lineHeight: 1.05,
           }}
         >
-          Stop Overpaying for Car Parts.
+          Search smarter. Pay less.
         </h2>
         <p
           style={{
@@ -31,7 +31,7 @@ const HomeCTASection = () => {
             marginTop: "12px",
           }}
         >
-          Join 50,000+ drivers saving money every week.
+          Start searching for free — no account needed.
         </p>
         <div
           className="flex flex-col sm:flex-row sm:flex-wrap justify-center items-center"
