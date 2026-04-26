@@ -11,6 +11,7 @@ import { CountryProvider } from "@/contexts/CountryContext";
 import { LocaleProvider } from "@/contexts/LocaleContext";
 import PageLoader from "@/components/PageLoader";
 import CookieConsent from "./components/CookieConsent.tsx";
+import CookieBanner from "./components/CookieBanner.tsx";
 import PWAInstallPrompt from "./components/PWAInstallPrompt.tsx";
 import DevToolsGuard from "./components/DevToolsGuard.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
@@ -74,6 +75,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <CookieBanner />
           <AuthProvider>
             <SubscriptionProvider>
             <SearchLimitProvider>
