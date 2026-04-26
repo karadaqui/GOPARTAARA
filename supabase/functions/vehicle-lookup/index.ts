@@ -4,8 +4,12 @@ const corsHeaders = {
 };
 
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
+import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 const DVLA_API_URL = "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles";
+
+const FREE_LIMIT = 10;
+const UNLIMITED_PLANS = ["pro", "elite", "admin"];
 
 const BodySchema = z.object({
   registrationNumber: z.string().min(2).max(10)
@@ -37,6 +41,72 @@ Deno.serve(async (req) => {
     }
 
     const { registrationNumber } = parsed.data;
+
+    // ── Server-side enforced search limit ──
+    // Reg lookups count toward the monthly free-search budget for authenticated users.
+    // Anonymous users are NOT limited server-side (per spec).
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      const supabaseAdmin = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+        { auth: { persistSession: false } }
+      );
+
+      const token = authHeader.replace("Bearer ", "");
+      const { data: claimsData } = await supabaseAdmin.auth.getClaims(token);
+      const userId = claimsData?.claims?.sub as string | undefined;
+
+      if (userId) {
+        const { data: profile } = await supabaseAdmin
+          .from("profiles")
+          .select("subscription_plan, bonus_searches")
+          .eq("user_id", userId)
+          .single();
+
+        const plan = profile?.subscription_plan || "free";
+        const bonusSearches = profile?.bonus_searches || 0;
+        const isUnlimited = UNLIMITED_PLANS.includes(plan);
+
+        if (!isUnlimited) {
+          const now = new Date();
+          const monthYear = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
+          const totalAllowed = FREE_LIMIT + bonusSearches;
+
+          const { data: usageRow } = await supabaseAdmin
+            .from("search_usage")
+            .select("search_count")
+            .eq("user_id", userId)
+            .eq("month_year", monthYear)
+            .maybeSingle();
+
+          const currentCount = usageRow?.search_count || 0;
+
+          if (currentCount >= totalAllowed) {
+            const nextMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
+            return new Response(
+              JSON.stringify({
+                error: "SEARCH_LIMIT_REACHED",
+                message: `You've used all ${totalAllowed} free searches this month. Upgrade to Pro for unlimited searches.`,
+                upgradeUrl: "/pricing",
+                remaining: 0,
+                searchCount: currentCount,
+                totalAllowed,
+                resetsAt: nextMonth.toISOString(),
+              }),
+              { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+
+          await supabaseAdmin
+            .from("search_usage")
+            .upsert(
+              { user_id: userId, month_year: monthYear, search_count: currentCount + 1, updated_at: new Date().toISOString() },
+              { onConflict: "user_id,month_year" }
+            );
+        }
+      }
+    }
 
     const dvlaResponse = await fetch(DVLA_API_URL, {
       method: "POST",
