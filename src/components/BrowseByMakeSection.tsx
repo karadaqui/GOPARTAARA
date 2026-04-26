@@ -11,74 +11,53 @@ const MAKES = [
   "Mercedes",
   "Peugeot",
   "Renault",
-  "Mini",
-  "Nissan",
 ];
 
 const BrowseByMakeSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section
-      style={{
-        maxWidth: "1200px",
-        margin: "0 auto",
-        padding: "40px 40px",
-      }}
-    >
-      <p
-        style={{
-          fontSize: "12px",
-          color: "#52525b",
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-          marginBottom: "16px",
-        }}
-      >
-        Browse by make
-      </p>
-      <div
-        className="make-row"
-        style={{
-          display: "flex",
-          gap: "8px",
-          overflowX: "auto",
-          scrollbarWidth: "none",
-          msOverflowStyle: "none",
-          WebkitOverflowScrolling: "touch",
-          paddingBottom: "4px",
-        }}
-      >
-        {MAKES.map((make) => (
-          <button
-            key={make}
-            type="button"
-            onClick={() =>
-              navigate(`/search?q=${encodeURIComponent(`${make} parts`)}`)
-            }
-            className="make-card"
-            style={{
-              background: "#0a0a0a",
-              border: "1px solid #1a1a1a",
-              borderRadius: "8px",
-              padding: "10px 20px",
-              whiteSpace: "nowrap",
-              fontSize: "14px",
-              fontWeight: 600,
-              color: "#a1a1aa",
-              cursor: "pointer",
-              transition: "all 0.15s",
-              flexShrink: 0,
-            }}
-          >
-            {make}
-          </button>
-        ))}
+    <section className="px-4 mb-10">
+      <div className="max-w-4xl mx-auto">
+        <p
+          style={{
+            color: "#cc1111",
+            fontSize: "12px",
+            fontWeight: 700,
+            letterSpacing: "0.18em",
+            textTransform: "uppercase",
+            marginBottom: "14px",
+          }}
+        >
+          BROWSE BY MAKE
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5">
+          {MAKES.map((make) => (
+            <button
+              key={make}
+              type="button"
+              onClick={() => navigate(`/search?q=${encodeURIComponent(`${make} parts`)}`)}
+              className="make-card text-left"
+              style={{
+                background: "#111111",
+                border: "1px solid #1f1f1f",
+                borderRadius: "10px",
+                padding: "12px 16px",
+                fontSize: "14px",
+                fontWeight: 600,
+                color: "#a1a1aa",
+                cursor: "pointer",
+                transition: "border-color 150ms, color 150ms",
+              }}
+            >
+              {make}
+            </button>
+          ))}
+        </div>
       </div>
       <style>{`
-        .make-row::-webkit-scrollbar { display: none; }
         .make-card:hover {
-          border-color: #333333 !important;
+          border-color: #2a2a2a !important;
           color: #ffffff !important;
         }
       `}</style>

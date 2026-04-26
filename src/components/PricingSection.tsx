@@ -341,7 +341,7 @@ const PricingSection = () => {
         </div>
 
         {/* Feature Comparison Table */}
-        <div className="mt-12">
+        <div className="mt-20">
           <h3 className="font-display text-2xl font-bold text-center mb-8 tracking-tight">Compare all features</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
@@ -387,7 +387,7 @@ const PricingSection = () => {
         </div>
 
         {/* Money Back Guarantee */}
-        <div className="mt-10 flex items-center justify-center gap-2.5 py-4 px-6 rounded-xl border border-border/30 bg-card/20 mx-auto max-w-2xl">
+        <div className="mt-16 flex items-center justify-center gap-2.5 py-4 px-6 rounded-xl border border-border/30 bg-card/20 mx-auto max-w-2xl">
           <Shield size={18} className="text-primary shrink-0" />
           <p className="text-sm text-muted-foreground text-center">
             <span className="font-semibold text-foreground">30-Day Money Back Guarantee</span> — Not happy? Get a full refund within 30 days, no questions asked.
@@ -395,7 +395,7 @@ const PricingSection = () => {
         </div>
 
         {/* FAQ Section */}
-        <div className="mt-12 max-w-2xl mx-auto">
+        <div className="mt-20 max-w-2xl mx-auto">
           <h3 className="font-display text-2xl font-bold text-center mb-8 tracking-tight">Frequently asked questions</h3>
           <Accordion type="single" collapsible className="space-y-2">
             {faqItems.map((item, i) => (
