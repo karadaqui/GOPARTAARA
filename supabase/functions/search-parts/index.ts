@@ -45,22 +45,48 @@ const BodySchema = z.object({
 let oauthToken: { token: string; expiresAt: number } | null = null;
 
 async function getOAuthToken(appId: string, certId: string): Promise<string> {
+  // Use cached token if still valid (with 60s safety margin)
   if (oauthToken && Date.now() < oauthToken.expiresAt - 60_000) {
+    console.log(`[search-parts] Using cached eBay OAuth token (expires in ${Math.round((oauthToken.expiresAt - Date.now()) / 1000)}s)`);
     return oauthToken.token;
   }
+
+  console.log(`[search-parts] Requesting new eBay OAuth token (appId prefix: ${appId.substring(0, 12)}..., certId length: ${certId.length})`);
   const credentials = btoa(`${appId}:${certId}`);
-  const response = await fetch(EBAY_OAUTH_URL, {
-    method: "POST",
-    headers: {
-      "Authorization": `Basic ${credentials}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: "grant_type=client_credentials&scope=https%3A%2F%2Fapi.ebay.com%2Foauth%2Fapi_scope",
-  });
+
+  let response: Response;
+  try {
+    response = await fetch(EBAY_OAUTH_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": `Basic ${credentials}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: "grant_type=client_credentials&scope=https%3A%2F%2Fapi.ebay.com%2Foauth%2Fapi_scope",
+    });
+  } catch (networkErr) {
+    // Don't cache on network failure — let next call retry
+    oauthToken = null;
+    console.error(`[search-parts] OAuth network error:`, networkErr);
+    throw new Error(`OAuth network error: ${networkErr instanceof Error ? networkErr.message : String(networkErr)}`);
+  }
+
   const text = await response.text();
-  if (!response.ok) throw new Error(`OAuth failed: ${response.status} - ${text}`);
+  if (!response.ok) {
+    oauthToken = null;
+    console.error(`[search-parts] eBay OAuth failed: status=${response.status}, body=${text}`);
+    throw new Error(`OAuth failed: ${response.status} - ${text}`);
+  }
+
   const data = JSON.parse(text);
+  if (!data.access_token) {
+    oauthToken = null;
+    console.error(`[search-parts] eBay OAuth response missing access_token: ${text}`);
+    throw new Error(`OAuth response missing access_token`);
+  }
+
   oauthToken = { token: data.access_token, expiresAt: Date.now() + (data.expires_in * 1000) };
+  console.log(`[search-parts] Got new eBay OAuth token (length: ${data.access_token.length}, expires in ${data.expires_in}s)`);
   return oauthToken.token;
 }
 
