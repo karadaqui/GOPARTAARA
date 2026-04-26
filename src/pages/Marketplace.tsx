@@ -86,29 +86,12 @@ const Marketplace = () => {
   const [authGateOpen, setAuthGateOpen] = useState(false);
   const [compareParts, setCompareParts] = useState<CompareItem[]>([]);
   const [showCompare, setShowCompare] = useState(false);
-  const [weeklyCount, setWeeklyCount] = useState<number | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
     if (!user) { setAuthGateOpen(true); setLoading(false); return; }
     loadListings();
-    loadWeeklyCount();
   }, [user, authLoading]);
-
-  const loadWeeklyCount = async () => {
-    try {
-      const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-      const { count } = await supabase
-        .from("seller_listings")
-        .select("id", { count: "exact", head: true })
-        .eq("active", true)
-        .eq("approval_status", "approved")
-        .gte("created_at", since);
-      setWeeklyCount(count ?? 0);
-    } catch {
-      setWeeklyCount(0);
-    }
-  };
 
   const loadListings = async () => {
     setLoading(true);
@@ -123,8 +106,6 @@ const Marketplace = () => {
     } catch {}
     setLoading(false);
   };
-
-  const displayWeeklyCount = weeklyCount && weeklyCount > 0 ? weeklyCount : 47;
 
   const filtered = useMemo(() => listings.filter(l => {
     if (category !== "All" && l.category !== category) return false;
@@ -269,25 +250,13 @@ const Marketplace = () => {
             <span className="text-primary">Parts</span> Marketplace
           </h1>
           <p className="text-muted-foreground text-lg">Browse parts from verified sellers across the UK</p>
-
-          {/* Seller stats row */}
-          <div
-            className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5"
-            style={{ fontSize: "13px", color: "#52525b" }}
-          >
-            <span>🚀 {displayWeeklyCount} parts listed this week</span>
-            <span className="opacity-40">·</span>
-            <span>⚡ Avg response: 4hrs</span>
-            <span className="opacity-40">·</span>
-            <span>✓ 100% secure transactions</span>
-          </div>
         </div>
 
         {/* Sell CTA */}
         <div className="bg-card border border-border rounded-xl px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
           <p className="text-sm text-foreground">
             <Wrench size={14} className="inline mr-1.5 -mt-0.5 text-primary" />
-            Have parts to sell? List for free — reach thousands of UK car owners
+            Have parts to sell? List for free on GOPARTARA
           </p>
           <Button size="sm" className="rounded-xl gap-1.5 shrink-0 h-10 min-w-[120px]" onClick={() => navigate("/my-market")}>
             List Your Parts →
@@ -297,7 +266,7 @@ const Marketplace = () => {
         {/* Info banners */}
         <div className="space-y-2 mb-8">
           <div className="bg-green-900/30 border border-green-500/30 rounded-xl px-4 py-2.5 text-sm text-green-400">
-            🎉 Free to list — All GOPARTARA members can list up to 5 parts for free. Upgrade to Pro for unlimited listings.
+            🎉 List your parts for free — Free plan: up to 5 listings. Pro & Elite: unlimited listings.
           </div>
         </div>
 
@@ -347,9 +316,9 @@ const Marketplace = () => {
             <div className="mb-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
-                  { emoji: "🆓", title: "Free to list", desc: "List up to 5 parts completely free" },
-                  { emoji: "👥", title: "50,000+ buyers", desc: "Reach thousands of UK car owners" },
-                  { emoji: "⚡", title: "Go live in 2 minutes", desc: "Simple listing process, instant visibility" },
+                  { emoji: "🆓", title: "Free to list", desc: "Up to 5 listings on the Free plan. Unlimited on Pro & Elite." },
+                  { emoji: "🛡️", title: "UK sellers only", desc: "All listings are from registered GOPARTARA members in the UK." },
+                  { emoji: "⚡", title: "Live immediately", desc: "Your listing goes live as soon as you publish it." },
                 ].map(({ emoji, title, desc }) => (
                   <div
                     key={title}
@@ -438,7 +407,7 @@ const Marketplace = () => {
 
             <div className="glass rounded-2xl p-8 mt-8 text-center">
               <h2 className="font-display text-xl font-bold mb-2">Sell Your Parts on GOPARTARA</h2>
-              <p className="text-muted-foreground mb-4">Reach thousands of car owners and mechanics.</p>
+              <p className="text-muted-foreground mb-4">Growing community of UK car owners and mechanics.</p>
               <Button onClick={() => navigate("/my-market")} className="rounded-xl gap-2 h-11">
                 <Store size={16} /> List Your Parts
               </Button>
