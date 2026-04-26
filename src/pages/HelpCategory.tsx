@@ -13,7 +13,7 @@ import {
 
 export interface HelpArticle {
   q: string;
-  a: string;
+  a: React.ReactNode;
 }
 
 interface HelpCategoryPageProps {
