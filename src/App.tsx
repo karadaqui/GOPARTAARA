@@ -133,7 +133,7 @@ const App = () => {
               </div>
             </Suspense>
             </ErrorBoundary>
-            <CookieConsent />
+            
             <PWAInstallPrompt />
             <SocialProofPopup />
             <DevToolsGuard />
