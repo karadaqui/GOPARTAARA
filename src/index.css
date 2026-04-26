@@ -265,28 +265,6 @@ html, body {
     50% { transform: translateY(-6px); }
   }
 
-  /* Hero grid: single column mobile, 2 columns desktop */
-  .hero-grid {
-    grid-template-columns: 1fr;
-  }
-  @media (min-width: 1024px) {
-    .hero-grid {
-      grid-template-columns: 1.05fr 0.95fr;
-    }
-  }
-
-  /* Hero preview card subtle floating animation */
-  @keyframes heroFloat {
-    0%, 100% { transform: translateY(0px) rotate(1.5deg); }
-    50%      { transform: translateY(-10px) rotate(1.5deg); }
-  }
-  .animate-hero-float {
-    animation: heroFloat 4s ease-in-out infinite;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .animate-hero-float { animation: none; transform: none; }
-  }
-
   /* Glow focus ring for inputs */
   .glow-focus:focus-within {
     box-shadow: 0 0 0 1px hsl(0 85% 50% / 0.5), 0 0 24px -4px hsl(0 85% 50% / 0.3);

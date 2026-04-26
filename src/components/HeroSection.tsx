@@ -326,7 +326,7 @@ const HeroSection = () => {
   return (
     <section
       id="home"
-      className="relative pt-16 overflow-x-visible overflow-y-hidden animated-gradient-bg"
+      className="relative flex items-center justify-center pt-16 overflow-x-visible overflow-y-hidden animated-gradient-bg"
       style={{
         minHeight: "70vh",
         backgroundImage:
@@ -339,19 +339,10 @@ const HeroSection = () => {
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary/6 blur-[180px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-primary/4 blur-[140px] pointer-events-none" />
 
-      <div
-        className="hero-grid relative z-10 mx-auto px-6 md:px-10 py-14 md:py-24"
-        style={{
-          maxWidth: "1280px",
-          display: "grid",
-          gap: "56px",
-          alignItems: "center",
-        }}
-      >
-        <div className="hero-left text-left">
+      <div className="container relative z-10 text-center px-4 py-10 sm:py-14">
         {/* Badge */}
         <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-8">
+          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
             ⚡ 1,000,000+ parts searchable · Free to compare
           </div>
@@ -360,17 +351,18 @@ const HeroSection = () => {
         {/* Heading */}
         <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <h1
-            className="font-display mb-6"
+            className="font-display mb-5"
             style={{
-              fontSize: "clamp(44px, 6vw, 72px)",
-              fontWeight: 900,
-              letterSpacing: "-0.045em",
-              lineHeight: 0.98,
+              fontSize: "clamp(44px, 5.5vw, 72px)",
+              fontWeight: 800,
+              letterSpacing: "-0.04em",
+              lineHeight: 1.0,
               color: "#ffffff",
             }}
           >
             Find Any Car Part
-            <span style={{ color: "#cc1111", display: "block", letterSpacing: "-0.045em" }}>Instantly.</span>
+            <br />
+            <span style={{ color: "#cc1111", letterSpacing: "-0.04em" }}>Instantly.</span>
           </h1>
         </div>
 
@@ -378,12 +370,12 @@ const HeroSection = () => {
         <div className={`transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
           <p
             style={{
-              fontSize: "18px",
+              fontSize: "17px",
               color: "#71717a",
               fontWeight: 400,
-              maxWidth: "480px",
-              margin: "0",
-              lineHeight: 1.7,
+              maxWidth: "460px",
+              margin: "0 auto",
+              lineHeight: 1.65,
             }}
           >
             Search 1,000,000+ parts from trusted UK & global suppliers.
@@ -405,8 +397,8 @@ const HeroSection = () => {
 
         {/* Trust strip */}
         <div
-          className={`flex transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          style={{ gap: "8px", margin: "20px 0 4px", flexWrap: "wrap" }}
+          className={`flex justify-center transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+          style={{ gap: "8px", margin: "16px 0", flexWrap: "wrap" }}
         >
           {["✓ Free to use", "✓ No account needed", "✓ 1M+ parts"].map((label) => (
             <span
@@ -1099,114 +1091,6 @@ const HeroSection = () => {
               ))}
             </div>
           </section>
-        </div>
-        </div>
-        {/* RIGHT COLUMN — Live Results Preview */}
-        <div className="hero-right hidden lg:flex justify-center">
-          <div
-            className="hero-preview-card animate-hero-float"
-            style={{
-              width: "100%",
-              maxWidth: "440px",
-              background: "#111111",
-              border: "1px solid #1f1f1f",
-              borderRadius: "16px",
-              padding: "24px",
-              boxShadow:
-                "0 0 60px rgba(204,17,17,0.08), 0 20px 40px rgba(0,0,0,0.4)",
-            }}
-          >
-            {/* Header row */}
-            <div className="flex items-center justify-between mb-5">
-              <span style={{ color: "#71717a", fontSize: "12px", fontWeight: 500 }}>
-                Live search results
-              </span>
-              <span
-                className="inline-flex items-center gap-1.5"
-                style={{
-                  fontSize: "10px",
-                  fontWeight: 700,
-                  color: "#4ade80",
-                  letterSpacing: "0.08em",
-                }}
-              >
-                <span
-                  className="animate-pulse"
-                  style={{
-                    width: "6px",
-                    height: "6px",
-                    borderRadius: "999px",
-                    background: "#4ade80",
-                    boxShadow: "0 0 8px rgba(74,222,128,0.6)",
-                  }}
-                />
-                LIVE
-              </span>
-            </div>
-
-            {/* Mini result rows */}
-            {[
-              { name: "BMW E46 brake pads — front set", price: "£24.99" },
-              { name: "Ford Focus MK3 oil filter", price: "£8.49" },
-              { name: "VW Golf MK7 timing belt kit", price: "£89.00" },
-            ].map((row, i, arr) => (
-              <div key={row.name}>
-                <div className="flex items-center gap-3 py-3">
-                  <div
-                    style={{
-                      width: "48px",
-                      height: "48px",
-                      borderRadius: "10px",
-                      background: "linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%)",
-                      border: "1px solid #262626",
-                      flexShrink: 0,
-                    }}
-                  />
-                  <span
-                    style={{
-                      flex: 1,
-                      color: "#e4e4e7",
-                      fontSize: "13px",
-                      fontWeight: 500,
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    {row.name}
-                  </span>
-                  <span
-                    style={{
-                      color: "#cc1111",
-                      fontSize: "15px",
-                      fontWeight: 800,
-                      letterSpacing: "-0.01em",
-                    }}
-                  >
-                    {row.price}
-                  </span>
-                </div>
-                {i < arr.length - 1 && (
-                  <div style={{ height: "1px", background: "#1f1f1f" }} />
-                )}
-              </div>
-            ))}
-
-            {/* Footer */}
-            <div
-              style={{
-                marginTop: "16px",
-                paddingTop: "14px",
-                borderTop: "1px solid #1f1f1f",
-                color: "#52525b",
-                fontSize: "11px",
-                fontWeight: 500,
-                letterSpacing: "0.02em",
-              }}
-            >
-              from 7 suppliers · Updated just now
-            </div>
-          </div>
         </div>
       </div>
 

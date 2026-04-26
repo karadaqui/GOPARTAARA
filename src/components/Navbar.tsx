@@ -118,7 +118,7 @@ const Navbar = () => {
           backgroundColor: scrolled ? "rgba(8,8,8,0.85)" : "transparent",
           backdropFilter: scrolled ? "blur(20px)" : "none",
           WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid #111111",
+          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
           transition: "background-color 200ms ease, border-color 200ms ease, backdrop-filter 200ms ease",
         }}
       >
