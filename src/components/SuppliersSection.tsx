@@ -36,7 +36,7 @@ const SuppliersSection = () => (
     </div>
 
     {/* Separator */}
-    <div className="container px-4 mb-16">
+    <div className="container px-4 mb-10">
       <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
     </div>
 
