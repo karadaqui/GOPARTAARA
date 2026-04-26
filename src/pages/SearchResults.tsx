@@ -335,6 +335,11 @@ const SearchResults = () => {
     return () => clearTimeout(timer);
   }, [liveResults]);
 
+  // Reset server-enforced search-limit state whenever the query changes
+  useEffect(() => {
+    setServerLimitReached(false);
+  }, [query]);
+
   // Autofocus search input on mount so users can type immediately
   useEffect(() => {
     const t = setTimeout(() => {
