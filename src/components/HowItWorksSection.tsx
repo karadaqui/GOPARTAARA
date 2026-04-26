@@ -105,7 +105,7 @@ const HowItWorksSection = () => (
               {i < steps.length - 1 && (
                 <div key={`divider-${i}`} style={{ width: "1px", background: "#1a1a1a", height: "100%" }} />
               )}
-            </>
+            </Fragment>
           );
         })}
       </div>
