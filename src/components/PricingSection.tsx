@@ -341,7 +341,7 @@ const PricingSection = () => {
         </div>
 
         {/* Feature Comparison Table */}
-        <div className="mt-20">
+        <div className="mt-12">
           <h3 className="font-display text-2xl font-bold text-center mb-8 tracking-tight">Compare all features</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm border-collapse">
