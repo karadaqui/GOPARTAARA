@@ -81,10 +81,13 @@ const Index = () => {
       />
       <Navbar />
       <HeroSection />
+      <SectionDivider />
       <PopularSearchesStrip />
+      <SectionDivider />
       <BrowseByMakeSection />
-      
+      <SectionDivider />
       <SocialProofStats />
+      <SectionDivider />
 
       {/* Trust bar */}
       <section className="px-4 mb-8 mt-2">
