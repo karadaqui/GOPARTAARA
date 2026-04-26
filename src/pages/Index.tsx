@@ -142,11 +142,17 @@ const Index = () => {
 
       <Suspense fallback={<div className="h-32" />}>
         <ScrollReveal><HowItWorksSection /></ScrollReveal>
+        <SectionDivider />
         <ScrollReveal><FeaturesSection /></ScrollReveal>
+        <SectionDivider />
         <ScrollReveal><WhyPartaraSection /></ScrollReveal>
+        <SectionDivider />
         <ScrollReveal><TestimonialsSection /></ScrollReveal>
+        <SectionDivider />
         <ScrollReveal><PricingSection /></ScrollReveal>
       </Suspense>
+
+      <SectionDivider />
 
       <ScrollReveal><HomeCTASection /></ScrollReveal>
 
