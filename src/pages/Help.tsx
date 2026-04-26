@@ -135,6 +135,60 @@ const Help = () => {
         title="Help Center | GOPARTARA"
         description="Find answers to common questions about searching for parts, pricing plans, price alerts, My Garage, the marketplace and your account."
         path="/help"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Is GOPARTARA free to use?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. You can search up to 10 times per month, save 5 parts, and set 5 price alerts completely free. No credit card needed. Pro (£9.99/mo) and Elite (£19.99/mo) plans offer more features.",
+              },
+            },
+            {
+              "@type": "Question",
+              "name": "Which suppliers do you search?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "We currently search eBay Global, mytyres.co.uk, Tyres UK, Green Spark Plug Co., neumaticos-online.es, Pneumatici IT, and ReifenDirekt EE — 7 suppliers simultaneously.",
+              },
+            },
+            {
+              "@type": "Question",
+              "name": "How do price alerts work?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Click the bell icon on any search result, set your target price, and we will email you when that listing drops below your target. We check prices every 6 hours.",
+              },
+            },
+            {
+              "@type": "Question",
+              "name": "Can I sell parts on GOPARTARA?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. All registered users can list up to 5 parts for free on our marketplace. Pro and Elite subscribers get unlimited listings.",
+              },
+            },
+            {
+              "@type": "Question",
+              "name": "Do I need an account to use GOPARTARA?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No account is needed for basic searching. You will need a free account to save parts, set price alerts, use My Garage, or list on the marketplace.",
+              },
+            },
+            {
+              "@type": "Question",
+              "name": "How do I cancel my subscription?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Go to Dashboard, then Subscription, then Cancel Plan. You can cancel anytime. Your plan stays active until the billing period ends.",
+              },
+            },
+          ],
+        }}
       />
       <Navbar />
 

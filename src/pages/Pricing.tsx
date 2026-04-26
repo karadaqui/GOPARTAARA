@@ -98,10 +98,39 @@ const Pricing = () => {
         path="/pricing"
         jsonLd={{
           "@context": "https://schema.org",
-          "@type": "WebPage",
-          "name": "GOPARTARA Pricing",
-          "url": "https://gopartara.com/pricing",
-          "description": "Compare GOPARTARA subscription plans for car parts search."
+          "@type": "Product",
+          "name": "GOPARTARA Pro",
+          "description": "Unlimited car parts searches, photo search, unlimited marketplace listings and more.",
+          "brand": {
+            "@type": "Brand",
+            "name": "GOPARTARA",
+          },
+          "offers": [
+            {
+              "@type": "Offer",
+              "name": "Free Plan",
+              "price": "0",
+              "priceCurrency": "GBP",
+              "availability": "https://schema.org/InStock",
+              "url": "https://gopartara.com/pricing",
+            },
+            {
+              "@type": "Offer",
+              "name": "Pro Plan",
+              "price": "9.99",
+              "priceCurrency": "GBP",
+              "availability": "https://schema.org/InStock",
+              "url": "https://gopartara.com/pricing",
+            },
+            {
+              "@type": "Offer",
+              "name": "Elite Plan",
+              "price": "19.99",
+              "priceCurrency": "GBP",
+              "availability": "https://schema.org/InStock",
+              "url": "https://gopartara.com/pricing",
+            },
+          ],
         }}
         additionalJsonLd={[
           {

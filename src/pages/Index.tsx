@@ -46,36 +46,47 @@ const Index = () => {
         path="/"
         jsonLd={{
           "@context": "https://schema.org",
-          "@type": "WebApplication",
-          "name": "GOPARTARA",
-          "url": "https://gopartara.com",
-          "description": "Compare prices on over 1M+ car parts from trusted UK & Global suppliers.",
-          "applicationCategory": "AutomotiveApplication",
-          "operatingSystem": "Web",
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "GBP"
-          }
+          "@graph": [
+            {
+              "@type": "WebSite",
+              "@id": "https://gopartara.com/#website",
+              "url": "https://gopartara.com",
+              "name": "GOPARTARA",
+              "description": "Search and compare car parts prices from 7 UK & global suppliers simultaneously.",
+              "publisher": {
+                "@type": "Organization",
+                "name": "GOPARTARA Ltd",
+                "url": "https://gopartara.com",
+                "logo": {
+                  "@type": "ImageObject",
+                  "url": "https://gopartara.com/logo.png",
+                },
+              },
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                  "@type": "EntryPoint",
+                  "urlTemplate": "https://gopartara.com/search?q={search_term_string}",
+                },
+                "query-input": "required name=search_term_string",
+              },
+            },
+          ],
         }}
         additionalJsonLd={[
           {
             "@context": "https://schema.org",
-            "@type": "WebSite",
+            "@type": "WebApplication",
             "name": "GOPARTARA",
             "url": "https://gopartara.com",
-            "potentialAction": {
-              "@type": "SearchAction",
-              "target": "https://gopartara.com/search?q={search_term_string}",
-              "query-input": "required name=search_term_string",
+            "description": "Compare prices on over 1M+ car parts from trusted UK & Global suppliers.",
+            "applicationCategory": "AutomotiveApplication",
+            "operatingSystem": "Web",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "GBP",
             },
-          },
-          {
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": "GOPARTARA",
-            "url": "https://gopartara.com",
-            "logo": "https://gopartara.com/favicon.png",
           },
         ]}
       />
