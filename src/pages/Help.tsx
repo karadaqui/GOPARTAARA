@@ -133,7 +133,7 @@ const Help = () => {
     <div className="min-h-screen bg-[#0a0a0a]">
       <SEOHead
         title="Help Center | GOPARTARA"
-        description="Find answers to common questions about searching, price alerts, the marketplace, your garage and your account on GOPARTARA."
+        description="Find answers to common questions about searching for parts, pricing plans, price alerts, My Garage, the marketplace and your account."
         path="/help"
       />
       <Navbar />

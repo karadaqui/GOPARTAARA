@@ -122,7 +122,7 @@ const Blog = () => {
     <div className="min-h-screen bg-background">
       <SEOHead
         title="Car Parts Blog & Guides — GOPARTARA"
-        description="Expert guides on buying car parts, maintenance tips, cost-saving advice and automotive industry insights. Updated regularly."
+        description="Expert guides, buying tips, maintenance advice and industry insights for UK car owners and mechanics. Updated daily."
         path="/blog"
         jsonLd={{
           "@context": "https://schema.org",

@@ -231,7 +231,7 @@ const Marketplace = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <SEOHead
         title="Car Parts Marketplace UK — Buy & Sell | GOPARTARA"
-        description="Buy and sell used car parts in the UK. Verified sellers, secure listings, free to browse. List your parts for free."
+        description="Buy and sell used and new car parts directly with other UK drivers. Free to list up to 5 parts. Browse brake pads, engines, suspension parts and more."
         path="/marketplace"
         jsonLd={{ "@context": "https://schema.org", "@type": "CollectionPage", "name": "GOPARTARA Parts Marketplace", "url": "https://gopartara.com/marketplace", "description": "Browse and buy car parts from verified UK sellers." }}
       />

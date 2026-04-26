@@ -52,6 +52,7 @@ const SEOHead = ({
     setMeta("property", "og:image", ogImage);
     setMeta("property", "og:site_name", "GOPARTARA");
     setMeta("name", "twitter:card", "summary_large_image");
+    setMeta("name", "twitter:site", "@gopartara");
     setMeta("name", "twitter:title", fullTitle);
     setMeta("name", "twitter:description", description);
     setMeta("name", "twitter:image", ogImage);
