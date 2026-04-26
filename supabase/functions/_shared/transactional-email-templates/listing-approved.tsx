@@ -15,7 +15,7 @@ interface Props {
 const ListingApprovedEmail = ({ listingTitle }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your listing "{listingTitle}" has been approved on {SITE_NAME}!</Preview>
+    <Preview>{`Your listing "${listingTitle ?? 'your part'}" has been approved on ${SITE_NAME}!`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>

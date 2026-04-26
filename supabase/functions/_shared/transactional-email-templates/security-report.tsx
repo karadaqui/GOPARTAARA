@@ -18,7 +18,7 @@ interface SecurityReportProps {
 const SecurityReportEmail = ({ date, issueCount = 0, findings = [], summary }: SecurityReportProps) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>{SITE_NAME} Daily Security Report — {issueCount} issue{issueCount !== 1 ? 's' : ''} found</Preview>
+    <Preview>{`${SITE_NAME} Daily Security Report — ${issueCount} issue${issueCount !== 1 ? 's' : ''} found`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>

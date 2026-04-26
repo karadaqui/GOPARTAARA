@@ -15,7 +15,7 @@ interface Props {
 const ListingSavedEmail = ({ listingTitle }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Someone saved your listing "{listingTitle}" on {SITE_NAME}</Preview>
+    <Preview>{`Someone saved your listing "${listingTitle ?? 'your part'}" on ${SITE_NAME}`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>

@@ -15,7 +15,7 @@ interface Props {
 const ReviewRemovedEmail = ({ listingTitle, reason }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your review on "{listingTitle}" was removed by our moderation team</Preview>
+    <Preview>{`Your review on "${listingTitle ?? 'a listing'}" was removed by our moderation team`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>

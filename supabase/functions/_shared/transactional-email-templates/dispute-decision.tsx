@@ -18,7 +18,7 @@ interface Props {
 const DisputeDecisionEmail = ({ listingTitle, decision, adminNote, sellerName }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Dispute decision for "{listingTitle}": {decision}</Preview>
+    <Preview>{`Dispute decision for "${listingTitle ?? 'your listing'}": ${decision ?? 'Reviewed'}`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>

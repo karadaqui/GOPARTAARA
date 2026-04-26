@@ -17,7 +17,7 @@ interface Props {
 const ReviewNotificationEmail = ({ listingTitle, rating, reviewText }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Someone left a {rating || 5} star review on "{listingTitle}" on {SITE_NAME}</Preview>
+    <Preview>{`Someone left a ${rating ?? 5} star review on "${listingTitle ?? 'your part'}" on ${SITE_NAME}`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>
