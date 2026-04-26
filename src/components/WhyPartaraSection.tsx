@@ -37,7 +37,7 @@ const renderCell = (value: Cell, isPartara: boolean, feature?: string) => {
 
 const WhyPartaraSection = () => {
   return (
-    <section className="px-4 py-20 md:py-28">
+    <section className="animated-gradient-bg px-4 py-20 md:py-28">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
