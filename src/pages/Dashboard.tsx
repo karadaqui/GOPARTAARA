@@ -459,7 +459,7 @@ const Dashboard = () => {
           <StatCard
             icon={<Search size={20} style={{ color: "#cc1111" }} />}
             label="Searches This Month"
-            value={isAdmin || isPro ? "Unlimited" : `${monthlySearchCount}/5`}
+            value={isAdmin || isPro ? "Unlimited" : `${monthlySearchCount}/10`}
             valueColor={isAdmin || isPro ? "#4ade80" : "white"}
           />
           <StatCard
