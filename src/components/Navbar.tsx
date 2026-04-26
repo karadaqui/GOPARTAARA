@@ -278,9 +278,11 @@ const Navbar = () => {
 
           {/* Right: Utilities + auth */}
           <div className="flex items-center gap-2 ml-auto flex-shrink-0">
-            {!loading && user && <MessageBubble />}
-            {!loading && user && <NotificationBell />}
-            <CountrySelector />
+            <div className="hidden md:flex items-center gap-2">
+              {!loading && user && <MessageBubble />}
+              {!loading && user && <NotificationBell />}
+              <CountrySelector />
+            </div>
 
             {!loading && (
               <div className="hidden md:flex items-center gap-2 ml-1">
