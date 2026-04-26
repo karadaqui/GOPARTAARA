@@ -82,7 +82,7 @@ const Index = () => {
       <HeroSection />
       <PopularSearchesStrip />
       <BrowseByMakeSection />
-      <SuppliersSection />
+      
       <SocialProofStats />
 
       {/* Trust bar */}
