@@ -1,28 +1,23 @@
-import { Search, BarChart3, ShoppingCart, Bell } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const steps = [
   {
-    icon: Search,
-    number: "1",
+    number: "01",
     title: "Search",
     desc: "Type a part name, upload a photo, or enter your reg plate. We'll handle the rest.",
   },
   {
-    icon: BarChart3,
-    number: "2",
+    number: "02",
     title: "Compare",
     desc: "See prices from trusted UK & global suppliers side by side. Filter by price, rating, and availability.",
   },
   {
-    icon: ShoppingCart,
-    number: "3",
+    number: "03",
     title: "Save",
     desc: "Order directly from your chosen supplier. No middleman, no markup — just the best deal.",
   },
   {
-    icon: Bell,
-    number: "4",
+    number: "04",
     title: "Save More",
     desc: "Set price alerts and get notified when parts drop to your target price. Never overpay again.",
   },
