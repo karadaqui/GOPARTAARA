@@ -290,6 +290,14 @@ Deno.serve(async (req) => {
     const responseText = await apiResponse.text();
 
     if (!apiResponse.ok) {
+      console.error(`[search-parts] eBay Browse API error: status=${apiResponse.status}, marketplace=${ebayMarketplace}, query="${searchQuery}", body=${responseText}`);
+
+      // 401/403 → token rejected; clear cache so next call gets fresh token
+      if (apiResponse.status === 401 || apiResponse.status === 403) {
+        console.error(`[search-parts] eBay rejected token (${apiResponse.status}) — clearing cached OAuth token`);
+        oauthToken = null;
+      }
+
       if (apiResponse.status === 400 || apiResponse.status === 404) {
         const fallbackParams = new URLSearchParams({
           q: searchQuery, limit: "12", fieldgroups: "MATCHING_ITEMS",
@@ -298,6 +306,7 @@ Deno.serve(async (req) => {
         const fallbackResponse = await fetch(`${EBAY_BROWSE_API_URL}?${fallbackParams.toString()}`, { headers: requestHeaders });
         const fallbackText = await fallbackResponse.text();
         if (!fallbackResponse.ok) {
+          console.error(`[search-parts] eBay fallback search failed: status=${fallbackResponse.status}, body=${fallbackText}`);
           return jsonResponse({ results: [], totalResults: 0, fallback: true, error: "SERVICE_UNAVAILABLE" }, 200, corsHeaders);
         }
         return processAndReturn(JSON.parse(fallbackText), cacheKey, corsHeaders);
