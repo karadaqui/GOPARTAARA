@@ -387,7 +387,7 @@ const PricingSection = () => {
         </div>
 
         {/* Money Back Guarantee */}
-        <div className="mt-16 flex items-center justify-center gap-2.5 py-4 px-6 rounded-xl border border-border/30 bg-card/20 mx-auto max-w-2xl">
+        <div className="mt-10 flex items-center justify-center gap-2.5 py-4 px-6 rounded-xl border border-border/30 bg-card/20 mx-auto max-w-2xl">
           <Shield size={18} className="text-primary shrink-0" />
           <p className="text-sm text-muted-foreground text-center">
             <span className="font-semibold text-foreground">30-Day Money Back Guarantee</span> — Not happy? Get a full refund within 30 days, no questions asked.
