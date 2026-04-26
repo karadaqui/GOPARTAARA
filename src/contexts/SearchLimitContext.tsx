@@ -54,20 +54,21 @@ export const SearchLimitProvider = ({ children }: { children: ReactNode }) => {
     }
 
     try {
-      const startOfMonth = new Date();
-      startOfMonth.setDate(1);
-      startOfMonth.setHours(0, 0, 0, 0);
+      const now = new Date();
+      const monthYear = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
 
       let count = 0;
       try {
-        const historyRes = await supabase
-          .from("search_history")
-          .select("*", { count: "exact", head: true })
+        // Server-authoritative count from search_usage table
+        const usageRes = await supabase
+          .from("search_usage")
+          .select("search_count")
           .eq("user_id", user.id)
-          .gte("created_at", startOfMonth.toISOString());
-        count = historyRes.count || 0;
+          .eq("month_year", monthYear)
+          .maybeSingle();
+        count = usageRes.data?.search_count || 0;
       } catch {
-        /* silently ignore 503 */
+        /* silently ignore */
       }
 
       try {
