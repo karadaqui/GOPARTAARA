@@ -184,6 +184,24 @@ const Dashboard = () => {
     }
   };
 
+  const handleResetSearchCount = async () => {
+    if (!user) return;
+    try {
+      const now = new Date();
+      const monthYear = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
+      const { error } = await supabase
+        .from("search_usage")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("month_year", monthYear);
+      if (error) throw error;
+      setMonthlySearchCount(0);
+      toast({ title: "✓ Search count reset", description: `Cleared usage for ${monthYear}.` });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to reset", variant: "destructive" });
+    }
+  };
+
   const handleManageSubscription = async () => {
     setPortalLoading(true);
     try {
@@ -441,7 +459,7 @@ const Dashboard = () => {
           <StatCard
             icon={<Search size={20} style={{ color: "#cc1111" }} />}
             label="Searches This Month"
-            value={isAdmin || isPro ? "Unlimited" : `${monthlySearchCount}/5`}
+            value={isAdmin || isPro ? "Unlimited" : `${monthlySearchCount}/10`}
             valueColor={isAdmin || isPro ? "#4ade80" : "white"}
           />
           <StatCard
@@ -461,6 +479,18 @@ const Dashboard = () => {
             onClick={() => navigate("/alerts")}
           />
         </div>
+
+        {(isAdmin || user?.email === "info@gopartara.com") && (
+          <div className="mb-6 flex justify-end">
+            <button
+              onClick={handleResetSearchCount}
+              className="text-xs px-3 py-1.5 rounded-lg border border-border bg-secondary/40 hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+            >
+              🔧 Reset Search Count (Admin)
+            </button>
+          </div>
+        )}
+
 
         {/* Section 3 — Quick Actions (premium horizontal cards) */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
