@@ -63,6 +63,7 @@ const Help = lazy(() => import("./pages/Help.tsx"));
 const HelpCategoryRoute = lazy(() => import("./pages/HelpCategoryRoute.tsx"));
 const Cookies = lazy(() => import("./pages/Cookies.tsx"));
 const Alerts = lazy(() => import("./pages/Alerts.tsx"));
+const PartSearchRedirect = lazy(() => import("./components/PartSearchRedirect.tsx"));
 
 const queryClient = new QueryClient();
 
