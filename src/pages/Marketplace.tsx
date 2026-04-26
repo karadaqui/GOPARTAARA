@@ -269,18 +269,6 @@ const Marketplace = () => {
             <span className="text-primary">Parts</span> Marketplace
           </h1>
           <p className="text-muted-foreground text-lg">Browse parts from verified sellers across the UK</p>
-
-          {/* Seller stats row */}
-          <div
-            className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5"
-            style={{ fontSize: "13px", color: "#52525b" }}
-          >
-            <span>🚀 {displayWeeklyCount} parts listed this week</span>
-            <span className="opacity-40">·</span>
-            <span>⚡ Avg response: 4hrs</span>
-            <span className="opacity-40">·</span>
-            <span>✓ 100% secure transactions</span>
-          </div>
         </div>
 
         {/* Sell CTA */}
