@@ -275,7 +275,7 @@ const Marketplace = () => {
         <div className="bg-card border border-border rounded-xl px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
           <p className="text-sm text-foreground">
             <Wrench size={14} className="inline mr-1.5 -mt-0.5 text-primary" />
-            Have parts to sell? List for free — reach thousands of UK car owners
+            Have parts to sell? List for free on GOPARTARA
           </p>
           <Button size="sm" className="rounded-xl gap-1.5 shrink-0 h-10 min-w-[120px]" onClick={() => navigate("/my-market")}>
             List Your Parts →
