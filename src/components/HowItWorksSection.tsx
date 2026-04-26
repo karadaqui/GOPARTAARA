@@ -56,8 +56,8 @@ const HowItWorksSection = () => (
             if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
           };
           return (
-            <>
-              <ScrollReveal key={s.title} delay={i + 1} threshold={0.05}>
+            <Fragment key={s.title}>
+              <ScrollReveal delay={i + 1} threshold={0.05}>
                 <div
                   role={isSearch ? "button" : undefined}
                   tabIndex={isSearch ? 0 : undefined}
