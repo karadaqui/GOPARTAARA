@@ -18,7 +18,7 @@ interface Props {
 const ListingRemovedEmail = ({ name, listingTitle, listingPrice, reason }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your listing "{listingTitle}" has been removed from {SITE_NAME}</Preview>
+    <Preview>{`Your listing "${listingTitle ?? 'your part'}" has been removed from ${SITE_NAME}`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>

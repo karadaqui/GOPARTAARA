@@ -16,7 +16,7 @@ interface Props {
 const ListingRejectedEmail = ({ listingTitle, reason }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your listing "{listingTitle}" needs attention on {SITE_NAME}</Preview>
+    <Preview>{`Your listing "${listingTitle ?? 'your part'}" needs attention on ${SITE_NAME}`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>

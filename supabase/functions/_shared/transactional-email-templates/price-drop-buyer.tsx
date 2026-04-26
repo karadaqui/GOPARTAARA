@@ -18,7 +18,7 @@ interface Props {
 const PriceDropBuyerEmail = ({ listingTitle, newPrice, targetPrice, listingUrl }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Good news! {listingTitle} is now £{newPrice} — meets your price alert!</Preview>
+    <Preview>{`Good news! ${listingTitle ?? 'Your part'} is now £${newPrice ?? ''} — meets your price alert!`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>

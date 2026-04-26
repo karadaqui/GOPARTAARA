@@ -16,7 +16,7 @@ interface Props {
 const PriceAlertSellerEmail = ({ listingTitle, targetPrice }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Someone set a price alert of £{targetPrice} on your listing "{listingTitle}"</Preview>
+    <Preview>{`Someone set a price alert of £${targetPrice ?? ''} on your listing "${listingTitle ?? 'your part'}"`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>

@@ -20,7 +20,7 @@ interface Props {
 const ReviewDisputeEmail = ({ listingTitle, reviewerName, reviewText, rating, disputeReason, sellerName }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Review dispute from {sellerName} on "{listingTitle}"</Preview>
+    <Preview>{`Review dispute from ${sellerName ?? 'a seller'} on "${listingTitle ?? 'a listing'}"`}</Preview>
     <Body style={main}>
       <Container style={wrapper}>
         <Section style={header}>
