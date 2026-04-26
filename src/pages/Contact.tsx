@@ -104,7 +104,7 @@ const Contact = () => {
     <div className="min-h-screen bg-background">
       <SEOHead
         title="Contact Us | GOPARTARA"
-        description="Get in touch with the GOPARTARA team. Have a question about car parts, pricing, or our platform? We respond within 24 hours."
+        description="Get in touch with the GOPARTARA team. We respond within 24 hours. Email info@gopartara.com or use our contact form."
         path="/contact"
         jsonLd={{
           "@context": "https://schema.org",
