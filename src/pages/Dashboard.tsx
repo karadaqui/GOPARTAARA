@@ -184,6 +184,24 @@ const Dashboard = () => {
     }
   };
 
+  const handleResetSearchCount = async () => {
+    if (!user) return;
+    try {
+      const now = new Date();
+      const monthYear = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
+      const { error } = await supabase
+        .from("search_usage")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("month_year", monthYear);
+      if (error) throw error;
+      setMonthlySearchCount(0);
+      toast({ title: "✓ Search count reset", description: `Cleared usage for ${monthYear}.` });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message || "Failed to reset", variant: "destructive" });
+    }
+  };
+
   const handleManageSubscription = async () => {
     setPortalLoading(true);
     try {
