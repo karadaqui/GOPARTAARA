@@ -3,7 +3,6 @@ type Stat = {
   display: string;
 };
 
-// Hardcoded marketing numbers — DO NOT fetch from database.
 const stats: Stat[] = [
   { label: "Parts searchable", display: "1,000,000+" },
   { label: "Live suppliers", display: "7" },
@@ -11,47 +10,56 @@ const stats: Stat[] = [
   { label: "Always free to use", display: "Free" },
 ];
 
-const StatCell = ({ stat }: { stat: Stat }) => (
-  <div className="stats-cell text-center py-2 px-4">
-    <div
-      style={{
-        fontSize: "28px",
-        fontWeight: 700,
-        color: "#ffffff",
-        lineHeight: 1.1,
-        fontVariantNumeric: "tabular-nums",
-      }}
-    >
-      {stat.display}
-    </div>
-    <div
-      style={{
-        fontSize: "12px",
-        color: "#52525b",
-        marginTop: "2px",
-        fontWeight: 400,
-        letterSpacing: "0.04em",
-      }}
-    >
-      {stat.label}
-    </div>
-  </div>
-);
-
 const SocialProofStats = () => (
   <section
     aria-label="Platform stats"
     style={{
-      borderTop: "1px solid #1f1f1f",
-      borderBottom: "1px solid #1f1f1f",
-      padding: "20px 0",
-      background: "transparent",
+      borderTop: "1px solid #141414",
+      borderBottom: "1px solid #141414",
     }}
   >
-    <div className="max-w-6xl mx-auto px-4">
-      <div className="stats-grid grid grid-cols-2 md:grid-cols-4">
-        {stats.map((stat) => (
-          <StatCell key={stat.label} stat={stat} />
+    <div
+      style={{
+        maxWidth: "1200px",
+        margin: "0 auto",
+        padding: "0 40px",
+      }}
+    >
+      <div className="grid grid-cols-2 md:grid-cols-4">
+        {stats.map((stat, idx) => (
+          <div
+            key={stat.label}
+            className="text-center"
+            style={{
+              padding: "32px 0",
+              borderRight:
+                idx < stats.length - 1 ? "1px solid #141414" : "none",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "36px",
+                fontWeight: 800,
+                color: "#ffffff",
+                letterSpacing: "-1px",
+                lineHeight: 1,
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
+              {stat.display}
+            </div>
+            <div
+              style={{
+                fontSize: "12px",
+                color: "#52525b",
+                letterSpacing: "0.1em",
+                textTransform: "uppercase",
+                marginTop: "4px",
+              }}
+            >
+              {stat.label}
+            </div>
+          </div>
         ))}
       </div>
     </div>

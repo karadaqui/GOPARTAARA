@@ -1,83 +1,93 @@
-import { Search, BarChart3, ShoppingCart, Bell } from "lucide-react";
 import ScrollReveal from "@/components/ScrollReveal";
 
 const steps = [
   {
-    icon: Search,
-    number: "1",
-    title: "Search",
-    desc: "Type a part name, upload a photo, or enter your reg plate. We'll handle the rest.",
+    n: "01",
+    title: "Search any part",
+    desc: "Type a part name, enter your reg plate, or upload a photo. We search 7 suppliers simultaneously.",
   },
   {
-    icon: BarChart3,
-    number: "2",
-    title: "Compare",
-    desc: "See prices from trusted UK & global suppliers side by side. Filter by price, rating, and availability.",
+    n: "02",
+    title: "Compare prices instantly",
+    desc: "See all results ranked by price from UK and EU suppliers. Filter by condition, shipping, and supplier rating.",
   },
   {
-    icon: ShoppingCart,
-    number: "3",
-    title: "Save",
-    desc: "Order directly from your chosen supplier. No middleman, no markup — just the best deal.",
-  },
-  {
-    icon: Bell,
-    number: "4",
-    title: "Save More",
-    desc: "Set price alerts and get notified when parts drop to your target price. Never overpay again.",
+    n: "03",
+    title: "Buy or set an alert",
+    desc: "Order directly from the cheapest supplier. Or set a target price — we'll email you the moment it drops.",
   },
 ];
 
 const HowItWorksSection = () => (
-  <section className="py-12 md:py-16 relative overflow-hidden">
-    <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/[0.02] to-transparent pointer-events-none" />
-    <div className="container px-4 md:px-6 lg:px-8 relative">
-      <ScrollReveal className="text-center mb-8 md:mb-10" threshold={0.05}>
-        <span className="inline-block uppercase" style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.12em", color: "#cc1111", marginBottom: "12px" }}>
-          How It Works
-        </span>
-        <h2 className="font-display text-2xl md:text-5xl font-bold mb-5 tracking-tight">
-          Find &amp; Save in Minutes
-        </h2>
-        <p className="text-muted-foreground max-w-xl mx-auto text-base md:text-lg leading-relaxed">
-          Finding the right car part shouldn't take hours. With GOPARTARA, it takes seconds.
-        </p>
-      </ScrollReveal>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-10 max-w-5xl mx-auto">
-        {steps.map((s, i) => {
-          const isSearch = s.title === "Search";
-          const handleClick = () => {
-            if (!isSearch) return;
-            const el = document.getElementById("search");
-            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-          };
-          return (
-            <ScrollReveal key={s.title} delay={i + 1} threshold={0.05}>
-              <div
-                role={isSearch ? "button" : undefined}
-                tabIndex={isSearch ? 0 : undefined}
-                onClick={handleClick}
-                onKeyDown={(e) => {
-                  if (isSearch && (e.key === "Enter" || e.key === " ")) {
-                    e.preventDefault();
-                    handleClick();
-                  }
-                }}
-                className={`relative text-center group mb-6 md:mb-16 ${isSearch ? "cursor-pointer" : ""}`}
-              >
-                <div className="mx-auto mb-4 md:mb-6 flex h-14 w-14 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-primary/10 text-primary transition-[colors,transform] group-hover:bg-primary/20 group-hover:scale-110">
-                  <s.icon size={26} />
-                </div>
-                <span className="absolute -top-2 right-4 md:top-0 md:right-4 text-5xl md:text-6xl font-black text-muted/15 select-none pointer-events-none">
-                  {s.number}
-                </span>
-                <h3 className="font-display text-lg md:text-xl font-bold mb-2 md:mb-3">{s.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mx-auto">{s.desc}</p>
-              </div>
-            </ScrollReveal>
-          );
-        })}
-      </div>
+  <section
+    style={{
+      maxWidth: "1200px",
+      margin: "0 auto",
+      padding: "64px 40px",
+    }}
+  >
+    <ScrollReveal>
+      <h2
+        style={{
+          fontSize: "clamp(32px, 5vw, 48px)",
+          fontWeight: 800,
+          letterSpacing: "-2px",
+          color: "#ffffff",
+          marginBottom: "48px",
+          lineHeight: 1.05,
+        }}
+      >
+        How it works
+      </h2>
+    </ScrollReveal>
+
+    <div className="grid grid-cols-1 md:grid-cols-3">
+      {steps.map((s, i) => (
+        <ScrollReveal key={s.n} delay={i + 1}>
+          <div
+            style={{
+              padding: "0 32px",
+              borderRight:
+                i < steps.length - 1 ? "1px solid #1a1a1a" : "none",
+              paddingLeft: i === 0 ? 0 : "32px",
+              paddingRight: i === steps.length - 1 ? 0 : "32px",
+              marginBottom: "32px",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "11px",
+                color: "#3f3f46",
+                letterSpacing: "0.1em",
+                fontWeight: 700,
+              }}
+            >
+              {s.n}
+            </span>
+            <h3
+              style={{
+                fontSize: "22px",
+                fontWeight: 700,
+                color: "#ffffff",
+                marginTop: "12px",
+                letterSpacing: "-0.5px",
+              }}
+            >
+              {s.title}
+            </h3>
+            <p
+              style={{
+                fontSize: "15px",
+                color: "#71717a",
+                lineHeight: 1.7,
+                marginTop: "8px",
+              }}
+            >
+              {s.desc}
+            </p>
+          </div>
+        </ScrollReveal>
+      ))}
     </div>
   </section>
 );
