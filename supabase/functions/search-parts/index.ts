@@ -135,8 +135,7 @@ Deno.serve(async (req) => {
 
     // ── Server-side enforced search limit (using search_usage table) ──
     // Only counts NEW searches (offset === 0, not pagination, not skipCredit)
-    const { skipCredit: skipCreditPeek } = (parsed?.success ? parsed.data : ({} as any)) || {};
-    const shouldCountSearch = offset === 0 && !skipCreditPeek;
+    const shouldCountSearch = offset === 0 && !skipCredit;
 
     if (!isUnlimited && shouldCountSearch) {
       const now = new Date();
