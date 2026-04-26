@@ -387,179 +387,196 @@ const Navbar = () => {
       </nav>
 
       {menuOpen && (
-        <div className="md:hidden">
-          {/* Backdrop */}
-          <div
-            onClick={() => setMenuOpen(false)}
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.7)",
-              zIndex: 99998,
-            }}
-          />
+        <div
+          className="md:hidden"
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 9998,
+            backgroundColor: "#080808",
+            padding: "24px",
+            display: "flex",
+            flexDirection: "column",
+            overflowY: "auto",
+            WebkitOverflowScrolling: "touch",
+            animation: "slideInRight 0.3s ease",
+          }}
+        >
+          <style>{`
+            @keyframes slideInRight {
+              from { transform: translateX(100%); }
+              to { transform: translateX(0); }
+            }
+          `}</style>
 
-          {/* Drawer — slides in from right */}
+          {/* Top row: logo + close */}
           <div
             style={{
-              position: "fixed",
-              top: 0,
-              right: 0,
-              bottom: 0,
-              width: "280px",
-              backgroundColor: "#0f0f0f",
-              zIndex: 99999,
               display: "flex",
-              flexDirection: "column",
-              overflowY: "auto",
-              WebkitOverflowScrolling: "touch",
-              boxShadow: "-8px 0 24px rgba(0,0,0,0.5)",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "16px",
             }}
           >
-            {/* Header */}
-            <div
+            <a
+              href="/"
+              onClick={(e) => handleMobileLinkClick(e, "/")}
+              className="no-underline"
+            >
+              <span className="logo-text text-xl">
+                <span className="logo-go">GO</span>
+                <span className="logo-part">PARTARA</span>
+              </span>
+            </a>
+            <button
+              type="button"
+              onClick={() => setMenuOpen(false)}
+              aria-label="Close navigation menu"
               style={{
+                width: "40px",
+                height: "40px",
+                background: "transparent",
+                border: "1px solid #27272a",
+                borderRadius: "8px",
+                color: "white",
+                cursor: "pointer",
                 display: "flex",
-                justifyContent: "space-between",
                 alignItems: "center",
-                padding: "16px 20px",
-                borderBottom: "1px solid #1f1f1f",
+                justifyContent: "center",
+                fontSize: "18px",
               }}
             >
-              <span style={{ fontWeight: 900, fontSize: "18px", color: "white" }}>
-                <span style={{ color: "#cc1111" }}>GO</span>PARTARA
-              </span>
-              <button
-                type="button"
-                onClick={() => setMenuOpen(false)}
-                style={{
-                  background: "none",
-                  border: "none",
-                  color: "#888",
-                  cursor: "pointer",
-                  padding: "8px",
-                  fontSize: "20px",
-                  minWidth: "44px",
-                  minHeight: "44px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                ✕
-              </button>
-            </div>
+              ✕
+            </button>
+          </div>
 
-            {/* Links — grouped with section separators */}
-            <div style={{ padding: "12px", flex: 1 }}>
-              {[
-                {
-                  title: "Browse",
-                  items: [
-                    { label: "Home", href: "/", icon: "🏠" },
-                    { label: "Search Parts", href: "/search", icon: "🔍" },
-                    { label: "Tyres", href: "/tyres", icon: "tyre" },
-                    { label: "Deals", href: "/deals", icon: "🔥" },
-                    { label: "Marketplace", href: "/marketplace", icon: "🏪" },
-                  ],
-                },
-                {
-                  title: "Account",
-                  items: [
-                    { label: "Pricing", href: "/pricing", icon: "💰" },
-                    { label: "Dashboard", href: "/dashboard", icon: "📊" },
-                  ],
-                },
-                {
-                  title: "Company",
-                  items: [
-                    { label: "Blog", href: "/blog", icon: "📝" },
-                    { label: "For Business", href: "/business", icon: "🏢" },
-                    { label: "Help Center", href: "/help", icon: "❓" },
-                    { label: "About", href: "/about", icon: "ℹ️" },
-                    { label: "Contact", href: "/contact", icon: "✉️" },
-                  ],
-                },
-              ].map((section, sIdx) => (
-                <div key={section.title} style={{ marginTop: sIdx === 0 ? 0 : 12 }}>
-                  <div
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                      color: "#52525b",
-                      padding: "8px 12px 6px",
-                    }}
-                  >
-                    {section.title}
-                  </div>
-                  {section.items.map((link) => (
-                    <a
-                      key={link.href}
-                      href={link.href}
-                      onClick={(e) => handleMobileLinkClick(e, link.href)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                        padding: "13px 12px",
-                        color: "#ffffff",
-                        textDecoration: "none",
-                        fontSize: "15px",
-                        fontWeight: 600,
-                        borderRadius: "10px",
-                        marginBottom: "2px",
-                        WebkitTapHighlightColor: "transparent",
-                      }}
-                    >
-                      {link.icon === "tyre" ? (
-                        <img
-                          src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f6de.png"
-                          width={18}
-                          height={18}
-                          alt=""
-                          loading="lazy"
-                          style={{ display: "inline-block", verticalAlign: "middle" }}
-                        />
-                      ) : (
-                        <span style={{ fontSize: "18px", width: "20px", textAlign: "center" }}>
-                          {link.icon}
-                        </span>
-                      )}
-                      {link.label}
-                    </a>
-                  ))}
-                  {sIdx < 2 && (
-                    <div
-                      style={{
-                        height: "1px",
-                        background: "#1f1f1f",
-                        margin: "8px 12px 0",
-                      }}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Bottom */}
-            <div style={{ padding: "20px", borderTop: "1px solid #1a1a1a" }}>
+          {/* Nav links */}
+          <nav style={{ flex: 1, marginTop: "8px" }}>
+            {[
+              { label: "Search", href: "/search" },
+              { label: "Marketplace", href: "/marketplace" },
+              { label: "Deals", href: "/deals" },
+              { label: "Pricing", href: "/pricing" },
+              { label: "Help Center", href: "/help" },
+              { label: "About", href: "/about" },
+              { label: "Blog", href: "/blog" },
+            ].map((link) => (
               <a
-                href="/sign-out"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setMenuOpen(false);
-                  signOut();
+                key={link.href}
+                href={link.href}
+                onClick={(e) => handleMobileLinkClick(e, link.href)}
+                style={{
+                  display: "block",
+                  padding: "18px 0",
+                  fontSize: "22px",
+                  fontWeight: 700,
+                  color: "white",
+                  borderBottom: "1px solid #111111",
+                  textDecoration: "none",
+                  letterSpacing: "-0.5px",
+                  WebkitTapHighlightColor: "transparent",
                 }}
-                style={{ color: "#555", fontSize: "13px", textDecoration: "none" }}
               >
-                Sign Out →
+                {link.label}
               </a>
-            </div>
+            ))}
+          </nav>
+
+          {/* Bottom buttons */}
+          <div style={{ marginTop: "auto", paddingTop: "24px" }}>
+            {user ? (
+              <>
+                <a
+                  href="/dashboard"
+                  onClick={(e) => handleMobileLinkClick(e, "/dashboard")}
+                  style={{
+                    display: "block",
+                    background: "transparent",
+                    border: "1px solid #27272a",
+                    color: "white",
+                    padding: "14px",
+                    borderRadius: "10px",
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    width: "100%",
+                    textAlign: "center",
+                    textDecoration: "none",
+                    boxSizing: "border-box",
+                  }}
+                >
+                  Dashboard
+                </a>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    signOut();
+                  }}
+                  style={{
+                    display: "block",
+                    background: "#cc1111",
+                    border: "none",
+                    color: "white",
+                    padding: "14px",
+                    borderRadius: "10px",
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    width: "100%",
+                    marginTop: "12px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <a
+                  href="/auth"
+                  onClick={(e) => handleMobileLinkClick(e, "/auth")}
+                  style={{
+                    display: "block",
+                    background: "transparent",
+                    border: "1px solid #27272a",
+                    color: "white",
+                    padding: "14px",
+                    borderRadius: "10px",
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    width: "100%",
+                    textAlign: "center",
+                    textDecoration: "none",
+                    boxSizing: "border-box",
+                  }}
+                >
+                  Sign In
+                </a>
+                <a
+                  href="/auth"
+                  onClick={(e) => handleMobileLinkClick(e, "/auth")}
+                  style={{
+                    display: "block",
+                    background: "#cc1111",
+                    border: "none",
+                    color: "white",
+                    padding: "14px",
+                    borderRadius: "10px",
+                    fontSize: "15px",
+                    fontWeight: 600,
+                    width: "100%",
+                    marginTop: "12px",
+                    textAlign: "center",
+                    textDecoration: "none",
+                    boxSizing: "border-box",
+                  }}
+                >
+                  Start for Free →
+                </a>
+              </>
+            )}
           </div>
         </div>
       )}
