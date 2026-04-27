@@ -384,3 +384,94 @@ function processAndReturn(data: any, cacheKey: string, corsHeaders: Record<strin
   setCache(cacheKey, responseData);
   return jsonResponse(responseData, 200, corsHeaders);
 }
+
+// ── eBay Finding API fallback (uses svcs.ebay.com — different host than api.ebay.com) ──
+// Used when OAuth fetch to api.ebay.com fails (typically DNS resolution issues in edge runtime).
+// Auth is just the App ID via query param — no token exchange required.
+const FINDING_GLOBAL_ID: Record<string, string> = {
+  EBAY_GB: "EBAY-GB", EBAY_US: "EBAY-US", EBAY_DE: "EBAY-DE",
+  EBAY_FR: "EBAY-FR", EBAY_IT: "EBAY-IT", EBAY_ES: "EBAY-ES",
+  EBAY_AU: "EBAY-AU", EBAY_ENCA: "EBAY-ENCA",
+};
+
+async function tryFindingApi(
+  appId: string,
+  searchQuery: string,
+  marketplace: string,
+  offset: number
+): Promise<{ results: any[]; totalResults: number; fallback: true; source: "finding-api" } | null> {
+  const globalId = FINDING_GLOBAL_ID[marketplace] || "EBAY-GB";
+  const pageNumber = Math.floor(offset / 12) + 1;
+
+  const params = new URLSearchParams({
+    "OPERATION-NAME": "findItemsByKeywords",
+    "SERVICE-VERSION": "1.0.0",
+    "SECURITY-APPNAME": appId,
+    "RESPONSE-DATA-FORMAT": "JSON",
+    "GLOBAL-ID": globalId,
+    "keywords": searchQuery,
+    "paginationInput.entriesPerPage": "12",
+    "paginationInput.pageNumber": String(pageNumber),
+    "sortOrder": "BestMatch",
+  });
+
+  const url = `https://svcs.ebay.com/services/search/FindingService/v1?${params.toString()}`;
+
+  try {
+    console.log(`[search-parts] Finding API fallback: query="${searchQuery}", globalId=${globalId}`);
+    const res = await fetch(url, { headers: { "Accept": "application/json" } });
+    if (!res.ok) {
+      console.error(`[search-parts] Finding API failed: status=${res.status}, body=${await res.text()}`);
+      return null;
+    }
+    const data = await res.json();
+    const root = data?.findItemsByKeywordsResponse?.[0];
+    const ack = root?.ack?.[0];
+    if (ack !== "Success" && ack !== "Warning") {
+      console.error(`[search-parts] Finding API non-success ack: ${ack}, errors=${JSON.stringify(root?.errorMessage || {})}`);
+      return null;
+    }
+    const items = root?.searchResult?.[0]?.item || [];
+    const totalResults = parseInt(root?.paginationOutput?.[0]?.totalEntries?.[0] || "0", 10);
+
+    const results = items.map((item: any, i: number) => {
+      const sellingStatus = item.sellingStatus?.[0] || {};
+      const currentPrice = sellingStatus.currentPrice?.[0] || sellingStatus.convertedCurrentPrice?.[0] || {};
+      const shippingInfo = item.shippingInfo?.[0] || {};
+      const shippingCost = parseFloat(shippingInfo.shippingServiceCost?.[0]?.["__value__"] || "0");
+      const condition = item.condition?.[0]?.conditionDisplayName?.[0] || "Not specified";
+      const sellerInfo = item.sellerInfo?.[0] || {};
+      return {
+        id: item.itemId?.[0] || `ebay-finding-${i}-${Date.now()}`,
+        partName: item.title?.[0] || "Unknown Part",
+        partNumber: item.itemId?.[0] || `EBAY-${i}`,
+        price: parseFloat(currentPrice["__value__"] || "0"),
+        condition: normalizeCondition(condition),
+        imageUrl: item.galleryURL?.[0] || item.pictureURLLarge?.[0] || "/placeholder.svg",
+        url: item.viewItemURL?.[0] || "",
+        freeShipping: shippingCost === 0,
+        shippingCost,
+        shipsToUK: true,
+        handlingTime: parseInt(item.handlingTime?.[0] || "3", 10),
+        expedited: shippingInfo.expeditedShipping?.[0] === "true",
+        sellerUsername: sellerInfo.sellerUserName?.[0] || "Unknown Seller",
+        sellerFeedbackScore: parseInt(sellerInfo.feedbackScore?.[0] || "0", 10),
+        sellerPositivePercent: parseFloat(sellerInfo.positiveFeedbackPercent?.[0] || "0"),
+        topRatedSeller: sellerInfo.topRatedSeller?.[0] === "true",
+        itemLocation: item.location?.[0] || item.country?.[0] || "Unknown",
+        itemCountry: item.country?.[0] || "GB",
+        listingType: item.listingInfo?.[0]?.listingType?.[0] === "Auction" ? "Auction" : "FixedPrice",
+        endTime: item.listingInfo?.[0]?.endTime?.[0] || null,
+        watchCount: 0,
+        quantityAvailable: null,
+        availabilityStatus: null,
+      };
+    });
+
+    console.log(`[search-parts] Finding API returned ${results.length} results (total=${totalResults})`);
+    return { results, totalResults, fallback: true, source: "finding-api" };
+  } catch (e) {
+    console.error(`[search-parts] Finding API network error:`, e);
+    return null;
+  }
+}
