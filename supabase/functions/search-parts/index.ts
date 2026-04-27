@@ -256,11 +256,17 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: "eBay credentials not configured", results: [], fallback: true }, 200, corsHeaders);
     }
 
-    let token: string;
+    let token: string | null = null;
     try {
       token = await getOAuthToken(EBAY_APP_ID, EBAY_CERT_ID);
     } catch (e) {
-      console.error("[search-parts] OAuth error:", e);
+      console.error("[search-parts] OAuth error, will try Finding API fallback:", e);
+      // Try Finding API fallback (different host: svcs.ebay.com — bypasses api.ebay.com DNS issues)
+      const findingResult = await tryFindingApi(EBAY_APP_ID, searchQuery, ebayMarketplace, offset || 0);
+      if (findingResult) {
+        setCache(cacheKey, findingResult);
+        return jsonResponse(findingResult, 200, corsHeaders);
+      }
       return jsonResponse({ error: "SERVICE_AUTH_FAILED", results: [], fallback: true }, 200, corsHeaders);
     }
 
