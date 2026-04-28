@@ -183,6 +183,16 @@ const MyMarket = () => {
 
   const loadData = async () => {
     setLoading(true);
+    // Load payout info (independent of seller profile)
+    try {
+      const { data: pi } = await supabase
+        .from("seller_payout_info" as any)
+        .select("full_name, sort_code, account_number, paypal_email, preferred_method")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      setPayoutInfo((pi as any) || null);
+    } catch { /* ignore */ }
+
     const { data: sp } = await supabase
       .from("seller_profiles")
       .select("*")
