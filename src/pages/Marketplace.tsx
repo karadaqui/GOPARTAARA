@@ -99,12 +99,71 @@ const Marketplace = () => {
   const [authGateOpen, setAuthGateOpen] = useState(false);
   const [compareParts, setCompareParts] = usePersistentCompare();
   const [showCompare, setShowCompare] = useState(false);
+  const [buyerOffers, setBuyerOffers] = useState<BuyerOffer[]>([]);
+  const [payingOfferId, setPayingOfferId] = useState<string | null>(null);
+
+  // Handle return from Stripe checkout
+  useEffect(() => {
+    const status = searchParams.get("payment");
+    const offerId = searchParams.get("offer");
+    if (!status) return;
+    if (status === "success") {
+      toast.success("Payment successful! The seller has been notified and will ship your part shortly.");
+      if (offerId) {
+        supabase.from("offers").update({ status: "paid" }).eq("id", offerId).then(() => {});
+      }
+    } else if (status === "cancelled") {
+      toast.warning("Payment was cancelled. You can try again from your offers below.");
+    }
+    window.history.replaceState({}, "", "/marketplace");
+  }, []);
 
   useEffect(() => {
     if (authLoading) return;
     if (!user) { setAuthGateOpen(true); setLoading(false); return; }
     loadListings();
+    loadBuyerOffers();
   }, [user, authLoading]);
+
+  const loadBuyerOffers = async () => {
+    if (!user) return;
+    try {
+      const { data } = await supabase
+        .from("offers")
+        .select("id, amount, status, listing_id, seller_id, buyer_id")
+        .eq("buyer_id", user.id)
+        .in("status", ["accepted", "pending_payment", "paid"])
+        .order("created_at", { ascending: false });
+      if (!data || data.length === 0) { setBuyerOffers([]); return; }
+      const listingIds = [...new Set(data.map((o: any) => o.listing_id))];
+      const { data: listings } = await supabase
+        .from("seller_listings").select("id, title, photos").in("id", listingIds);
+      const map = new Map((listings || []).map((l: any) => [l.id, l]));
+      setBuyerOffers(data.map((o: any) => ({
+        ...o,
+        listing_title: map.get(o.listing_id)?.title || "Unknown part",
+        listing_photo: map.get(o.listing_id)?.photos?.[0] || null,
+      })));
+    } catch {}
+  };
+
+  const handlePayNow = async (offer: BuyerOffer) => {
+    setPayingOfferId(offer.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-marketplace-checkout", {
+        body: { offerId: offer.id },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL returned");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to start checkout");
+      setPayingOfferId(null);
+    }
+  };
 
   const loadListings = async () => {
     setLoading(true);
