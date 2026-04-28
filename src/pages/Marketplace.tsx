@@ -17,6 +17,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthGateModal from "@/components/AuthGateModal";
 import ScrollReveal from "@/components/ScrollReveal";
+import { toast } from "sonner";
+
+interface BuyerOffer {
+  id: string;
+  amount: number;
+  status: string;
+  listing_id: string;
+  seller_id: string;
+  buyer_id: string;
+  listing_title: string;
+  listing_photo: string | null;
+}
 
 interface ListingWithSeller {
   id: string;
