@@ -112,8 +112,37 @@ const ListingDetail = () => {
   const [disputeReason, setDisputeReason] = useState("");
   const [moderating, setModerating] = useState(false);
   const [offerOpen, setOfferOpen] = useState(false);
+  const [buyingNow, setBuyingNow] = useState(false);
   const isAdmin = userPlan === "admin";
   const isSeller = listing?.seller_profiles?.user_id === user?.id;
+
+  const handleBuyNow = async () => {
+    if (!user) {
+      navigate("/auth?redirect=" + window.location.pathname);
+      return;
+    }
+    if (!listing) return;
+    setBuyingNow(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-marketplace-checkout", {
+        body: {
+          listingId: listing.id,
+          amount: listing.price,
+          partTitle: listing.title,
+          sellerId: listing.seller_profiles.user_id,
+          buyerId: user.id,
+          buyNow: true,
+        },
+      });
+      if (error) throw error;
+      if (!data?.url) throw new Error("No checkout URL returned");
+      window.location.href = data.url;
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Could not start checkout", description: "Please try again.", variant: "destructive" });
+      setBuyingNow(false);
+    }
+  };
 
   useEffect(() => {
     if (id) loadListing();
