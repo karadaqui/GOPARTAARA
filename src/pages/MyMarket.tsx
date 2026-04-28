@@ -798,6 +798,36 @@ const MyMarket = () => {
           </div>
         </div>
 
+        {/* Payout status banner */}
+        {hasValidPayout ? (
+          <div className="mb-6 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-sm">
+              <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+              <span className="text-emerald-300">
+                Payout details saved —{" "}
+                {payoutInfo?.preferred_method === "paypal" || (!payoutInfo?.account_number && payoutInfo?.paypal_email)
+                  ? <>💙 PayPal: <span className="font-mono">{payoutInfo?.paypal_email}</span></>
+                  : <>🏦 Bank Transfer: <span className="font-mono">{payoutInfo?.sort_code}</span></>}
+              </span>
+            </div>
+            <Button size="sm" variant="ghost" className="h-7 text-xs gap-1" onClick={() => { setPayoutGateContinue(false); setPayoutModalOpen(true); }}>
+              <Pencil size={12} /> Edit
+            </Button>
+          </div>
+        ) : (
+          <div className="mb-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-sm">
+              <AlertTriangle size={16} className="text-amber-400 shrink-0" />
+              <span className="text-amber-300">
+                You haven't set up payout details yet. Add your bank or PayPal details to start selling.
+              </span>
+            </div>
+            <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-amber-500/40 text-amber-300 hover:bg-amber-500/10" onClick={() => { setPayoutGateContinue(false); setPayoutModalOpen(true); }}>
+              <CreditCard size={12} /> Set Up Payouts →
+            </Button>
+          </div>
+        )}
+
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <div className="glass rounded-xl p-4 text-center">
