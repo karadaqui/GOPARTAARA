@@ -18,7 +18,7 @@ import TopProgressBar from "./components/TopProgressBar.tsx";
 
 import SocialProofPopup from "./components/SocialProofPopup.tsx";
 import MotTaxReminderRunner from "./components/garage/MotTaxReminderRunner.tsx";
-import ServiceStatusBanner from "./components/ServiceStatusBanner.tsx";
+
 
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
@@ -86,7 +86,7 @@ const App = () => {
             <MotTaxReminderRunner />
             <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
-              <ServiceStatusBanner />
+              
               <div className="pb-20 md:pb-0 overflow-x-hidden w-full max-w-[100vw]">
               <Routes>
                 <Route path="/" element={<Index />} />
