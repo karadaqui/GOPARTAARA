@@ -86,16 +86,20 @@ const EBAY_DEALS = [
 
 const EBAY_ALL_URL = ebayAff("https://www.ebay.co.uk/deals/automotive");
 
-// ───────── Amazon UK ─────────
+// ───────── Amazon UK (via Awin) ─────────
+const awinAmazon = (amazonUrl: string) =>
+  `https://www.awin1.com/cread.php?awinmid=118045&awinaffid=2845282&ued=${encodeURIComponent(amazonUrl)}`;
+
 const AMAZON_DEALS = [
-  { icon: "⚙️", title: "Car Parts & Accessories", subtitle: "Brakes, filters, exhausts & more", url: "https://www.amazon.co.uk/s?k=car+parts&tag=gopartara-21", badge: "Top picks" },
-  { icon: "🔧", title: "Tools & Equipment", subtitle: "Garage tools, jacks, diagnostic kits", url: "https://www.amazon.co.uk/s?k=car+tools&tag=gopartara-21", badge: "Workshop" },
-  { icon: "🧴", title: "Car Care & Cleaning", subtitle: "Wax, polish & detailing essentials", url: "https://www.amazon.co.uk/s?k=car+cleaning&tag=gopartara-21", badge: "Detailing" },
-  { icon: "🛞", title: "Tyres & Wheels", subtitle: "All-season, winter & summer tyres", url: "https://www.amazon.co.uk/s?k=tyres&tag=gopartara-21", badge: "Big savings" },
-  { icon: "📻", title: "Car Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: "https://www.amazon.co.uk/s?k=car+electronics&tag=gopartara-21", badge: "Hot deals" },
-  { icon: "⚡", title: "Performance Parts", subtitle: "Tuning, exhausts & styling kits", url: "https://www.amazon.co.uk/s?k=performance+car+parts&tag=gopartara-21", badge: "Performance" },
+  { icon: "⚙️", title: "Car Parts & Accessories", subtitle: "Brakes, filters, exhausts & more", url: awinAmazon("https://www.amazon.co.uk/s?k=car+parts"), badge: "Top picks" },
+  { icon: "🔧", title: "Tools & Equipment", subtitle: "Garage tools, jacks, diagnostic kits", url: awinAmazon("https://www.amazon.co.uk/s?k=car+tools"), badge: "Workshop" },
+  { icon: "🧴", title: "Car Care & Cleaning", subtitle: "Wax, polish & detailing essentials", url: awinAmazon("https://www.amazon.co.uk/s?k=car+cleaning"), badge: "Detailing" },
+  { icon: "🛞", title: "Tyres & Wheels", subtitle: "All-season, winter & summer tyres", url: awinAmazon("https://www.amazon.co.uk/s?k=tyres"), badge: "Big savings" },
+  { icon: "📻", title: "Car Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: awinAmazon("https://www.amazon.co.uk/s?k=car+electronics"), badge: "Hot deals" },
+  { icon: "⚡", title: "Performance Parts", subtitle: "Tuning, exhausts & styling kits", url: awinAmazon("https://www.amazon.co.uk/s?k=performance+car+parts"), badge: "Performance" },
 ];
-const AMAZON_ALL_URL = "https://www.amazon.co.uk/s?k=car+parts&tag=gopartara-21";
+const AMAZON_ALL_URL = awinAmazon("https://www.amazon.co.uk/s?k=car+parts");
+
 
 const Deals = () => {
   const [now, setNow] = useState(() => new Date());
