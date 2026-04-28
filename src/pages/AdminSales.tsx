@@ -31,6 +31,7 @@ interface SaleRow {
   listing_title?: string;
   buyer_email?: string;
   seller_email?: string;
+  seller_display_name?: string;
   payout?: {
     full_name?: string | null;
     sort_code?: string | null;
