@@ -83,19 +83,20 @@ const AdminSales = () => {
 
       const [{ data: listings }, { data: profiles }, { data: payouts }] = await Promise.all([
         supabase.from("seller_listings").select("id, title").in("id", listingIds),
-        supabase.from("profiles").select("user_id, email").in("user_id", userIds),
+        supabase.from("profiles").select("user_id, email, display_name").in("user_id", userIds),
         supabase.from("seller_payout_info" as any).select("*").in("user_id", userIds),
       ]);
 
       const listingMap = new Map((listings || []).map((l: any) => [l.id, l.title]));
-      const profileMap = new Map((profiles || []).map((p: any) => [p.user_id, p.email]));
+      const profileMap = new Map((profiles || []).map((p: any) => [p.user_id, p]));
       const payoutMap = new Map((payouts || []).map((p: any) => [p.user_id, p]));
 
       const enriched: SaleRow[] = offersList.map(o => ({
         ...o,
         listing_title: listingMap.get(o.listing_id) || "—",
-        buyer_email: profileMap.get(o.buyer_id) || "—",
-        seller_email: profileMap.get(o.seller_id) || "—",
+        buyer_email: (profileMap.get(o.buyer_id) as any)?.email || "—",
+        seller_email: (profileMap.get(o.seller_id) as any)?.email || "—",
+        seller_display_name: (profileMap.get(o.seller_id) as any)?.display_name || null,
         payout: payoutMap.get(o.seller_id) || null,
       }));
 
