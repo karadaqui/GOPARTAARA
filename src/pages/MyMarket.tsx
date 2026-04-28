@@ -1449,6 +1449,33 @@ const MyMarket = () => {
         </div>
       )}
 
+      {user && (
+        <PayoutSetupModal
+          open={payoutModalOpen}
+          onOpenChange={setPayoutModalOpen}
+          userId={user.id}
+          continueLabel={payoutGateContinue ? "Save & Continue to Listing →" : "Save Payout Details"}
+          onSaved={async () => {
+            // refresh local payout info
+            try {
+              const { data: pi } = await supabase
+                .from("seller_payout_info" as any)
+                .select("full_name, sort_code, account_number, paypal_email, preferred_method")
+                .eq("user_id", user.id)
+                .maybeSingle();
+              setPayoutInfo((pi as any) || null);
+            } catch { /* ignore */ }
+            if (payoutGateContinue) {
+              setPayoutGateContinue(false);
+              // Open listing form now that payout exists
+              setEditingListing(null);
+              setListingForm({ title: "", description: "", price: "", category: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
+              setListingDialog(true);
+            }
+          }}
+        />
+      )}
+
       <Footer />
     </div>
   );
