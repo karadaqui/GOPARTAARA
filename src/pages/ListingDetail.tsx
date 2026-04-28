@@ -451,9 +451,40 @@ const ListingDetail = () => {
 
             {/* Primary actions */}
             <div className="space-y-2.5">
+              {!isSeller && listing.price && (
+                <>
+                  <button
+                    onClick={handleBuyNow}
+                    disabled={buyingNow}
+                    style={{
+                      background: buyingNow ? '#666' : '#cc1111',
+                      color: 'white',
+                      padding: '16px',
+                      borderRadius: '10px',
+                      fontSize: '16px',
+                      fontWeight: 700,
+                      border: 'none',
+                      cursor: buyingNow ? 'not-allowed' : 'pointer',
+                      width: '100%',
+                    }}
+                  >
+                    {buyingNow ? 'Redirecting to checkout...' : `Buy Now — £${listing.price.toFixed(2)}`}
+                  </button>
+                  <p style={{
+                    fontSize: '12px',
+                    color: '#52525b',
+                    textAlign: 'center',
+                    marginTop: '-4px',
+                    marginBottom: '4px',
+                  }}>
+                    🔒 Instant purchase · Secured by Stripe
+                  </p>
+                </>
+              )}
               {!isSeller && (
                 <Button
                   onClick={() => { if (!user) { navigate("/auth"); return; } setOfferOpen(true); }}
+                  variant="secondary"
                   className="w-full rounded-xl gap-2 h-12 text-base font-semibold"
                 >
                   🤝 Make an Offer
