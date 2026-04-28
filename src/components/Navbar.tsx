@@ -289,24 +289,44 @@ const Navbar = () => {
                 {user ? (
                   <>
                     {user.email === ADMIN_EMAIL && (
-                      <button
-                        onClick={() => navigate("/admin")}
-                        className="transition-colors hidden lg:inline-flex"
-                        style={{
-                          fontSize: "13px",
-                          fontWeight: 500,
-                          color: "#a1a1aa",
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                          padding: "6px 8px",
-                          whiteSpace: "nowrap",
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
-                      >
-                        Admin
-                      </button>
+                      <>
+                        <button
+                          onClick={() => navigate("/admin")}
+                          className="transition-colors hidden lg:inline-flex"
+                          style={{
+                            fontSize: "13px",
+                            fontWeight: 500,
+                            color: "#a1a1aa",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: "6px 8px",
+                            whiteSpace: "nowrap",
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                        >
+                          Admin
+                        </button>
+                        <button
+                          onClick={() => navigate("/admin/sales")}
+                          className="transition-colors hidden lg:inline-flex"
+                          style={{
+                            fontSize: "13px",
+                            fontWeight: 500,
+                            color: "#a1a1aa",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: "6px 8px",
+                            whiteSpace: "nowrap",
+                          }}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                        >
+                          Sales
+                        </button>
+                      </>
                     )}
 
                     <button
