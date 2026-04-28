@@ -101,6 +101,7 @@ const Marketplace = () => {
   const [showCompare, setShowCompare] = useState(false);
   const [buyerOffers, setBuyerOffers] = useState<BuyerOffer[]>([]);
   const [payingOfferId, setPayingOfferId] = useState<string | null>(null);
+  const [hasShop, setHasShop] = useState(false);
 
   // Handle return from Stripe checkout
   useEffect(() => {
@@ -123,6 +124,16 @@ const Marketplace = () => {
     if (!user) { setAuthGateOpen(true); setLoading(false); return; }
     loadListings();
     loadBuyerOffers();
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("seller_profiles")
+          .select("id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        setHasShop(!!data);
+      } catch {}
+    })();
   }, [user, authLoading]);
 
   const loadBuyerOffers = async () => {
@@ -330,9 +341,29 @@ const Marketplace = () => {
             <Wrench size={14} className="inline mr-1.5 -mt-0.5 text-primary" />
             Have parts to sell? List for free on GOPARTARA
           </p>
-          <Button size="sm" className="rounded-xl gap-1.5 shrink-0 h-10 min-w-[120px]" onClick={() => navigate("/my-market")}>
-            List Your Parts →
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button size="sm" className="rounded-xl gap-1.5 h-10 min-w-[120px]" onClick={() => navigate("/my-market")}>
+              List Your Parts →
+            </Button>
+            {user && hasShop && (
+              <button
+                onClick={() => navigate("/my-market")}
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(255,255,255,0.2)",
+                  color: "white",
+                  padding: "10px 20px",
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                My Shop →
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Info banners */}
