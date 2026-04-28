@@ -865,12 +865,22 @@ const MyMarket = () => {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-display font-bold text-lg text-primary">£{Number(offer.amount).toFixed(2)}</span>
-                        <Badge
-                          variant={offer.status === "pending" ? "secondary" : offer.status === "accepted" ? "default" : "destructive"}
-                          className="capitalize text-xs"
-                        >
-                          {offer.status}
-                        </Badge>
+                        {offer.status === "accepted" || offer.status === "pending_payment" ? (
+                          <Badge className="text-xs bg-amber-500/15 text-amber-400 border border-amber-500/30 hover:bg-amber-500/15">
+                            Awaiting buyer payment
+                          </Badge>
+                        ) : offer.status === "paid" ? (
+                          <Badge className="text-xs bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/15">
+                            Paid ✓
+                          </Badge>
+                        ) : (
+                          <Badge
+                            variant={offer.status === "pending" ? "secondary" : "destructive"}
+                            className="capitalize text-xs"
+                          >
+                            {offer.status}
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground">
                         from <span className="font-medium text-foreground">{offer.buyer_name}</span> on <span className="font-medium text-foreground">{offer.listing_title}</span>
