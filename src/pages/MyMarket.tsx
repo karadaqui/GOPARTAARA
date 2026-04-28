@@ -19,6 +19,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import VehicleSelector from "@/components/VehicleSelector";
 import CategoryTagSelector from "@/components/CategoryTagSelector";
 import EmptyState from "@/components/EmptyState";
+import PayoutSetupModal from "@/components/PayoutSetupModal";
+import { CreditCard, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 interface SellerProfile {
   id: string;
