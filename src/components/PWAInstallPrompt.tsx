@@ -7,7 +7,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const VISIT_KEY = "pwa_visit_count";
-const DISMISSED_KEY = "pwa_dismissed";
+const DISMISSED_KEY = "pwa_bottom_dismissed";
 const SHOW_DELAY_MS = 30_000;
 const MIN_VISITS = 3;
 
@@ -50,8 +50,12 @@ const PWAInstallPrompt = () => {
     // Mobile only
     if (window.innerWidth >= 768) return;
 
-    // Dismissed previously
-    if (localStorage.getItem(DISMISSED_KEY) === "true") return;
+    // Dismissed previously (persistent)
+    try {
+      if (localStorage.getItem(DISMISSED_KEY) === "true") return;
+    } catch {
+      // ignore
+    }
 
     const visits = parseInt(localStorage.getItem(VISIT_KEY) || "0", 10);
 
@@ -119,13 +123,22 @@ const PWAInstallPrompt = () => {
       aria-label="Install GOPARTARA"
     >
       <div className="flex items-center gap-3 px-4 py-3">
-        <img
-          src="/favicon.png"
-          alt="GOPARTARA"
-          width={32}
-          height={32}
-          className="rounded-md flex-shrink-0"
-        />
+        <div
+          aria-hidden="true"
+          style={{
+            background: "#cc1111",
+            color: "#ffffff",
+            fontWeight: 900,
+            fontSize: 11,
+            padding: "4px 6px",
+            borderRadius: 4,
+            letterSpacing: "-0.5px",
+            flexShrink: 0,
+            lineHeight: 1,
+          }}
+        >
+          GO
+        </div>
         <p className="flex-1 text-[13px] leading-snug text-zinc-300">
           Add to home screen for faster access
         </p>
@@ -141,9 +154,19 @@ const PWAInstallPrompt = () => {
           type="button"
           onClick={dismiss}
           aria-label="Dismiss"
-          className="p-1.5 rounded-md text-zinc-500 hover:text-zinc-300"
+          className="flex items-center justify-center"
+          style={{
+            minWidth: 44,
+            minHeight: 44,
+            color: "#71717a",
+            background: "transparent",
+            border: "none",
+            cursor: "pointer",
+            fontSize: 18,
+            padding: 8,
+          }}
         >
-          <X size={16} />
+          <X size={20} />
         </button>
       </div>
     </div>
