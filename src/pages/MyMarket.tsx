@@ -126,6 +126,15 @@ const MyMarket = () => {
   const [boostListingId, setBoostListingId] = useState<string | null>(null);
   const [boostingPriceId, setBoostingPriceId] = useState<string | null>(null);
   const [showBoostPending, setShowBoostPending] = useState(false);
+  const [payoutInfo, setPayoutInfo] = useState<{ full_name: string | null; sort_code: string | null; account_number: string | null; paypal_email: string | null; preferred_method: string | null } | null>(null);
+  const [payoutModalOpen, setPayoutModalOpen] = useState(false);
+  const [payoutGateContinue, setPayoutGateContinue] = useState(false);
+
+  const hasValidPayout = !!payoutInfo && (
+    (payoutInfo.preferred_method === "bank" && !!payoutInfo.sort_code && !!payoutInfo.account_number) ||
+    (payoutInfo.preferred_method === "paypal" && !!payoutInfo.paypal_email) ||
+    !!payoutInfo.account_number || !!payoutInfo.paypal_email
+  );
 
   // Check for ?boost_pending=true in URL (user returned from Stripe checkout)
   useEffect(() => {
