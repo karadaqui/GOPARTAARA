@@ -396,6 +396,12 @@ const MyMarket = () => {
   };
 
   const openListingForm = (listing?: Listing) => {
+    // GATE: require payout info before creating new listings (editing existing is fine)
+    if (!listing && !hasValidPayout) {
+      setPayoutGateContinue(true);
+      setPayoutModalOpen(true);
+      return;
+    }
     if (listing) {
       setEditingListing(listing);
       setListingForm({
