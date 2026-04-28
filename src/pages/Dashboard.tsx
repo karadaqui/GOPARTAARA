@@ -505,8 +505,9 @@ const Dashboard = () => {
             onClick={() => navigate("/garage")}
           />
           <QuickAction
-            icon={<Package size={20} style={{ color: "#cc1111" }} />}
-            label="My Listings"
+            icon={<span style={{ fontSize: 20 }}>🏪</span>}
+            label="My Shop"
+            subtitle="Manage listings & offers"
             onClick={() => navigate("/my-market")}
           />
         </div>
@@ -994,10 +995,12 @@ const StatCard = ({
 const QuickAction = ({
   icon,
   label,
+  subtitle,
   onClick,
 }: {
   icon: React.ReactNode;
   label: string;
+  subtitle?: string;
   onClick: () => void;
 }) => (
   <button
@@ -1023,8 +1026,15 @@ const QuickAction = ({
     >
       {icon}
     </div>
-    <span className="flex-1 text-white" style={{ fontSize: "15px", fontWeight: 600 }}>
-      {label}
+    <span className="flex-1 min-w-0">
+      <span className="block text-white" style={{ fontSize: "15px", fontWeight: 600 }}>
+        {label}
+      </span>
+      {subtitle && (
+        <span className="block" style={{ fontSize: "12px", color: "#71717a", marginTop: 2 }}>
+          {subtitle}
+        </span>
+      )}
     </span>
     <ArrowRight
       size={16}

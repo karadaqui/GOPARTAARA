@@ -42,6 +42,8 @@ const moreLinks: MoreLink[] = [
   { label: "Contact", href: "/contact", Icon: MailIcon },
 ];
 
+const authedMoreLink: MoreLink = { label: "🏪 My Shop", href: "/my-market", Icon: Briefcase };
+
 const ADMIN_EMAIL = "info@gopartara.com";
 
 const Navbar = () => {
@@ -220,7 +222,7 @@ const Navbar = () => {
                       boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
                     }}
                   >
-                    {moreLinks.map((l) => {
+                    {(user ? [authedMoreLink, ...moreLinks] : moreLinks).map((l) => {
                       const isActive =
                         pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
                       const Icon = l.Icon;
@@ -478,6 +480,7 @@ const Navbar = () => {
             {[
               { label: "Search", href: "/search" },
               { label: "Marketplace", href: "/marketplace" },
+              ...(user ? [{ label: "🏪 My Shop", href: "/my-market" }] : []),
               { label: "Deals", href: "/deals" },
               { label: "Pricing", href: "/pricing" },
               { label: "Help Center", href: "/help" },
