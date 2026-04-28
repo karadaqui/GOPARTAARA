@@ -15,7 +15,7 @@ import PWAInstallPrompt from "./components/PWAInstallPrompt.tsx";
 import DevToolsGuard from "./components/DevToolsGuard.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
 import TopProgressBar from "./components/TopProgressBar.tsx";
-import MobileAppBanner from "./components/MobileAppBanner.tsx";
+
 import SocialProofPopup from "./components/SocialProofPopup.tsx";
 import MotTaxReminderRunner from "./components/garage/MotTaxReminderRunner.tsx";
 import ServiceStatusBanner from "./components/ServiceStatusBanner.tsx";
@@ -86,7 +86,6 @@ const App = () => {
             <MotTaxReminderRunner />
             <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
-              <MobileAppBanner />
               <ServiceStatusBanner />
               <div className="pb-20 md:pb-0 overflow-x-hidden w-full max-w-[100vw]">
               <Routes>
