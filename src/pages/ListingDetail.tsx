@@ -472,9 +472,9 @@ const ListingDetail = () => {
                   </button>
                   <p style={{
                     fontSize: '12px',
-                    color: '#52525b',
+                    color: '#71717a',
                     textAlign: 'center',
-                    marginTop: '-4px',
+                    marginTop: '8px',
                     marginBottom: '4px',
                   }}>
                     🔒 Instant purchase · Secured by Stripe
