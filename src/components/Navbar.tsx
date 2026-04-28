@@ -480,6 +480,7 @@ const Navbar = () => {
             {[
               { label: "Search", href: "/search" },
               { label: "Marketplace", href: "/marketplace" },
+              ...(user ? [{ label: "🏪 My Shop", href: "/my-market" }] : []),
               { label: "Deals", href: "/deals" },
               { label: "Pricing", href: "/pricing" },
               { label: "Help Center", href: "/help" },
