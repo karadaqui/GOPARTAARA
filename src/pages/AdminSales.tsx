@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const ADMIN_EMAIL = "info@gopartara.com";
+const COMMISSION_RATE = 0.05;
 
 interface SaleRow {
   id: string;
@@ -138,10 +139,12 @@ const AdminSales = () => {
   };
 
   const paidRows = rows.filter(r => r.status === "paid");
-  const totalRevenue = paidRows.reduce((s, r) => s + Number(r.amount), 0);
+  const grossSales = paidRows.reduce((s, r) => s + Number(r.amount), 0);
+  const totalRevenue = grossSales * COMMISSION_RATE;
+  const totalPayouts = grossSales * (1 - COMMISSION_RATE);
   const totalSales = paidRows.length;
   const pendingPayouts = paidRows.filter(r => !r.payout_sent).length;
-  const avgSale = totalSales > 0 ? totalRevenue / totalSales : 0;
+  const avgSale = totalSales > 0 ? grossSales / totalSales : 0;
 
   if (authLoading || loading) {
     return (
@@ -163,8 +166,9 @@ const AdminSales = () => {
         <h1 className="font-display text-3xl font-bold mb-8">💰 Sales Dashboard</h1>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          <StatCard label="Total Revenue" value={`£${totalRevenue.toFixed(2)}`} />
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
+          <StatCard label="Total Revenue (5%)" value={`£${totalRevenue.toFixed(2)}`} />
+          <StatCard label="Total Payouts (95%)" value={`£${totalPayouts.toFixed(2)}`} />
           <StatCard label="Total Sales" value={String(totalSales)} />
           <StatCard label="Pending Payouts" value={String(pendingPayouts)} />
           <StatCard label="Avg Sale Value" value={`£${avgSale.toFixed(2)}`} />
@@ -180,6 +184,8 @@ const AdminSales = () => {
                 <th className="text-left p-3">Buyer</th>
                 <th className="text-left p-3">Seller</th>
                 <th className="text-left p-3">Amount</th>
+                <th className="text-left p-3">Commission</th>
+                <th className="text-left p-3">Seller Payout</th>
                 <th className="text-left p-3">Stripe</th>
                 <th className="text-left p-3">Status</th>
                 <th className="text-left p-3">Payout</th>
@@ -188,7 +194,7 @@ const AdminSales = () => {
             </thead>
             <tbody>
               {rows.length === 0 && (
-                <tr><td colSpan={9} className="p-8 text-center text-muted-foreground">No sales yet</td></tr>
+                <tr><td colSpan={11} className="p-8 text-center text-muted-foreground">No sales yet</td></tr>
               )}
               {rows.map(r => (
                 <tr key={r.id} className="border-t border-border align-top">
@@ -213,6 +219,14 @@ const AdminSales = () => {
                     )}
                   </td>
                   <td className="p-3 font-semibold whitespace-nowrap">£{Number(r.amount).toFixed(2)}</td>
+                  <td className="p-3 whitespace-nowrap">
+                    <div className="font-semibold text-emerald-400">£{(Number(r.amount) * COMMISSION_RATE).toFixed(2)}</div>
+                    <div className="text-[11px] text-muted-foreground">5% fee</div>
+                  </td>
+                  <td className="p-3 whitespace-nowrap">
+                    <div className="font-semibold text-foreground">£{(Number(r.amount) * (1 - COMMISSION_RATE)).toFixed(2)}</div>
+                    <div className="text-[11px] text-muted-foreground">to send</div>
+                  </td>
                   <td className="p-3">
                     {r.stripe_session_id ? (
                       <a

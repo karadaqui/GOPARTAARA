@@ -828,6 +828,12 @@ const MyMarket = () => {
           </div>
         )}
 
+        {/* Commission notice */}
+        <div className="mb-6 p-3 rounded-xl bg-secondary/40 border border-border text-xs text-muted-foreground">
+          <span className="font-semibold text-foreground">GOPARTARA charges a 5% platform fee on all sales.</span>{" "}
+          You receive 95% of the sale price.
+        </div>
+
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <div className="glass rounded-xl p-4 text-center">
@@ -1203,6 +1209,9 @@ const MyMarket = () => {
           <DialogHeader>
             <DialogTitle className="font-display">{editingListing ? "Edit Listing" : "New Listing"}</DialogTitle>
           </DialogHeader>
+          <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300">
+            <span className="font-semibold">GOPARTARA charges a 5% platform fee on all sales.</span> You receive 95% of the sale price.
+          </div>
           <div className="space-y-4">
             <div>
               <label className="text-sm text-muted-foreground block mb-1">Title *</label>
