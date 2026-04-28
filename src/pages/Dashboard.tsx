@@ -10,7 +10,7 @@ import SEOHead from "@/components/SEOHead";
 import {
   Camera, Save, User, Mail, Crown, Bookmark, Loader2,
   Search, X, ExternalLink, CreditCard, Download, Lock, Copy,
-  Bell as BellIcon, ShoppingBag, Sparkles, ArrowRight, Car, Package, ArrowDownToLine, Scale, BarChart3,
+  Bell as BellIcon, ShoppingBag, Sparkles, ArrowRight, Car, Package, ArrowDownToLine, Scale, BarChart3, Store,
 } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
@@ -505,7 +505,7 @@ const Dashboard = () => {
             onClick={() => navigate("/garage")}
           />
           <QuickAction
-            icon={<span style={{ fontSize: 20 }}>🏪</span>}
+            icon={<Store size={20} style={{ color: "#cc1111" }} />}
             label="My Shop"
             subtitle="Manage listings & offers"
             onClick={() => navigate("/my-market")}
