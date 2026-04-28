@@ -305,10 +305,11 @@ const AdminSales = () => {
   );
 };
 
-const StatCard = ({ label, value }: { label: string; value: string }) => (
+const StatCard = ({ label, value, valueColor, subtitle }: { label: string; value: string; valueColor?: string; subtitle?: string }) => (
   <div className="rounded-xl border border-border bg-card p-4">
     <div className="text-xs uppercase text-muted-foreground tracking-wide">{label}</div>
-    <div className="font-display text-2xl font-bold mt-1">{value}</div>
+    <div className="font-display text-2xl font-bold mt-1" style={valueColor ? { color: valueColor } : undefined}>{value}</div>
+    {subtitle && <div className="text-[11px] text-muted-foreground mt-0.5">{subtitle}</div>}
   </div>
 );
 
