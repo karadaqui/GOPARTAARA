@@ -197,18 +197,19 @@ const AdminSales = () => {
                   <td className="p-3 text-xs">{r.buyer_email}</td>
                   <td className="p-3 text-xs">
                     <div>{r.seller_email}</div>
-                    {r.payout ? (
+                    {r.payout && (r.payout.paypal_email || r.payout.account_number) ? (
                       <div className="mt-1 text-[11px] text-muted-foreground leading-tight">
-                        {r.payout.full_name && <div>{r.payout.full_name}</div>}
-                        {r.payout.preferred_method === "paypal" && r.payout.paypal_email && (
-                          <div>PayPal: {r.payout.paypal_email}</div>
-                        )}
-                        {r.payout.preferred_method === "bank" && (r.payout.sort_code || r.payout.account_number) && (
-                          <div>Sort: {r.payout.sort_code} · Acc: {r.payout.account_number}</div>
+                        {r.payout.preferred_method === "paypal" || (!r.payout.account_number && r.payout.paypal_email) ? (
+                          <div>💙 PayPal: {r.payout.paypal_email}</div>
+                        ) : (
+                          <>
+                            <div>🏦 Sort: {r.payout.sort_code} | Acc: {r.payout.account_number}</div>
+                            {r.payout.full_name && <div>Name: {r.payout.full_name}</div>}
+                          </>
                         )}
                       </div>
                     ) : (
-                      <div className="mt-1 text-[11px] text-amber-500">No payout info set</div>
+                      <div className="mt-1 text-[11px] text-destructive font-medium">⚠️ No payout info</div>
                     )}
                   </td>
                   <td className="p-3 font-semibold whitespace-nowrap">£{Number(r.amount).toFixed(2)}</td>
