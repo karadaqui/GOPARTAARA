@@ -19,6 +19,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import VehicleSelector from "@/components/VehicleSelector";
 import CategoryTagSelector from "@/components/CategoryTagSelector";
 import EmptyState from "@/components/EmptyState";
+import PayoutSetupModal from "@/components/PayoutSetupModal";
+import { CreditCard, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 interface SellerProfile {
   id: string;
@@ -124,6 +126,15 @@ const MyMarket = () => {
   const [boostListingId, setBoostListingId] = useState<string | null>(null);
   const [boostingPriceId, setBoostingPriceId] = useState<string | null>(null);
   const [showBoostPending, setShowBoostPending] = useState(false);
+  const [payoutInfo, setPayoutInfo] = useState<{ full_name: string | null; sort_code: string | null; account_number: string | null; paypal_email: string | null; preferred_method: string | null } | null>(null);
+  const [payoutModalOpen, setPayoutModalOpen] = useState(false);
+  const [payoutGateContinue, setPayoutGateContinue] = useState(false);
+
+  const hasValidPayout = !!payoutInfo && (
+    (payoutInfo.preferred_method === "bank" && !!payoutInfo.sort_code && !!payoutInfo.account_number) ||
+    (payoutInfo.preferred_method === "paypal" && !!payoutInfo.paypal_email) ||
+    !!payoutInfo.account_number || !!payoutInfo.paypal_email
+  );
 
   // Check for ?boost_pending=true in URL (user returned from Stripe checkout)
   useEffect(() => {
@@ -172,6 +183,16 @@ const MyMarket = () => {
 
   const loadData = async () => {
     setLoading(true);
+    // Load payout info (independent of seller profile)
+    try {
+      const { data: pi } = await supabase
+        .from("seller_payout_info" as any)
+        .select("full_name, sort_code, account_number, paypal_email, preferred_method")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      setPayoutInfo((pi as any) || null);
+    } catch { /* ignore */ }
+
     const { data: sp } = await supabase
       .from("seller_profiles")
       .select("*")
@@ -375,6 +396,12 @@ const MyMarket = () => {
   };
 
   const openListingForm = (listing?: Listing) => {
+    // GATE: require payout info before creating new listings (editing existing is fine)
+    if (!listing && !hasValidPayout) {
+      setPayoutGateContinue(true);
+      setPayoutModalOpen(true);
+      return;
+    }
     if (listing) {
       setEditingListing(listing);
       setListingForm({
@@ -770,6 +797,36 @@ const MyMarket = () => {
             </Button>
           </div>
         </div>
+
+        {/* Payout status banner */}
+        {hasValidPayout ? (
+          <div className="mb-6 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-sm">
+              <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+              <span className="text-emerald-300">
+                Payout details saved —{" "}
+                {payoutInfo?.preferred_method === "paypal" || (!payoutInfo?.account_number && payoutInfo?.paypal_email)
+                  ? <>💙 PayPal: <span className="font-mono">{payoutInfo?.paypal_email}</span></>
+                  : <>🏦 Bank Transfer: <span className="font-mono">{payoutInfo?.sort_code}</span></>}
+              </span>
+            </div>
+            <Button size="sm" variant="ghost" className="h-7 text-xs gap-1" onClick={() => { setPayoutGateContinue(false); setPayoutModalOpen(true); }}>
+              <Pencil size={12} /> Edit
+            </Button>
+          </div>
+        ) : (
+          <div className="mb-6 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-sm">
+              <AlertTriangle size={16} className="text-amber-400 shrink-0" />
+              <span className="text-amber-300">
+                You haven't set up payout details yet. Add your bank or PayPal details to start selling.
+              </span>
+            </div>
+            <Button size="sm" variant="outline" className="h-7 text-xs gap-1 border-amber-500/40 text-amber-300 hover:bg-amber-500/10" onClick={() => { setPayoutGateContinue(false); setPayoutModalOpen(true); }}>
+              <CreditCard size={12} /> Set Up Payouts →
+            </Button>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -1390,6 +1447,33 @@ const MyMarket = () => {
             Undo
           </Button>
         </div>
+      )}
+
+      {user && (
+        <PayoutSetupModal
+          open={payoutModalOpen}
+          onOpenChange={setPayoutModalOpen}
+          userId={user.id}
+          continueLabel={payoutGateContinue ? "Save & Continue to Listing →" : "Save Payout Details"}
+          onSaved={async () => {
+            // refresh local payout info
+            try {
+              const { data: pi } = await supabase
+                .from("seller_payout_info" as any)
+                .select("full_name, sort_code, account_number, paypal_email, preferred_method")
+                .eq("user_id", user.id)
+                .maybeSingle();
+              setPayoutInfo((pi as any) || null);
+            } catch { /* ignore */ }
+            if (payoutGateContinue) {
+              setPayoutGateContinue(false);
+              // Open listing form now that payout exists
+              setEditingListing(null);
+              setListingForm({ title: "", description: "", price: "", category: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
+              setListingDialog(true);
+            }
+          }}
+        />
       )}
 
       <Footer />
