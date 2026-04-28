@@ -86,6 +86,7 @@ const App = () => {
             <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
               <MobileAppBanner />
+              <ServiceStatusBanner />
               <div className="pb-20 md:pb-0 overflow-x-hidden w-full max-w-[100vw]">
               <Routes>
                 <Route path="/" element={<Index />} />
