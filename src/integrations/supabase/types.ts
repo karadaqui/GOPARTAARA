@@ -592,6 +592,7 @@ export type Database = {
           message: string | null
           seller_id: string
           status: string
+          stripe_session_id: string | null
         }
         Insert: {
           amount: number
@@ -602,6 +603,7 @@ export type Database = {
           message?: string | null
           seller_id: string
           status?: string
+          stripe_session_id?: string | null
         }
         Update: {
           amount?: number
@@ -612,6 +614,7 @@ export type Database = {
           message?: string | null
           seller_id?: string
           status?: string
+          stripe_session_id?: string | null
         }
         Relationships: [
           {

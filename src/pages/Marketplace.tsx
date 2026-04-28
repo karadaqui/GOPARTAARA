@@ -17,6 +17,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthGateModal from "@/components/AuthGateModal";
 import ScrollReveal from "@/components/ScrollReveal";
+import { toast } from "sonner";
+
+interface BuyerOffer {
+  id: string;
+  amount: number;
+  status: string;
+  listing_id: string;
+  seller_id: string;
+  buyer_id: string;
+  listing_title: string;
+  listing_photo: string | null;
+}
 
 interface ListingWithSeller {
   id: string;
@@ -87,12 +99,71 @@ const Marketplace = () => {
   const [authGateOpen, setAuthGateOpen] = useState(false);
   const [compareParts, setCompareParts] = usePersistentCompare();
   const [showCompare, setShowCompare] = useState(false);
+  const [buyerOffers, setBuyerOffers] = useState<BuyerOffer[]>([]);
+  const [payingOfferId, setPayingOfferId] = useState<string | null>(null);
+
+  // Handle return from Stripe checkout
+  useEffect(() => {
+    const status = searchParams.get("payment");
+    const offerId = searchParams.get("offer");
+    if (!status) return;
+    if (status === "success") {
+      toast.success("Payment successful! The seller has been notified and will ship your part shortly.");
+      if (offerId) {
+        supabase.from("offers").update({ status: "paid" }).eq("id", offerId).then(() => {});
+      }
+    } else if (status === "cancelled") {
+      toast.warning("Payment was cancelled. You can try again from your offers below.");
+    }
+    window.history.replaceState({}, "", "/marketplace");
+  }, []);
 
   useEffect(() => {
     if (authLoading) return;
     if (!user) { setAuthGateOpen(true); setLoading(false); return; }
     loadListings();
+    loadBuyerOffers();
   }, [user, authLoading]);
+
+  const loadBuyerOffers = async () => {
+    if (!user) return;
+    try {
+      const { data } = await supabase
+        .from("offers")
+        .select("id, amount, status, listing_id, seller_id, buyer_id")
+        .eq("buyer_id", user.id)
+        .in("status", ["accepted", "pending_payment", "paid"])
+        .order("created_at", { ascending: false });
+      if (!data || data.length === 0) { setBuyerOffers([]); return; }
+      const listingIds = [...new Set(data.map((o: any) => o.listing_id))];
+      const { data: listings } = await supabase
+        .from("seller_listings").select("id, title, photos").in("id", listingIds);
+      const map = new Map((listings || []).map((l: any) => [l.id, l]));
+      setBuyerOffers(data.map((o: any) => ({
+        ...o,
+        listing_title: map.get(o.listing_id)?.title || "Unknown part",
+        listing_photo: map.get(o.listing_id)?.photos?.[0] || null,
+      })));
+    } catch {}
+  };
+
+  const handlePayNow = async (offer: BuyerOffer) => {
+    setPayingOfferId(offer.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-marketplace-checkout", {
+        body: { offerId: offer.id },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("No checkout URL returned");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Failed to start checkout");
+      setPayingOfferId(null);
+    }
+  };
 
   const loadListings = async () => {
     setLoading(true);
@@ -280,6 +351,44 @@ const Marketplace = () => {
           </div>
         ) : (
           <>
+            {/* Buyer's accepted offers — Pay Now */}
+            {buyerOffers.length > 0 && (
+              <div className="mb-8 space-y-3">
+                <h2 className="font-display text-lg font-bold text-foreground">Your offers</h2>
+                {buyerOffers.map(o => (
+                  <div key={o.id} className="bg-card border border-border rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      {o.listing_photo ? (
+                        <SafeImage src={o.listing_photo} alt={o.listing_title} className="w-14 h-14 rounded-lg object-cover shrink-0" />
+                      ) : (
+                        <div className="w-14 h-14 rounded-lg bg-secondary flex items-center justify-center shrink-0">
+                          <Package size={20} className="text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-sm truncate text-foreground">{o.listing_title}</p>
+                        <p className="text-xs text-muted-foreground">Your offer: £{Number(o.amount).toFixed(2)}</p>
+                      </div>
+                    </div>
+                    {o.status === "paid" ? (
+                      <Badge className="bg-green-500/20 text-green-400 border-green-500/30">✓ Paid</Badge>
+                    ) : (
+                      <div className="flex flex-col items-stretch sm:items-end gap-1.5">
+                        <Button
+                          onClick={() => handlePayNow(o)}
+                          disabled={payingOfferId === o.id}
+                          className="rounded-xl h-11 bg-primary hover:bg-primary/90 font-semibold"
+                        >
+                          {payingOfferId === o.id ? "Redirecting…" : `Pay £${Number(o.amount).toFixed(2)} Securely →`}
+                        </Button>
+                        <p className="text-[11px] text-muted-foreground text-center sm:text-right">🔒 Secured by Stripe — card payments only</p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* Filters */}
             <div className="glass rounded-2xl p-4 mb-8">
               <div className="flex flex-col md:flex-row gap-3">
