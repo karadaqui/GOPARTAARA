@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -7,7 +6,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const VISIT_KEY = "pwa_visit_count";
-const DISMISSED_KEY = "pwa_bottom_dismissed";
+const DISMISSED_KEY = "gopartara_pwa_dismissed";
 const SHOW_DELAY_MS = 30_000;
 const MIN_VISITS = 3;
 
