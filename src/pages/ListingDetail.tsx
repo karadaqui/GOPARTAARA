@@ -112,8 +112,37 @@ const ListingDetail = () => {
   const [disputeReason, setDisputeReason] = useState("");
   const [moderating, setModerating] = useState(false);
   const [offerOpen, setOfferOpen] = useState(false);
+  const [buyingNow, setBuyingNow] = useState(false);
   const isAdmin = userPlan === "admin";
   const isSeller = listing?.seller_profiles?.user_id === user?.id;
+
+  const handleBuyNow = async () => {
+    if (!user) {
+      navigate("/auth?redirect=" + window.location.pathname);
+      return;
+    }
+    if (!listing) return;
+    setBuyingNow(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-marketplace-checkout", {
+        body: {
+          listingId: listing.id,
+          amount: listing.price,
+          partTitle: listing.title,
+          sellerId: listing.seller_profiles.user_id,
+          buyerId: user.id,
+          buyNow: true,
+        },
+      });
+      if (error) throw error;
+      if (!data?.url) throw new Error("No checkout URL returned");
+      window.location.href = data.url;
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Could not start checkout", description: "Please try again.", variant: "destructive" });
+      setBuyingNow(false);
+    }
+  };
 
   useEffect(() => {
     if (id) loadListing();
@@ -422,9 +451,40 @@ const ListingDetail = () => {
 
             {/* Primary actions */}
             <div className="space-y-2.5">
+              {!isSeller && listing.price && (
+                <>
+                  <button
+                    onClick={handleBuyNow}
+                    disabled={buyingNow}
+                    style={{
+                      background: buyingNow ? '#666' : '#cc1111',
+                      color: 'white',
+                      padding: '16px',
+                      borderRadius: '10px',
+                      fontSize: '16px',
+                      fontWeight: 700,
+                      border: 'none',
+                      cursor: buyingNow ? 'not-allowed' : 'pointer',
+                      width: '100%',
+                    }}
+                  >
+                    {buyingNow ? 'Redirecting to checkout...' : `Buy Now — £${listing.price.toFixed(2)}`}
+                  </button>
+                  <p style={{
+                    fontSize: '12px',
+                    color: '#52525b',
+                    textAlign: 'center',
+                    marginTop: '-4px',
+                    marginBottom: '4px',
+                  }}>
+                    🔒 Instant purchase · Secured by Stripe
+                  </p>
+                </>
+              )}
               {!isSeller && (
                 <Button
                   onClick={() => { if (!user) { navigate("/auth"); return; } setOfferOpen(true); }}
+                  variant="secondary"
                   className="w-full rounded-xl gap-2 h-12 text-base font-semibold"
                 >
                   🤝 Make an Offer
