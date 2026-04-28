@@ -183,9 +183,7 @@ const AdminSales = () => {
                 <th className="text-left p-3">Part</th>
                 <th className="text-left p-3">Buyer</th>
                 <th className="text-left p-3">Seller</th>
-                <th className="text-left p-3">Sale Price</th>
-                <th className="text-left p-3">Your Cut (5%)</th>
-                <th className="text-left p-3">Send to Seller</th>
+                <th className="text-left p-3">Amount</th>
                 <th className="text-left p-3">Stripe</th>
                 <th className="text-left p-3">Status</th>
                 <th className="text-left p-3">Payout</th>
@@ -194,55 +192,49 @@ const AdminSales = () => {
             </thead>
             <tbody>
               {rows.length === 0 && (
-                <tr><td colSpan={11} className="p-8 text-center text-muted-foreground">No sales yet</td></tr>
+                <tr><td colSpan={9} className="p-8 text-center text-muted-foreground">No sales yet</td></tr>
               )}
-              {rows.map(r => (
+              {rows.map(r => {
+                const amt = Number(r.amount);
+                const isPaypal = r.payout?.preferred_method === "paypal" || (!r.payout?.account_number && r.payout?.paypal_email);
+                const hasPayout = r.payout && (r.payout.paypal_email || r.payout.account_number);
+                return (
                 <tr key={r.id} className="border-t border-border align-top">
                   <td className="p-3 whitespace-nowrap">{fmtDate(r.created_at)}</td>
                   <td className="p-3 max-w-[200px] truncate" title={r.listing_title}>{r.listing_title}</td>
                   <td className="p-3 text-xs">{r.buyer_email}</td>
-                  <td className="p-3 text-xs">
-                    <div>{r.seller_email}</div>
-                    {r.payout && (r.payout.paypal_email || r.payout.account_number) ? (
-                      <div className="mt-1 text-[11px] text-muted-foreground leading-tight">
-                        {r.payout.preferred_method === "paypal" || (!r.payout.account_number && r.payout.paypal_email) ? (
-                          <div>💙 PayPal: {r.payout.paypal_email}</div>
+                  <td className="p-3 text-xs min-w-[220px]">
+                    <div className="font-semibold text-foreground">{r.seller_email}</div>
+                    {r.seller_display_name && (
+                      <div className="text-[11px] text-muted-foreground">{r.seller_display_name}</div>
+                    )}
+                    {hasPayout ? (
+                      <div className="mt-1.5 text-[11px] leading-tight space-y-0.5">
+                        {isPaypal ? (
+                          <div className="text-foreground">💙 PayPal: <span className="font-medium">{r.payout!.paypal_email}</span></div>
                         ) : (
                           <>
-                            <div>🏦 Sort: {r.payout.sort_code} | Acc: {r.payout.account_number}</div>
-                            {r.payout.full_name && <div>Name: {r.payout.full_name}</div>}
+                            <div className="text-foreground">🏦 Sort: <span className="font-mono font-medium">{r.payout!.sort_code}</span></div>
+                            <div className="text-foreground">Acc: <span className="font-mono font-medium">{r.payout!.account_number}</span></div>
+                            {r.payout!.full_name && <div className="text-muted-foreground">Name: {r.payout!.full_name}</div>}
                           </>
                         )}
                       </div>
                     ) : (
-                      <div className="mt-1 text-[11px] text-destructive font-medium">⚠️ No payout info</div>
+                      <div className="mt-1.5 text-[11px] font-medium" style={{ color: '#f59e0b' }}>⚠️ No payout info set</div>
                     )}
                   </td>
-                  <td className="p-3 font-semibold whitespace-nowrap text-foreground">£{Number(r.amount).toFixed(2)}</td>
-                  <td className="p-3 whitespace-nowrap">
-                    <div className="font-semibold" style={{ color: '#22c55e' }}>£{(Number(r.amount) * COMMISSION_RATE).toFixed(2)}</div>
-                    <div className="text-[12px] text-muted-foreground">platform fee</div>
-                  </td>
-                  <td className="p-3 whitespace-nowrap">
+                  <td className="p-3 whitespace-nowrap min-w-[160px]">
+                    <div className="text-foreground">Paid: £{amt.toFixed(2)}</div>
+                    <div className="text-[12px]" style={{ color: '#22c55e' }}>Your 5%: £{(amt * COMMISSION_RATE).toFixed(2)}</div>
                     <div style={{ color: '#cc1111', fontWeight: 700, fontSize: '16px' }}>
-                      £{(Number(r.amount) * (1 - COMMISSION_RATE)).toFixed(2)}
+                      → Send: £{(amt * (1 - COMMISSION_RATE)).toFixed(2)}
                     </div>
-                    {r.payout && (r.payout.paypal_email || r.payout.account_number) ? (
-                      <div className="mt-0.5 text-[11px] text-muted-foreground leading-tight">
-                        {r.payout.preferred_method === "paypal" || (!r.payout.account_number && r.payout.paypal_email) ? (
-                          <>💙 {r.payout.paypal_email}</>
-                        ) : (
-                          <>🏦 {r.payout.sort_code} / {r.payout.account_number}</>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="mt-0.5 text-[11px] text-destructive font-medium">⚠️ No payout info!</div>
-                    )}
                   </td>
                   <td className="p-3">
                     {r.stripe_session_id ? (
                       <a
-                        href={`https://dashboard.stripe.com/payments/${r.stripe_session_id}`}
+                        href={`https://dashboard.stripe.com/checkout/sessions/${r.stripe_session_id}`}
                         target="_blank" rel="noopener noreferrer"
                         className="text-primary hover:underline inline-flex items-center gap-1 text-xs"
                       >
