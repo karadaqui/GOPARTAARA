@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -7,7 +6,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const VISIT_KEY = "pwa_visit_count";
-const DISMISSED_KEY = "pwa_bottom_dismissed";
+const DISMISSED_KEY = "gopartara_pwa_dismissed";
 const SHOW_DELAY_MS = 30_000;
 const MIN_VISITS = 3;
 
@@ -144,29 +143,31 @@ const PWAInstallPrompt = () => {
         </p>
         <button
           type="button"
-          onClick={install}
-          className="px-3 py-1.5 rounded-md text-xs font-semibold text-white"
-          style={{ background: "#cc1111" }}
-        >
-          Add
-        </button>
-        <button
-          type="button"
           onClick={dismiss}
           aria-label="Dismiss"
           className="flex items-center justify-center"
           style={{
             minWidth: 44,
             minHeight: 44,
-            color: "#71717a",
+            color: "#a1a1aa",
             background: "transparent",
             border: "none",
             cursor: "pointer",
             fontSize: 18,
+            lineHeight: 1,
+            fontFamily: "inherit",
             padding: 8,
           }}
         >
-          <X size={20} />
+          ✕
+        </button>
+        <button
+          type="button"
+          onClick={install}
+          className="px-3 py-1.5 rounded-md text-xs font-semibold text-white"
+          style={{ background: "#cc1111" }}
+        >
+          Add
         </button>
       </div>
     </div>
