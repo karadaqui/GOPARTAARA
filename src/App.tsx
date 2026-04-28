@@ -47,6 +47,7 @@ const ListingDetail = lazy(() => import("./pages/ListingDetail.tsx"));
 const SellerProfile = lazy(() => import("./pages/SellerProfile.tsx"));
 const Pricing = lazy(() => import("./pages/Pricing.tsx"));
 const Admin = lazy(() => import("./pages/Admin.tsx"));
+const AdminSales = lazy(() => import("./pages/AdminSales.tsx"));
 const Garage = lazy(() => import("./pages/Garage.tsx"));
 const Refund = lazy(() => import("./pages/Refund.tsx"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail.tsx"));
@@ -118,6 +119,7 @@ const App = () => {
                 <Route path="/complete-profile" element={<ProtectedRoute><CompleteProfile /></ProtectedRoute>} />
                 <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+                <Route path="/admin/sales" element={<ProtectedRoute><AdminSales /></ProtectedRoute>} />
                 <Route path="/confirm-shop-delete/:token" element={<ConfirmShopDelete />} />
                 <Route path="/recent" element={<RecentParts />} />
                 <Route path="/tyres" element={<Tyres />} />

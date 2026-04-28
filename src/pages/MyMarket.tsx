@@ -269,6 +269,22 @@ const MyMarket = () => {
     setLoading(false);
   };
 
+  const syncPayoutInfo = async (bd: { account_name: string | null; sort_code: string | null; account_number: string | null; paypal_email: string | null }) => {
+    try {
+      const preferred_method = bd.paypal_email && !bd.account_number ? "paypal" : "bank";
+      await supabase.from("seller_payout_info" as any).upsert({
+        user_id: user!.id,
+        full_name: bd.account_name,
+        sort_code: bd.sort_code,
+        account_number: bd.account_number,
+        paypal_email: bd.paypal_email,
+        preferred_method,
+      } as any, { onConflict: "user_id" });
+    } catch (e) {
+      console.error("payout info sync failed", e);
+    }
+  };
+
   const handleCreateProfile = async () => {
     if (!profileForm.business_name.trim()) {
       toast({ title: "Business name required", variant: "destructive" });
@@ -299,6 +315,7 @@ const MyMarket = () => {
       if (hasBankDetails) {
         await supabase.from("profiles").update({ seller_bank_details: bankDetails } as any).eq("user_id", user!.id);
       }
+      await syncPayoutInfo(bankDetails);
       toast({ title: "Profile created!" });
       setEditingProfile(false);
       await loadData();
@@ -330,6 +347,7 @@ const MyMarket = () => {
         paypal_email: profileForm.bank_paypal_email || null,
       };
       await supabase.from("profiles").update({ seller_bank_details: bankDetails } as any).eq("user_id", user!.id);
+      await syncPayoutInfo(bankDetails);
       toast({ title: "Profile updated!" });
       setEditingProfile(false);
       await loadData();

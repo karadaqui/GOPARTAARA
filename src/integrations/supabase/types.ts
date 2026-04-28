@@ -590,6 +590,8 @@ export type Database = {
           id: string
           listing_id: string
           message: string | null
+          payout_date: string | null
+          payout_sent: boolean
           seller_id: string
           status: string
           stripe_session_id: string | null
@@ -601,6 +603,8 @@ export type Database = {
           id?: string
           listing_id: string
           message?: string | null
+          payout_date?: string | null
+          payout_sent?: boolean
           seller_id: string
           status?: string
           stripe_session_id?: string | null
@@ -612,6 +616,8 @@ export type Database = {
           id?: string
           listing_id?: string
           message?: string | null
+          payout_date?: string | null
+          payout_sent?: boolean
           seller_id?: string
           status?: string
           stripe_session_id?: string | null
@@ -1118,6 +1124,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      seller_payout_info: {
+        Row: {
+          account_number: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          paypal_email: string | null
+          preferred_method: string
+          sort_code: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_number?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          paypal_email?: string | null
+          preferred_method?: string
+          sort_code?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_number?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          paypal_email?: string | null
+          preferred_method?: string
+          sort_code?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       seller_profiles: {
         Row: {
