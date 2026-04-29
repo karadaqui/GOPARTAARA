@@ -33,17 +33,17 @@ const FeaturedListingsSection = () => {
     })();
   }, []);
 
-  if (listings.length === 0) return null;
+  if (listings.length < 2) return null;
 
   return (
     <section className="px-4 py-8 max-w-6xl mx-auto">
-      <h2 className="ds-h2 mb-4">⭐ Featured Parts</h2>
-      <div className="flex gap-4 overflow-x-auto pb-2 -mx-4 px-4 snap-x">
+      <h2 className="ds-h2 mb-4">Featured Parts</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {listings.map((l) => (
           <Link
             key={l.id}
             to={`/marketplace/${l.id}`}
-            className="flex-shrink-0 w-56 rounded-2xl overflow-hidden border border-border bg-card snap-start hover:border-primary/40 transition-colors"
+            className="rounded-2xl overflow-hidden border border-border bg-card hover:border-primary/40 transition-colors"
           >
             <div className="aspect-square bg-elevated">
               <SafeImage src={l.photos?.[0]} alt={l.title} className="w-full h-full object-cover" />

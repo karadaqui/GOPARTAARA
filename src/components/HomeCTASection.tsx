@@ -8,7 +8,7 @@ const HomeCTASection = () => {
           "linear-gradient(135deg, #0d0000 0%, #1a0000 50%, #0d0000 100%)",
         borderTop: "1px solid rgba(204,17,17,0.2)",
         borderBottom: "1px solid rgba(204,17,17,0.2)",
-        padding: "80px 24px",
+        padding: "64px 24px",
         textAlign: "center",
       }}
     >

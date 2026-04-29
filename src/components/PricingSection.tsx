@@ -280,12 +280,12 @@ const PricingSection = () => {
 
         {/* Promo code section */}
         <div className="text-center mt-8">
-          <p className="text-muted-foreground text-xs mb-2">Got a secret code? 👀</p>
+          <p className="text-muted-foreground text-xs mb-2">Got a secret code?</p>
           <div className="flex gap-2 justify-center max-w-[280px] mx-auto">
             <input
               id="promoInput"
               type="text"
-              placeholder="🤫 psst... try COMMUNITY"
+              placeholder="Try COMMUNITY"
               className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-foreground text-[13px] outline-none focus:border-primary"
             />
             <button
@@ -319,7 +319,7 @@ const PricingSection = () => {
           className="text-center mt-6"
           style={{ fontSize: "13px", color: "#fbbf24" }}
         >
-          🕐 First month Pro free — offer ends{" "}
+          First month Pro free — offer ends{" "}
           {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(
             "en-US",
             { month: "long", day: "numeric", year: "numeric" }
@@ -378,7 +378,7 @@ const PricingSection = () => {
             color: "#fbbf24",
           }}
         >
-          🕐 First month free on Pro — offer ends{" "}
+          First month free on Pro — offer ends{" "}
           {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", {
             month: "long",
             day: "numeric",
@@ -575,12 +575,12 @@ const PlanCard = ({
       <div className="flex-1 mb-6">
         {isBundle ? (
           <>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">🔍 Search Features</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Search Features</p>
             <ul className="space-y-2.5 mb-5">
               {searchFeatures.map((f) => <FeatureItem key={f} text={f} />)}
             </ul>
             <div className="h-px bg-border/30 mb-5" />
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">🏪 Seller Features</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Seller Features</p>
             <ul className="space-y-2.5">
               {sellerFeatures.map((f) => <FeatureItem key={f} text={f} />)}
             </ul>

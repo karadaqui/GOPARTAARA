@@ -17,11 +17,6 @@ const steps = [
     title: "Save",
     desc: "Order directly from your chosen supplier. No middleman, no markup — just the best deal.",
   },
-  {
-    number: "04",
-    title: "Save More",
-    desc: "Set price alerts and get notified when parts drop to your target price. Never overpay again.",
-  },
 ];
 
 const HowItWorksSection = () => (
@@ -57,7 +52,7 @@ const HowItWorksSection = () => (
       <div
         className="hidden md:grid max-w-5xl mx-auto"
         style={{
-          gridTemplateColumns: "1fr 1px 1fr 1px 1fr 1px 1fr",
+          gridTemplateColumns: "1fr 1px 1fr 1px 1fr",
           gap: 0,
           padding: "0 40px",
         }}
