@@ -55,7 +55,7 @@ const individualPlans = [
     period: "/mo",
     features: ["Unlimited searches", "Photo search", "Unlimited marketplace listings", "Unlimited parts & alerts", "Unlimited garage vehicles", "Search history", "Price alerts", "Ad-free experience", "10 photos per listing"],
     useCase: "For DIY mechanics and car enthusiasts",
-    cta: "Start Pro Free →",
+    cta: "Start Pro",
     popular: true,
     bestValue: false,
     priceId: STRIPE.pro,
