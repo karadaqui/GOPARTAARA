@@ -8,8 +8,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
 import SearchCounter from "@/components/SearchCounter";
-import { useSearchLimit } from "@/hooks/useSearchLimit";
+import { useSearchLimit, getGuestSearchCount, incrementGuestSearch, ANON_SEARCH_LIMIT } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
+import AnonSearchLimitModal from "@/components/AnonSearchLimitModal";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
 
 const buildPhotoSearchTerms = (
@@ -85,6 +86,7 @@ const HeroSection = () => {
   const [vinVehicle, setVinVehicle] = useState<Record<string, string | null> | null>(null);
   const [vinError, setVinError] = useState("");
   const [authGateOpen, setAuthGateOpen] = useState(false);
+  const [anonLimitOpen, setAnonLimitOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -157,15 +159,26 @@ const HeroSection = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) { setAuthGateOpen(true); return; }
+    const trimmed = query.trim();
+    if (!trimmed) return;
+
+    if (!user) {
+      // Anonymous: 3 free searches, then sign-up wall
+      if (getGuestSearchCount() >= ANON_SEARCH_LIMIT) {
+        setAnonLimitOpen(true);
+        return;
+      }
+      incrementGuestSearch();
+      navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+      return;
+    }
+
     if (searchLimit.limitReached) {
       toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" });
       navigate("/pricing");
       return;
     }
-    if (query.trim()) {
-      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
-    }
+    navigate(`/search?q=${encodeURIComponent(trimmed)}`);
   };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -378,7 +391,7 @@ const HeroSection = () => {
               textAlign: "center",
             }}
           >
-            Search 7 suppliers simultaneously. Free, no account needed.
+            Search 7 suppliers simultaneously. 3 free searches. No account needed to start.
           </p>
         </div>
 
