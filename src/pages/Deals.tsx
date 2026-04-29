@@ -78,12 +78,12 @@ const EBAY_ALL_URL = ebayAff("https://www.ebay.co.uk/deals/automotive");
 
 // ───────── Amazon UK (Amazon Associates) ─────────
 const AMAZON_DEALS = [
-  { icon: "⚙️", title: "Car Parts & Accessories", subtitle: "Brakes, filters, exhausts & more", url: "https://www.amazon.co.uk/s?k=car+parts+accessories&tag=gopartara-21", badge: "Top picks" },
-  { icon: "🔧", title: "Tools & Equipment", subtitle: "Garage tools, jacks, diagnostic kits", url: "https://www.amazon.co.uk/s?k=car+tools+equipment&tag=gopartara-21", badge: "Workshop" },
-  { icon: "🧴", title: "Car Care & Cleaning", subtitle: "Wax, polish & detailing essentials", url: "https://www.amazon.co.uk/s?k=car+care+cleaning&tag=gopartara-21", badge: "Detailing" },
-  { icon: "🛞", title: "Tyres & Wheels", subtitle: "All-season, winter & summer tyres", url: "https://www.amazon.co.uk/s?k=tyres+wheels&tag=gopartara-21", badge: "Big savings" },
-  { icon: "📻", title: "Car Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: "https://www.amazon.co.uk/s?k=car+electronics+dash+cam&tag=gopartara-21", badge: "Hot deals" },
-  { icon: "⚡", title: "Performance Parts", subtitle: "Tuning, exhausts & styling kits", url: "https://www.amazon.co.uk/s?k=car+performance+parts&tag=gopartara-21", badge: "Performance" },
+  { title: "Car Parts & Accessories", subtitle: "Brakes, filters, exhausts & more", url: "https://www.amazon.co.uk/s?k=car+parts+accessories&tag=gopartara-21", badge: "Top picks" },
+  { title: "Tools & Equipment", subtitle: "Garage tools, jacks, diagnostic kits", url: "https://www.amazon.co.uk/s?k=car+tools+equipment&tag=gopartara-21", badge: "Workshop" },
+  { title: "Car Care & Cleaning", subtitle: "Wax, polish & detailing essentials", url: "https://www.amazon.co.uk/s?k=car+care+cleaning&tag=gopartara-21", badge: "Detailing" },
+  { title: "Tyres & Wheels", subtitle: "All-season, winter & summer tyres", url: "https://www.amazon.co.uk/s?k=tyres+wheels&tag=gopartara-21", badge: "Big savings" },
+  { title: "Car Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: "https://www.amazon.co.uk/s?k=car+electronics+dash+cam&tag=gopartara-21", badge: "Hot deals" },
+  { title: "Performance Parts", subtitle: "Tuning, exhausts & styling kits", url: "https://www.amazon.co.uk/s?k=car+performance+parts&tag=gopartara-21", badge: "Performance" },
 ];
 const AMAZON_ALL_URL = "https://www.amazon.co.uk/automotive?tag=gopartara-21";
 
