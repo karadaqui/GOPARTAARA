@@ -575,12 +575,12 @@ const PlanCard = ({
       <div className="flex-1 mb-6">
         {isBundle ? (
           <>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">🔍 Search Features</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Search Features</p>
             <ul className="space-y-2.5 mb-5">
               {searchFeatures.map((f) => <FeatureItem key={f} text={f} />)}
             </ul>
             <div className="h-px bg-border/30 mb-5" />
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">🏪 Seller Features</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Seller Features</p>
             <ul className="space-y-2.5">
               {sellerFeatures.map((f) => <FeatureItem key={f} text={f} />)}
             </ul>
