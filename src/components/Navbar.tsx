@@ -191,6 +191,7 @@ const Navbar = () => {
 
             <div className="relative" onMouseEnter={handleMoreEnter} onMouseLeave={handleMoreLeave}>
               <button
+                type="button"
                 className="transition-colors"
                 style={{
                   display: "flex",
@@ -209,10 +210,10 @@ const Navbar = () => {
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
               >
-                <span>More</span>
+                <span style={{ display: "block", lineHeight: "14px" }}>More</span>
                 <ChevronDown
                   size={13}
-                  style={{ display: "block" }}
+                  style={{ display: "block", flexShrink: 0 }}
                   className={`transition-transform duration-300 ${moreOpen ? "rotate-180" : ""}`}
                 />
               </button>
@@ -229,7 +230,7 @@ const Navbar = () => {
                       boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
                     }}
                   >
-                    {(user ? [authedMoreLink, ...moreLinks] : moreLinks).map((l) => {
+                    {(user ? [moreLinks[0], authedMoreLink, ...moreLinks.slice(1)] : moreLinks).map((l) => {
                       const isActive =
                         pathname === l.href || (l.href !== "/" && pathname.startsWith(l.href));
                       const Icon = l.Icon;
