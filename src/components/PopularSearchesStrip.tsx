@@ -62,8 +62,8 @@ const PopularSearchesStrip = () => {
       </div>
       <style>{`
         .popular-chip:hover {
-          background: rgba(255,255,255,0.08) !important;
-          color: #a1a1aa !important;
+          border-color: #cc1111 !important;
+          color: #ffffff !important;
         }
       `}</style>
     </section>
