@@ -44,7 +44,7 @@ const Pricing = () => {
       const result = await response.json();
 
       if (result.success) {
-        toast.success('🎉 1 month Pro activated!');
+        toast.success('1 month Pro activated');
         setTimeout(() => window.location.reload(), 1500);
       } else if (result.already_used) {
         toast.success(result.message);
