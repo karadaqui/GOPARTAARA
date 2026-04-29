@@ -609,8 +609,12 @@ const PlanCard = ({
       )}
 
       <Button
-        variant={popular ? "default" : "outline"}
-        className="w-full rounded-xl h-11 text-sm font-medium"
+        className="w-full rounded-xl h-11 text-sm font-medium border-0 hover:opacity-90 transition-opacity"
+        style={{
+          background:
+            name === "Pro" ? "#16a34a" : name === "Elite" ? "#cc1111" : "#374151",
+          color: "#ffffff",
+        }}
         disabled={loading}
         onClick={onSelect}
       >
