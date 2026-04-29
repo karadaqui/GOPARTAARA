@@ -83,7 +83,7 @@ const individualPlans = [
 /* ── Comparison table data ──────────────────────────────── */
 
 const comparisonRows: { feature: string; free: string; pro: string; elite: string }[] = [
-  { feature: "Monthly searches", free: "5", pro: "Unlimited", elite: "Unlimited" },
+  { feature: "Monthly searches", free: "20", pro: "Unlimited", elite: "Unlimited" },
   { feature: "Marketplace listings", free: "5", pro: "Unlimited", elite: "Unlimited" },
   { feature: "Photo search", free: "✗", pro: "✓", elite: "✓" },
   { feature: "Reg plate search", free: "✓", pro: "✓", elite: "✓" },
