@@ -4,7 +4,7 @@ const STATS = [
   { value: "1,000,000+", label: "Parts" },
   { value: "7", label: "Suppliers" },
   { value: "Free", label: "To use" },
-  { value: "No", label: "Account needed" },
+  { value: "3", label: "Free searches" },
 ];
 
 const StatsBar = () => (
