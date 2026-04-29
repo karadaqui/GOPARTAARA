@@ -52,7 +52,7 @@ const HowItWorksSection = () => (
       <div
         className="hidden md:grid max-w-5xl mx-auto"
         style={{
-          gridTemplateColumns: "1fr 1px 1fr 1px 1fr 1px 1fr",
+          gridTemplateColumns: "1fr 1px 1fr 1px 1fr",
           gap: 0,
           padding: "0 40px",
         }}
