@@ -612,18 +612,7 @@ const HeroSection = () => {
                   }}
                 />
                 </div>
-                <div className="flex flex-col items-center mt-4 gap-2">
-                  <p
-                    className="text-xs text-muted-foreground flex items-center justify-center gap-1.5 text-center leading-tight"
-                    style={{ flexWrap: "nowrap" }}
-                  >
-                    <ImageIcon
-                      size={12}
-                      className="text-muted-foreground/70"
-                      style={{ flexShrink: 0, width: 14, height: 14 }}
-                    />
-                    <span style={{ whiteSpace: "nowrap" }}>Upload a photo to identify any part</span>
-                  </p>
+                <div className="flex mt-4">
                   {user && <SearchCounter limitData={searchLimit} />}
                 </div>
 
