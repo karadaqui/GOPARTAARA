@@ -53,7 +53,7 @@ const individualPlans = [
     annualPrice: "£7.99",
     annualBilled: "Billed £95.88/yr",
     period: "/mo",
-    features: ["Unlimited searches", "Photo search", "Unlimited marketplace listings", "Unlimited parts & alerts", "Unlimited garage vehicles", "Search history", "Price alerts", "Ad-free experience", "10 photos per listing"],
+    features: ["Unlimited searches", "Photo search", "Unlimited saved parts", "Unlimited price alerts", "Unlimited marketplace listings", "Unlimited vehicles in My Garage", "Compare up to 5 parts at once", "Search history"],
     useCase: "For DIY mechanics and car enthusiasts",
     cta: "Start Pro Free →",
     popular: true,
