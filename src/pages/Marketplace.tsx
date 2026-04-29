@@ -329,6 +329,7 @@ const Marketplace = () => {
         jsonLd={{ "@context": "https://schema.org", "@type": "CollectionPage", "name": "GOPARTARA Parts Marketplace", "url": "https://gopartara.com/marketplace", "description": "Browse and buy car parts from verified UK sellers." }}
       />
       <Navbar />
+      <FeaturedSidebar />
 
       <AuthGateModal
         open={authGateOpen}
