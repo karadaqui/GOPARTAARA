@@ -249,7 +249,7 @@ const PricingSection = () => {
                 period={plan.period}
                 features={plan.features}
                 useCase={plan.useCase}
-                cta={proTrialCta ? "Start Free — 1 Month Pro" : plan.cta}
+                cta={plan.cta}
                 ctaSubtext={proTrialCta ? "No credit card required" : undefined}
                 popular={plan.popular}
                 bestValue={plan.bestValue}
