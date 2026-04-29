@@ -106,13 +106,13 @@ const Index = () => {
       <section className="px-4 mb-8 mt-2">
         <div className="max-w-4xl mx-auto text-center">
           <p style={{ fontSize: "12px", color: "#52525b", margin: "8px 0", textAlign: "center" }}>
-            Trusted by drivers across the UK 🇬🇧
+            Trusted by drivers across the UK
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
             {[
-              "🏆 UK's Most Comprehensive Parts Search",
-              "🔒 SSL Secured · No Credit Card Required",
-              "⚡ Live data from 7 verified suppliers",
+              "UK's Most Comprehensive Parts Search",
+              "SSL Secured · No Credit Card Required",
+              "Live data from 7 verified suppliers",
             ].map((label) => (
               <span
                 key={label}
