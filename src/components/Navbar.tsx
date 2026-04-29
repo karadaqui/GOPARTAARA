@@ -257,7 +257,7 @@ const Navbar = () => {
                             e.currentTarget.style.backgroundColor = "transparent";
                           }}
                         >
-                          <Icon size={14} className="opacity-70" />
+                          <Icon size={14} className={l.href === "/ev-charging" ? "" : "opacity-70"} style={l.href === "/ev-charging" ? { color: "#cc1111" } : undefined} />
                           <span className="flex-1">{l.label}</span>
                           {showEliteBadge && (
                             <span
