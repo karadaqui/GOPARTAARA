@@ -80,7 +80,9 @@ Deno.serve(async (req) => {
     const csvText = await new Response(decompressed).text();
 
     const rows = parseCsv(csvText);
+    console.log("Parsed CSV rows:", rows.length);
     if (rows.length < 2) {
+      console.warn("Empty CSV — no products in feed");
       return new Response(JSON.stringify([]), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
