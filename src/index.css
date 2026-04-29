@@ -970,3 +970,42 @@ input, textarea, select {
 .logo-text { font-family: '"Barlow Condensed"', system-ui, sans-serif; font-weight: 800; letter-spacing: 0.05em; }
 .logo-go { color: var(--ds-accent); }
 .logo-part, .logo-ara { color: #fff; }
+
+/* ============================================================
+   APPLE-DARK PREMIUM TOKENS — global v3
+   ============================================================ */
+:root {
+  --bg: #080808;
+  --surface: #0d0d0d;
+  --surface-2: #111111;
+  --border: #1a1a1a;
+  --border-2: #222222;
+  --text: #f0f0f0;
+  --text-muted: #666666;
+  --text-dim: #333333;
+  --red: #cc1111;
+  --red-dim: rgba(204,17,17,0.1);
+  --red-border: rgba(204,17,17,0.25);
+  --green: #22c55e;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+}
+
+/* Thin dark scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #333; }
+* { scrollbar-width: thin; scrollbar-color: #222 transparent; }
+
+/* Global rounded inputs with red focus */
+input:not([type="checkbox"]):not([type="radio"]), textarea, select {
+  border-radius: 10px;
+}
+input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: none;
+  border-color: var(--red) !important;
+  box-shadow: 0 0 0 1px var(--red-border);
+}

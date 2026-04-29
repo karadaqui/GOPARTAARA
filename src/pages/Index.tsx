@@ -3,8 +3,10 @@ import { Link, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import StatsBar from "@/components/home/StatsBar";
+import FeaturedParts from "@/components/home/FeaturedParts";
 import HowItWorksBig from "@/components/home/HowItWorksBig";
 import LiveSuppliers from "@/components/home/LiveSuppliers";
+import HomePricing from "@/components/home/HomePricing";
 import MarketplaceCTA from "@/components/home/MarketplaceCTA";
 import PopularSearchesStrip from "@/components/PopularSearchesStrip";
 import BrowseByMakeSection from "@/components/BrowseByMakeSection";
@@ -66,6 +68,8 @@ const Index = () => {
 
       <StatsBar />
 
+      <FeaturedParts />
+
       <HowItWorksBig />
 
       <LiveSuppliers />
@@ -73,6 +77,8 @@ const Index = () => {
       <PopularSearchesStrip />
 
       <BrowseByMakeSection />
+
+      <HomePricing />
 
       <MarketplaceCTA />
 
