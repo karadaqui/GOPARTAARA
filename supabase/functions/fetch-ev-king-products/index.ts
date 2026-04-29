@@ -74,21 +74,35 @@ async function loadProducts(apiKey: string): Promise<Product[]> {
     `aw_product_id%2Cproduct_name%2Cdescription%2Cmerchant_image_url%2C` +
     `search_price%2Cmerchant_deep_link%2Cbrand_name%2Ccategory_name`;
 
-  let res: Response | null = null;
+  // Stream the response (matches the proven pattern used by awin-tyre-feed).
+  let csvText = "";
   let lastErr = "";
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const r = await fetch(feedUrl);
-      if (r.ok) { res = r; break; }
-      lastErr = String(r.status);
-      try { await r.body?.cancel(); } catch { /* ignore */ }
+      if (!r.ok || !r.body) {
+        lastErr = String(r.status);
+        try { await r.body?.cancel(); } catch { /* ignore */ }
+        await new Promise((resolve) => setTimeout(resolve, 800 * (attempt + 1)));
+        continue;
+      }
+      const reader = r.body.getReader();
+      const dec = new TextDecoder();
+      let out = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        out += dec.decode(value, { stream: true });
+        if (out.length > 8_000_000) break; // safety cap
+      }
+      csvText = out;
+      break;
     } catch (e) {
       lastErr = (e as Error).message;
+      await new Promise((resolve) => setTimeout(resolve, 800 * (attempt + 1)));
     }
-    await new Promise((resolve) => setTimeout(resolve, 700 * (attempt + 1)));
   }
-  if (!res) throw new Error(`Feed fetch failed: ${lastErr}`);
-  const csvText = await res.text();
+  if (!csvText) throw new Error(`Feed fetch failed: ${lastErr}`);
   const rows = parseCSV(csvText);
   if (rows.length < 2) {
     cache = { fetchedAt: now, products: [] };
