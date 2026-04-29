@@ -31,7 +31,7 @@ const HomeCTASection = () => {
             marginTop: "12px",
           }}
         >
-          Start searching for free — no account needed.
+          3 free searches, no account needed.
         </p>
         <div
           className="flex flex-col sm:flex-row sm:flex-wrap justify-center items-center"
