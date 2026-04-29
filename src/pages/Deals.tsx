@@ -4,7 +4,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
-import FeaturedSidebar from "@/components/FeaturedSidebar";
 
 // ───────── eBay (eBay Partner Network) ─────────
 const ebayAff = (url: string) => {
@@ -138,7 +137,6 @@ const Deals = () => {
         path="/deals"
       />
       <Navbar />
-      <FeaturedSidebar />
 
       <main className="pt-16">
         {/* HERO */}
