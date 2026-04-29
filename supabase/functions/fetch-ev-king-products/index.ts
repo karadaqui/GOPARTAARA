@@ -71,8 +71,8 @@ async function loadProducts(apiKey: string): Promise<Product[]> {
     `https://productdata.awin.com/datafeed/download/apikey/${apiKey}/` +
     `fid/${FEED_ID}/format/csv/language/en/delimiter/%2C/` +
     `compression/none/adultcontent/1/columns/` +
-    `aw_product_id%2Cproduct_name%2Cdescription%2Cmerchant_image_url%2C` +
-    `search_price%2Cmerchant_deep_link%2Cbrand_name%2Ccategory_name`;
+    `aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2C` +
+    `merchant_deep_link%2Cbrand_name%2Ccategory_name`;
 
   // Stream the response (matches the proven pattern used by awin-tyre-feed).
   let csvText = "";
