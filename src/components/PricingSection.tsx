@@ -38,7 +38,7 @@ const individualPlans = [
     annualPrice: "£0",
     annualBilled: "",
     period: "/mo",
-    features: ["10 searches per month", "5 active marketplace listings", "Save up to 5 parts & alerts", "1 garage vehicle", "Referral bonuses"],
+    features: ["20 searches per month", "5 active marketplace listings", "Save up to 5 parts & alerts", "1 garage vehicle", "Referral bonuses"],
     useCase: "Perfect for occasional searches",
     cta: "Get Started Free",
     popular: false,
