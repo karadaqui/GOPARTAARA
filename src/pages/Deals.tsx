@@ -138,6 +138,7 @@ const Deals = () => {
         path="/deals"
       />
       <Navbar />
+      <FeaturedSidebar />
 
       <main className="pt-16">
         {/* HERO */}
