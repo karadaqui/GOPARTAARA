@@ -48,7 +48,7 @@ const individualPlans: Plan[] = [
     priceId: null,
     annualPriceId: null,
     features: [
-      { title: "10 searches per month", desc: "Search any part name, reg plate or VIN across all 7 suppliers." },
+      { title: "20 searches per month", desc: "Search any part name, reg plate or VIN across all 7 suppliers." },
       { title: "5 saved parts", desc: "Bookmark parts you're interested in for quick access later." },
       { title: "5 price alerts", desc: "Get emailed when a part drops below your target price." },
       { title: "5 marketplace listings", desc: "List up to 5 parts for sale in the GOPARTARA marketplace." },
@@ -80,7 +80,7 @@ const individualPlans: Plan[] = [
   {
     name: "Elite",
     variant: "elite",
-    tagline: "The complete experience",
+    tagline: "For mechanics & trade buyers",
     monthlyPrice: "£19.99",
     annualPrice: "£15.99",
     annualBilled: "Billed £191.88/yr",
@@ -93,6 +93,8 @@ const individualPlans: Plan[] = [
       { title: "CSV export", desc: "Export your price comparisons and saved parts to a spreadsheet." },
       { title: "Garage analytics", desc: "Track MOT, tax, service history and running costs per vehicle." },
       { title: "Priority support", desc: "Get faster responses from our team when you need help." },
+      { title: "VAT invoices on request", desc: "Get a VAT invoice for your subscription — essential for UK business accounts." },
+      { title: "2-seat team account", desc: "Share access with one colleague — ideal for garages with multiple staff." },
       { title: "Early access to new features", desc: "Be the first to try new GOPARTARA tools before they launch." },
     ],
   },
@@ -102,7 +104,7 @@ const individualPlans: Plan[] = [
 
 export const faqItems = [
   { q: "Can I cancel anytime?", a: "Yes, absolutely. Cancel anytime from your dashboard. No contracts, no cancellation fees. Your plan stays active until the end of the billing period." },
-  { q: "What happens when I hit my 10 search limit on Free?", a: "You'll see a prompt to upgrade. You can still browse the site, but new searches will be paused until the next month or you upgrade to Pro." },
+  { q: "What happens when I hit my 20 search limit on Free?", a: "You'll see a prompt to upgrade. You can still browse the site, but new searches will be paused until the next month or you upgrade to Pro." },
   { q: "Can I upgrade or downgrade my plan?", a: "Yes, you can change your plan anytime. Upgrades take effect immediately. Downgrades take effect at the next billing cycle." },
   { q: "How does the 30-day money back guarantee work?", a: "If you're not satisfied within 30 days of your first subscription, email us at info@gopartara.com and we'll issue a full refund — no questions asked." },
   { q: "Do you store my payment details?", a: "We use Stripe, the world's most trusted payment processor. We never store your card details on our servers." },
@@ -587,6 +589,51 @@ const PricingSection = () => {
               </div>
             );
           })}
+        </div>
+
+        {/* Trust strip */}
+        <div
+          style={{
+            textAlign: "center",
+            padding: "32px 0",
+            borderTop: "1px solid #1a1a1a",
+            marginTop: "32px",
+          }}
+        >
+          <p
+            style={{
+              fontFamily: '"DM Sans", sans-serif',
+              fontWeight: 500,
+              fontSize: "14px",
+              color: "#555555",
+              margin: "0 0 16px",
+            }}
+          >
+            Trusted by drivers across the UK
+          </p>
+          <div style={{ display: "inline-flex", flexWrap: "wrap", justifyContent: "center", gap: "24px" }}>
+            {["No credit card required", "Cancel anytime", "First month free on Pro"].map((t) => (
+              <span
+                key={t}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  background: "transparent",
+                  border: "1px solid #1a1a1a",
+                  borderRadius: "100px",
+                  padding: "6px 16px",
+                  fontFamily: '"DM Sans", sans-serif',
+                  fontWeight: 400,
+                  fontSize: "12px",
+                  color: "#444444",
+                }}
+              >
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e" }} />
+                {t}
+              </span>
+            ))}
+          </div>
         </div>
 
         {/* Promo code */}

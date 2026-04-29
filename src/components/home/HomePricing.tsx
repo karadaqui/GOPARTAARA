@@ -22,7 +22,7 @@ const TIERS: Tier[] = [
     ctaTo: "/auth",
     variant: "free",
     features: [
-      "10 searches per month",
+      "20 searches per month",
       "5 saved parts",
       "5 price alerts",
       "5 marketplace listings",
@@ -408,6 +408,54 @@ const HomePricing = () => {
               </div>
             );
           })}
+        </div>
+
+        {/* Trust strip */}
+        <div
+          style={{
+            textAlign: "center",
+            padding: "32px 0 0",
+            borderTop: "1px solid #1a1a1a",
+            marginTop: "32px",
+            maxWidth: "920px",
+            marginLeft: "auto",
+            marginRight: "auto",
+          }}
+        >
+          <p
+            style={{
+              fontFamily: '"DM Sans", sans-serif',
+              fontWeight: 500,
+              fontSize: "14px",
+              color: "#555555",
+              margin: "0 0 16px",
+            }}
+          >
+            Trusted by drivers across the UK
+          </p>
+          <div style={{ display: "inline-flex", flexWrap: "wrap", justifyContent: "center", gap: "24px" }}>
+            {["No credit card required", "Cancel anytime", "First month free on Pro"].map((t) => (
+              <span
+                key={t}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  background: "transparent",
+                  border: "1px solid #1a1a1a",
+                  borderRadius: "100px",
+                  padding: "6px 16px",
+                  fontFamily: '"DM Sans", sans-serif',
+                  fontWeight: 400,
+                  fontSize: "12px",
+                  color: "#444444",
+                }}
+              >
+                <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#22c55e" }} />
+                {t}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
       <style>{`
