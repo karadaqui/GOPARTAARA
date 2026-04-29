@@ -27,8 +27,8 @@ const PopularSearchesStrip = () => {
         >
           <span
             style={{
-              color: "#71717a",
-              fontSize: "13px",
+              color: "#555555",
+              fontSize: "12px",
               fontWeight: 500,
               whiteSpace: "nowrap",
               flexShrink: 0,
@@ -43,16 +43,16 @@ const PopularSearchesStrip = () => {
               onClick={() => navigate(`/search?q=${encodeURIComponent(term)}`)}
               className="popular-chip"
               style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                color: "#71717a",
+                background: "#111111",
+                border: "1px solid #242424",
+                color: "#888888",
                 fontSize: "13px",
                 padding: "6px 12px",
-                borderRadius: "6px",
+                borderRadius: "3px",
                 whiteSpace: "nowrap",
                 flexShrink: 0,
                 cursor: "pointer",
-                transition: "background-color 150ms, color 150ms",
+                transition: "border-color 150ms, color 150ms",
               }}
             >
               {term}
