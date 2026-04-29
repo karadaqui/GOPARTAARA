@@ -117,14 +117,14 @@ const Navbar = () => {
           WebkitTransform: "translateZ(0)",
           transform: "translateZ(0)",
           willChange: "transform",
-          backgroundColor: scrolled ? "rgba(8,8,8,0.85)" : "transparent",
-          backdropFilter: scrolled ? "blur(20px)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
-          transition: "background-color 200ms ease, border-color 200ms ease, backdrop-filter 200ms ease",
+          backgroundColor: "rgba(8,8,8,0.85)",
+          backdropFilter: "blur(20px) saturate(180%)",
+          WebkitBackdropFilter: "blur(20px) saturate(180%)",
+          borderBottom: "1px solid #1a1a1a",
+          transition: "background-color 200ms ease, border-color 200ms ease",
         }}
       >
-        <div className="container relative flex items-center gap-4" style={{ height: "56px" }}>
+        <div className="container relative flex items-center gap-4" style={{ height: "52px" }}>
           {/* Left: Logo */}
           <a
             href="/"
@@ -164,23 +164,7 @@ const Navbar = () => {
                 <button
                   key={l.label}
                   onClick={() => handleNavClick(l.href)}
-                  className="transition-colors"
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: isActive ? 500 : 400,
-                    color: isActive ? "#ffffff" : "#a1a1aa",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: "4px 0",
-                    whiteSpace: "nowrap",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) e.currentTarget.style.color = "#ffffff";
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) e.currentTarget.style.color = "#a1a1aa";
-                  }}
+                  className={`nav-link-ds ${isActive ? "is-active" : ""}`}
                 >
                   {l.label}
                 </button>
@@ -189,23 +173,11 @@ const Navbar = () => {
 
             <div className="relative" onMouseEnter={handleMoreEnter} onMouseLeave={handleMoreLeave}>
               <button
-                className="transition-colors flex items-center gap-1"
-                style={{
-                  fontSize: "14px",
-                  fontWeight: 400,
-                  color: "#a1a1aa",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: "4px 0",
-                  whiteSpace: "nowrap",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                className="nav-link-ds flex items-center gap-1"
               >
                 More
                 <ChevronDown
-                  size={13}
+                  size={11}
                   className={`transition-transform duration-300 ${moreOpen ? "rotate-180" : ""}`}
                 />
               </button>
