@@ -203,8 +203,17 @@ const Marketplace = () => {
     return true;
   }), [listings, category, search, vehicleFilter]);
 
-  const featured = useMemo(() => filtered.filter(l => l.seller_profiles.seller_tier === "featured" || l.seller_profiles.seller_tier === "pro"), [filtered]);
-  const regular = useMemo(() => filtered.filter(l => l.seller_profiles.seller_tier !== "featured" && l.seller_profiles.seller_tier !== "pro"), [filtered]);
+  const isBoosted = (l: any) => l.featured && l.featured_until && new Date(l.featured_until) > new Date();
+  const featured = useMemo(() => filtered
+    .filter(l => isBoosted(l) || l.seller_profiles.seller_tier === "featured" || l.seller_profiles.seller_tier === "pro")
+    .sort((a: any, b: any) => {
+      const aB = isBoosted(a), bB = isBoosted(b);
+      if (aB && bB) return new Date(b.featured_until).getTime() - new Date(a.featured_until).getTime();
+      if (aB) return -1;
+      if (bB) return 1;
+      return 0;
+    }), [filtered]);
+  const regular = useMemo(() => filtered.filter(l => !isBoosted(l) && l.seller_profiles.seller_tier !== "featured" && l.seller_profiles.seller_tier !== "pro"), [filtered]);
 
   const toggleCompare = (listing: ListingWithSeller) => {
     const isSelected = compareParts.some((p) => p.id === listing.id);
