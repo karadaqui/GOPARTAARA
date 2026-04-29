@@ -1,168 +1,148 @@
-import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
-import SafeImage from "@/components/SafeImage";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ExternalLink, Zap } from "lucide-react";
-
-interface EvProduct {
-  id: string;
-  name: string;
-  description: string;
-  price: string;
-  image_url: string;
-  affiliate_url: string;
-  brand: string;
-  category: string;
-}
-
-const CONNECTOR_TYPES = ["Type 1", "Type 2", "CCS", "CHAdeMO", "3-pin"] as const;
-const CABLE_LENGTHS = ["3m", "5m", "7m", "10m"] as const;
+import { Zap } from "lucide-react";
 
 export default function EvCharging() {
-  const [products, setProducts] = useState<EvProduct[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [connector, setConnector] = useState<string>("");
-  const [length, setLength] = useState<string>("");
-
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke("fetch-ev-king-feed");
-        if (error) throw error;
-        if (active) setProducts(data?.products || []);
-      } catch (e) {
-        console.error("EV products load failed", e);
-      } finally {
-        if (active) setLoading(false);
-      }
-    })();
-    return () => { active = false; };
-  }, []);
-
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase().trim();
-    return products.filter((p) => {
-      const haystack = `${p.name} ${p.description}`.toLowerCase();
-      if (q && !haystack.includes(q)) return false;
-      if (connector && !haystack.includes(connector.toLowerCase())) return false;
-      if (length && !haystack.includes(length.toLowerCase())) return false;
-      return true;
-    });
-  }, [products, search, connector, length]);
+  const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white">
+    <div className="min-h-screen bg-[#080808] flex flex-col">
       <SEOHead
-        title="EV Charging Cables & Accessories | GOPARTARA"
-        description="Find the right EV charging cable for your electric car. Type 1, Type 2, CCS, CHAdeMO and 3-pin cables for all UK and EU EV models."
-        path="/ev-charging"
+        title="EV Charging — Under Maintenance | GOPARTARA"
+        description="Our EV charging accessories section is being wired up. Check back shortly."
       />
       <Navbar />
 
-      <main className="max-w-6xl mx-auto px-4 py-12">
-        {/* Header */}
-        <header className="mb-10">
-          <Badge className="mb-4 bg-[#cc1111]/15 text-[#ff6b6b] border border-[#cc1111]/30 hover:bg-[#cc1111]/20">
-            <Zap className="w-3 h-3 mr-1.5" />
-            Powered by EV King — UK's leading EV accessories retailer
-          </Badge>
-          <h1 className="text-3xl md:text-5xl font-semibold tracking-tight mb-3">
-            EV Charging Cables &amp; Accessories
-          </h1>
-          <p className="text-zinc-400 text-base md:text-lg max-w-2xl">
-            Find the right charging cable for your electric car. All UK and EU EV models covered.
-          </p>
-        </header>
-
-        {/* Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
-          <Input
-            placeholder="Search products…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500"
-          />
-          <select
-            value={connector}
-            onChange={(e) => setConnector(e.target.value)}
-            className="h-10 rounded-md bg-zinc-900 border border-zinc-800 text-white px-3 text-sm"
-          >
-            <option value="">All connector types</option>
-            {CONNECTOR_TYPES.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
-          <select
-            value={length}
-            onChange={(e) => setLength(e.target.value)}
-            className="h-10 rounded-md bg-zinc-900 border border-zinc-800 text-white px-3 text-sm"
-          >
-            <option value="">Any cable length</option>
-            {CABLE_LENGTHS.map((l) => <option key={l} value={l}>{l}</option>)}
-          </select>
+      <main
+        className="flex-1 flex flex-col items-center justify-center text-center"
+        style={{ padding: "80px 48px" }}
+      >
+        <div
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontWeight: 600,
+            fontSize: 11,
+            color: "#cc1111",
+            letterSpacing: "0.15em",
+            textTransform: "uppercase",
+            marginBottom: 24,
+          }}
+        >
+          EV Charging
         </div>
 
-        {/* Grid */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-[360px] bg-zinc-900" />
-            ))}
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-20 text-zinc-500">
-            No products match your filters.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filtered.map((p) => (
-              <article
-                key={p.id}
-                className="bg-zinc-900/60 border border-zinc-800 rounded-lg overflow-hidden flex flex-col hover:border-[#cc1111]/50 transition-colors"
-              >
-                <div className="aspect-square bg-white flex items-center justify-center overflow-hidden">
-                  <SafeImage
-                    src={p.image_url}
-                    alt={p.name}
-                    className="w-full h-full object-contain p-4"
-                  />
-                </div>
-                <div className="p-4 flex flex-col flex-1">
-                  {p.brand && (
-                    <div className="text-[11px] uppercase tracking-wider text-zinc-500 mb-1">
-                      {p.brand}
-                    </div>
-                  )}
-                  <h3 className="text-sm font-medium line-clamp-2 mb-2 min-h-[40px]">
-                    {p.name}
-                  </h3>
-                  <div className="text-lg font-semibold text-white mb-3">{p.price}</div>
-                  <a
-                    href={p.affiliate_url}
-                    target="_blank"
-                    rel="noopener noreferrer sponsored"
-                    className="mt-auto"
-                  >
-                    <Button className="w-full bg-[#cc1111] hover:bg-[#a50d0d] text-white">
-                      View on EV King
-                      <ExternalLink className="w-4 h-4 ml-2" />
-                    </Button>
-                  </a>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
+        <Zap
+          style={{
+            width: 64,
+            height: 64,
+            color: "#cc1111",
+            opacity: 0.8,
+            marginBottom: 32,
+          }}
+          strokeWidth={1.75}
+        />
 
-        <p className="text-xs text-zinc-600 mt-10 text-center">
-          GOPARTARA may earn a commission on purchases made through links on this page.
+        <h1
+          style={{
+            fontFamily: "'Barlow Condensed', sans-serif",
+            fontWeight: 800,
+            fontSize: 56,
+            color: "#ffffff",
+            lineHeight: 0.95,
+            textAlign: "center",
+            maxWidth: 600,
+            margin: "0 auto",
+          }}
+        >
+          We're charging up this page.
+        </h1>
+
+        <p
+          style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontWeight: 400,
+            fontSize: 16,
+            color: "#555555",
+            maxWidth: 480,
+            margin: "20px auto 40px",
+            lineHeight: 1.7,
+            textAlign: "center",
+          }}
+        >
+          Our EV charging accessories section is being wired up. Check back
+          shortly — we're connecting the best UK charging cables and EV
+          accessories from EV King.
         </p>
+
+        <div className="flex items-center justify-center gap-3">
+          <button
+            onClick={() => navigate("/search")}
+            style={{
+              background: "#cc1111",
+              border: "none",
+              borderRadius: 10,
+              padding: "12px 28px",
+              fontFamily: "'DM Sans', sans-serif",
+              fontWeight: 600,
+              fontSize: 14,
+              color: "#ffffff",
+              cursor: "pointer",
+            }}
+          >
+            Back to Search
+          </button>
+          <button
+            onClick={() => navigate("/deals")}
+            style={{
+              background: "transparent",
+              border: "1px solid #2a2a2a",
+              borderRadius: 10,
+              padding: "12px 28px",
+              fontFamily: "'DM Sans', sans-serif",
+              fontWeight: 500,
+              fontSize: 14,
+              color: "#888888",
+              cursor: "pointer",
+            }}
+          >
+            View All Deals
+          </button>
+        </div>
+
+        <div
+          className="flex items-center justify-center"
+          style={{ gap: 8, marginTop: 32 }}
+        >
+          <span
+            style={{
+              width: 8,
+              height: 8,
+              background: "#22c55e",
+              borderRadius: "50%",
+              display: "inline-block",
+              animation: "evk-pulse 2s infinite",
+            }}
+          />
+          <span
+            style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontWeight: 400,
+              fontSize: 13,
+              color: "#444444",
+            }}
+          >
+            EV King integration in progress
+          </span>
+        </div>
+
+        <style>{`
+          @keyframes evk-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+          }
+        `}</style>
       </main>
 
       <Footer />
