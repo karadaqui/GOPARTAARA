@@ -38,7 +38,7 @@ const individualPlans = [
     annualPrice: "£0",
     annualBilled: "",
     period: "/mo",
-    features: ["10 searches per month", "5 active marketplace listings", "Save up to 5 parts & alerts", "1 garage vehicle", "Referral bonuses"],
+    features: ["20 searches per month", "5 active marketplace listings", "Save up to 5 parts & alerts", "1 garage vehicle", "Referral bonuses"],
     useCase: "Perfect for occasional searches",
     cta: "Get Started Free",
     popular: false,
@@ -55,7 +55,7 @@ const individualPlans = [
     period: "/mo",
     features: ["Unlimited searches", "Photo search", "Unlimited marketplace listings", "Unlimited parts & alerts", "Unlimited garage vehicles", "Search history", "Price alerts", "Ad-free experience", "10 photos per listing"],
     useCase: "For DIY mechanics and car enthusiasts",
-    cta: "Start Pro Free →",
+    cta: "Start Pro",
     popular: true,
     bestValue: false,
     priceId: STRIPE.pro,
@@ -63,14 +63,14 @@ const individualPlans = [
   },
   {
     name: "Elite",
-    tagline: "The complete experience",
+    tagline: "For mechanics & trade buyers",
     monthlyPrice: "£19.99",
     annualPrice: "£15.99",
     annualBilled: "Billed £191.88/yr",
     period: "/mo",
     features: ["Everything in Pro", "Bulk price comparison (up to 20 parts)", "Export search history as CSV", "30-day price history charts", "Garage analytics dashboard", "Priority email support", "Early access to new features"],
     useCase: "For those who buy parts regularly",
-    cta: "Go Elite →",
+    cta: "Go Elite",
     popular: false,
     bestValue: true,
     priceId: STRIPE.elite,
@@ -83,7 +83,7 @@ const individualPlans = [
 /* ── Comparison table data ──────────────────────────────── */
 
 const comparisonRows: { feature: string; free: string; pro: string; elite: string }[] = [
-  { feature: "Monthly searches", free: "5", pro: "Unlimited", elite: "Unlimited" },
+  { feature: "Monthly searches", free: "20", pro: "Unlimited", elite: "Unlimited" },
   { feature: "Marketplace listings", free: "5", pro: "Unlimited", elite: "Unlimited" },
   { feature: "Photo search", free: "✗", pro: "✓", elite: "✓" },
   { feature: "Reg plate search", free: "✓", pro: "✓", elite: "✓" },
@@ -106,7 +106,7 @@ export const faqItems = [
     a: "Yes, absolutely. Cancel anytime from your dashboard. No contracts, no cancellation fees. Your plan stays active until the end of the billing period.",
   },
   {
-    q: "What happens when I hit my 10 search limit on Free?",
+    q: "What happens when I hit my 20 search limit on Free?",
     a: "You'll see a prompt to upgrade. You can still browse the site, but new searches will be paused until the next month or you upgrade to Pro.",
   },
   {
@@ -249,7 +249,7 @@ const PricingSection = () => {
                 period={plan.period}
                 features={plan.features}
                 useCase={plan.useCase}
-                cta={proTrialCta ? "Start Free — 1 Month Pro" : plan.cta}
+                cta={plan.cta}
                 ctaSubtext={proTrialCta ? "No credit card required" : undefined}
                 popular={plan.popular}
                 bestValue={plan.bestValue}
@@ -609,8 +609,12 @@ const PlanCard = ({
       )}
 
       <Button
-        variant={popular ? "default" : "outline"}
-        className="w-full rounded-xl h-11 text-sm font-medium"
+        className="w-full rounded-xl h-11 text-sm font-medium border-0 hover:opacity-90 transition-opacity"
+        style={{
+          background:
+            name === "Pro" ? "#16a34a" : name === "Elite" ? "#cc1111" : "#374151",
+          color: "#ffffff",
+        }}
         disabled={loading}
         onClick={onSelect}
       >
