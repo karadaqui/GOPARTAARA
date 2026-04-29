@@ -773,3 +773,12 @@ input, textarea, select {
   border-color: #52525b;
   background: rgba(255,255,255,0.03);
 }
+
+/* Subtle red accent on search result card hover */
+.search-result-card {
+  border-left: 2px solid transparent;
+  transition: border-left-color 150ms ease, border-color 150ms ease, transform 150ms ease, background-color 150ms ease;
+}
+.search-result-card:hover {
+  border-left-color: #cc1111;
+}

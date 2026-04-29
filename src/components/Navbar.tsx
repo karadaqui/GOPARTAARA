@@ -42,7 +42,7 @@ const moreLinks: MoreLink[] = [
   { label: "Contact", href: "/contact", Icon: MailIcon },
 ];
 
-const authedMoreLink: MoreLink = { label: "🏪 My Shop", href: "/my-market", Icon: Briefcase };
+const authedMoreLink: MoreLink = { label: "My Shop", href: "/my-market", Icon: Briefcase };
 
 const ADMIN_EMAIL = "info@gopartara.com";
 
@@ -166,7 +166,7 @@ const Navbar = () => {
                   onClick={() => handleNavClick(l.href)}
                   className="transition-colors"
                   style={{
-                    fontSize: "13px",
+                    fontSize: "14px",
                     fontWeight: isActive ? 500 : 400,
                     color: isActive ? "#ffffff" : "#a1a1aa",
                     background: "none",
@@ -191,7 +191,7 @@ const Navbar = () => {
               <button
                 className="transition-colors flex items-center gap-1"
                 style={{
-                  fontSize: "13px",
+                  fontSize: "14px",
                   fontWeight: 400,
                   color: "#a1a1aa",
                   background: "none",
@@ -480,7 +480,7 @@ const Navbar = () => {
             {[
               { label: "Search", href: "/search" },
               { label: "Marketplace", href: "/marketplace" },
-              ...(user ? [{ label: "🏪 My Shop", href: "/my-market" }] : []),
+              ...(user ? [{ label: "My Shop", href: "/my-market" }] : []),
               { label: "Deals", href: "/deals" },
               { label: "Pricing", href: "/pricing" },
               { label: "Help Center", href: "/help" },

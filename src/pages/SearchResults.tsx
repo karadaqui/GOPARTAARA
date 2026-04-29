@@ -1294,9 +1294,9 @@ const SearchResults = () => {
             {/* ── Results Header ── */}
             <div className="mb-4 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
               <div>
-                <p className="text-lg text-zinc-400 font-normal mb-1">{categoryFilter !== "All Parts" ? `${categoryFilter} for` : "Results for"}</p>
-                <h1 className="text-3xl md:text-4xl font-bold text-white">
-                  <span className="text-red-500">"</span>{activeQuery}<span className="text-red-500">"</span>
+                <h1 className="text-2xl md:text-3xl font-semibold text-white" style={{ letterSpacing: "-0.02em" }}>
+                  {totalResults > 0 ? `${totalResults.toLocaleString()} results` : "Results"}
+                  <span className="text-zinc-500 font-normal"> · {categoryFilter !== "All Parts" ? `${categoryFilter} — ` : ""}{activeQuery}</span>
                 </h1>
                 {totalResults > 0 && !liveLoading && (
                   <>
@@ -1308,7 +1308,7 @@ const SearchResults = () => {
                           : `${startItem.toLocaleString()}-${endItem.toLocaleString()} of ${totalResults.toLocaleString()} listings`}
                       </span>
                       <span style={{ fontSize: "12px", color: "#3f3f46", marginLeft: "8px" }}>
-                        ✓ Prices verified · Best match first
+                        Prices verified · Best match first
                       </span>
                     </p>
                     <p className="mt-1.5" style={{ fontSize: "12px", color: "#52525b" }}>
@@ -1614,7 +1614,7 @@ const SearchResults = () => {
                             localStorage.setItem('partara_recent_views', JSON.stringify(updated));
                           } catch(e) {}
                         }}
-                        className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-[colors,transform] flex flex-col relative cursor-pointer animate-fade-in"
+                        className="search-result-card group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-[colors,transform] flex flex-col relative cursor-pointer animate-fade-in"
                         style={{ animationDelay: `${idx * 50}ms` }}>
                         <a href={item.url} target="_blank" rel="noopener noreferrer" className="block relative">
                           <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
