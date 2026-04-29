@@ -113,17 +113,8 @@ const HeroSection = () => {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // Live viewer counter — fluctuate every 8s by -3..+5, clamp 180–350
-  useEffect(() => {
-    const intervalId = window.setInterval(() => {
-      setViewers((prev) => {
-        const change = Math.floor(Math.random() * 9) - 3; // -3..+5
-        const next = prev + change;
-        return Math.max(180, Math.min(350, next));
-      });
-    }, 8000);
-    return () => window.clearInterval(intervalId);
-  }, []);
+
+
 
   // Returning visitor detection
   const [isReturning, setIsReturning] = useState(false);
