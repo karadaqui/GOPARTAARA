@@ -48,7 +48,7 @@ const individualPlans: Plan[] = [
     priceId: null,
     annualPriceId: null,
     features: [
-      { title: "10 searches per month", desc: "Search any part name, reg plate or VIN across all 7 suppliers." },
+      { title: "20 searches per month", desc: "Search any part name, reg plate or VIN across all 7 suppliers." },
       { title: "5 saved parts", desc: "Bookmark parts you're interested in for quick access later." },
       { title: "5 price alerts", desc: "Get emailed when a part drops below your target price." },
       { title: "5 marketplace listings", desc: "List up to 5 parts for sale in the GOPARTARA marketplace." },
@@ -80,7 +80,7 @@ const individualPlans: Plan[] = [
   {
     name: "Elite",
     variant: "elite",
-    tagline: "The complete experience",
+    tagline: "For mechanics & trade buyers",
     monthlyPrice: "£19.99",
     annualPrice: "£15.99",
     annualBilled: "Billed £191.88/yr",
@@ -93,6 +93,8 @@ const individualPlans: Plan[] = [
       { title: "CSV export", desc: "Export your price comparisons and saved parts to a spreadsheet." },
       { title: "Garage analytics", desc: "Track MOT, tax, service history and running costs per vehicle." },
       { title: "Priority support", desc: "Get faster responses from our team when you need help." },
+      { title: "VAT invoices on request", desc: "Get a VAT invoice for your subscription — essential for UK business accounts." },
+      { title: "2-seat team account", desc: "Share access with one colleague — ideal for garages with multiple staff." },
       { title: "Early access to new features", desc: "Be the first to try new GOPARTARA tools before they launch." },
     ],
   },
@@ -102,7 +104,7 @@ const individualPlans: Plan[] = [
 
 export const faqItems = [
   { q: "Can I cancel anytime?", a: "Yes, absolutely. Cancel anytime from your dashboard. No contracts, no cancellation fees. Your plan stays active until the end of the billing period." },
-  { q: "What happens when I hit my 10 search limit on Free?", a: "You'll see a prompt to upgrade. You can still browse the site, but new searches will be paused until the next month or you upgrade to Pro." },
+  { q: "What happens when I hit my 20 search limit on Free?", a: "You'll see a prompt to upgrade. You can still browse the site, but new searches will be paused until the next month or you upgrade to Pro." },
   { q: "Can I upgrade or downgrade my plan?", a: "Yes, you can change your plan anytime. Upgrades take effect immediately. Downgrades take effect at the next billing cycle." },
   { q: "How does the 30-day money back guarantee work?", a: "If you're not satisfied within 30 days of your first subscription, email us at info@gopartara.com and we'll issue a full refund — no questions asked." },
   { q: "Do you store my payment details?", a: "We use Stripe, the world's most trusted payment processor. We never store your card details on our servers." },
