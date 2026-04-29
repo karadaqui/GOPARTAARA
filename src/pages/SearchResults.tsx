@@ -13,6 +13,7 @@ import SafeImage from "@/components/SafeImage";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import FeaturedSidebar from "@/components/FeaturedSidebar";
 import { Button } from "@/components/ui/button";
 import {
   Search, ExternalLink, Loader2, Camera, Car, Scale, Star,
