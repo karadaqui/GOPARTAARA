@@ -367,7 +367,7 @@ const HeroSection = () => {
 
         {/* Search section */}
         <div className={`transition-[colors,transform] ease-out delay-300 mt-6 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-          <div id="search" className="max-w-3xl mx-auto">
+          <div id="search" style={{ maxWidth: "640px", marginTop: "32px" }}>
             {/* Tabs — Mobile (scrollable) */}
             <div
               className="md:hidden tab-scroll-container flex"
