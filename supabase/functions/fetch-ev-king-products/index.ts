@@ -75,7 +75,12 @@ async function loadProducts(apiKey: string): Promise<Product[]> {
     `fid/${FEED_ID}/format/csv/language/en/delimiter/%2C/` +
     `compression/none/adultcontent/1/columns/${columns}`;
 
-  const res = await fetch(feedUrl);
+  const res = await fetch(feedUrl, {
+    headers: {
+      "User-Agent": "Mozilla/5.0 (compatible; GopartaraBot/1.0)",
+      "Accept": "text/csv,text/plain,*/*",
+    },
+  });
   if (!res.ok) throw new Error(`Feed fetch failed: ${res.status}`);
   const csvText = await res.text();
   const rows = parseCSV(csvText);
