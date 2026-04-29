@@ -173,11 +173,14 @@ const Navbar = () => {
 
             <div className="relative" onMouseEnter={handleMoreEnter} onMouseLeave={handleMoreLeave}>
               <button
-                className="nav-link-ds flex items-center gap-1"
+                className="nav-link-ds"
+                style={{ display: "inline-flex", alignItems: "center", gap: "4px", lineHeight: 1, cursor: "pointer" }}
               >
-                More
+                <span style={{ display: "inline-flex", alignItems: "center", lineHeight: 1 }}>More</span>
                 <ChevronDown
-                  size={11}
+                  size={14}
+                  strokeWidth={2}
+                  style={{ color: "currentColor", display: "block" }}
                   className={`transition-transform duration-300 ${moreOpen ? "rotate-180" : ""}`}
                 />
               </button>
