@@ -15,8 +15,21 @@ const PopularSearchesStrip = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="px-4 mt-4 mb-6">
+    <section className="px-4 mt-12 mb-6">
       <div className="max-w-4xl mx-auto">
+        <div
+          style={{
+            fontFamily: '"DM Sans", system-ui, sans-serif',
+            fontWeight: 600,
+            fontSize: "11px",
+            color: "#555555",
+            letterSpacing: "0.25em",
+            textTransform: "uppercase",
+            marginBottom: "16px",
+          }}
+        >
+          Popular Searches
+        </div>
         <div
           className="flex items-center gap-2 overflow-x-auto"
           style={{
@@ -25,17 +38,6 @@ const PopularSearchesStrip = () => {
             WebkitOverflowScrolling: "touch",
           }}
         >
-          <span
-            style={{
-              color: "#555555",
-              fontSize: "12px",
-              fontWeight: 500,
-              whiteSpace: "nowrap",
-              flexShrink: 0,
-            }}
-          >
-            Popular:
-          </span>
           {POPULAR.map((term) => (
             <button
               key={term}
