@@ -280,7 +280,7 @@ const PricingSection = () => {
 
         {/* Promo code section */}
         <div className="text-center mt-8">
-          <p className="text-muted-foreground text-xs mb-2">Got a secret code? 👀</p>
+          <p className="text-muted-foreground text-xs mb-2">Got a secret code?</p>
           <div className="flex gap-2 justify-center max-w-[280px] mx-auto">
             <input
               id="promoInput"
