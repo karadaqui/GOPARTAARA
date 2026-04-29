@@ -191,9 +191,13 @@ const Navbar = () => {
 
             <div className="relative" onMouseEnter={handleMoreEnter} onMouseLeave={handleMoreLeave}>
               <button
-                className="transition-colors flex items-center gap-1"
+                className="transition-colors"
                 style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
                   fontSize: "14px",
+                  lineHeight: 1,
                   fontWeight: 400,
                   color: "#a1a1aa",
                   background: "none",
@@ -205,9 +209,10 @@ const Navbar = () => {
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
               >
-                More
+                <span>More</span>
                 <ChevronDown
                   size={13}
+                  style={{ display: "block" }}
                   className={`transition-transform duration-300 ${moreOpen ? "rotate-180" : ""}`}
                 />
               </button>
