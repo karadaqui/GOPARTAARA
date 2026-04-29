@@ -2120,6 +2120,7 @@ const SearchResults = () => {
       <CompareBar items={compareParts} onOpen={() => setShowCompare(true)} onClear={() => setCompareParts([])} />
       {showCompare && <CompareModal items={compareParts} onRemove={(id) => setCompareParts((prev) => prev.filter((p) => p.id !== id))} onClose={() => setShowCompare(false)} />}
       <AuthGateModal open={authGateOpen} onOpenChange={setAuthGateOpen} title="Please sign in to search for car parts" description="Create a free account to search across 1,000,000+ parts from trusted UK & global suppliers." />
+      <AnonSearchLimitModal open={anonLimitOpen} onOpenChange={setAnonLimitOpen} />
 
       {/* Search Limit Modal */}
       {searchLimitModalOpen && (
