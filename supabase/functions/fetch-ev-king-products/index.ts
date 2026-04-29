@@ -9,6 +9,7 @@ const corsHeaders = {
 };
 
 const ADVERTISER_ID = "22473";
+const FEED_ID = "52279";
 const PUBLISHER_ID = "2845282";
 const CACHE_TTL_MS = 60 * 60 * 1000;
 
@@ -71,7 +72,7 @@ async function loadProducts(apiKey: string): Promise<Product[]> {
 
   const feedUrl =
     `https://productdata.awin.com/datafeed/download/apikey/${apiKey}/` +
-    `language/en/fid/${ADVERTISER_ID}/columns/${columns}/` +
+    `language/en/fid/${FEED_ID}/columns/${columns}/` +
     `format/csv/delimiter/%2C/compression/gzip/adultcontent/1/`;
 
   const res = await fetch(feedUrl);
