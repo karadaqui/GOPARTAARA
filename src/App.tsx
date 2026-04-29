@@ -65,6 +65,7 @@ const Help = lazy(() => import("./pages/Help.tsx"));
 const HelpCategoryRoute = lazy(() => import("./pages/HelpCategoryRoute.tsx"));
 const Cookies = lazy(() => import("./pages/Cookies.tsx"));
 const Alerts = lazy(() => import("./pages/Alerts.tsx"));
+const EvCharging = lazy(() => import("./pages/EvCharging.tsx"));
 const PartSearchRedirect = lazy(() => import("./components/PartSearchRedirect.tsx"));
 
 const queryClient = new QueryClient();
@@ -130,6 +131,7 @@ const App = () => {
                 <Route path="/help" element={<Help />} />
                 <Route path="/help/:slug" element={<HelpCategoryRoute />} />
                 <Route path="/cookies" element={<Cookies />} />
+                <Route path="/ev-charging" element={<EvCharging />} />
                 <Route path="*" element={<PartSearchRedirect />} />
               </Routes>
               </div>
