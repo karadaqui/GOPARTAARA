@@ -177,7 +177,7 @@ const Deals = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 p-6 sm:p-8">
               <div className="flex-1 min-w-0">
                 <span className="inline-flex items-center gap-1.5 bg-red-600/15 border border-red-600/40 text-red-400 text-[11px] font-bold uppercase tracking-wider rounded-full px-2.5 py-1 mb-3">
-                  🔥 Featured Deal
+                  Featured Deal
                 </span>
                 <h2 className="text-white text-2xl sm:text-3xl font-black tracking-tight mb-1.5">
                   Up to 50% off Car Parts &amp; Accessories
@@ -198,15 +198,6 @@ const Deals = () => {
         <section className="px-4 pb-16 max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <img
-                src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4b0.png"
-                width={32}
-                height={32}
-                loading="lazy"
-                decoding="async"
-                alt="deals"
-                className="rounded-xl"
-              />
               <div>
                 <h2 className="text-foreground font-bold text-lg">eBay UK</h2>
                 <p className="text-muted-foreground text-xs">Deals & Savings · Updated daily</p>
@@ -238,7 +229,6 @@ const Deals = () => {
                     {deal.badge}
                   </span>
                 </div>
-                <div className="text-2xl mb-3">{deal.icon}</div>
                 <p className="text-foreground font-bold text-sm mb-1 pr-2">{deal.title}</p>
                 <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
                 <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
@@ -300,7 +290,7 @@ const Deals = () => {
                     {deal.badge}
                   </span>
                 </div>
-                <div className="text-2xl mb-3">{deal.icon}</div>
+                
                 <p className="text-foreground font-bold text-sm mb-1 pr-2">{deal.title}</p>
                 <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
                 <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
