@@ -68,7 +68,7 @@ const individualPlans = [
     annualPrice: "£15.99",
     annualBilled: "Billed £191.88/yr",
     period: "/mo",
-    features: ["Everything in Pro", "Bulk price comparison (up to 20 parts)", "Export search history as CSV", "30-day price history charts", "Garage analytics dashboard", "Priority email support", "Early access to new features"],
+    features: ["Everything in Pro", "Bulk compare (up to 20 parts)", "CSV export", "Garage analytics", "Priority support", "Early access to new features"],
     useCase: "For those who buy parts regularly",
     cta: "Go Elite →",
     popular: false,
