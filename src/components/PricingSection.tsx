@@ -608,11 +608,26 @@ const PlanCard = ({
         </p>
       )}
 
-      <Button
-        variant={popular ? "default" : "outline"}
-        className="w-full rounded-xl h-11 text-sm font-medium"
+      <button
+        type="button"
         disabled={loading}
         onClick={onSelect}
+        style={{
+          width: "100%",
+          height: "44px",
+          borderRadius: "12px",
+          fontSize: "14px",
+          fontWeight: 600,
+          cursor: loading ? "not-allowed" : "pointer",
+          transition: "all 0.15s ease",
+          background: popular ? "#cc1111" : "transparent",
+          border: popular ? "none" : "1px solid #2a2a2a",
+          color: "#ffffff",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "8px",
+        }}
       >
         {loading ? (
           <span className="flex items-center gap-2">
@@ -620,7 +635,7 @@ const PlanCard = ({
             {slowWarning ? "Taking longer than expected…" : "Redirecting…"}
           </span>
         ) : cta}
-      </Button>
+      </button>
       {ctaSubtext && (
         <p className="text-xs text-muted-foreground text-center mt-2">{ctaSubtext}</p>
       )}
