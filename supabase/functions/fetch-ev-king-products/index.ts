@@ -81,7 +81,11 @@ async function loadProducts(apiKey: string): Promise<Product[]> {
       "Accept": "text/csv,text/plain,*/*",
     },
   });
-  if (!res.ok) throw new Error(`Feed fetch failed: ${res.status}`);
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    console.error("AWIN feed error", res.status, "body:", body.substring(0, 300));
+    throw new Error(`Feed fetch failed: ${res.status}`);
+  }
   const csvText = await res.text();
   const rows = parseCSV(csvText);
   if (rows.length < 2) {
