@@ -486,7 +486,7 @@ const Dashboard = () => {
               onClick={handleResetSearchCount}
               className="text-xs px-3 py-1.5 rounded-lg border border-border bg-secondary/40 hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
             >
-              🔧 Reset Search Count (Admin)
+              Reset Search Count (Admin)
             </button>
           </div>
         )}
