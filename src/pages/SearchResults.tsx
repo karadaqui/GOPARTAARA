@@ -1533,7 +1533,7 @@ const SearchResults = () => {
               </div>
             ) : liveLoading ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-10">
-                {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
+                {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
             ) : liveResults.length > 0 && unifiedResults.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 mb-8">
