@@ -75,7 +75,14 @@ async function loadProducts(apiKey: string): Promise<Product[]> {
     `language/en/fid/${FEED_ID}/columns/${columns}/` +
     `format/csv/delimiter/%2C/compression/gzip/adultcontent/1/`;
 
-  const res = await fetch(feedUrl);
+  let res = await fetch(feedUrl, { redirect: "manual" });
+  if (res.status === 301 || res.status === 302 || res.status === 307 || res.status === 308) {
+    const loc = res.headers.get("location");
+    if (loc) {
+      try { await res.body?.cancel(); } catch { /* ignore */ }
+      res = await fetch(loc);
+    }
+  }
   if (!res.ok) throw new Error(`Feed fetch failed: ${res.status}`);
 
   const buf = await res.arrayBuffer();
