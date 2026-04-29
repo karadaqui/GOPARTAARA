@@ -13,70 +13,60 @@ const ebayAff = (url: string) => {
 
 const EBAY_DEALS = [
   {
-    icon: "🔧",
     title: "Car Parts & Accessories",
     subtitle: "Brakes, filters, exhausts & more",
     url: ebayAff("https://www.ebay.co.uk/deals/automotive/car-parts-accessories"),
     badge: "Top category",
   },
   {
-    icon: "🏎️",
     title: "Garage Equipment & Tools",
     subtitle: "Jacks, compressors, testers",
     url: ebayAff("https://www.ebay.co.uk/deals/automotive/garage-equipment-tools"),
     badge: "Up to 50% off",
   },
   {
-    icon: "📡",
     title: "Car Electronics",
     subtitle: "Dash cams, GPS, stereos & CarPlay",
     url: ebayAff("https://www.ebay.co.uk/deals/automotive/car-electronics"),
     badge: "Hot deals",
   },
   {
-    icon: "🛞",
     title: "Wheels & Tyres",
     subtitle: "Alloys, winter tyres & more",
     url: ebayAff("https://www.ebay.co.uk/deals/automotive/wheels-tyres"),
     badge: "Big savings",
   },
   {
-    icon: "🛢️",
     title: "Oils & Fluids",
     subtitle: "Engine oil, coolant, brake fluid",
     url: ebayAff("https://www.ebay.co.uk/deals/automotive/oils-fluids"),
     badge: "Essentials",
   },
   {
-    icon: "🚗",
     title: "Car Care, Utility & Trailers",
     subtitle: "Cleaning, covers, towing & more",
     url: ebayAff("https://www.ebay.co.uk/deals/automotive/car-care-utility-trailers"),
     badge: "New deals",
   },
   {
-    icon: "⚡",
     title: "Tuning & Styling",
     subtitle: "Performance parts & styling kits",
     url: ebayAff("https://www.ebay.co.uk/deals/automotive/tuning-styling"),
     badge: "Performance",
   },
   {
-    icon: "👕",
     title: "Apparel & Accessories",
     subtitle: "Driving gear, helmets & clothing",
     url: ebayAff("https://www.ebay.co.uk/deals/automotive/apparel-accessories"),
     badge: "Style",
   },
   {
-    icon: "🏍️",
     title: "Motorcycle Parts",
     subtitle: "Bike parts, helmets & gear",
     url: ebayAff("https://www.ebay.co.uk/deals/automotive/motorcycle-parts"),
     badge: "Bikers",
   },
   {
-    icon: "⛺",
     title: "Camping & Caravan Parts",
     subtitle: "Awnings, accessories & spares",
     url: ebayAff("https://www.ebay.co.uk/deals/automotive/camping-caravan-parts"),
@@ -88,12 +78,12 @@ const EBAY_ALL_URL = ebayAff("https://www.ebay.co.uk/deals/automotive");
 
 // ───────── Amazon UK (Amazon Associates) ─────────
 const AMAZON_DEALS = [
-  { icon: "⚙️", title: "Car Parts & Accessories", subtitle: "Brakes, filters, exhausts & more", url: "https://www.amazon.co.uk/s?k=car+parts+accessories&tag=gopartara-21", badge: "Top picks" },
-  { icon: "🔧", title: "Tools & Equipment", subtitle: "Garage tools, jacks, diagnostic kits", url: "https://www.amazon.co.uk/s?k=car+tools+equipment&tag=gopartara-21", badge: "Workshop" },
-  { icon: "🧴", title: "Car Care & Cleaning", subtitle: "Wax, polish & detailing essentials", url: "https://www.amazon.co.uk/s?k=car+care+cleaning&tag=gopartara-21", badge: "Detailing" },
-  { icon: "🛞", title: "Tyres & Wheels", subtitle: "All-season, winter & summer tyres", url: "https://www.amazon.co.uk/s?k=tyres+wheels&tag=gopartara-21", badge: "Big savings" },
-  { icon: "📻", title: "Car Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: "https://www.amazon.co.uk/s?k=car+electronics+dash+cam&tag=gopartara-21", badge: "Hot deals" },
-  { icon: "⚡", title: "Performance Parts", subtitle: "Tuning, exhausts & styling kits", url: "https://www.amazon.co.uk/s?k=car+performance+parts&tag=gopartara-21", badge: "Performance" },
+  { title: "Car Parts & Accessories", subtitle: "Brakes, filters, exhausts & more", url: "https://www.amazon.co.uk/s?k=car+parts+accessories&tag=gopartara-21", badge: "Top picks" },
+  { title: "Tools & Equipment", subtitle: "Garage tools, jacks, diagnostic kits", url: "https://www.amazon.co.uk/s?k=car+tools+equipment&tag=gopartara-21", badge: "Workshop" },
+  { title: "Car Care & Cleaning", subtitle: "Wax, polish & detailing essentials", url: "https://www.amazon.co.uk/s?k=car+care+cleaning&tag=gopartara-21", badge: "Detailing" },
+  { title: "Tyres & Wheels", subtitle: "All-season, winter & summer tyres", url: "https://www.amazon.co.uk/s?k=tyres+wheels&tag=gopartara-21", badge: "Big savings" },
+  { title: "Car Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: "https://www.amazon.co.uk/s?k=car+electronics+dash+cam&tag=gopartara-21", badge: "Hot deals" },
+  { title: "Performance Parts", subtitle: "Tuning, exhausts & styling kits", url: "https://www.amazon.co.uk/s?k=car+performance+parts&tag=gopartara-21", badge: "Performance" },
 ];
 const AMAZON_ALL_URL = "https://www.amazon.co.uk/automotive?tag=gopartara-21";
 
@@ -187,7 +177,7 @@ const Deals = () => {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 p-6 sm:p-8">
               <div className="flex-1 min-w-0">
                 <span className="inline-flex items-center gap-1.5 bg-red-600/15 border border-red-600/40 text-red-400 text-[11px] font-bold uppercase tracking-wider rounded-full px-2.5 py-1 mb-3">
-                  🔥 Featured Deal
+                  Featured Deal
                 </span>
                 <h2 className="text-white text-2xl sm:text-3xl font-black tracking-tight mb-1.5">
                   Up to 50% off Car Parts &amp; Accessories
@@ -208,15 +198,6 @@ const Deals = () => {
         <section className="px-4 pb-16 max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <img
-                src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4b0.png"
-                width={32}
-                height={32}
-                loading="lazy"
-                decoding="async"
-                alt="deals"
-                className="rounded-xl"
-              />
               <div>
                 <h2 className="text-foreground font-bold text-lg">eBay UK</h2>
                 <p className="text-muted-foreground text-xs">Deals & Savings · Updated daily</p>
@@ -248,7 +229,6 @@ const Deals = () => {
                     {deal.badge}
                   </span>
                 </div>
-                <div className="text-2xl mb-3">{deal.icon}</div>
                 <p className="text-foreground font-bold text-sm mb-1 pr-2">{deal.title}</p>
                 <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
                 <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
@@ -310,7 +290,7 @@ const Deals = () => {
                     {deal.badge}
                   </span>
                 </div>
-                <div className="text-2xl mb-3">{deal.icon}</div>
+                
                 <p className="text-foreground font-bold text-sm mb-1 pr-2">{deal.title}</p>
                 <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
                 <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
