@@ -17,11 +17,6 @@ const steps = [
     title: "Save",
     desc: "Order directly from your chosen supplier. No middleman, no markup — just the best deal.",
   },
-  {
-    number: "04",
-    title: "Save More",
-    desc: "Set price alerts and get notified when parts drop to your target price. Never overpay again.",
-  },
 ];
 
 const HowItWorksSection = () => (
