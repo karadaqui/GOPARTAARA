@@ -9,7 +9,7 @@ const corsHeaders = {
 };
 
 const ADVERTISER_ID = "22473";
-const FEED_ID = "52279";
+const FEED_ID = "52281";
 const PUBLISHER_ID = "2845282";
 const CACHE_TTL_MS = 60 * 60 * 1000;
 
