@@ -302,7 +302,7 @@ const PricingSection = () => {
                     body: JSON.stringify({ promoCode: code })
                   });
                    const d = await r.json();
-                  if (d.success) { toast({ title: '🎉 1 month Pro activated!' }); setTimeout(() => window.location.reload(), 1500); }
+                  if (d.success) { toast({ title: '1 month Pro activated' }); setTimeout(() => window.location.reload(), 1500); }
                   else if (d.already_used) { toast({ title: d.message }); }
                   else toast({ title: d.error || 'Invalid code', variant: 'destructive' });
                 } catch { toast({ title: 'Connection error', variant: 'destructive' }); }
