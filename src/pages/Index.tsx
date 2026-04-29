@@ -2,7 +2,10 @@ import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import SimpleStepsStrip from "@/components/SimpleStepsStrip";
+import StatsBar from "@/components/home/StatsBar";
+import HowItWorksBig from "@/components/home/HowItWorksBig";
+import LiveSuppliers from "@/components/home/LiveSuppliers";
+import MarketplaceCTA from "@/components/home/MarketplaceCTA";
 import PopularSearchesStrip from "@/components/PopularSearchesStrip";
 import BrowseByMakeSection from "@/components/BrowseByMakeSection";
 import Footer from "@/components/Footer";
@@ -61,11 +64,17 @@ const Index = () => {
       <Navbar />
       <HeroSection />
 
-      <SimpleStepsStrip />
+      <StatsBar />
+
+      <HowItWorksBig />
+
+      <LiveSuppliers />
 
       <PopularSearchesStrip />
 
       <BrowseByMakeSection />
+
+      <MarketplaceCTA />
 
       {/* Deals & Savings — clean CTA strip */}
       <Link
