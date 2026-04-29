@@ -146,10 +146,11 @@ async function loadProducts(apiKey: string): Promise<unknown[]> {
     const stockRaw = iStock >= 0 ? (row[iStock] || "").toLowerCase().trim() : "1";
     const inStock = stockRaw === "1" || stockRaw === "true" || stockRaw === "yes" || stockRaw === "";
 
-    // Always build affiliate URL with the publisher's awin1.com tracker.
-    const affiliateUrl = merchantDeep
-      ? `https://www.awin1.com/cread.php?awinmid=${ADVERTISER_ID}&awinaffid=${AFFILIATE_ID}&ued=${encodeURIComponent(merchantDeep)}`
-      : awDeep;
+    // Prefer aw_deep_link directly — Awin pre-builds the correct tracking URL there.
+    // Fall back to manually constructing a cread.php link with a properly URL-encoded ued param.
+    const affiliateUrl = awDeep
+      ? awDeep
+      : `https://www.awin1.com/cread.php?awinmid=${ADVERTISER_ID}&awinaffid=${AFFILIATE_ID}&ued=${encodeURIComponent(merchantDeep)}`;
 
     products.push({
       id: iId >= 0 && row[iId] ? row[iId] : String(r),
