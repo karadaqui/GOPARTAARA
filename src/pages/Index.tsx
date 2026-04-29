@@ -93,6 +93,7 @@ const Index = () => {
         ]}
       />
       <Navbar />
+      <FeaturedSidebar />
       <HeroSection />
       <SectionDivider />
       <PopularSearchesStrip />
