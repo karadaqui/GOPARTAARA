@@ -22,7 +22,7 @@ const TIERS: Tier[] = [
     ctaTo: "/auth",
     variant: "free",
     features: [
-      "10 searches per month",
+      "20 searches per month",
       "5 saved parts",
       "5 price alerts",
       "5 marketplace listings",
