@@ -86,7 +86,6 @@ const HeroSection = () => {
   const [vinError, setVinError] = useState("");
   const [authGateOpen, setAuthGateOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [viewers, setViewers] = useState(() => Math.floor(Math.random() * 170) + 180);
   const navigate = useNavigate();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
