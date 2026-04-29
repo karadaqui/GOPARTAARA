@@ -9,7 +9,7 @@ const STEPS = [
 const HowItWorksBig = () => (
   <section
     style={{
-      padding: "60px 0",
+      padding: "48px 0",
       borderBottom: "1px solid #1a1a1a",
     }}
   >
@@ -21,12 +21,26 @@ const HowItWorksBig = () => (
         color: "#cc1111",
         letterSpacing: "0.25em",
         textAlign: "center",
-        marginBottom: "40px",
+        marginBottom: "12px",
         textTransform: "uppercase",
       }}
     >
       How It Works
     </div>
+    <h2
+      style={{
+        fontFamily: '"Barlow Condensed", system-ui, sans-serif',
+        fontWeight: 700,
+        fontSize: "38px",
+        color: "#ffffff",
+        textAlign: "center",
+        margin: "0 0 40px",
+        letterSpacing: "-0.01em",
+        lineHeight: 1.05,
+      }}
+    >
+      Three steps. Seconds to save.
+    </h2>
     <div
       className="hiw-grid"
       style={{
@@ -34,14 +48,22 @@ const HowItWorksBig = () => (
         margin: "0 auto",
         padding: "0 24px",
         display: "grid",
-        gridTemplateColumns: "1fr 1px 1fr 1px 1fr",
-        alignItems: "start",
-        gap: 0,
+        gridTemplateColumns: "1fr 1fr 1fr",
+        alignItems: "stretch",
+        gap: "16px",
       }}
     >
-      {STEPS.map((s, i) => (
+      {STEPS.map((s) => (
         <Fragment key={s.n}>
-          <div style={{ padding: "0 32px", textAlign: "left" }}>
+          <div
+            style={{
+              padding: "32px 28px",
+              textAlign: "left",
+              border: "1px solid #1a1a1a",
+              borderRadius: "16px",
+              background: "#0d0d0d",
+            }}
+          >
             <div
               style={{
                 fontFamily: '"Barlow Condensed", system-ui, sans-serif',
@@ -80,9 +102,6 @@ const HowItWorksBig = () => (
               {s.desc}
             </p>
           </div>
-          {i < STEPS.length - 1 && (
-            <div style={{ width: "1px", height: "120px", background: "#1a1a1a", alignSelf: "center" }} />
-          )}
         </Fragment>
       ))}
     </div>

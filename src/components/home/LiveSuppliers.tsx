@@ -1,11 +1,11 @@
 const SUPPLIERS = [
-  { name: "eBay", flag: "🇬🇧" },
-  { name: "mytyres.co.uk", flag: "🇬🇧" },
-  { name: "Tyres UK", flag: "🇬🇧" },
-  { name: "Autodoc", flag: "🇪🇺" },
-  { name: "Amazon", flag: "🇬🇧" },
-  { name: "Euro Car Parts", flag: "🇬🇧" },
-  { name: "GSF Car Parts", flag: "🇬🇧" },
+  { name: "eBay" },
+  { name: "mytyres.co.uk" },
+  { name: "Tyres UK" },
+  { name: "Autodoc" },
+  { name: "Amazon" },
+  { name: "Euro Car Parts" },
+  { name: "GSF Car Parts" },
 ];
 
 const LiveSuppliers = () => (
@@ -58,7 +58,6 @@ const LiveSuppliers = () => (
               flexShrink: 0,
             }}
           >
-            <span style={{ fontSize: "14px", lineHeight: 1 }}>{s.flag}</span>
             <span
               style={{
                 fontFamily: '"DM Sans", system-ui, sans-serif',

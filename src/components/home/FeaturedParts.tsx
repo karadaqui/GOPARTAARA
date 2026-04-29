@@ -44,8 +44,8 @@ const FeaturedParts = () => {
     };
   }, []);
 
-  // Hide section entirely if 0 featured listings or still loading-empty
-  if (items === null || items.length === 0) return null;
+  // Hide section entirely if fewer than 2 featured listings
+  if (items === null || items.length < 2) return null;
 
   const display = items.slice(0, 4);
   const fmt = (n: number, c: string | null) => {
@@ -56,7 +56,7 @@ const FeaturedParts = () => {
   return (
     <section
       style={{
-        padding: "56px 24px",
+        padding: "48px 24px",
         borderBottom: "1px solid var(--border)",
       }}
     >
