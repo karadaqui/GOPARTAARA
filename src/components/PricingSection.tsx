@@ -106,7 +106,7 @@ export const faqItems = [
     a: "Yes, absolutely. Cancel anytime from your dashboard. No contracts, no cancellation fees. Your plan stays active until the end of the billing period.",
   },
   {
-    q: "What happens when I hit my 10 search limit on Free?",
+    q: "What happens when I hit my 20 search limit on Free?",
     a: "You'll see a prompt to upgrade. You can still browse the site, but new searches will be paused until the next month or you upgrade to Pro.",
   },
   {
