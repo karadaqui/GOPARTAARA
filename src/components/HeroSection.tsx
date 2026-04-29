@@ -316,9 +316,8 @@ const HeroSection = () => {
   return (
     <section
       id="home"
-      className="relative flex items-center justify-center pt-16 overflow-x-visible overflow-y-hidden animated-gradient-bg"
+      className="relative flex items-center justify-center pt-16 pb-8 overflow-x-visible overflow-y-hidden animated-gradient-bg"
       style={{
-        minHeight: "70vh",
         backgroundImage:
           "radial-gradient(ellipse 80% 40% at 50% -10%, rgba(204,17,17,0.12) 0%, transparent 70%), radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
         backgroundSize: "auto, 24px 24px",
