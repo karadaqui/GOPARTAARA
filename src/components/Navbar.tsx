@@ -34,9 +34,9 @@ type MoreLink = {
 };
 
 const moreLinks: MoreLink[] = [
+  { label: "EV Charging", href: "/ev-charging", Icon: Zap },
   { label: "Bulk Compare", href: "/compare", Icon: Scale, elite: true },
   { label: "Tyres", href: "/tyres", Icon: CircleDot },
-  { label: "EV Charging", href: "/ev-charging", Icon: Zap },
   { label: "For Business", href: "/business", Icon: Briefcase },
   { label: "Blog", href: "/blog", Icon: BookOpen },
   { label: "Help Center", href: "/help", Icon: HelpCircle },
@@ -191,9 +191,13 @@ const Navbar = () => {
 
             <div className="relative" onMouseEnter={handleMoreEnter} onMouseLeave={handleMoreLeave}>
               <button
-                className="transition-colors flex items-center gap-1"
+                className="transition-colors"
                 style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
                   fontSize: "14px",
+                  lineHeight: 1,
                   fontWeight: 400,
                   color: "#a1a1aa",
                   background: "none",
@@ -205,9 +209,10 @@ const Navbar = () => {
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
               >
-                More
+                <span>More</span>
                 <ChevronDown
                   size={13}
+                  style={{ display: "block" }}
                   className={`transition-transform duration-300 ${moreOpen ? "rotate-180" : ""}`}
                 />
               </button>
@@ -252,7 +257,7 @@ const Navbar = () => {
                             e.currentTarget.style.backgroundColor = "transparent";
                           }}
                         >
-                          <Icon size={14} className="opacity-70" />
+                          <Icon size={14} className={l.href === "/ev-charging" ? "" : "opacity-70"} style={l.href === "/ev-charging" ? { color: "#cc1111" } : undefined} />
                           <span className="flex-1">{l.label}</span>
                           {showEliteBadge && (
                             <span
