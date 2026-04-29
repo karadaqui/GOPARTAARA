@@ -127,10 +127,19 @@ Deno.serve(async (req) => {
     return rateLimitResponse(corsHeaders);
   }
 
-  const auth = await validateJWT(req, corsHeaders);
-  if (auth.error) {
-    await logSecurityEvent("unauthenticated_access", req, undefined, "search-parts");
-    return auth.error;
+  // Optional auth — allow anonymous searches (limited client-side to 3 / 30 days)
+  const authHeader = req.headers.get("Authorization");
+  const hasBearer = !!authHeader && authHeader.startsWith("Bearer ") && authHeader.replace("Bearer ", "").length > 20;
+
+  let userId: string | null = null;
+  if (hasBearer) {
+    const auth = await validateJWT(req, corsHeaders);
+    if (auth.error) {
+      // Invalid token — treat as anonymous rather than blocking
+      userId = null;
+    } else {
+      userId = auth.userId;
+    }
   }
 
   const supabaseAdmin = createClient(
@@ -139,14 +148,17 @@ Deno.serve(async (req) => {
     { auth: { persistSession: false } }
   );
 
-  const { data: profile } = await supabaseAdmin
-    .from("profiles")
-    .select("subscription_plan, bonus_searches")
-    .eq("user_id", auth.userId)
-    .single();
-
-  const plan = profile?.subscription_plan || "free";
-  const bonusSearches = profile?.bonus_searches || 0;
+  let plan = "free";
+  let bonusSearches = 0;
+  if (userId) {
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("subscription_plan, bonus_searches")
+      .eq("user_id", userId)
+      .single();
+    plan = profile?.subscription_plan || "free";
+    bonusSearches = profile?.bonus_searches || 0;
+  }
   const isUnlimited = UNLIMITED_PLANS.includes(plan);
 
   try {
