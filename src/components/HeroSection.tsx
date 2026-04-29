@@ -325,20 +325,37 @@ const HeroSection = () => {
     >
       <div
         className="relative z-10 px-6 md:px-12 lg:px-[60px] py-12 sm:py-16"
-        style={{ maxWidth: "1100px", margin: "0 auto 0 0" }}
+        style={{ maxWidth: "780px", margin: "0 auto", textAlign: "center" }}
       >
-        {/* Heading — left-aligned, asymmetric, editorial */}
-        <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+        {/* Eyebrow label */}
+        <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <p
+            style={{
+              fontFamily: '"DM Sans", system-ui, sans-serif',
+              fontSize: "11px",
+              fontWeight: 600,
+              letterSpacing: "0.25em",
+              color: "#cc1111",
+              textTransform: "uppercase",
+              marginBottom: "20px",
+            }}
+          >
+            The UK's Car Parts Search Engine
+          </p>
+        </div>
+
+        {/* Heading — centered */}
+        <div className={`transition-[colors,transform] ease-out delay-75 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
           <h1
             className="font-display"
             style={{
-              fontSize: "clamp(48px, 8vw, 80px)",
+              fontSize: "clamp(44px, 8vw, 72px)",
               fontWeight: 800,
               letterSpacing: "-0.02em",
-              lineHeight: 0.95,
+              lineHeight: 0.92,
               color: "#ffffff",
-              maxWidth: "620px",
-              textAlign: "left",
+              margin: "0 auto",
+              textAlign: "center",
             }}
           >
             Find Any Car Part
@@ -352,22 +369,22 @@ const HeroSection = () => {
           <p
             style={{
               fontFamily: '"DM Sans", system-ui, sans-serif',
-              fontSize: "16px",
+              fontSize: "17px",
               color: "#888888",
               fontWeight: 400,
-              maxWidth: "440px",
-              marginTop: "20px",
+              maxWidth: "560px",
+              margin: "16px auto 32px",
               lineHeight: 1.55,
-              textAlign: "left",
+              textAlign: "center",
             }}
           >
-            Search 7 UK suppliers simultaneously. No account needed. Always free.
+            Search 7 suppliers simultaneously. Free, no account needed.
           </p>
         </div>
 
         {/* Search section */}
-        <div className={`transition-[colors,transform] ease-out delay-300 mt-6 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-          <div id="search" style={{ maxWidth: "640px", marginTop: "32px" }}>
+        <div className={`transition-[colors,transform] ease-out delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+          <div id="search" style={{ maxWidth: "680px", margin: "0 auto", textAlign: "left" }}>
             {/* Tabs — Mobile (scrollable) */}
             <div
               className="md:hidden tab-scroll-container flex"
