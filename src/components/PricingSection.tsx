@@ -285,7 +285,7 @@ const PricingSection = () => {
             <input
               id="promoInput"
               type="text"
-              placeholder="🤫 psst... try COMMUNITY"
+              placeholder="Try COMMUNITY"
               className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-foreground text-[13px] outline-none focus:border-primary"
             />
             <button
