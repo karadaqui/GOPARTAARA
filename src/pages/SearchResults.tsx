@@ -233,13 +233,21 @@ const getPriceBadgeClasses = (variant: "great" | "good" | "high" | "top") => {
 
 // ── Skeleton Card ──
 const SkeletonCard = () => (
-  <div className="rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111111]">
+  <div
+    className="overflow-hidden"
+    style={{
+      background: "#111111",
+      border: "1px solid #1a1a1a",
+      borderRadius: "12px",
+    }}
+  >
+    {/* Image area */}
     <div className="h-52 bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
     <div className="p-4 space-y-3">
-      <div className="h-4 w-3/4 rounded-full bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
-      <div className="h-4 w-1/2 rounded-full bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
-      <div className="h-7 w-1/3 rounded-full bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
-      <div className="h-9 w-full rounded-xl bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
+      {/* Title */}
+      <div className="h-4 w-3/4 rounded bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
+      {/* Price */}
+      <div className="h-6 w-1/3 rounded bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
     </div>
   </div>
 );
@@ -1294,9 +1302,10 @@ const SearchResults = () => {
             {/* ── Results Header ── */}
             <div className="mb-4 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
               <div>
-                <h1 className="text-2xl md:text-3xl font-semibold text-white" style={{ letterSpacing: "-0.02em" }}>
+                <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
                   {totalResults > 0 ? `${totalResults.toLocaleString()} results` : "Results"}
-                  <span className="text-zinc-500 font-normal"> · {categoryFilter !== "All Parts" ? `${categoryFilter} — ` : ""}{activeQuery}</span>
+                  <span style={{ color: "#333333", fontWeight: 400 }}> · </span>
+                  <span style={{ color: "#888888", fontWeight: 400 }}>{categoryFilter !== "All Parts" ? `${categoryFilter} — ` : ""}{activeQuery}</span>
                 </h1>
                 {totalResults > 0 && !liveLoading && (
                   <>
