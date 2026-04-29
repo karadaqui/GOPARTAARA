@@ -35,7 +35,7 @@ export default function EvCharging() {
     let active = true;
     (async () => {
       try {
-        const { data, error } = await supabase.functions.invoke("fetch-ev-king-products");
+        const { data, error } = await supabase.functions.invoke("fetch-ev-king-feed");
         if (error) throw error;
         if (active) setProducts(data?.products || []);
       } catch (e) {
