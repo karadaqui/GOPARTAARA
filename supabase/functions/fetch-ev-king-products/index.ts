@@ -56,18 +56,21 @@ Deno.serve(async (req) => {
       );
     }
 
-    const feedRes = await fetch(buildFeedUrl(apiKey), { redirect: "follow" });
+    const feedUrl = buildFeedUrl(apiKey);
+    console.log("Fetching Awin feed:", feedUrl.replace(apiKey, "***"));
+    const feedRes = await fetch(feedUrl, { redirect: "follow" });
+    console.log("Awin feed response status:", feedRes.status);
     if (!feedRes.ok || !feedRes.body) {
-      // Awin returns 400 with "No products found" when feed is empty / not joined yet
       let bodyText = "";
       try { bodyText = await feedRes.clone().text(); } catch { /* ignore */ }
+      console.error("Awin feed error body:", bodyText.slice(0, 500));
       if (/no products found/i.test(bodyText)) {
         return new Response(JSON.stringify([]), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       return new Response(
-        JSON.stringify({ error: `Feed fetch failed: ${feedRes.status}` }),
+        JSON.stringify({ error: `Feed fetch failed: ${feedRes.status}`, detail: bodyText.slice(0, 200) }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
