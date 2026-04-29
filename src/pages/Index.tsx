@@ -140,7 +140,6 @@ const Index = () => {
         style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
       >
         <div className="flex items-center gap-3">
-          <span className="text-xl">🔥</span>
           <div>
             <p className="text-foreground text-sm font-bold">Deals &amp; Savings</p>
             <p className="text-muted-foreground text-xs">
