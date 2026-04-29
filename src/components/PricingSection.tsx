@@ -38,7 +38,7 @@ const individualPlans = [
     annualPrice: "£0",
     annualBilled: "",
     period: "/mo",
-    features: ["10 searches per month", "5 active marketplace listings", "Save up to 5 parts & alerts", "1 garage vehicle", "Referral bonuses"],
+    features: ["10 searches per month", "5 saved parts", "5 price alerts", "5 marketplace listings", "1 vehicle in My Garage"],
     useCase: "Perfect for occasional searches",
     cta: "Get Started Free",
     popular: false,
@@ -53,7 +53,7 @@ const individualPlans = [
     annualPrice: "£7.99",
     annualBilled: "Billed £95.88/yr",
     period: "/mo",
-    features: ["Unlimited searches", "Photo search", "Unlimited marketplace listings", "Unlimited parts & alerts", "Unlimited garage vehicles", "Search history", "Price alerts", "Ad-free experience", "10 photos per listing"],
+    features: ["Unlimited searches", "Photo search", "Unlimited saved parts", "Unlimited price alerts", "Unlimited marketplace listings", "Unlimited vehicles in My Garage", "Compare up to 5 parts at once", "Search history"],
     useCase: "For DIY mechanics and car enthusiasts",
     cta: "Start Pro Free →",
     popular: true,
@@ -68,7 +68,7 @@ const individualPlans = [
     annualPrice: "£15.99",
     annualBilled: "Billed £191.88/yr",
     period: "/mo",
-    features: ["Everything in Pro", "Bulk price comparison (up to 20 parts)", "Export search history as CSV", "30-day price history charts", "Garage analytics dashboard", "Priority email support", "Early access to new features"],
+    features: ["Everything in Pro", "Bulk compare (up to 20 parts)", "CSV export", "Garage analytics", "Priority support", "Early access to new features"],
     useCase: "For those who buy parts regularly",
     cta: "Go Elite →",
     popular: false,
@@ -268,7 +268,7 @@ const PricingSection = () => {
                       body: JSON.stringify({})
                     });
                     const d = await r.json();
-                    if (d.success) { toast({ title: '🎉 1 month Pro activated!' }); setTimeout(() => window.location.reload(), 1500); }
+                    if (d.success) { toast({ title: '1 month Pro activated' }); setTimeout(() => window.location.reload(), 1500); }
                     else toast({ title: d.error || 'Something went wrong', variant: 'destructive' });
                   } catch { toast({ title: 'Connection error', variant: 'destructive' }); }
                 } : () => startCheckout(effectivePriceId)}
@@ -280,12 +280,12 @@ const PricingSection = () => {
 
         {/* Promo code section */}
         <div className="text-center mt-8">
-          <p className="text-muted-foreground text-xs mb-2">Got a secret code? 👀</p>
+          <p className="text-muted-foreground text-xs mb-2">Have a promo code?</p>
           <div className="flex gap-2 justify-center max-w-[280px] mx-auto">
             <input
               id="promoInput"
               type="text"
-              placeholder="🤫 psst... try COMMUNITY"
+              placeholder="Enter code"
               className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-foreground text-[13px] outline-none focus:border-primary"
             />
             <button
@@ -302,7 +302,7 @@ const PricingSection = () => {
                     body: JSON.stringify({ promoCode: code })
                   });
                    const d = await r.json();
-                  if (d.success) { toast({ title: '🎉 1 month Pro activated!' }); setTimeout(() => window.location.reload(), 1500); }
+                  if (d.success) { toast({ title: '1 month Pro activated' }); setTimeout(() => window.location.reload(), 1500); }
                   else if (d.already_used) { toast({ title: d.message }); }
                   else toast({ title: d.error || 'Invalid code', variant: 'destructive' });
                 } catch { toast({ title: 'Connection error', variant: 'destructive' }); }
@@ -319,7 +319,7 @@ const PricingSection = () => {
           className="text-center mt-6"
           style={{ fontSize: "13px", color: "#fbbf24" }}
         >
-          🕐 First month Pro free — offer ends{" "}
+          First month Pro free — offer ends{" "}
           {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(
             "en-US",
             { month: "long", day: "numeric", year: "numeric" }
@@ -378,7 +378,7 @@ const PricingSection = () => {
             color: "#fbbf24",
           }}
         >
-          🕐 First month free on Pro — offer ends{" "}
+          First month free on Pro — offer ends{" "}
           {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", {
             month: "long",
             day: "numeric",
@@ -575,12 +575,12 @@ const PlanCard = ({
       <div className="flex-1 mb-6">
         {isBundle ? (
           <>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">🔍 Search Features</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Search Features</p>
             <ul className="space-y-2.5 mb-5">
               {searchFeatures.map((f) => <FeatureItem key={f} text={f} />)}
             </ul>
             <div className="h-px bg-border/30 mb-5" />
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">🏪 Seller Features</p>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Seller Features</p>
             <ul className="space-y-2.5">
               {sellerFeatures.map((f) => <FeatureItem key={f} text={f} />)}
             </ul>
@@ -608,11 +608,26 @@ const PlanCard = ({
         </p>
       )}
 
-      <Button
-        variant={popular ? "default" : "outline"}
-        className="w-full rounded-xl h-11 text-sm font-medium"
+      <button
+        type="button"
         disabled={loading}
         onClick={onSelect}
+        style={{
+          width: "100%",
+          height: "44px",
+          borderRadius: "12px",
+          fontSize: "14px",
+          fontWeight: 600,
+          cursor: loading ? "not-allowed" : "pointer",
+          transition: "all 0.15s ease",
+          background: popular ? "#cc1111" : "transparent",
+          border: popular ? "none" : "1px solid #2a2a2a",
+          color: "#ffffff",
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "8px",
+        }}
       >
         {loading ? (
           <span className="flex items-center gap-2">
@@ -620,7 +635,7 @@ const PlanCard = ({
             {slowWarning ? "Taking longer than expected…" : "Redirecting…"}
           </span>
         ) : cta}
-      </Button>
+      </button>
       {ctaSubtext && (
         <p className="text-xs text-muted-foreground text-center mt-2">{ctaSubtext}</p>
       )}
