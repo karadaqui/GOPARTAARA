@@ -1,3 +1,5 @@
+import { Fragment } from "react";
+
 const steps = [
   { n: "01", title: "Search", desc: "Type a part name, reg plate, or VIN" },
   { n: "02", title: "Compare", desc: "See prices from 7 UK suppliers side by side" },
