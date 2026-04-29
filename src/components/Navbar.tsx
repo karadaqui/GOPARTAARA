@@ -191,7 +191,7 @@ const Navbar = () => {
               <button
                 className="transition-colors flex items-center gap-1"
                 style={{
-                  fontSize: "13px",
+                  fontSize: "14px",
                   fontWeight: 400,
                   color: "#a1a1aa",
                   background: "none",

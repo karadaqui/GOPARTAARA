@@ -16,7 +16,6 @@ const SECTIONS: FooterSection[] = [
       { label: "Deals", href: "/deals" },
       { label: "My Garage", href: "/garage" },
       { label: "Pricing", href: "/pricing" },
-      { label: "Help Center", href: "/help" },
     ],
   },
   {
@@ -32,18 +31,13 @@ const SECTIONS: FooterSection[] = [
     title: "Support",
     links: [
       { label: "Help Center", href: "/help" },
-      { label: "Refund Policy", href: "/refund" },
-      { label: "Report an Issue", href: "/contact" },
     ],
   },
   {
     title: "Legal",
     links: [
       { label: "Privacy Policy", href: "/privacy" },
-      { label: "Cookie Policy", href: "/cookies" },
       { label: "Terms of Service", href: "/terms" },
-      { label: "Affiliate Disclosure", href: "/affiliate-disclosure" },
-      { label: "Subscription Policy", href: "/subscription-policy" },
     ],
   },
 ];
