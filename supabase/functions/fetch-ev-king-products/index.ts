@@ -65,28 +65,19 @@ async function loadProducts(apiKey: string): Promise<Product[]> {
   if (cache && now - cache.fetchedAt < CACHE_TTL_MS) return cache.products;
 
   const columns = [
-    "aw_product_id", "product_name", "description", "merchant_product_id",
+    "aw_product_id", "product_name", "description",
     "merchant_image_url", "search_price", "merchant_deep_link",
     "brand_name", "category_name",
   ].join("%2C");
 
   const feedUrl =
     `https://productdata.awin.com/datafeed/download/apikey/${apiKey}/` +
-    `language/en/fid/${FEED_ID}/columns/${columns}/` +
-    `format/csv/delimiter/%2C/compression/gzip/adultcontent/1/`;
+    `fid/${FEED_ID}/format/csv/language/en/delimiter/%2C/` +
+    `compression/none/adultcontent/1/columns/${columns}`;
 
-  let res = await fetch(feedUrl, { redirect: "manual" });
-  if (res.status === 301 || res.status === 302 || res.status === 307 || res.status === 308) {
-    const loc = res.headers.get("location");
-    if (loc) {
-      try { await res.body?.cancel(); } catch { /* ignore */ }
-      res = await fetch(loc);
-    }
-  }
+  const res = await fetch(feedUrl);
   if (!res.ok) throw new Error(`Feed fetch failed: ${res.status}`);
-
-  const buf = await res.arrayBuffer();
-  const csvText = await decompressGzip(buf);
+  const csvText = await res.text();
   const rows = parseCSV(csvText);
   if (rows.length < 2) {
     cache = { fetchedAt: now, products: [] };
