@@ -1,25 +1,11 @@
-import { Suspense, lazy, useEffect } from "react";
+import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import SocialProofStats from "@/components/SocialProofStats";
-import HomeCTASection from "@/components/HomeCTASection";
+import SimpleStepsStrip from "@/components/SimpleStepsStrip";
 import PopularSearchesStrip from "@/components/PopularSearchesStrip";
 import BrowseByMakeSection from "@/components/BrowseByMakeSection";
-import FeaturedListingsSection from "@/components/FeaturedListingsSection";
-import SectionDivider from "@/components/SectionDivider";
-
-import HomeShareRow from "@/components/HomeShareRow";
-
-// Below-the-fold: lazy-load to keep initial JS small and defer their data fetches
-const FeaturesSection = lazy(() => import("@/components/FeaturesSection"));
-const HowItWorksSection = lazy(() => import("@/components/HowItWorksSection"));
-const TestimonialsSection = lazy(() => import("@/components/TestimonialsSection"));
-const PricingSection = lazy(() => import("@/components/PricingSection"));
-const WhyPartaraSection = lazy(() => import("@/components/WhyPartaraSection"));
-
 import Footer from "@/components/Footer";
-import ScrollReveal from "@/components/ScrollReveal";
 import SEOHead from "@/components/SEOHead";
 import BackToTop from "@/components/BackToTop";
 import WelcomeModal from "@/components/WelcomeModal";
@@ -58,10 +44,7 @@ const Index = () => {
                 "@type": "Organization",
                 "name": "GOPARTARA Ltd",
                 "url": "https://gopartara.com",
-                "logo": {
-                  "@type": "ImageObject",
-                  "url": "https://gopartara.com/logo.png",
-                },
+                "logo": { "@type": "ImageObject", "url": "https://gopartara.com/logo.png" },
               },
               "potentialAction": {
                 "@type": "SearchAction",
@@ -74,67 +57,54 @@ const Index = () => {
             },
           ],
         }}
-        additionalJsonLd={[
-          {
-            "@context": "https://schema.org",
-            "@type": "WebApplication",
-            "name": "GOPARTARA",
-            "url": "https://gopartara.com",
-            "description": "Compare prices on over 1M+ car parts from trusted UK & Global suppliers.",
-            "applicationCategory": "AutomotiveApplication",
-            "operatingSystem": "Web",
-            "offers": {
-              "@type": "Offer",
-              "price": "0",
-              "priceCurrency": "GBP",
-            },
-          },
-        ]}
       />
       <Navbar />
       <HeroSection />
-      <SectionDivider />
-      <PopularSearchesStrip />
-      <SectionDivider />
-      <FeaturedListingsSection />
-      <BrowseByMakeSection />
-      <SectionDivider />
-      <SocialProofStats />
-      <SectionDivider />
 
+      <SimpleStepsStrip />
+
+      <PopularSearchesStrip />
+
+      <BrowseByMakeSection />
+
+      {/* Deals & Savings — clean CTA strip */}
       <Link
         to="/deals"
-        className="flex items-center justify-between px-5 py-3 mx-4 mb-6 max-w-4xl md:mx-auto rounded transition-colors group"
-        style={{ background: "rgba(255,255,255,0.02)", border: "1px solid #1a1a1a" }}
+        className="deals-strip group"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          background: "#0f0f0f",
+          borderTop: "1px solid #1a1a1a",
+          borderBottom: "1px solid #1a1a1a",
+          padding: "18px 24px",
+          margin: "48px 0 0",
+          textDecoration: "none",
+        }}
       >
-        <div>
-          <p className="text-foreground text-sm font-semibold" style={{ letterSpacing: "0.01em" }}>Deals &amp; Savings</p>
-          <p style={{ fontSize: "12px", color: "#888888", marginTop: "2px" }}>
-            eBay · Amazon · Classic Parts — Updated daily
-          </p>
-        </div>
-        <span className="group-hover:translate-x-0.5 transition-transform text-sm font-semibold" style={{ color: "#cc1111" }}>
+        <span
+          style={{
+            fontFamily: '"DM Sans", system-ui, sans-serif',
+            fontSize: "14px",
+            fontWeight: 500,
+            color: "#cccccc",
+          }}
+        >
+          Today's best deals from eBay &amp; Amazon
+        </span>
+        <span
+          className="group-hover:translate-x-0.5 transition-transform"
+          style={{
+            fontFamily: '"DM Sans", system-ui, sans-serif',
+            fontSize: "14px",
+            fontWeight: 600,
+            color: "#cc1111",
+          }}
+        >
           View deals →
         </span>
       </Link>
-
-      <Suspense fallback={<div className="h-32" />}>
-        <ScrollReveal><HowItWorksSection /></ScrollReveal>
-        <SectionDivider />
-        <ScrollReveal><FeaturesSection /></ScrollReveal>
-        <SectionDivider />
-        <ScrollReveal><WhyPartaraSection /></ScrollReveal>
-        <SectionDivider />
-        <ScrollReveal><TestimonialsSection /></ScrollReveal>
-        <SectionDivider />
-        <ScrollReveal><PricingSection /></ScrollReveal>
-      </Suspense>
-
-      <SectionDivider />
-
-      <ScrollReveal><HomeCTASection /></ScrollReveal>
-
-      <HomeShareRow />
 
       <Footer />
       <BackToTop />
