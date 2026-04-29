@@ -938,6 +938,7 @@ const SearchResults = () => {
         path="/search"
       />
       <Navbar />
+      <FeaturedSidebar />
 
       {/* ── Subtle red glow at top ── */}
       <div className="pointer-events-none fixed inset-x-0 top-0 h-[500px] z-0" style={{ background: "radial-gradient(ellipse 80% 40% at 50% -10%, rgba(220,38,38,0.08) 0%, transparent 70%)" }} />
