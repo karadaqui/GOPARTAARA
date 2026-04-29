@@ -305,24 +305,24 @@ const Navbar = () => {
 
                     <button
                       onClick={() => navigate("/dashboard")}
-                      className="transition-colors rounded-md"
+                      className="transition-colors"
                       style={{
-                        fontSize: "13px",
-                        fontWeight: 400,
-                        color: "#e4e4e7",
+                        fontFamily: '"DM Sans", sans-serif',
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        color: "var(--text)",
                         background: "transparent",
-                        border: "1px solid #27272a",
+                        border: "1px solid var(--border-2)",
+                        borderRadius: "var(--radius-md)",
                         cursor: "pointer",
-                        padding: "6px 12px",
+                        padding: "7px 16px",
                         whiteSpace: "nowrap",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "#3f3f46";
-                        e.currentTarget.style.color = "#ffffff";
+                        e.currentTarget.style.borderColor = "var(--red)";
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "#27272a";
-                        e.currentTarget.style.color = "#e4e4e7";
+                        e.currentTarget.style.borderColor = "var(--border-2)";
                       }}
                     >
                       Dashboard
