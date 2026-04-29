@@ -17,9 +17,9 @@ const BrowseByMakeSection = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="px-4 mb-10">
+    <section className="px-4 mb-10 mt-6">
       <div className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5">
+        <div className="grid grid-cols-3 md:grid-cols-5 gap-2.5">
           {MAKES.map((make) => (
             <button
               key={make}
@@ -27,13 +27,14 @@ const BrowseByMakeSection = () => {
               onClick={() => navigate(`/search?q=${encodeURIComponent(`${make} parts`)}`)}
               className="make-card"
               style={{
-                background: "#0d0d0d",
-                border: "1px solid #1f1f1f",
-                borderRadius: "8px",
-                padding: "14px 20px",
+                background: "#0f0f0f",
+                border: "1px solid #1a1a1a",
+                borderRadius: "4px",
+                padding: "18px 24px",
+                fontFamily: '"DM Sans", system-ui, sans-serif',
                 fontSize: "14px",
                 fontWeight: 600,
-                color: "#a1a1aa",
+                color: "#e0e0e0",
                 cursor: "pointer",
                 transition: "all 0.15s ease",
                 textAlign: "left",
@@ -46,9 +47,8 @@ const BrowseByMakeSection = () => {
       </div>
       <style>{`
         .make-card:hover {
-          border-color: #333333 !important;
-          color: #ffffff !important;
-          background: #111111 !important;
+          border-color: #cc1111 !important;
+          background: rgba(204,17,17,0.05) !important;
         }
       `}</style>
     </section>
