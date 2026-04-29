@@ -319,7 +319,7 @@ const PricingSection = () => {
           className="text-center mt-6"
           style={{ fontSize: "13px", color: "#fbbf24" }}
         >
-          🕐 First month Pro free — offer ends{" "}
+          First month Pro free — offer ends{" "}
           {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(
             "en-US",
             { month: "long", day: "numeric", year: "numeric" }
