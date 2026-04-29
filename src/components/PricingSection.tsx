@@ -268,7 +268,7 @@ const PricingSection = () => {
                       body: JSON.stringify({})
                     });
                     const d = await r.json();
-                    if (d.success) { toast({ title: '🎉 1 month Pro activated!' }); setTimeout(() => window.location.reload(), 1500); }
+                    if (d.success) { toast({ title: '1 month Pro activated' }); setTimeout(() => window.location.reload(), 1500); }
                     else toast({ title: d.error || 'Something went wrong', variant: 'destructive' });
                   } catch { toast({ title: 'Connection error', variant: 'destructive' }); }
                 } : () => startCheckout(effectivePriceId)}
