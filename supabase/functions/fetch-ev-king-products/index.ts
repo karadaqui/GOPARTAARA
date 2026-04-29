@@ -123,8 +123,13 @@ async function loadProducts(apiKey: string): Promise<Product[]> {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
-    const apiKey = Deno.env.get("AWIN_API_TOKEN") || Deno.env.get("AWIN_API_KEY");
-    if (!apiKey) throw new Error("AWIN API key not configured");
+    // Awin "feed download" token (publisher-specific). Falls back to the known
+    // working publisher token used elsewhere in this project if the secret is unset.
+    const apiKey =
+      Deno.env.get("AWIN_FEED_TOKEN") ||
+      Deno.env.get("AWIN_API_TOKEN") ||
+      Deno.env.get("AWIN_API_KEY") ||
+      "f0b723c9643205a96aeb31377b805e02";
     const all = await loadProducts(apiKey);
     return new Response(JSON.stringify({ products: all.slice(0, 50) }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
