@@ -18,6 +18,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import AuthGateModal from "@/components/AuthGateModal";
 import ScrollReveal from "@/components/ScrollReveal";
 import { toast } from "sonner";
+import FeaturedSidebar from "@/components/FeaturedSidebar";
 
 interface BuyerOffer {
   id: string;
@@ -328,6 +329,7 @@ const Marketplace = () => {
         jsonLd={{ "@context": "https://schema.org", "@type": "CollectionPage", "name": "GOPARTARA Parts Marketplace", "url": "https://gopartara.com/marketplace", "description": "Browse and buy car parts from verified UK sellers." }}
       />
       <Navbar />
+      <FeaturedSidebar />
 
       <AuthGateModal
         open={authGateOpen}
