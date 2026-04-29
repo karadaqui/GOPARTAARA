@@ -175,7 +175,7 @@ Deno.serve(async (req) => {
     // Only counts NEW searches (offset === 0, not pagination, not skipCredit)
     const shouldCountSearch = offset === 0 && !skipCredit;
 
-    if (!isUnlimited && shouldCountSearch) {
+    if (userId && !isUnlimited && shouldCountSearch) {
       const now = new Date();
       const monthYear = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
       const totalAllowed = FREE_LIMIT + bonusSearches;
@@ -183,14 +183,14 @@ Deno.serve(async (req) => {
       const { data: usageRow } = await supabaseAdmin
         .from("search_usage")
         .select("search_count")
-        .eq("user_id", auth.userId)
+        .eq("user_id", userId)
         .eq("month_year", monthYear)
         .maybeSingle();
 
       const currentCount = usageRow?.search_count || 0;
 
       if (currentCount >= totalAllowed) {
-        await logSecurityEvent("search_limit_exceeded", req, auth.userId, "search-parts", { currentCount, totalAllowed });
+        await logSecurityEvent("search_limit_exceeded", req, userId, "search-parts", { currentCount, totalAllowed });
 
         // Compute first day of next month for reset display
         const nextMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1));
@@ -211,7 +211,7 @@ Deno.serve(async (req) => {
       await supabaseAdmin
         .from("search_usage")
         .upsert(
-          { user_id: auth.userId, month_year: monthYear, search_count: newCount, updated_at: new Date().toISOString() },
+          { user_id: userId, month_year: monthYear, search_count: newCount, updated_at: new Date().toISOString() },
           { onConflict: "user_id,month_year" }
         );
     }
@@ -251,10 +251,10 @@ Deno.serve(async (req) => {
     if (cached) return jsonResponse(cached, 200, corsHeaders);
 
     // Record search atomically (only first page, only when no filters applied, and not skipped)
-    if (offset === 0 && !conditionFilter && !shippingFilter && !priceMin && !sortBy && !categoryFilter && !brandFilter && !skipCredit) {
+    if (userId && offset === 0 && !conditionFilter && !shippingFilter && !priceMin && !sortBy && !categoryFilter && !brandFilter && !skipCredit) {
       try {
         await supabaseAdmin.from("search_history").insert({
-          user_id: auth.userId,
+          user_id: userId,
           query: query,
         });
       } catch (e) {
