@@ -64,16 +64,15 @@ async function loadProducts(apiKey: string): Promise<Product[]> {
   const now = Date.now();
   if (cache && now - cache.fetchedAt < CACHE_TTL_MS) return cache.products;
 
-  const columns = [
-    "aw_product_id", "product_name", "description",
-    "merchant_image_url", "search_price", "merchant_deep_link",
-    "brand_name", "category_name",
-  ].join("%2C");
-
+  // Use the exact feed URL discovered via the AWIN feedList for advertiser 22473.
+  // The legacy AWIN host is picky about column ordering and parameter order — match
+  // their canonical URL byte-for-byte (compression/none, ordered columns).
   const feedUrl =
     `https://productdata.awin.com/datafeed/download/apikey/${apiKey}/` +
     `fid/${FEED_ID}/format/csv/language/en/delimiter/%2C/` +
-    `compression/none/adultcontent/1/columns/${columns}`;
+    `compression/none/adultcontent/1/columns/` +
+    `aw_product_id%2Cproduct_name%2Cdescription%2Cmerchant_image_url%2C` +
+    `search_price%2Cmerchant_deep_link%2Cbrand_name%2Ccategory_name`;
 
   let res: Response | null = null;
   let lastErr = "";
