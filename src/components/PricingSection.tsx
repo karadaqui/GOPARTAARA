@@ -378,7 +378,7 @@ const PricingSection = () => {
             color: "#fbbf24",
           }}
         >
-          🕐 First month free on Pro — offer ends{" "}
+          First month free on Pro — offer ends{" "}
           {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", {
             month: "long",
             day: "numeric",
