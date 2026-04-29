@@ -1302,9 +1302,10 @@ const SearchResults = () => {
             {/* ── Results Header ── */}
             <div className="mb-4 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
               <div>
-                <h1 className="text-2xl md:text-3xl font-semibold text-white" style={{ letterSpacing: "-0.02em" }}>
+                <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
                   {totalResults > 0 ? `${totalResults.toLocaleString()} results` : "Results"}
-                  <span className="text-zinc-500 font-normal"> · {categoryFilter !== "All Parts" ? `${categoryFilter} — ` : ""}{activeQuery}</span>
+                  <span style={{ color: "#333333", fontWeight: 400 }}> · </span>
+                  <span style={{ color: "#888888", fontWeight: 400 }}>{categoryFilter !== "All Parts" ? `${categoryFilter} — ` : ""}{activeQuery}</span>
                 </h1>
                 {totalResults > 0 && !liveLoading && (
                   <>
