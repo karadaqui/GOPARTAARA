@@ -85,7 +85,7 @@ const AMAZON_DEALS = [
   { title: "Car Electronics", subtitle: "Dash cams, GPS, CarPlay adapters", url: "https://www.amazon.co.uk/s?k=car+electronics+dash+cam&tag=gopartara-21", badge: "Hot deals" },
   { title: "Performance Parts", subtitle: "Tuning, exhausts & styling kits", url: "https://www.amazon.co.uk/s?k=car+performance+parts&tag=gopartara-21", badge: "Performance" },
 ];
-const AMAZON_ALL_URL = "https://www.amazon.co.uk/automotive?tag=gopartara-21";
+const AMAZON_ALL_URL = "https://www.amazon.co.uk/s?k=car+parts&tag=gopartara-21";
 
 
 const Deals = () => {
@@ -154,7 +154,6 @@ const Deals = () => {
                   key={label}
                   className="inline-flex items-center gap-1.5 bg-zinc-900/60 border border-zinc-800 rounded-full px-3 py-1 text-[12px] text-zinc-300"
                 >
-                  <span className="text-emerald-400 font-bold">✓</span>
                   {label}
                 </span>
               ))}
