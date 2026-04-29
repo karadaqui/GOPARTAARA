@@ -7,6 +7,7 @@ import HomeCTASection from "@/components/HomeCTASection";
 import PopularSearchesStrip from "@/components/PopularSearchesStrip";
 import BrowseByMakeSection from "@/components/BrowseByMakeSection";
 import FeaturedListingsSection from "@/components/FeaturedListingsSection";
+import FeaturedSidebar from "@/components/FeaturedSidebar";
 import SectionDivider from "@/components/SectionDivider";
 
 import HomeShareRow from "@/components/HomeShareRow";
