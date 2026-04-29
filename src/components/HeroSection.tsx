@@ -316,65 +316,58 @@ const HeroSection = () => {
   return (
     <section
       id="home"
-      className="relative flex items-center justify-center pt-16 overflow-x-visible overflow-y-hidden animated-gradient-bg"
+      className="relative pt-20 overflow-x-visible overflow-y-hidden"
       style={{
         minHeight: "70vh",
-        backgroundImage:
-          "radial-gradient(ellipse 80% 40% at 50% -10%, rgba(204,17,17,0.12) 0%, transparent 70%), radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
-        backgroundSize: "auto, 24px 24px",
-        backgroundRepeat: "no-repeat, repeat",
+        background:
+          "radial-gradient(ellipse 80% 50% at 70% 50%, rgba(204,17,17,0.05) 0%, transparent 60%), #080808",
       }}
     >
-      {/* Background glow orbs */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary/6 blur-[180px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-primary/4 blur-[140px] pointer-events-none" />
-
-      <div className="container relative z-10 text-center px-4 py-10 sm:py-14">
-        {/* Badge */}
-        <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            1,000,000+ parts searchable · Free to compare
-          </div>
-        </div>
-
-        {/* Heading */}
-        <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+      <div
+        className="relative z-10 px-6 md:px-12 lg:px-[60px] py-12 sm:py-16"
+        style={{ maxWidth: "1100px", margin: "0 auto 0 0" }}
+      >
+        {/* Heading — left-aligned, asymmetric, editorial */}
+        <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
           <h1
-            className="font-display mb-5"
+            className="font-display"
             style={{
-              fontSize: "clamp(44px, 5.5vw, 72px)",
+              fontSize: "clamp(48px, 8vw, 80px)",
               fontWeight: 800,
-              letterSpacing: "-0.04em",
-              lineHeight: 1.0,
+              letterSpacing: "-0.02em",
+              lineHeight: 0.95,
               color: "#ffffff",
+              maxWidth: "620px",
+              textAlign: "left",
             }}
           >
             Find Any Car Part
             <br />
-            <span style={{ color: "#cc1111", letterSpacing: "-0.04em" }}>Instantly.</span>
+            <span style={{ color: "#cc1111" }}>Instantly.</span>
           </h1>
         </div>
 
         {/* Subtitle */}
-        <div className={`transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+        <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <p
             style={{
-              fontSize: "17px",
-              color: "#71717a",
+              fontFamily: '"DM Sans", system-ui, sans-serif',
+              fontSize: "16px",
+              color: "#888888",
               fontWeight: 400,
-              maxWidth: "460px",
-              margin: "0 auto",
-              lineHeight: 1.65,
+              maxWidth: "440px",
+              marginTop: "20px",
+              lineHeight: 1.55,
+              textAlign: "left",
             }}
           >
-            The UK's only search engine that checks eBay, mytyres.co.uk, Tyres UK and 4 more suppliers simultaneously.
+            Search 7 UK suppliers simultaneously. No account needed. Always free.
           </p>
         </div>
 
         {/* Search section */}
         <div className={`transition-[colors,transform] ease-out delay-300 mt-6 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-          <div id="search" className="max-w-3xl mx-auto">
+          <div id="search" style={{ maxWidth: "640px", marginTop: "32px" }}>
             {/* Tabs — Mobile (scrollable) */}
             <div
               className="md:hidden tab-scroll-container flex"
@@ -619,18 +612,7 @@ const HeroSection = () => {
                   }}
                 />
                 </div>
-                <div className="flex flex-col items-center mt-4 gap-2">
-                  <p
-                    className="text-xs text-muted-foreground flex items-center justify-center gap-1.5 text-center leading-tight"
-                    style={{ flexWrap: "nowrap" }}
-                  >
-                    <ImageIcon
-                      size={12}
-                      className="text-muted-foreground/70"
-                      style={{ flexShrink: 0, width: 14, height: 14 }}
-                    />
-                    <span style={{ whiteSpace: "nowrap" }}>Upload a photo to identify any part</span>
-                  </p>
+                <div className="flex mt-4">
                   {user && <SearchCounter limitData={searchLimit} />}
                 </div>
 
@@ -939,9 +921,6 @@ const HeroSection = () => {
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
               <div>
-                <span className="text-[10px] uppercase tracking-[0.2em] text-green-400 font-bold">
-                  Partners
-                </span>
                 <h2 className="text-base font-bold text-white tracking-tight">
                   Active Integrations
                 </h2>
