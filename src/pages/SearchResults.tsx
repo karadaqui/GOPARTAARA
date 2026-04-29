@@ -232,25 +232,32 @@ const getPriceBadgeClasses = (variant: "great" | "good" | "high" | "top") => {
 };
 
 // ── Skeleton Card ──
-const SkeletonCard = () => (
-  <div
-    className="overflow-hidden"
-    style={{
-      background: "#111111",
-      border: "1px solid #1a1a1a",
-      borderRadius: "12px",
-    }}
-  >
-    {/* Image area */}
-    <div className="h-52 bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
-    <div className="p-4 space-y-3">
-      {/* Title */}
-      <div className="h-4 w-3/4 rounded bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
-      {/* Price */}
-      <div className="h-6 w-1/3 rounded bg-gradient-to-r from-[#111] via-[#1a1a1a] to-[#111] bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
+const SkeletonCard = () => {
+  const shimmer = {
+    background: "linear-gradient(90deg, #111 0%, #1e1e1e 50%, #111 100%)",
+    backgroundSize: "200% 100%",
+    animation: "shimmer 1.5s ease-in-out infinite",
+  } as const;
+  return (
+    <div
+      className="overflow-hidden"
+      style={{
+        background: "#111111",
+        border: "1px solid #1a1a1a",
+        borderRadius: "12px",
+      }}
+    >
+      {/* Image placeholder */}
+      <div style={{ width: "100%", height: "180px", ...shimmer }} />
+      <div className="p-4 space-y-3">
+        {/* Title placeholder */}
+        <div style={{ width: "70%", height: "16px", borderRadius: "4px", ...shimmer }} />
+        {/* Price placeholder */}
+        <div style={{ width: "40%", height: "20px", borderRadius: "4px", ...shimmer }} />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 
 // ══════════════════════════════════════════════
@@ -1526,7 +1533,7 @@ const SearchResults = () => {
               </div>
             ) : liveLoading ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-10">
-                {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
+                {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
             ) : liveResults.length > 0 && unifiedResults.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 mb-8">
