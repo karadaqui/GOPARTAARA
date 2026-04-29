@@ -378,7 +378,7 @@ const Marketplace = () => {
         {/* Info banners */}
         <div className="space-y-2 mb-8">
           <div className="bg-green-900/30 border border-green-500/30 rounded-xl px-4 py-2.5 text-sm text-green-400">
-            🎉 List your parts for free — Free plan: up to 5 listings. Pro & Elite: unlimited listings.
+            List your parts for free — Free plan: up to 5 listings. Pro & Elite: unlimited listings.
           </div>
         </div>
 

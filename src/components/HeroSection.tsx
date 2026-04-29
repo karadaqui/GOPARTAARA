@@ -344,7 +344,7 @@ const HeroSection = () => {
         <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
             <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            ⚡ 1,000,000+ parts searchable · Free to compare
+            1,000,000+ parts searchable · Free to compare
           </div>
         </div>
 
@@ -378,45 +378,8 @@ const HeroSection = () => {
               lineHeight: 1.65,
             }}
           >
-            Search 1,000,000+ parts from trusted UK & global suppliers.
+            The UK's only search engine that checks eBay, mytyres.co.uk, Tyres UK and 4 more suppliers simultaneously.
           </p>
-          {isReturning && (
-            <p
-              className="animate-fade-in"
-              style={{
-                fontSize: "13px",
-                color: "#a1a1aa",
-                marginTop: "10px",
-                fontWeight: 500,
-              }}
-            >
-              👋 Welcome back! Ready to find your part?
-            </p>
-          )}
-        </div>
-
-        {/* Trust strip */}
-        <div
-          className={`flex justify-center transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-          style={{ gap: "8px", margin: "16px 0", flexWrap: "wrap" }}
-        >
-          {["✓ Free to use", "✓ No account needed", "✓ 1M+ parts"].map((label) => (
-            <span
-              key={label}
-              style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                color: "#71717a",
-                fontSize: "12px",
-                fontWeight: 500,
-                padding: "4px 12px",
-                borderRadius: "999px",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {label}
-            </span>
-          ))}
         </div>
 
         {/* Search section */}
@@ -668,33 +631,6 @@ const HeroSection = () => {
                 </div>
                 <div className="flex flex-col items-center mt-4 gap-2">
                   <p
-                    style={{
-                      color: "#71717a",
-                      fontSize: "12px",
-                      marginTop: "8px",
-                      textAlign: "center",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "6px",
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: "8px",
-                        height: "8px",
-                        borderRadius: "999px",
-                        background: "#4ade80",
-                        boxShadow: "0 0 8px rgba(74,222,128,0.6)",
-                        display: "inline-block",
-                      }}
-                      className="animate-pulse"
-                    />
-                    <span key={viewers} style={{ color: "#d4d4d8", fontWeight: 500 }} className="animate-fade-in">
-                      {viewers}
-                    </span>
-                    people searching right now
-                  </p>
-                  <p
                     className="text-xs text-muted-foreground flex items-center justify-center gap-1.5 text-center leading-tight"
                     style={{ flexWrap: "nowrap" }}
                   >
@@ -706,19 +642,6 @@ const HeroSection = () => {
                     <span style={{ whiteSpace: "nowrap" }}>Upload a photo to identify any part</span>
                   </p>
                   {user && <SearchCounter limitData={searchLimit} />}
-                  <div className="flex items-center justify-center mt-3">
-                    <a
-                      href="#mission"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        document.getElementById('mission-section')?.scrollIntoView({ behavior: 'smooth' });
-                      }}
-                      className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors group"
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse flex-shrink-0" />
-                      ✨ New? Get your first month Pro free · No card needed →
-                    </a>
-                  </div>
                 </div>
 
                 {/* Photo identification results */}
