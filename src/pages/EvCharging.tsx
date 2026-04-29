@@ -122,17 +122,19 @@ export default function EvCharging() {
     let cancelled = false;
     (async () => {
       try {
-        const { data, error: fnErr } = await supabase.functions.invoke(
+        const { data, error } = await supabase.functions.invoke(
           "fetch-ev-king-products",
         );
+        console.log("EV King response:", data, error);
         if (cancelled) return;
-        if (fnErr || !Array.isArray(data)) {
+        if (error || !Array.isArray(data) || data.length === 0) {
           setError(true);
           setProducts([]);
           return;
         }
         setProducts(data as EvProduct[]);
-      } catch {
+      } catch (e) {
+        console.error("EV King invoke failed:", e);
         if (!cancelled) {
           setError(true);
           setProducts([]);
