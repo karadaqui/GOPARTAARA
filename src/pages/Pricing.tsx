@@ -175,13 +175,13 @@ const Pricing = () => {
         {/* Promo code section */}
         <div className="max-w-md mx-auto px-4 pb-12">
           <p className="text-sm text-muted-foreground mb-2 text-center">
-            Got a secret code? 👀
+            Got a secret code?
           </p>
           <div className="flex gap-2">
             <Input
               value={promoCode}
               onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-              placeholder="🤫 psst... try COMMUNITY"
+              placeholder="Try COMMUNITY"
               className="flex-1 bg-zinc-800 border-zinc-700 text-foreground uppercase"
             />
             <Button
