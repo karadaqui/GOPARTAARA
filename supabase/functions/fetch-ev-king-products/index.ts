@@ -75,17 +75,20 @@ async function loadProducts(apiKey: string): Promise<Product[]> {
     `fid/${FEED_ID}/format/csv/language/en/delimiter/%2C/` +
     `compression/none/adultcontent/1/columns/${columns}`;
 
-  const res = await fetch(feedUrl, {
-    headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; GopartaraBot/1.0)",
-      "Accept": "text/csv,text/plain,*/*",
-    },
-  });
-  if (!res.ok) {
-    const body = await res.text().catch(() => "");
-    console.error("AWIN feed error", res.status, "body:", body.substring(0, 300));
-    throw new Error(`Feed fetch failed: ${res.status}`);
+  let res: Response | null = null;
+  let lastErr = "";
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const r = await fetch(feedUrl);
+      if (r.ok) { res = r; break; }
+      lastErr = String(r.status);
+      try { await r.body?.cancel(); } catch { /* ignore */ }
+    } catch (e) {
+      lastErr = (e as Error).message;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 700 * (attempt + 1)));
   }
+  if (!res) throw new Error(`Feed fetch failed: ${lastErr}`);
   const csvText = await res.text();
   const rows = parseCSV(csvText);
   if (rows.length < 2) {
