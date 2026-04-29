@@ -25,8 +25,8 @@ const SimpleStepsStrip = () => (
       className="simple-steps-grid"
     >
       {steps.map((s, i) => (
-        <>
-          <div key={s.n} style={{ padding: "0 24px", textAlign: "left" }}>
+        <Fragment key={s.n}>
+          <div style={{ padding: "0 24px", textAlign: "left" }}>
             <div
               style={{
                 fontFamily: '"DM Sans", system-ui, sans-serif',
@@ -53,9 +53,9 @@ const SimpleStepsStrip = () => (
             </div>
           </div>
           {i < steps.length - 1 && (
-            <div key={`d-${i}`} style={{ width: "1px", height: "48px", background: "#1a1a1a" }} />
+            <div style={{ width: "1px", height: "48px", background: "#1a1a1a" }} />
           )}
-        </>
+        </Fragment>
       ))}
     </div>
     <style>{`
