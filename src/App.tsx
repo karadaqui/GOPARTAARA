@@ -139,7 +139,7 @@ const App = () => {
             </ErrorBoundary>
             
             <PWAInstallPrompt />
-            <SocialProofPopup />
+            
             <DevToolsGuard />
             
             </LocaleProvider>
