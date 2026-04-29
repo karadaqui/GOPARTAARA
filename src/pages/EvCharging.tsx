@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
 import SafeImage from "@/components/SafeImage";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -60,14 +60,11 @@ export default function EvCharging() {
 
   return (
     <div className="min-h-screen bg-[#080808] text-white">
-      <Helmet>
-        <title>EV Charging Cables & Accessories | GOPARTARA</title>
-        <meta
-          name="description"
-          content="Find the right EV charging cable for your electric car. Type 1, Type 2, CCS, CHAdeMO and 3-pin cables for all UK and EU EV models."
-        />
-        <link rel="canonical" href="https://gopartara.com/ev-charging" />
-      </Helmet>
+      <SEOHead
+        title="EV Charging Cables & Accessories | GOPARTARA"
+        description="Find the right EV charging cable for your electric car. Type 1, Type 2, CCS, CHAdeMO and 3-pin cables for all UK and EU EV models."
+        path="/ev-charging"
+      />
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 py-12">
