@@ -325,20 +325,37 @@ const HeroSection = () => {
     >
       <div
         className="relative z-10 px-6 md:px-12 lg:px-[60px] py-12 sm:py-16"
-        style={{ maxWidth: "1100px", margin: "0 auto 0 0" }}
+        style={{ maxWidth: "780px", margin: "0 auto", textAlign: "center" }}
       >
-        {/* Heading — left-aligned, asymmetric, editorial */}
-        <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+        {/* Eyebrow label */}
+        <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <p
+            style={{
+              fontFamily: '"DM Sans", system-ui, sans-serif',
+              fontSize: "11px",
+              fontWeight: 600,
+              letterSpacing: "0.25em",
+              color: "#cc1111",
+              textTransform: "uppercase",
+              marginBottom: "20px",
+            }}
+          >
+            The UK's Car Parts Search Engine
+          </p>
+        </div>
+
+        {/* Heading — centered */}
+        <div className={`transition-[colors,transform] ease-out delay-75 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
           <h1
             className="font-display"
             style={{
-              fontSize: "clamp(48px, 8vw, 80px)",
+              fontSize: "clamp(44px, 8vw, 72px)",
               fontWeight: 800,
               letterSpacing: "-0.02em",
-              lineHeight: 0.95,
+              lineHeight: 0.92,
               color: "#ffffff",
-              maxWidth: "620px",
-              textAlign: "left",
+              margin: "0 auto",
+              textAlign: "center",
             }}
           >
             Find Any Car Part
@@ -352,22 +369,22 @@ const HeroSection = () => {
           <p
             style={{
               fontFamily: '"DM Sans", system-ui, sans-serif',
-              fontSize: "16px",
+              fontSize: "17px",
               color: "#888888",
               fontWeight: 400,
-              maxWidth: "440px",
-              marginTop: "20px",
+              maxWidth: "560px",
+              margin: "16px auto 32px",
               lineHeight: 1.55,
-              textAlign: "left",
+              textAlign: "center",
             }}
           >
-            Search 7 UK suppliers simultaneously. No account needed. Always free.
+            Search 7 suppliers simultaneously. Free, no account needed.
           </p>
         </div>
 
         {/* Search section */}
-        <div className={`transition-[colors,transform] ease-out delay-300 mt-6 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-          <div id="search" style={{ maxWidth: "640px", marginTop: "32px" }}>
+        <div className={`transition-[colors,transform] ease-out delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+          <div id="search" style={{ maxWidth: "680px", margin: "0 auto", textAlign: "left" }}>
             {/* Tabs — Mobile (scrollable) */}
             <div
               className="md:hidden tab-scroll-container flex"
@@ -915,74 +932,20 @@ const HeroSection = () => {
           </div>
         </div>
 
-        {/* Suppliers Section */}
+        {/* Supplier strip — minimal */}
         <div className={`transition-[colors,transform] ease-out delay-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <section className="py-12 px-4 max-w-2xl mx-auto">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-base font-bold text-white tracking-tight">
-                  Active Integrations
-                </h2>
-              </div>
-              <div className="inline-flex items-center gap-1.5 text-[10px] bg-green-500/10 border border-green-500/20 text-green-400 rounded-full px-2 py-0.5 font-bold">
-                <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse" />
-                7 Live
-              </div>
-            </div>
-
-            {/* Compact inline list */}
-            <div className="divide-y divide-zinc-800/40">
-              {[
-                { name: 'eBay Global', cat: 'All Car Parts', coverage: 'Worldwide · 1M+ parts', twemoji: '1f30d', url: null as string | null },
-                { name: 'mytyres.co.uk', cat: 'Tyres', coverage: 'UK + 35 countries', twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=4118&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.mytyres.co.uk' },
-                { name: 'Tyres UK', cat: 'Tyres', coverage: '64 countries', twemoji: '1f30d', url: 'https://www.awin1.com/cread.php?awinmid=12715&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.tyres.net' },
-                { name: 'Green Spark Plug Co.', cat: 'Classic Parts', coverage: 'Worldwide shipping', twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.greenspark.co.uk' },
-                { name: 'neumaticos-online.es', cat: 'Tyres', coverage: 'Spain only', twemoji: '1f1ea-1f1f8', url: 'https://www.awin1.com/cread.php?awinmid=10499&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.neumaticos-online.es' },
-                { name: 'Pneumatici IT', cat: 'Tyres', coverage: 'Italy only', twemoji: '1f1ee-1f1f9', url: 'https://www.awin1.com/cread.php?awinmid=12716&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.pneumatici.it' },
-                { name: 'ReifenDirekt EE', cat: 'Tyres', coverage: 'Estonia, Latvia, Lithuania', twemoji: '1f1ea-1f1ea', url: 'https://www.awin1.com/cread.php?awinmid=10747&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.reifendirekt.co.ee' },
-              ].map(s => {
-                const rowClass = "flex items-center gap-3 py-2.5 hover:bg-zinc-900/40 -mx-2 px-2 rounded-lg transition-colors group";
-                const inner = (
-                  <>
-                    <img
-                      src={`https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${s.twemoji}.png`}
-                      width={18}
-                      height={18}
-                      loading="lazy"
-                      decoding="async"
-                      alt=""
-                      className="flex-shrink-0 opacity-90"
-                    />
-                    <span className="text-white text-sm font-medium truncate">{s.name}</span>
-                    <span className="text-zinc-600 text-xs hidden sm:inline">·</span>
-                    <span className="text-zinc-500 text-xs hidden sm:inline truncate">{s.cat}</span>
-                    <span className="text-zinc-600 text-xs hidden md:inline truncate ml-auto">{s.coverage}</span>
-                    <span className="flex-shrink-0 text-[9px] text-green-400 font-bold tracking-wider sm:ml-0 ml-auto">
-                      LIVE
-                    </span>
-                  </>
-                );
-                return s.url ? (
-                  <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer sponsored" className={rowClass}>
-                    {inner}
-                  </a>
-                ) : (
-                  <div key={s.name} className={rowClass}>{inner}</div>
-                );
-              })}
-            </div>
-
-            {/* Coming soon */}
-            <div className="mt-5 flex flex-wrap items-center gap-1.5">
-              <span className="text-zinc-600 text-[10px] font-semibold uppercase tracking-wider mr-1">
-                Coming soon:
-              </span>
-              {['Amazon','Euro Car Parts','GSF Car Parts','Autodoc','Halfords','Black Circles'].map(n => (
-                <span key={n} className="text-[10px] text-zinc-500">{n}</span>
-              ))}
-            </div>
-          </section>
+          <p
+            style={{
+              fontFamily: '"DM Sans", system-ui, sans-serif',
+              fontSize: "12px",
+              fontWeight: 400,
+              color: "#444444",
+              marginTop: "20px",
+              textAlign: "center",
+            }}
+          >
+            eBay · mytyres.co.uk · Tyres UK · +4 more
+          </p>
         </div>
       </div>
 
