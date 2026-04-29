@@ -18,6 +18,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import AuthGateModal from "@/components/AuthGateModal";
 import ScrollReveal from "@/components/ScrollReveal";
 import { toast } from "sonner";
+import FeaturedSidebar from "@/components/FeaturedSidebar";
 
 interface BuyerOffer {
   id: string;
