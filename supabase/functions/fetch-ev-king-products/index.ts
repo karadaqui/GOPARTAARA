@@ -56,8 +56,16 @@ Deno.serve(async (req) => {
       );
     }
 
-    const feedRes = await fetch(buildFeedUrl(apiKey));
+    const feedRes = await fetch(buildFeedUrl(apiKey), { redirect: "follow" });
     if (!feedRes.ok || !feedRes.body) {
+      // Awin returns 400 with "No products found" when feed is empty / not joined yet
+      let bodyText = "";
+      try { bodyText = await feedRes.clone().text(); } catch { /* ignore */ }
+      if (/no products found/i.test(bodyText)) {
+        return new Response(JSON.stringify([]), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       return new Response(
         JSON.stringify({ error: `Feed fetch failed: ${feedRes.status}` }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
