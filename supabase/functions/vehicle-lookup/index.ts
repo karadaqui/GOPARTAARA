@@ -8,7 +8,7 @@ import { createClient } from "npm:@supabase/supabase-js@2.57.2";
 
 const DVLA_API_URL = "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles";
 
-const FREE_LIMIT = 20;
+const FREE_LIMIT = 10;
 const UNLIMITED_PLANS = ["pro", "elite", "admin"];
 
 const BodySchema = z.object({

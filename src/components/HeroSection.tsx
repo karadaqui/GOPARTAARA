@@ -8,9 +8,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
 import SearchCounter from "@/components/SearchCounter";
-import { useSearchLimit, getGuestSearchCount, incrementGuestSearch, ANON_SEARCH_LIMIT } from "@/hooks/useSearchLimit";
+import { useSearchLimit } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
-import AnonSearchLimitModal from "@/components/AnonSearchLimitModal";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
 
 const buildPhotoSearchTerms = (
@@ -86,7 +85,6 @@ const HeroSection = () => {
   const [vinVehicle, setVinVehicle] = useState<Record<string, string | null> | null>(null);
   const [vinError, setVinError] = useState("");
   const [authGateOpen, setAuthGateOpen] = useState(false);
-  const [anonLimitOpen, setAnonLimitOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -159,26 +157,15 @@ const HeroSection = () => {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = query.trim();
-    if (!trimmed) return;
-
-    if (!user) {
-      // Anonymous: 3 free searches, then sign-up wall
-      if (getGuestSearchCount() >= ANON_SEARCH_LIMIT) {
-        setAnonLimitOpen(true);
-        return;
-      }
-      incrementGuestSearch();
-      navigate(`/search?q=${encodeURIComponent(trimmed)}`);
-      return;
-    }
-
+    if (!user) { setAuthGateOpen(true); return; }
     if (searchLimit.limitReached) {
       toast({ title: "Search limit reached", description: "Upgrade to Pro for unlimited searches.", variant: "destructive" });
       navigate("/pricing");
       return;
     }
-    navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+    if (query.trim()) {
+      navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+    }
   };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -329,75 +316,65 @@ const HeroSection = () => {
   return (
     <section
       id="home"
-      className="relative pt-20 overflow-x-visible overflow-y-hidden"
+      className="relative flex items-center justify-center pt-16 overflow-x-visible overflow-y-hidden animated-gradient-bg"
       style={{
         minHeight: "70vh",
-        background:
-          "radial-gradient(ellipse 80% 50% at 70% 50%, rgba(204,17,17,0.05) 0%, transparent 60%), #080808",
+        backgroundImage:
+          "radial-gradient(ellipse 80% 40% at 50% -10%, rgba(204,17,17,0.12) 0%, transparent 70%), radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
+        backgroundSize: "auto, 24px 24px",
+        backgroundRepeat: "no-repeat, repeat",
       }}
     >
-      <div
-        className="relative z-10 px-6 md:px-12 lg:px-[60px] py-12 sm:py-16"
-        style={{ maxWidth: "780px", margin: "0 auto", textAlign: "center" }}
-      >
-        {/* Eyebrow label */}
+      {/* Background glow orbs */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary/6 blur-[180px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-primary/4 blur-[140px] pointer-events-none" />
+
+      <div className="container relative z-10 text-center px-4 py-10 sm:py-14">
+        {/* Badge */}
         <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <p
-            style={{
-              fontFamily: '"DM Sans", system-ui, sans-serif',
-              fontSize: "11px",
-              fontWeight: 600,
-              letterSpacing: "0.25em",
-              color: "#cc1111",
-              textTransform: "uppercase",
-              marginBottom: "20px",
-            }}
-          >
-            The UK's Car Parts Search Engine
-          </p>
+          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            1,000,000+ parts searchable · Free to compare
+          </div>
         </div>
 
-        {/* Heading — centered */}
-        <div className={`transition-[colors,transform] ease-out delay-75 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+        {/* Heading */}
+        <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <h1
-            className="font-display"
+            className="font-display mb-5"
             style={{
-              fontSize: "clamp(44px, 8vw, 72px)",
+              fontSize: "clamp(44px, 5.5vw, 72px)",
               fontWeight: 800,
-              letterSpacing: "-0.02em",
-              lineHeight: 0.92,
+              letterSpacing: "-0.04em",
+              lineHeight: 1.0,
               color: "#ffffff",
-              margin: "0 auto",
-              textAlign: "center",
             }}
           >
             Find Any Car Part
             <br />
-            <span style={{ color: "#cc1111" }}>Instantly.</span>
+            <span style={{ color: "#cc1111", letterSpacing: "-0.04em" }}>Instantly.</span>
           </h1>
         </div>
 
         {/* Subtitle */}
-        <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+        <div className={`transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
           <p
             style={{
-              fontFamily: '"DM Sans", system-ui, sans-serif',
               fontSize: "17px",
-              color: "#888888",
+              color: "#71717a",
               fontWeight: 400,
-              maxWidth: "560px",
-              margin: "16px auto 32px",
-              lineHeight: 1.55,
-              textAlign: "center",
+              maxWidth: "460px",
+              margin: "0 auto",
+              lineHeight: 1.65,
             }}
           >
-            Search 7 suppliers simultaneously. 3 free searches. No account needed to start.
+            The UK's only search engine that checks eBay, mytyres.co.uk, Tyres UK and 4 more suppliers simultaneously.
           </p>
         </div>
 
         {/* Search section */}
-        <div className={`transition-[colors,transform] ease-out delay-300 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
-          <div id="search" style={{ maxWidth: "680px", margin: "0 auto", textAlign: "left" }}>
+        <div className={`transition-[colors,transform] ease-out delay-300 mt-6 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"}`}>
+          <div id="search" className="max-w-3xl mx-auto">
             {/* Tabs — Mobile (scrollable) */}
             <div
               className="md:hidden tab-scroll-container flex"
@@ -642,7 +619,18 @@ const HeroSection = () => {
                   }}
                 />
                 </div>
-                <div className="flex mt-4">
+                <div className="flex flex-col items-center mt-4 gap-2">
+                  <p
+                    className="text-xs text-muted-foreground flex items-center justify-center gap-1.5 text-center leading-tight"
+                    style={{ flexWrap: "nowrap" }}
+                  >
+                    <ImageIcon
+                      size={12}
+                      className="text-muted-foreground/70"
+                      style={{ flexShrink: 0, width: 14, height: 14 }}
+                    />
+                    <span style={{ whiteSpace: "nowrap" }}>Upload a photo to identify any part</span>
+                  </p>
                   {user && <SearchCounter limitData={searchLimit} />}
                 </div>
 
@@ -945,20 +933,77 @@ const HeroSection = () => {
           </div>
         </div>
 
-        {/* Supplier strip — minimal */}
+        {/* Suppliers Section */}
         <div className={`transition-[colors,transform] ease-out delay-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <p
-            style={{
-              fontFamily: '"DM Sans", system-ui, sans-serif',
-              fontSize: "12px",
-              fontWeight: 400,
-              color: "#444444",
-              marginTop: "20px",
-              textAlign: "center",
-            }}
-          >
-            eBay · mytyres.co.uk · Tyres UK · +4 more
-          </p>
+          <section className="py-12 px-4 max-w-2xl mx-auto">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-green-400 font-bold">
+                  Partners
+                </span>
+                <h2 className="text-base font-bold text-white tracking-tight">
+                  Active Integrations
+                </h2>
+              </div>
+              <div className="inline-flex items-center gap-1.5 text-[10px] bg-green-500/10 border border-green-500/20 text-green-400 rounded-full px-2 py-0.5 font-bold">
+                <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse" />
+                7 Live
+              </div>
+            </div>
+
+            {/* Compact inline list */}
+            <div className="divide-y divide-zinc-800/40">
+              {[
+                { name: 'eBay Global', cat: 'All Car Parts', coverage: 'Worldwide · 1M+ parts', twemoji: '1f30d', url: null as string | null },
+                { name: 'mytyres.co.uk', cat: 'Tyres', coverage: 'UK + 35 countries', twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=4118&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.mytyres.co.uk' },
+                { name: 'Tyres UK', cat: 'Tyres', coverage: '64 countries', twemoji: '1f30d', url: 'https://www.awin1.com/cread.php?awinmid=12715&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.tyres.net' },
+                { name: 'Green Spark Plug Co.', cat: 'Classic Parts', coverage: 'Worldwide shipping', twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.greenspark.co.uk' },
+                { name: 'neumaticos-online.es', cat: 'Tyres', coverage: 'Spain only', twemoji: '1f1ea-1f1f8', url: 'https://www.awin1.com/cread.php?awinmid=10499&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.neumaticos-online.es' },
+                { name: 'Pneumatici IT', cat: 'Tyres', coverage: 'Italy only', twemoji: '1f1ee-1f1f9', url: 'https://www.awin1.com/cread.php?awinmid=12716&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.pneumatici.it' },
+                { name: 'ReifenDirekt EE', cat: 'Tyres', coverage: 'Estonia, Latvia, Lithuania', twemoji: '1f1ea-1f1ea', url: 'https://www.awin1.com/cread.php?awinmid=10747&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.reifendirekt.co.ee' },
+              ].map(s => {
+                const rowClass = "flex items-center gap-3 py-2.5 hover:bg-zinc-900/40 -mx-2 px-2 rounded-lg transition-colors group";
+                const inner = (
+                  <>
+                    <img
+                      src={`https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${s.twemoji}.png`}
+                      width={18}
+                      height={18}
+                      loading="lazy"
+                      decoding="async"
+                      alt=""
+                      className="flex-shrink-0 opacity-90"
+                    />
+                    <span className="text-white text-sm font-medium truncate">{s.name}</span>
+                    <span className="text-zinc-600 text-xs hidden sm:inline">·</span>
+                    <span className="text-zinc-500 text-xs hidden sm:inline truncate">{s.cat}</span>
+                    <span className="text-zinc-600 text-xs hidden md:inline truncate ml-auto">{s.coverage}</span>
+                    <span className="flex-shrink-0 text-[9px] text-green-400 font-bold tracking-wider sm:ml-0 ml-auto">
+                      LIVE
+                    </span>
+                  </>
+                );
+                return s.url ? (
+                  <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer sponsored" className={rowClass}>
+                    {inner}
+                  </a>
+                ) : (
+                  <div key={s.name} className={rowClass}>{inner}</div>
+                );
+              })}
+            </div>
+
+            {/* Coming soon */}
+            <div className="mt-5 flex flex-wrap items-center gap-1.5">
+              <span className="text-zinc-600 text-[10px] font-semibold uppercase tracking-wider mr-1">
+                Coming soon:
+              </span>
+              {['Amazon','Euro Car Parts','GSF Car Parts','Autodoc','Halfords','Black Circles'].map(n => (
+                <span key={n} className="text-[10px] text-zinc-500">{n}</span>
+              ))}
+            </div>
+          </section>
         </div>
       </div>
 
@@ -968,7 +1013,6 @@ const HeroSection = () => {
         title="Please sign in to search for car parts"
         description="Create a free account to search across 1,000,000+ parts from trusted UK & global suppliers."
       />
-      <AnonSearchLimitModal open={anonLimitOpen} onOpenChange={setAnonLimitOpen} />
     </section>
   );
 };

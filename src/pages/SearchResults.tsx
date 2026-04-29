@@ -31,9 +31,8 @@ import { usePersistentCompare } from "@/hooks/usePersistentCompare";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { toast as sonnerToast } from "sonner";
-import { useSearchLimit, isSameQuery, setLastSearch, getGuestSearchCount, incrementGuestSearch, ANON_SEARCH_LIMIT } from "@/hooks/useSearchLimit";
+import { useSearchLimit, isSameQuery, setLastSearch, getGuestSearchCount, incrementGuestSearch } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
-import AnonSearchLimitModal from "@/components/AnonSearchLimitModal";
 import LocationNudge from "@/components/LocationNudge";
 import { useCountry } from "@/hooks/useCountry";
 import { useLocale } from "@/contexts/LocaleContext";
@@ -288,7 +287,6 @@ const SearchResults = () => {
   const [currentPage, setCurrentPage] = useState(1);
    const internalSearchRef = useRef(false);
   const [authGateOpen, setAuthGateOpen] = useState(false);
-  const [anonLimitOpen, setAnonLimitOpen] = useState(false);
   const [searchLimitModalOpen, setSearchLimitModalOpen] = useState(false);
   const [searchLimitModalType, setSearchLimitModalType] = useState<"free" | "guest">("free");
   const [supplierBannerDismissed, setSupplierBannerDismissed] = useState(() => localStorage.getItem("supplier_banner_dismissed") === "1");
@@ -387,14 +385,7 @@ const SearchResults = () => {
     if (urlQuery && urlQuery !== query) setQuery(urlQuery);
     if (urlQuery && urlQuery !== activeQuery) { setActiveQuery(urlQuery); setCurrentPage(1); }
     if (urlQuery) setSearchMode("text");
-    // Anonymous URL arrivals: enforce 3-search limit, otherwise let it through
-    if (urlQuery && !user) {
-      if (getGuestSearchCount() >= ANON_SEARCH_LIMIT) {
-        setAnonLimitOpen(true);
-      } else {
-        incrementGuestSearch();
-      }
-    }
+    if (urlQuery && !user) setAuthGateOpen(true);
     // Track garage vehicle label from URL
     if (isFromGarage && urlQuery) {
       setGarageVehicleLabel(urlQuery);
@@ -431,8 +422,7 @@ const SearchResults = () => {
   // ── eBay search ──
   useEffect(() => {
     if (!activeQuery.trim()) { setLiveResults([]); setTotalResults(0); setEbayFallback(false); setLiveError(false); return; }
-    // Anonymous users: only block if they've exceeded their 3-search anon allowance
-    if (!user && getGuestSearchCount() > ANON_SEARCH_LIMIT) { setAnonLimitOpen(true); setLiveResults([]); setTotalResults(0); return; }
+    if (!user) { setAuthGateOpen(true); setLiveResults([]); setTotalResults(0); return; }
     let cancelled = false;
 
     // Build a cache key from all filter state
@@ -581,19 +571,16 @@ const SearchResults = () => {
     const sanitized = sanitizeInput(query.trim());
     if (!sanitized) return;
 
-    // Anonymous: 3 free searches via localStorage, then sign-up wall
+    // Guest search limit (3 searches via localStorage)
     if (!user) {
-      if (getGuestSearchCount() >= ANON_SEARCH_LIMIT) {
-        setAnonLimitOpen(true);
+      const guestCount = getGuestSearchCount();
+      if (guestCount >= 3) {
+        setSearchLimitModalType("guest");
+        setSearchLimitModalOpen(true);
         return;
       }
       incrementGuestSearch();
-      internalSearchRef.current = true;
-      setActiveQuery(sanitized);
-      setSelectedCategory(null);
-      setCurrentPage(1);
-      setSearchParams({ q: sanitized });
-      setGarageVehicleLabel(null);
+      setAuthGateOpen(true);
       return;
     }
 
@@ -2120,7 +2107,6 @@ const SearchResults = () => {
       <CompareBar items={compareParts} onOpen={() => setShowCompare(true)} onClear={() => setCompareParts([])} />
       {showCompare && <CompareModal items={compareParts} onRemove={(id) => setCompareParts((prev) => prev.filter((p) => p.id !== id))} onClose={() => setShowCompare(false)} />}
       <AuthGateModal open={authGateOpen} onOpenChange={setAuthGateOpen} title="Please sign in to search for car parts" description="Create a free account to search across 1,000,000+ parts from trusted UK & global suppliers." />
-      <AnonSearchLimitModal open={anonLimitOpen} onOpenChange={setAnonLimitOpen} />
 
       {/* Search Limit Modal */}
       {searchLimitModalOpen && (

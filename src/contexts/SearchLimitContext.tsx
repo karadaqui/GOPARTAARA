@@ -12,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 
-const FREE_LIMIT = 20;
+const FREE_LIMIT = 10;
 // Only these plans grant unlimited searches - seller plans do NOT
 const UNLIMITED_SEARCH_PLANS = ["pro", "elite", "admin"];
 

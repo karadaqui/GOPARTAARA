@@ -16,7 +16,7 @@ import DevToolsGuard from "./components/DevToolsGuard.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
 import TopProgressBar from "./components/TopProgressBar.tsx";
 
-
+import SocialProofPopup from "./components/SocialProofPopup.tsx";
 import MotTaxReminderRunner from "./components/garage/MotTaxReminderRunner.tsx";
 
 
@@ -137,6 +137,7 @@ const App = () => {
             </ErrorBoundary>
             
             <PWAInstallPrompt />
+            <SocialProofPopup />
             <DevToolsGuard />
             
             </LocaleProvider>

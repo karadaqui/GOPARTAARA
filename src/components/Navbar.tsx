@@ -117,14 +117,14 @@ const Navbar = () => {
           WebkitTransform: "translateZ(0)",
           transform: "translateZ(0)",
           willChange: "transform",
-          backgroundColor: "rgba(8,8,8,0.85)",
-          backdropFilter: "blur(20px) saturate(180%)",
-          WebkitBackdropFilter: "blur(20px) saturate(180%)",
-          borderBottom: "1px solid #1a1a1a",
-          transition: "background-color 200ms ease, border-color 200ms ease",
+          backgroundColor: scrolled ? "rgba(8,8,8,0.85)" : "transparent",
+          backdropFilter: scrolled ? "blur(20px)" : "none",
+          WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
+          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
+          transition: "background-color 200ms ease, border-color 200ms ease, backdrop-filter 200ms ease",
         }}
       >
-        <div className="container relative flex items-center gap-4" style={{ height: "52px" }}>
+        <div className="container relative flex items-center gap-4" style={{ height: "56px" }}>
           {/* Left: Logo */}
           <a
             href="/"
@@ -164,7 +164,23 @@ const Navbar = () => {
                 <button
                   key={l.label}
                   onClick={() => handleNavClick(l.href)}
-                  className={`nav-link-ds ${isActive ? "is-active" : ""}`}
+                  className="transition-colors"
+                  style={{
+                    fontSize: "14px",
+                    fontWeight: isActive ? 500 : 400,
+                    color: isActive ? "#ffffff" : "#a1a1aa",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    padding: "4px 0",
+                    whiteSpace: "nowrap",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isActive) e.currentTarget.style.color = "#ffffff";
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isActive) e.currentTarget.style.color = "#a1a1aa";
+                  }}
                 >
                   {l.label}
                 </button>
@@ -173,14 +189,23 @@ const Navbar = () => {
 
             <div className="relative" onMouseEnter={handleMoreEnter} onMouseLeave={handleMoreLeave}>
               <button
-                className="nav-link-ds"
-                style={{ display: "inline-flex", alignItems: "center", gap: "4px", lineHeight: 1, cursor: "pointer" }}
+                className="transition-colors flex items-center gap-1"
+                style={{
+                  fontSize: "14px",
+                  fontWeight: 400,
+                  color: "#a1a1aa",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: "4px 0",
+                  whiteSpace: "nowrap",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
               >
-                <span style={{ display: "inline-flex", alignItems: "center", lineHeight: 1 }}>More</span>
+                More
                 <ChevronDown
-                  size={14}
-                  strokeWidth={2}
-                  style={{ color: "currentColor", display: "block" }}
+                  size={13}
                   className={`transition-transform duration-300 ${moreOpen ? "rotate-180" : ""}`}
                 />
               </button>
@@ -308,24 +333,24 @@ const Navbar = () => {
 
                     <button
                       onClick={() => navigate("/dashboard")}
-                      className="transition-colors"
+                      className="transition-colors rounded-md"
                       style={{
-                        fontFamily: '"DM Sans", sans-serif',
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        color: "var(--text)",
+                        fontSize: "13px",
+                        fontWeight: 400,
+                        color: "#e4e4e7",
                         background: "transparent",
-                        border: "1px solid var(--border-2)",
-                        borderRadius: "var(--radius-md)",
+                        border: "1px solid #27272a",
                         cursor: "pointer",
-                        padding: "7px 16px",
+                        padding: "6px 12px",
                         whiteSpace: "nowrap",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "var(--red)";
+                        e.currentTarget.style.borderColor = "#3f3f46";
+                        e.currentTarget.style.color = "#ffffff";
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "var(--border-2)";
+                        e.currentTarget.style.borderColor = "#27272a";
+                        e.currentTarget.style.color = "#e4e4e7";
                       }}
                     >
                       Dashboard
@@ -446,7 +471,7 @@ const Navbar = () => {
                 fontSize: "18px",
               }}
             >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+              ✕
             </button>
           </div>
 

@@ -15,21 +15,8 @@ const PopularSearchesStrip = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="px-4 mt-12 mb-6">
+    <section className="px-4 mt-4 mb-6">
       <div className="max-w-4xl mx-auto">
-        <div
-          style={{
-            fontFamily: '"DM Sans", system-ui, sans-serif',
-            fontWeight: 600,
-            fontSize: "11px",
-            color: "#555555",
-            letterSpacing: "0.25em",
-            textTransform: "uppercase",
-            marginBottom: "16px",
-          }}
-        >
-          Popular Searches
-        </div>
         <div
           className="flex items-center gap-2 overflow-x-auto"
           style={{
@@ -38,6 +25,17 @@ const PopularSearchesStrip = () => {
             WebkitOverflowScrolling: "touch",
           }}
         >
+          <span
+            style={{
+              color: "#71717a",
+              fontSize: "13px",
+              fontWeight: 500,
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+            }}
+          >
+            Popular:
+          </span>
           {POPULAR.map((term) => (
             <button
               key={term}
@@ -45,16 +43,16 @@ const PopularSearchesStrip = () => {
               onClick={() => navigate(`/search?q=${encodeURIComponent(term)}`)}
               className="popular-chip"
               style={{
-                background: "#111111",
-                border: "1px solid #242424",
-                color: "#888888",
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                color: "#71717a",
                 fontSize: "13px",
                 padding: "6px 12px",
-                borderRadius: "3px",
+                borderRadius: "6px",
                 whiteSpace: "nowrap",
                 flexShrink: 0,
                 cursor: "pointer",
-                transition: "border-color 150ms, color 150ms",
+                transition: "background-color 150ms, color 150ms",
               }}
             >
               {term}
@@ -64,8 +62,8 @@ const PopularSearchesStrip = () => {
       </div>
       <style>{`
         .popular-chip:hover {
-          border-color: #cc1111 !important;
-          color: #ffffff !important;
+          background: rgba(255,255,255,0.08) !important;
+          color: #a1a1aa !important;
         }
       `}</style>
     </section>
