@@ -1,6 +1,5 @@
 // Green Spark Plug Co. — global affiliate section (worldwide shipping)
 
-// TEMP: Awin tracking disabled - restore after 24h
 const buildLink = (path: string) =>
   `https://www.gsparkplug.com${path}`;
 
