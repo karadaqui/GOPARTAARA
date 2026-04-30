@@ -111,7 +111,7 @@ serve(async (req) => {
             bi = hdrs.findIndex(h => norm(h).includes('brandname') || norm(h) === 'brand')
             descIdx = hdrs.findIndex(h => h.includes('desc'))
             // Image URL: priority aw_image_url > merchant_image_url > image_url > aw_thumb_url
-            var imgIdx = hdrs.findIndex(h => norm(h) === 'awimageurl')
+            imgIdx = hdrs.findIndex(h => norm(h) === 'awimageurl')
             if (imgIdx < 0) imgIdx = hdrs.findIndex(h => norm(h) === 'merchantimageurl')
             if (imgIdx < 0) imgIdx = hdrs.findIndex(h => norm(h) === 'imageurl')
             if (imgIdx < 0) imgIdx = hdrs.findIndex(h => norm(h) === 'awthumburl')
