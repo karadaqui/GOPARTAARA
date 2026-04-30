@@ -1230,6 +1230,57 @@ export type Database = {
         }
         Relationships: []
       }
+      tyre_products_cache: {
+        Row: {
+          brand: string | null
+          cached_at: string | null
+          currency: string | null
+          feed_id: string
+          id: number
+          price: number | null
+          product_name: string
+          profile: string | null
+          raw_data: Json | null
+          rim: string | null
+          supplier_name: string
+          tyre_size: string | null
+          url: string
+          width: string | null
+        }
+        Insert: {
+          brand?: string | null
+          cached_at?: string | null
+          currency?: string | null
+          feed_id: string
+          id?: number
+          price?: number | null
+          product_name: string
+          profile?: string | null
+          raw_data?: Json | null
+          rim?: string | null
+          supplier_name: string
+          tyre_size?: string | null
+          url: string
+          width?: string | null
+        }
+        Update: {
+          brand?: string | null
+          cached_at?: string | null
+          currency?: string | null
+          feed_id?: string
+          id?: number
+          price?: number | null
+          product_name?: string
+          profile?: string | null
+          raw_data?: Json | null
+          rim?: string | null
+          supplier_name?: string
+          tyre_size?: string | null
+          url?: string
+          width?: string | null
+        }
+        Relationships: []
+      }
       user_vehicles: {
         Row: {
           created_at: string
