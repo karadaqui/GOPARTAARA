@@ -434,7 +434,7 @@ const Dashboard = () => {
 
             <div className="flex items-center gap-2 shrink-0">
               {isFree && !isAdmin && (
-                <Button className="rounded-xl gap-2 text-white" onClick={() => navigate("/pricing")} style={{ background: "#cc1111" }}>
+                <Button className="rounded-xl gap-2" onClick={() => navigate("/pricing")} style={{ background: "#fbbf24", color: "#0f172a", fontWeight: 700 }}>
                   <Sparkles size={14} />
                   Upgrade to Pro →
                 </Button>
