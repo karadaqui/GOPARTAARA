@@ -42,8 +42,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <SEOHead
-        title="GOPARTARA — Compare Car Parts Prices UK | Search 1M+ Parts Free"
-        description="Search and compare car parts prices from 7 trusted UK & global suppliers simultaneously. Free to use. No account needed. Find brake pads, filters, tyres and more instantly."
+        title="GOPARTARA — Compare Car Parts Prices | Search 1M+ Parts Free"
+        description="Search and compare car parts prices from 7 trusted global suppliers simultaneously. Free to use. No account needed. Find brake pads, filters, tyres and more — shipped worldwide."
         path="/"
         jsonLd={{
           "@context": "https://schema.org",
