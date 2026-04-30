@@ -797,12 +797,12 @@ input, textarea, select {
   font-size: 15px;
 }
 .article-prose th, .article-prose td {
-  border: 1px solid #27272a;
+  border: 1px solid #e2e8f0;
   padding: 10px 14px;
   text-align: left;
 }
-.article-prose th { background: #18181b; color: #ffffff; font-weight: 600; }
-.article-prose td { color: #a1a1aa; }
+.article-prose th { background: #f8fafc; color: #0f172a; font-weight: 600; }
+.article-prose td { color: #475569; }
 
 /* ── Testimonial ticker (marquee) ────────────────────────── */
 @keyframes ticker-left {
@@ -821,7 +821,7 @@ input, textarea, select {
   .animate-ticker-left, .animate-ticker-right { animation: none; }
 }
 
-/* ── Share pill (blog/articles) ──────────────────────── */
+/* ── Share pill (blog/articles) — light ──────────────────── */
 .share-pill {
   display: inline-flex;
   align-items: center;
@@ -829,25 +829,26 @@ input, textarea, select {
   padding: 6px 12px;
   font-size: 12px;
   font-weight: 500;
-  color: #a1a1aa;
-  background: transparent;
-  border: 1px solid #3f3f46;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease;
   cursor: pointer;
   white-space: nowrap;
 }
 .share-pill:hover {
-  color: #ffffff;
-  border-color: #52525b;
-  background: rgba(255,255,255,0.03);
+  color: #0f172a;
+  border-color: #cbd5e1;
+  background: #f8fafc;
 }
 
-/* Subtle red accent on search result card hover */
+/* Subtle accent on search result card hover */
 .search-result-card {
   border-left: 2px solid transparent;
   transition: border-left-color 150ms ease, border-color 150ms ease, transform 150ms ease, background-color 150ms ease;
 }
 .search-result-card:hover {
-  border-left-color: #cc1111;
+  border-left-color: #fbbf24;
+}
 }
