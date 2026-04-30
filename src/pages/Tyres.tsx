@@ -747,6 +747,8 @@ const Tyres = () => {
             </p>
           </div>
         )}
+        </>)}
+        {/* TEMP: Awin maintenance - restore after 24h — end of hidden block */}
 
         {/* Trust section */}
         <section className="max-w-4xl mx-auto px-4 pb-16">
