@@ -80,7 +80,7 @@ const Index = () => {
             "@type": "WebApplication",
             "name": "GOPARTARA",
             "url": "https://gopartara.com",
-            "description": "Compare prices on over 1M+ car parts from trusted UK & Global suppliers.",
+            "description": "Compare prices on over 1,000,000 car parts from trusted global suppliers. Always free.",
             "applicationCategory": "AutomotiveApplication",
             "operatingSystem": "Web",
             "offers": {
