@@ -122,21 +122,31 @@ const TestimonialsSection = () => {
             marginBottom: "12px",
           }}
         >
-          Testimonials
+          Early Access · Beta Feedback
         </span>
         <h2 className="font-display text-3xl md:text-5xl font-bold mb-5 tracking-tight">
-          Real drivers. Real savings.
+          What Early Users Are Saying
         </h2>
         <p className="text-muted-foreground max-w-xl mx-auto text-base md:text-lg leading-relaxed">
-          Used by car owners and mechanics across the UK and Europe
+          GOPARTARA is in early access. These are real quotes from beta users.
         </p>
       </ScrollReveal>
 
       <div className="max-w-6xl mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {homepageTestimonials.map((t, i) => (
             <TestimonialCard key={`${t.name}-${i}`} t={t} />
           ))}
+        </div>
+
+        <div className="text-center mt-8">
+          <a
+            href="mailto:info@gopartara.com?subject=Feedback"
+            className="text-sm transition-colors hover:text-foreground"
+            style={{ color: "#71717a" }}
+          >
+            Have feedback? Share your experience →
+          </a>
         </div>
       </div>
     </section>
