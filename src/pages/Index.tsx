@@ -95,9 +95,6 @@ const Index = () => {
         ]}
       />
 
-      {/* Site-wide top urgency bar */}
-      <UrgencyBar />
-
       <Navbar />
       <HeroSection />
 
