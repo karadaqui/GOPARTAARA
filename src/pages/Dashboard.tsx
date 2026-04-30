@@ -387,7 +387,7 @@ const Dashboard = () => {
         <div
           className="rounded-2xl p-5 sm:p-6 mb-6"
           style={{
-            background: "linear-gradient(135deg, rgba(204,17,17,0.08) 0%, transparent 60%), #0a0a0a",
+            background: "#0a1628",
             border: "1px solid rgba(204,17,17,0.15)",
           }}
         >
@@ -434,7 +434,7 @@ const Dashboard = () => {
 
             <div className="flex items-center gap-2 shrink-0">
               {isFree && !isAdmin && (
-                <Button className="rounded-xl gap-2 text-white" onClick={() => navigate("/pricing")} style={{ background: "#cc1111" }}>
+                <Button className="rounded-xl gap-2" onClick={() => navigate("/pricing")} style={{ background: "#fbbf24", color: "#0f172a", fontWeight: 700 }}>
                   <Sparkles size={14} />
                   Upgrade to Pro →
                 </Button>
@@ -517,7 +517,7 @@ const Dashboard = () => {
         <div
           className="rounded-2xl p-6 sm:p-8 mb-6"
           style={{
-            background: "linear-gradient(135deg, #0d0000 0%, #1a0000 100%)",
+            background: "linear-gradient(135deg, #0a1628 0%, #1d4ed8 100%)",
             border: "1px solid rgba(204,17,17,0.2)",
           }}
         >

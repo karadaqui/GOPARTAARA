@@ -12,7 +12,6 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import NotificationBell from "@/components/NotificationBell";
@@ -48,23 +47,25 @@ const authedMoreLink: MoreLink = { label: "My Shop", href: "/my-market", Icon: B
 
 const ADMIN_EMAIL = "info@gopartara.com";
 
+const linkBase: React.CSSProperties = {
+  fontSize: "14px",
+  background: "none",
+  border: "none",
+  cursor: "pointer",
+  padding: "4px 0",
+  whiteSpace: "nowrap",
+  transition: "color 150ms ease",
+};
+
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const moreTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { user, signOut, loading } = useAuth();
   const { isElite, isAdmin } = useUserPlan();
   const eliteAccess = isElite || isAdmin;
   const navigate = useNavigate();
   const { pathname } = useLocation();
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -88,7 +89,6 @@ const Navbar = () => {
 
   const handleNavClick = (href: string) => {
     setMoreOpen(false);
-
     if (href === "/") {
       if (pathname === "/") {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -97,7 +97,6 @@ const Navbar = () => {
       }
       return;
     }
-
     navigate(href);
   };
 
@@ -114,16 +113,11 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className="fixed top-0 left-0 right-0 z-50 transition-colors"
+        className="sticky top-0 z-50"
         style={{
-          WebkitTransform: "translateZ(0)",
-          transform: "translateZ(0)",
-          willChange: "transform",
-          backgroundColor: scrolled ? "rgba(8,8,8,0.85)" : "transparent",
-          backdropFilter: scrolled ? "blur(20px)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
-          transition: "background-color 200ms ease, border-color 200ms ease, backdrop-filter 200ms ease",
+          background: "#ffffff",
+          borderBottom: "1px solid #e2e8f0",
+          height: "56px",
         }}
       >
         <div className="container relative flex items-center gap-4" style={{ height: "56px" }}>
@@ -133,31 +127,19 @@ const Navbar = () => {
             onClick={(e) => {
               if (window.location.pathname === "/") {
                 e.preventDefault();
-                window.location.reload();
-              }
-            }}
-            onAuxClick={(e) => {
-              if (e.button === 1) {
-                e.preventDefault();
-                window.open("https://gopartara.com", "_blank");
-              }
-            }}
-            onMouseDown={(e) => {
-              if (e.button === 1) {
-                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
               }
             }}
             className="no-underline group flex-shrink-0"
           >
             <span className="logo-text text-xl">
               <span className="logo-go">GO</span>
-              <span className="logo-part transition-colors duration-200 group-hover:text-zinc-400">
-                PARTARA
-              </span>
+              <span className="logo-part">PART</span>
+              <span className="logo-ara">ARA</span>
             </span>
           </a>
 
-          {/* Center: Primary nav links — absolutely centered to viewport */}
+          {/* Center: Primary nav links */}
           <div className="hidden md:flex items-center gap-5 lg:gap-6 absolute left-1/2 -translate-x-1/2">
             {primaryLinks.map((l) => {
               const isActive =
@@ -166,22 +148,16 @@ const Navbar = () => {
                 <button
                   key={l.label}
                   onClick={() => handleNavClick(l.href)}
-                  className="transition-colors"
                   style={{
-                    fontSize: "14px",
-                    fontWeight: isActive ? 500 : 400,
-                    color: isActive ? "#ffffff" : "#a1a1aa",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: "4px 0",
-                    whiteSpace: "nowrap",
+                    ...linkBase,
+                    fontWeight: isActive ? 600 : 500,
+                    color: isActive ? "#0f172a" : "#64748b",
                   }}
                   onMouseEnter={(e) => {
-                    if (!isActive) e.currentTarget.style.color = "#ffffff";
+                    if (!isActive) e.currentTarget.style.color = "#0f172a";
                   }}
                   onMouseLeave={(e) => {
-                    if (!isActive) e.currentTarget.style.color = "#a1a1aa";
+                    if (!isActive) e.currentTarget.style.color = "#64748b";
                   }}
                 >
                   {l.label}
@@ -192,28 +168,20 @@ const Navbar = () => {
             <div className="relative" onMouseEnter={handleMoreEnter} onMouseLeave={handleMoreLeave}>
               <button
                 type="button"
-                className="transition-colors"
                 style={{
+                  ...linkBase,
                   display: "flex",
                   alignItems: "center",
                   gap: "4px",
-                  fontSize: "14px",
-                  lineHeight: 1,
-                  fontWeight: 400,
-                  color: "#a1a1aa",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: "4px 0",
-                  whiteSpace: "nowrap",
+                  fontWeight: 500,
+                  color: "#64748b",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#0f172a")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#64748b")}
               >
-                <span style={{ display: "block", lineHeight: "14px" }}>More</span>
+                <span>More</span>
                 <ChevronDown
                   size={13}
-                  style={{ display: "block", flexShrink: 0 }}
                   className={`transition-transform duration-300 ${moreOpen ? "rotate-180" : ""}`}
                 />
               </button>
@@ -223,11 +191,9 @@ const Navbar = () => {
                   <div
                     className="rounded-lg p-1 animate-in fade-in-0 zoom-in-95"
                     style={{
-                      backgroundColor: "rgba(10,10,10,0.95)",
-                      backdropFilter: "blur(20px)",
-                      WebkitBackdropFilter: "blur(20px)",
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #e2e8f0",
+                      boxShadow: "0 10px 30px rgba(15,23,42,0.10)",
                     }}
                   >
                     {(user ? [moreLinks[0], authedMoreLink, ...moreLinks.slice(1)] : moreLinks).map((l) => {
@@ -239,26 +205,26 @@ const Navbar = () => {
                         <button
                           key={l.href}
                           onClick={() => handleNavClick(l.href)}
-                          className="w-full rounded-md px-3 py-2 text-left transition-colors flex items-center gap-2.5"
+                          className="w-full rounded-md px-3 py-2 text-left flex items-center gap-2.5"
                           style={{
                             fontSize: "13px",
-                            fontWeight: isActive ? 500 : 400,
-                            color: isActive ? "#ffffff" : "#a1a1aa",
+                            fontWeight: isActive ? 600 : 500,
+                            color: isActive ? "#0f172a" : "#475569",
                             background: "none",
                             border: "none",
                             cursor: "pointer",
-                            whiteSpace: "nowrap",
+                            transition: "background-color 150ms ease, color 150ms ease",
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.color = "#ffffff";
-                            e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.05)";
+                            e.currentTarget.style.color = "#0f172a";
+                            e.currentTarget.style.backgroundColor = "#f1f5f9";
                           }}
                           onMouseLeave={(e) => {
-                            if (!isActive) e.currentTarget.style.color = "#a1a1aa";
+                            if (!isActive) e.currentTarget.style.color = "#475569";
                             e.currentTarget.style.backgroundColor = "transparent";
                           }}
                         >
-                          <Icon size={14} className={l.href === "/ev-charging" ? "" : "opacity-70"} style={l.href === "/ev-charging" ? { color: "#cc1111" } : undefined} />
+                          <Icon size={14} />
                           <span className="flex-1">{l.label}</span>
                           {showEliteBadge && (
                             <span
@@ -267,9 +233,9 @@ const Navbar = () => {
                                 fontWeight: 700,
                                 letterSpacing: "0.08em",
                                 textTransform: "uppercase",
-                                color: "#fbbf24",
-                                background: "rgba(251,191,36,0.12)",
-                                border: "1px solid rgba(251,191,36,0.25)",
+                                color: "#92400e",
+                                background: "#fef3c7",
+                                border: "1px solid #fcd34d",
                                 padding: "2px 6px",
                                 borderRadius: 999,
                               }}
@@ -296,43 +262,42 @@ const Navbar = () => {
 
             {!loading && (
               <div className="hidden md:flex items-center gap-2 ml-1">
+                {/* Live "7 live" pill — always visible */}
+                <span
+                  aria-label="7 suppliers live"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    background: "#f0fdf4",
+                    border: "1px solid #bbf7d0",
+                    color: "#16a34a",
+                    fontWeight: 700,
+                    fontSize: "12px",
+                    padding: "4px 10px",
+                    borderRadius: "999px",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  <span className="live-dot" />
+                  7 live
+                </span>
+
                 {user ? (
                   <>
                     {user.email === ADMIN_EMAIL && (
                       <>
                         <button
                           onClick={() => navigate("/admin")}
-                          className="transition-colors hidden lg:inline-flex"
-                          style={{
-                            fontSize: "13px",
-                            fontWeight: 500,
-                            color: "#a1a1aa",
-                            background: "none",
-                            border: "none",
-                            cursor: "pointer",
-                            padding: "6px 8px",
-                            whiteSpace: "nowrap",
-                          }}
-                          onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                          className="hidden lg:inline-flex"
+                          style={{ ...linkBase, fontWeight: 500, color: "#64748b", padding: "6px 8px" }}
                         >
                           Admin
                         </button>
                         <button
                           onClick={() => navigate("/admin/sales")}
-                          className="transition-colors hidden lg:inline-flex"
-                          style={{
-                            fontSize: "13px",
-                            fontWeight: 500,
-                            color: "#a1a1aa",
-                            background: "none",
-                            border: "none",
-                            cursor: "pointer",
-                            padding: "6px 8px",
-                            whiteSpace: "nowrap",
-                          }}
-                          onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                          className="hidden lg:inline-flex"
+                          style={{ ...linkBase, fontWeight: 500, color: "#64748b", padding: "6px 8px" }}
                         >
                           Sales
                         </button>
@@ -341,52 +306,27 @@ const Navbar = () => {
 
                     <button
                       onClick={() => navigate("/dashboard")}
-                      className="transition-colors rounded-md"
-                      style={{
-                        fontSize: "13px",
-                        fontWeight: 400,
-                        color: "#e4e4e7",
-                        background: "transparent",
-                        border: "1px solid #27272a",
-                        cursor: "pointer",
-                        padding: "6px 12px",
-                        whiteSpace: "nowrap",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "#3f3f46";
-                        e.currentTarget.style.color = "#ffffff";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "#27272a";
-                        e.currentTarget.style.color = "#e4e4e7";
-                      }}
+                      className="btn-navy"
+                      style={{ padding: "8px 14px", fontSize: "13px" }}
                     >
                       Dashboard
                     </button>
 
                     <button
                       onClick={signOut}
-                      className="transition-colors"
-                      style={{
-                        fontSize: "13px",
-                        fontWeight: 400,
-                        color: "#a1a1aa",
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        padding: "6px 8px",
-                        whiteSpace: "nowrap",
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                      style={{ ...linkBase, fontWeight: 500, color: "#64748b", padding: "6px 8px" }}
                     >
                       Sign Out
                     </button>
                   </>
                 ) : (
-                  <Button size="sm" onClick={() => navigate("/auth")} className="rounded-md btn-glow h-8">
-                    Get Started
-                  </Button>
+                  <button
+                    onClick={() => navigate("/auth")}
+                    className="btn-soft"
+                    style={{ padding: "8px 14px", fontSize: "13px" }}
+                  >
+                    Get Started Free
+                  </button>
                 )}
               </div>
             )}
@@ -398,11 +338,11 @@ const Navbar = () => {
               style={{
                 width: "40px",
                 height: "40px",
-                background: "transparent",
-                border: "1px solid #27272a",
+                background: "#ffffff",
+                border: "1px solid #e2e8f0",
                 borderRadius: "8px",
                 cursor: "pointer",
-                color: "white",
+                color: "#0f172a",
               }}
               aria-label="Open navigation menu"
             >
@@ -426,23 +366,14 @@ const Navbar = () => {
             right: 0,
             bottom: 0,
             zIndex: 9998,
-            backgroundColor: "#080808",
+            backgroundColor: "#ffffff",
             padding: "24px",
             display: "flex",
             flexDirection: "column",
             overflowY: "auto",
             WebkitOverflowScrolling: "touch",
-            animation: "slideInRight 0.3s ease",
           }}
         >
-          <style>{`
-            @keyframes slideInRight {
-              from { transform: translateX(100%); }
-              to { transform: translateX(0); }
-            }
-          `}</style>
-
-          {/* Top row: logo + close */}
           <div
             style={{
               display: "flex",
@@ -451,14 +382,11 @@ const Navbar = () => {
               marginBottom: "16px",
             }}
           >
-            <a
-              href="/"
-              onClick={(e) => handleMobileLinkClick(e, "/")}
-              className="no-underline"
-            >
+            <a href="/" onClick={(e) => handleMobileLinkClick(e, "/")} className="no-underline">
               <span className="logo-text text-xl">
                 <span className="logo-go">GO</span>
-                <span className="logo-part">PARTARA</span>
+                <span className="logo-part">PART</span>
+                <span className="logo-ara">ARA</span>
               </span>
             </a>
             <button
@@ -468,14 +396,11 @@ const Navbar = () => {
               style={{
                 width: "40px",
                 height: "40px",
-                background: "transparent",
-                border: "1px solid #27272a",
+                background: "#ffffff",
+                border: "1px solid #e2e8f0",
                 borderRadius: "8px",
-                color: "white",
+                color: "#0f172a",
                 cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
                 fontSize: "18px",
               }}
             >
@@ -483,7 +408,6 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Nav links */}
           <nav style={{ flex: 1, marginTop: "8px" }}>
             {[
               { label: "Search", href: "/search" },
@@ -502,13 +426,12 @@ const Navbar = () => {
                 style={{
                   display: "block",
                   padding: "18px 0",
-                  fontSize: "22px",
+                  fontSize: "20px",
                   fontWeight: 700,
-                  color: "white",
-                  borderBottom: "1px solid #111111",
+                  color: "#0f172a",
+                  borderBottom: "1px solid #e2e8f0",
                   textDecoration: "none",
                   letterSpacing: "-0.5px",
-                  WebkitTapHighlightColor: "transparent",
                 }}
               >
                 {link.label}
@@ -516,49 +439,22 @@ const Navbar = () => {
             ))}
           </nav>
 
-          {/* Bottom buttons */}
           <div style={{ marginTop: "auto", paddingTop: "24px" }}>
             {user ? (
               <>
                 <a
                   href="/dashboard"
                   onClick={(e) => handleMobileLinkClick(e, "/dashboard")}
-                  style={{
-                    display: "block",
-                    background: "transparent",
-                    border: "1px solid #27272a",
-                    color: "white",
-                    padding: "14px",
-                    borderRadius: "10px",
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    width: "100%",
-                    textAlign: "center",
-                    textDecoration: "none",
-                    boxSizing: "border-box",
-                  }}
+                  className="btn-navy"
+                  style={{ display: "block", width: "100%", padding: "14px", fontSize: "15px", textAlign: "center" }}
                 >
                   Dashboard
                 </a>
                 <button
                   type="button"
-                  onClick={() => {
-                    setMenuOpen(false);
-                    signOut();
-                  }}
-                  style={{
-                    display: "block",
-                    background: "#cc1111",
-                    border: "none",
-                    color: "white",
-                    padding: "14px",
-                    borderRadius: "10px",
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    width: "100%",
-                    marginTop: "12px",
-                    cursor: "pointer",
-                  }}
+                  onClick={() => { setMenuOpen(false); signOut(); }}
+                  className="btn-soft"
+                  style={{ display: "block", width: "100%", padding: "14px", fontSize: "15px", marginTop: "12px" }}
                 >
                   Sign Out
                 </button>
@@ -568,43 +464,18 @@ const Navbar = () => {
                 <a
                   href="/auth"
                   onClick={(e) => handleMobileLinkClick(e, "/auth")}
-                  style={{
-                    display: "block",
-                    background: "transparent",
-                    border: "1px solid #27272a",
-                    color: "white",
-                    padding: "14px",
-                    borderRadius: "10px",
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    width: "100%",
-                    textAlign: "center",
-                    textDecoration: "none",
-                    boxSizing: "border-box",
-                  }}
+                  className="btn-soft"
+                  style={{ display: "block", width: "100%", padding: "14px", fontSize: "15px", textAlign: "center" }}
                 >
                   Sign In
                 </a>
                 <a
                   href="/auth"
                   onClick={(e) => handleMobileLinkClick(e, "/auth")}
-                  style={{
-                    display: "block",
-                    background: "#cc1111",
-                    border: "none",
-                    color: "white",
-                    padding: "14px",
-                    borderRadius: "10px",
-                    fontSize: "15px",
-                    fontWeight: 600,
-                    width: "100%",
-                    marginTop: "12px",
-                    textAlign: "center",
-                    textDecoration: "none",
-                    boxSizing: "border-box",
-                  }}
+                  className="btn-navy"
+                  style={{ display: "block", width: "100%", padding: "14px", fontSize: "15px", marginTop: "12px", textAlign: "center" }}
                 >
-                  Start for Free →
+                  Get Started Free →
                 </a>
               </>
             )}
