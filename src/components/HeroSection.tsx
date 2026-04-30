@@ -367,7 +367,7 @@ const HeroSection = () => {
               lineHeight: 1.65,
             }}
           >
-            The UK's only search engine that checks eBay, mytyres.co.uk, Tyres UK and 4 more suppliers simultaneously.
+            The smart search engine that simultaneously checks eBay, mytyres.co.uk, Tyres UK and 4 more global suppliers.
           </p>
         </div>
 
