@@ -1237,6 +1237,7 @@ export type Database = {
           currency: string | null
           feed_id: string
           id: number
+          image_url: string | null
           price: number | null
           product_name: string
           profile: string | null
@@ -1253,6 +1254,7 @@ export type Database = {
           currency?: string | null
           feed_id: string
           id?: number
+          image_url?: string | null
           price?: number | null
           product_name: string
           profile?: string | null
@@ -1269,6 +1271,7 @@ export type Database = {
           currency?: string | null
           feed_id?: string
           id?: number
+          image_url?: string | null
           price?: number | null
           product_name?: string
           profile?: string | null

@@ -44,7 +44,7 @@ serve(async (req) => {
     const queryCache = async () => {
       let q = supabase
         .from('tyre_products_cache')
-        .select('feed_id, supplier_name, product_name, price, currency, url, brand, cached_at')
+        .select('feed_id, supplier_name, product_name, price, currency, url, brand, image_url, cached_at')
         .eq('tyre_size', tyreSize)
 
       if (advertiserId) {
@@ -112,7 +112,7 @@ serve(async (req) => {
       brand: r.brand || '',
       shipping: 'Free delivery',
       advertiserId: r.feed_id,
-      image: '',
+      image: r.image_url || '',
     }))
 
     const suppliers = Array.from(new Set(products.map((p) => p.supplier)))
