@@ -110,11 +110,13 @@ serve(async (req) => {
             ui = hdrs.findIndex(h => norm(h).includes('deeplink'))
             bi = hdrs.findIndex(h => norm(h).includes('brandname') || norm(h) === 'brand')
             descIdx = hdrs.findIndex(h => h.includes('desc'))
-            // Image URL: priority aw_image_url > merchant_image_url > image_url > aw_thumb_url
-            imgIdx = hdrs.findIndex(h => norm(h) === 'awimageurl')
-            if (imgIdx < 0) imgIdx = hdrs.findIndex(h => norm(h) === 'merchantimageurl')
-            if (imgIdx < 0) imgIdx = hdrs.findIndex(h => norm(h) === 'imageurl')
-            if (imgIdx < 0) imgIdx = hdrs.findIndex(h => norm(h) === 'awthumburl')
+            // Image URL priority: aw_image_url > merchant_image_url > image_url > aw_thumb_url > merchant_thumb
+            const imgCandidates = ['awimageurl', 'merchantimageurl', 'imageurl', 'awthumburl', 'merchantthumb']
+            imgIdx = -1
+            for (const cand of imgCandidates) {
+              const found = hdrs.findIndex(h => norm(h) === cand)
+              if (found >= 0) { imgIdx = found; break }
+            }
             console.log(`Feed ${feedId} headers: ni=${ni} pi=${pi} ui=${ui} bi=${bi} descIdx=${descIdx} imgIdx=${imgIdx}`)
             continue
           }
