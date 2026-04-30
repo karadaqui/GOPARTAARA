@@ -695,14 +695,21 @@ const Tyres = () => {
                         >
                           <Scale size={14} />
                         </button>
-                        <a
-                          href={product.url}
-                          target="_blank"
-                          rel="noopener noreferrer sponsored"
-                          className="ml-auto px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-lg transition-colors"
-                        >
-                          Buy →
-                        </a>
+                        {/* TEMP: Awin maintenance - restore after 24h — mytyres Buy hidden */}
+                        {(product.advertiserId || product.supplierMeta?.id) === '4118' ? (
+                          <span className="ml-auto px-3 py-1.5 text-zinc-500 text-xs italic">
+                            Back soon — under maintenance
+                          </span>
+                        ) : (
+                          <a
+                            href={product.url}
+                            target="_blank"
+                            rel="noopener noreferrer sponsored"
+                            className="ml-auto px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-lg transition-colors"
+                          >
+                            Buy →
+                          </a>
+                        )}
                       </div>
                     </div>
                   </div>
