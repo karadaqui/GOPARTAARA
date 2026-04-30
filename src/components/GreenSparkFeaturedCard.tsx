@@ -16,16 +16,13 @@ export const isClassicPartSearch = (query: string): boolean => {
 };
 
 const GreenSparkFeaturedCard = ({ searchQuery }: GreenSparkFeaturedCardProps) => {
-  // TEMP: Awin tracking disabled - restore after 24h
+  // TEMP: Awin maintenance - restore after 24h
   const affiliateUrl = `https://www.gsparkplug.com/?q=${encodeURIComponent(searchQuery)}`;
 
   return (
-    <a
-      href={affiliateUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="The Green Spark Plug Co. — featured specialist supplier"
-      className="flex items-center gap-4 p-4 mb-4 rounded-2xl border border-amber-800/30 bg-amber-950/15 hover:border-amber-600/40 hover:bg-amber-950/25 transition-colors group"
+    <div
+      aria-label="The Green Spark Plug Co. — featured specialist supplier (under maintenance)"
+      className="flex items-center gap-4 p-4 mb-4 rounded-2xl border border-amber-800/30 bg-amber-950/15 transition-colors"
     >
       {/* Supplier badge */}
       <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-amber-900/30 border border-amber-800/30 flex items-center justify-center text-xl">
@@ -50,17 +47,22 @@ const GreenSparkFeaturedCard = ({ searchQuery }: GreenSparkFeaturedCardProps) =>
         </p>
       </div>
 
-      {/* Price hint + CTA */}
+      {/* TEMP: Awin maintenance - restore after 24h — Shop now CTA replaced with grey notice */}
       <div className="flex-shrink-0 text-right hidden sm:block">
-        <p className="text-xs text-muted-foreground mb-1">
-          Free UK delivery £59+
-        </p>
-        <div className="flex items-center justify-end gap-1 text-amber-400 group-hover:text-amber-300 transition-colors">
-          <span className="text-xs font-semibold">Shop now</span>
-          <span className="text-xs group-hover:translate-x-0.5 transition-transform">→</span>
-        </div>
+        <span className="text-xs text-zinc-500 italic">
+          Back soon — under maintenance
+        </span>
       </div>
-    </a>
+      {/* Original CTA (hidden during maintenance):
+      <a href={affiliateUrl} target="_blank" rel="noopener noreferrer">
+        <p className="text-xs text-muted-foreground mb-1">Free UK delivery £59+</p>
+        <div className="flex items-center justify-end gap-1 text-amber-400">
+          <span className="text-xs font-semibold">Shop now</span>
+          <span className="text-xs">→</span>
+        </div>
+      </a>
+      */}
+    </div>
   );
 };
 

@@ -312,6 +312,28 @@ const Tyres = () => {
           </div>
         </div>
 
+        {/* TEMP: Awin maintenance - restore after 24h */}
+        <div className="max-w-2xl mx-auto px-4 mb-12">
+          <div className="bg-zinc-900/80 backdrop-blur border border-zinc-800 rounded-3xl p-8 text-center shadow-2xl shadow-black/40">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-5">
+              <span className="text-3xl">🛠️</span>
+            </div>
+            <h2 className="ds-h2 mb-3">Tyre search temporarily unavailable</h2>
+            <p className="ds-body text-zinc-400 mb-6">
+              We're performing maintenance on our tyre supplier connections.
+              Try searching for car parts instead.
+            </p>
+            <button
+              onClick={() => navigate('/search')}
+              className="btn-ds-primary"
+            >
+              Search Car Parts →
+            </button>
+          </div>
+        </div>
+
+        {/* TEMP: Awin maintenance - restore after 24h — original tyre search hidden below */}
+        {false && (<>
         {/* Search Card */}
         <div className="max-w-2xl mx-auto px-4 mb-6">
           <div className="bg-zinc-900/80 backdrop-blur border border-zinc-800 rounded-3xl p-6 shadow-2xl shadow-black/40">
@@ -673,14 +695,21 @@ const Tyres = () => {
                         >
                           <Scale size={14} />
                         </button>
-                        <a
-                          href={product.url}
-                          target="_blank"
-                          rel="noopener noreferrer sponsored"
-                          className="ml-auto px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-lg transition-colors"
-                        >
-                          Buy →
-                        </a>
+                        {/* TEMP: Awin maintenance - restore after 24h — mytyres Buy hidden */}
+                        {(product.advertiserId || product.supplierMeta?.id) === '4118' ? (
+                          <span className="ml-auto px-3 py-1.5 text-zinc-500 text-xs italic">
+                            Back soon — under maintenance
+                          </span>
+                        ) : (
+                          <a
+                            href={product.url}
+                            target="_blank"
+                            rel="noopener noreferrer sponsored"
+                            className="ml-auto px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-lg transition-colors"
+                          >
+                            Buy →
+                          </a>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -725,6 +754,8 @@ const Tyres = () => {
             </p>
           </div>
         )}
+        </>)}
+        {/* TEMP: Awin maintenance - restore after 24h — end of hidden block */}
 
         {/* Trust section */}
         <section className="max-w-4xl mx-auto px-4 pb-16">
