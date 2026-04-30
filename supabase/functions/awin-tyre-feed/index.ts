@@ -235,11 +235,6 @@ const del=cols[di]||''
       product.title = (cols[descIdx]||cols[ni]||'').replace(/"/g,'').trim()
     }
 
-    // TEMP: Awin tracking disabled - restore after 24h
-    if (actualId === '4118') {
-      product.url = 'https://www.mytyres.co.uk/'
-    }
-
     prods.push(product)
 if(prods.length>=24)break loop
 }}

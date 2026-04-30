@@ -227,8 +227,7 @@ function processProducts(products: RawProduct[], query: string): Product[] {
           ? (p.search_price || "")
           : `${symbol}${priceNum.toFixed(2)}`,
         image: p.merchant_image_url || p.aw_image_url || "",
-        // TEMP: Awin tracking disabled - restore after 24h
-        url: `https://www.gsparkplug.com/?q=${encodeURIComponent(query)}`,
+        url: p.aw_deep_link || p.merchant_deep_link || "",
         brand: p.brand_name || "Green Spark Plug Co.",
         shipping,
         description: rawDesc,
