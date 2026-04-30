@@ -218,8 +218,8 @@ const Navbar = () => {
                   padding: "4px 0",
                   whiteSpace: "nowrap",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                onMouseEnter={(e) => (e.currentTarget.style.color = isHome ? "#0a1628" : "#ffffff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = isHome ? "#64748b" : "#a1a1aa")}
               >
                 <span style={{ display: "block", lineHeight: "14px" }}>More</span>
                 <ChevronDown
