@@ -71,13 +71,13 @@ const Footer = () => {
           <div className="hidden md:contents">
             {SECTIONS.map((section) => (
               <div key={section.title}>
-                <h4 className="font-semibold text-sm mb-4">{section.title}</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
+                <h4 className="font-semibold text-sm mb-4" style={{ color: "#f0f6fc" }}>{section.title}</h4>
+                <ul className="space-y-2 text-sm">
                   {section.links.map((link) => (
                     <li key={link.label}>
                       <button
                         onClick={() => handleLink(link.href)}
-                        className="hover:text-foreground transition-colors"
+                        className="ds-footer-link transition-colors"
                       >
                         {link.label}
                       </button>
@@ -93,13 +93,13 @@ const Footer = () => {
         <div className="md:hidden grid grid-cols-2 gap-x-6 gap-y-8 mb-8">
           {SECTIONS.map((section) => (
             <div key={section.title}>
-              <h4 className="font-semibold text-sm mb-3">{section.title}</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
+              <h4 className="font-semibold text-sm mb-3" style={{ color: "#f0f6fc" }}>{section.title}</h4>
+              <ul className="space-y-2 text-sm">
                 {section.links.map((link) => (
                   <li key={link.label}>
                     <button
                       onClick={() => handleLink(link.href)}
-                      className="text-left hover:text-foreground transition-colors"
+                      className="ds-footer-link text-left transition-colors"
                     >
                       {link.label}
                     </button>
