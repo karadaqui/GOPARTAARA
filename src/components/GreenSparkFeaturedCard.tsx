@@ -16,9 +16,8 @@ export const isClassicPartSearch = (query: string): boolean => {
 };
 
 const GreenSparkFeaturedCard = ({ searchQuery }: GreenSparkFeaturedCardProps) => {
-  const affiliateUrl = `https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara&p=${encodeURIComponent(
-    "https://www.gsparkplug.com/?q=" + searchQuery,
-  )}`;
+  // TEMP: Awin tracking disabled - restore after 24h
+  const affiliateUrl = `https://www.gsparkplug.com/?q=${encodeURIComponent(searchQuery)}`;
 
   return (
     <a
