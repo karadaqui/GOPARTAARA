@@ -125,6 +125,7 @@ serve(async (req) => {
           const price = parseFloat(cols[pi] || '0')
           const url = (cols[ui] || '').replace(/^"|"$/g, '').trim()
           const brand = (cols[bi] || '').replace(/^"|"$/g, '').trim()
+          const imageUrl = imgIdx >= 0 ? (cols[imgIdx] || '').replace(/^"|"$/g, '').trim() : ''
 
           if (!url || !url.startsWith('http') || price <= 0) continue
 
@@ -142,6 +143,7 @@ serve(async (req) => {
             currency: feed.cur,
             url,
             brand,
+            image_url: imageUrl,
             width: size.width,
             profile: size.profile,
             rim: size.rim,
