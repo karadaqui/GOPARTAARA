@@ -8,10 +8,13 @@ import PopularSearchesStrip from "@/components/PopularSearchesStrip";
 import BrowseByMakeSection from "@/components/BrowseByMakeSection";
 import FeaturedListingsSection from "@/components/FeaturedListingsSection";
 import SectionDivider from "@/components/SectionDivider";
+import UrgencyBar from "@/components/UrgencyBar";
+import LiveActivityStrip from "@/components/LiveActivityStrip";
+import GuaranteesBar from "@/components/GuaranteesBar";
 
 import HomeShareRow from "@/components/HomeShareRow";
 
-// Below-the-fold: lazy-load to keep initial JS small and defer their data fetches
+// Below-the-fold: lazy-load
 const FeaturesSection = lazy(() => import("@/components/FeaturesSection"));
 const HowItWorksSection = lazy(() => import("@/components/HowItWorksSection"));
 const TestimonialsSection = lazy(() => import("@/components/TestimonialsSection"));
@@ -91,63 +94,42 @@ const Index = () => {
           },
         ]}
       />
+
+      {/* Site-wide top urgency bar */}
+      <UrgencyBar />
+
       <Navbar />
       <HeroSection />
-      <SectionDivider />
+
+      {/* Stats bar (navy gradient) directly below hero */}
+      <SocialProofStats />
+
+      {/* Live activity strip (light green) */}
+      <LiveActivityStrip />
+
       <PopularSearchesStrip />
       <SectionDivider />
       <FeaturedListingsSection />
       <BrowseByMakeSection />
       <SectionDivider />
-      <SocialProofStats />
-      <SectionDivider />
-
-      {/* Trust bar */}
-      <section className="px-4 mb-8 mt-2">
-        <div className="max-w-4xl mx-auto text-center">
-          <p style={{ fontSize: "12px", color: "#52525b", margin: "8px 0", textAlign: "center" }}>
-            Trusted by drivers worldwide.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
-            {[
-              "UK's Most Comprehensive Parts Search",
-              "SSL Secured · No Credit Card Required",
-              "Live data from 7 verified suppliers",
-            ].map((label) => (
-              <span
-                key={label}
-                className="inline-flex items-center"
-                style={{
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.06)",
-                  color: "#52525b",
-                  fontSize: "11px",
-                  padding: "4px 10px",
-                  borderRadius: "999px",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {label}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
 
       <Link
         to="/deals"
         className="flex items-center justify-between px-5 py-3 mx-4 mb-6 max-w-4xl md:mx-auto rounded-2xl transition-colors group"
-        style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+        style={{ background: "#ffffff", border: "1px solid #e2e8f0" }}
       >
         <div className="flex items-center gap-3">
           <div>
-            <p className="text-foreground text-sm font-bold">Deals &amp; Savings</p>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-sm font-bold" style={{ color: "#0f172a" }}>Deals &amp; Savings</p>
+            <p className="text-xs" style={{ color: "#64748b" }}>
               eBay · Amazon · Classic Parts — Updated daily
             </p>
           </div>
         </div>
-        <span className="group-hover:translate-x-0.5 transition-transform text-sm font-semibold" style={{ color: "#cc1111" }}>
+        <span
+          className="group-hover:translate-x-0.5 transition-transform text-sm font-bold"
+          style={{ color: "#0a1628" }}
+        >
           View deals →
         </span>
       </Link>
@@ -164,7 +146,7 @@ const Index = () => {
         <ScrollReveal><PricingSection /></ScrollReveal>
       </Suspense>
 
-      <SectionDivider />
+      <GuaranteesBar />
 
       <ScrollReveal><HomeCTASection /></ScrollReveal>
 
