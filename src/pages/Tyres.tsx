@@ -312,6 +312,28 @@ const Tyres = () => {
           </div>
         </div>
 
+        {/* TEMP: Awin maintenance - restore after 24h */}
+        <div className="max-w-2xl mx-auto px-4 mb-12">
+          <div className="bg-zinc-900/80 backdrop-blur border border-zinc-800 rounded-3xl p-8 text-center shadow-2xl shadow-black/40">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 mb-5">
+              <span className="text-3xl">🛠️</span>
+            </div>
+            <h2 className="ds-h2 mb-3">Tyre search temporarily unavailable</h2>
+            <p className="ds-body text-zinc-400 mb-6">
+              We're performing maintenance on our tyre supplier connections.
+              Try searching for car parts instead.
+            </p>
+            <button
+              onClick={() => navigate('/search')}
+              className="btn-ds-primary"
+            >
+              Search Car Parts →
+            </button>
+          </div>
+        </div>
+
+        {/* TEMP: Awin maintenance - restore after 24h — original tyre search hidden below */}
+        {false && (<>
         {/* Search Card */}
         <div className="max-w-2xl mx-auto px-4 mb-6">
           <div className="bg-zinc-900/80 backdrop-blur border border-zinc-800 rounded-3xl p-6 shadow-2xl shadow-black/40">
