@@ -528,15 +528,16 @@ const HeroSection = () => {
                   onSubmit={(e) => { setAutoOpen(false); handleSearch(e); }}
                   className="hero-search-form flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2"
                   style={{
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: "14px",
+                    background: "#ffffff",
+                    border: "2.5px solid #0a1628",
+                    borderRadius: "0 10px 10px 10px",
+                    boxShadow: "0 4px 20px rgba(10,22,40,0.12)",
                     transition: "border-color 150ms ease, box-shadow 150ms ease",
                   }}
                 >
                   <div className="flex-1 flex items-center gap-3 px-3 sm:min-h-[52px]">
                     <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
-                    <Search style={{ color: "#52525b", flexShrink: 0 }} size={18} />
+                    <Search style={{ color: "#94a3b8", flexShrink: 0 }} size={18} />
                     <input
                       ref={heroInputRef}
                       type="text"
@@ -545,7 +546,7 @@ const HeroSection = () => {
                       onChange={(e) => { setQuery(e.target.value); setAutoOpen(true); }}
                       onFocus={() => setAutoOpen(true)}
                       className="hero-search-input w-full bg-transparent outline-none text-sm sm:text-[15px] py-3"
-                      style={{ color: "#ffffff" }}
+                      style={{ color: "#0f172a" }}
                       disabled={identifying}
                       autoComplete="off"
                       autoCorrect="off"
@@ -567,9 +568,9 @@ const HeroSection = () => {
                       <div
                         className="flex items-center justify-center gap-2 transition-colors"
                         style={{
-                          background: "transparent",
-                          border: "1px solid rgba(255,255,255,0.1)",
-                          color: "#a1a1aa",
+                          background: "#f8fafc",
+                          border: "1px solid #e2e8f0",
+                          color: "#64748b",
                           borderRadius: "10px",
                           fontSize: "13px",
                           padding: "0 14px",
@@ -594,17 +595,12 @@ const HeroSection = () => {
                       <button
                         type="button"
                         onClick={() => navigate("/pricing")}
-                        className="shrink-0 flex-1 sm:flex-none flex items-center justify-center gap-1 transition-colors"
+                        className="shrink-0 flex-1 sm:flex-none flex items-center justify-center gap-1 btn-navy"
                         style={{
-                          background: "#cc1111",
-                          color: "#ffffff",
-                          borderRadius: "10px",
-                          fontWeight: 600,
                           fontSize: "15px",
                           height: "44px",
                           padding: "0 24px",
-                          border: "none",
-                          cursor: "pointer",
+                          borderRadius: "10px",
                         }}
                       >
                         <ArrowUp size={14} />
@@ -614,18 +610,13 @@ const HeroSection = () => {
                       <button
                         type="submit"
                         disabled={identifying}
-                        className="shrink-0 flex-1 sm:flex-none transition-transform disabled:opacity-60 hover:scale-[1.02]"
+                        className="shrink-0 flex-1 sm:flex-none btn-navy disabled:opacity-60"
                         style={{
-                          background: "#cc1111",
-                          color: "#ffffff",
-                          borderRadius: "10px",
-                          fontWeight: 600,
                           fontSize: "15px",
                           height: "44px",
                           padding: "0 24px",
-                          border: "none",
+                          borderRadius: "10px",
                           cursor: identifying ? "not-allowed" : "pointer",
-                          transitionDuration: "150ms",
                         }}
                       >
                         Search
