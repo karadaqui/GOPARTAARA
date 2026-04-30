@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SEOHead from "@/components/SEOHead";
 import SafeImage from "@/components/SafeImage";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
