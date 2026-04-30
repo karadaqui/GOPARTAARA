@@ -42,49 +42,50 @@ html, body {
 
 @layer base {
   :root {
-    --background: 220 20% 6%;
-    --foreground: 0 0% 96%;
+    /* LIGHT THEME — page bg #f8fafc, card #ffffff, navy primary #0a1628 */
+    --background: 210 40% 98%;        /* #f8fafc */
+    --foreground: 222 47% 11%;        /* #0f172a */
 
-    --card: 220 18% 10%;
-    --card-foreground: 0 0% 96%;
+    --card: 0 0% 100%;                /* #ffffff */
+    --card-foreground: 222 47% 11%;
 
-    --popover: 220 18% 10%;
-    --popover-foreground: 0 0% 96%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 0 85% 50%;
+    --primary: 217 70% 10%;           /* #0a1628 navy */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 15% 16%;
-    --secondary-foreground: 0 0% 90%;
+    --secondary: 210 40% 96%;         /* #f1f5f9 */
+    --secondary-foreground: 215 25% 27%;  /* #334155 */
 
-    --muted: 220 15% 14%;
-    --muted-foreground: 220 10% 55%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;  /* #64748b */
 
-    --accent: 0 85% 50%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 43 96% 56%;             /* #fbbf24 amber */
+    --accent-foreground: 222 47% 11%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 72% 51%;         /* #dc2626 — used only for "PRICE DROP" badges */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 18%;
-    --input: 220 15% 18%;
-    --ring: 0 85% 50%;
+    --border: 214 32% 91%;            /* #e2e8f0 */
+    --input: 214 32% 91%;
+    --ring: 217 70% 10%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 220 18% 8%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 0 85% 50%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 217 70% 10%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 14%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 220 15% 18%;
-    --sidebar-ring: 0 85% 50%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 217 70% 10%;
 
-    --hero-glow: 0 85% 50%;
-    
+    --hero-glow: 217 70% 10%;
+
     /* Semantic status colors */
-    --success: 142 76% 36%;
+    --success: 142 71% 45%;           /* #16a34a */
     --success-foreground: 0 0% 100%;
   }
 }
@@ -520,23 +521,23 @@ nav a, nav button, button, a {
 
 .logo-go {
   font-size: 1em;
-  font-weight: 800;
+  font-weight: 900;
   color: #cc1111;
   letter-spacing: -0.03em;
 }
 
 .logo-part {
   font-size: 1em;
-  font-weight: 800;
-  color: #ffffff;
+  font-weight: 900;
+  color: #cc1111;
   letter-spacing: -0.03em;
   transition: color 0.2s ease;
 }
 
 .logo-ara {
   font-size: 1em;
-  font-weight: 800;
-  color: white;
+  font-weight: 900;
+  color: #0f172a;
   letter-spacing: -0.03em;
 }
 
