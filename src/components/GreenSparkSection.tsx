@@ -1,10 +1,8 @@
 // Green Spark Plug Co. — global affiliate section (worldwide shipping)
 
-const AFFILIATE_BASE =
-  "https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara&p=";
-
+// TEMP: Awin tracking disabled - restore after 24h
 const buildLink = (path: string) =>
-  `${AFFILIATE_BASE}${encodeURIComponent(`https://www.greenspark.co.uk${path}`)}`;
+  `https://www.gsparkplug.com${path}`;
 
 const HOME_LINK = buildLink("/");
 
