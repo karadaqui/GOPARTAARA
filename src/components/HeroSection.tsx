@@ -580,13 +580,14 @@ const HeroSection = () => {
                       <div
                         className="flex items-center justify-center gap-2 transition-colors"
                         style={{
-                          background: "transparent",
-                          border: "1px solid rgba(255,255,255,0.1)",
-                          color: "#a1a1aa",
+                          background: "#f8fafc",
+                          border: "1px solid #e2e8f0",
+                          color: "#64748b",
                           borderRadius: "10px",
                           fontSize: "13px",
                           padding: "0 14px",
                           height: "44px",
+                          fontWeight: 600,
                         }}
                       >
                         {identifying ? (
