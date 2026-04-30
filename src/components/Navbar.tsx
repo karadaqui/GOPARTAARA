@@ -111,21 +111,18 @@ const Navbar = () => {
     }
   };
 
-  const isHome = pathname === "/";
-
   return (
     <>
       <nav
-        className={`fixed left-0 right-0 z-50 transition-colors ${isHome ? "ds-navbar-light" : ""}`}
+        className="fixed top-0 left-0 right-0 z-50 transition-colors"
         style={{
-          top: isHome ? "32px" : "0",
           WebkitTransform: "translateZ(0)",
           transform: "translateZ(0)",
           willChange: "transform",
-          backgroundColor: isHome ? "#ffffff" : (scrolled ? "rgba(8,8,8,0.85)" : "transparent"),
-          backdropFilter: isHome ? "none" : (scrolled ? "blur(20px)" : "none"),
-          WebkitBackdropFilter: isHome ? "none" : (scrolled ? "blur(20px)" : "none"),
-          borderBottom: isHome ? "1px solid #e2e8f0" : (scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent"),
+          backgroundColor: scrolled ? "rgba(8,8,8,0.85)" : "transparent",
+          backdropFilter: scrolled ? "blur(20px)" : "none",
+          WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
+          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
           transition: "background-color 200ms ease, border-color 200ms ease, backdrop-filter 200ms ease",
         }}
       >
@@ -152,18 +149,11 @@ const Navbar = () => {
             }}
             className="no-underline group flex-shrink-0"
           >
-            <span className="logo-text text-xl" style={{ fontWeight: 900 }}>
-              {isHome ? (
-                <>
-                  <span style={{ color: "#cc1111" }}>GOPART</span>
-                  <span style={{ color: "#0f172a" }} className="transition-colors duration-200 group-hover:opacity-70">ARA</span>
-                </>
-              ) : (
-                <>
-                  <span className="logo-go">GO</span>
-                  <span className="logo-part transition-colors duration-200 group-hover:text-zinc-400">PARTARA</span>
-                </>
-              )}
+            <span className="logo-text text-xl">
+              <span className="logo-go">GO</span>
+              <span className="logo-part transition-colors duration-200 group-hover:text-zinc-400">
+                PARTARA
+              </span>
             </span>
           </a>
 
@@ -179,10 +169,8 @@ const Navbar = () => {
                   className="transition-colors"
                   style={{
                     fontSize: "14px",
-                    fontWeight: isActive ? (isHome ? 700 : 500) : 400,
-                    color: isActive
-                      ? (isHome ? "#0a1628" : "#ffffff")
-                      : (isHome ? "#64748b" : "#a1a1aa"),
+                    fontWeight: isActive ? 500 : 400,
+                    color: isActive ? "#ffffff" : "#a1a1aa",
                     background: "none",
                     border: "none",
                     cursor: "pointer",
@@ -190,10 +178,10 @@ const Navbar = () => {
                     whiteSpace: "nowrap",
                   }}
                   onMouseEnter={(e) => {
-                    if (!isActive) e.currentTarget.style.color = isHome ? "#0a1628" : "#ffffff";
+                    if (!isActive) e.currentTarget.style.color = "#ffffff";
                   }}
                   onMouseLeave={(e) => {
-                    if (!isActive) e.currentTarget.style.color = isHome ? "#64748b" : "#a1a1aa";
+                    if (!isActive) e.currentTarget.style.color = "#a1a1aa";
                   }}
                 >
                   {l.label}
@@ -212,15 +200,15 @@ const Navbar = () => {
                   fontSize: "14px",
                   lineHeight: 1,
                   fontWeight: 400,
-                  color: isHome ? "#64748b" : "#a1a1aa",
+                  color: "#a1a1aa",
                   background: "none",
                   border: "none",
                   cursor: "pointer",
                   padding: "4px 0",
                   whiteSpace: "nowrap",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = isHome ? "#0a1628" : "#ffffff")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = isHome ? "#64748b" : "#a1a1aa")}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
               >
                 <span style={{ display: "block", lineHeight: "14px" }}>More</span>
                 <ChevronDown
@@ -300,12 +288,6 @@ const Navbar = () => {
 
           {/* Right: Utilities + auth */}
           <div className="flex items-center gap-2 ml-auto flex-shrink-0">
-            {/* Live "X live" pill — homepage only, desktop only */}
-            {isHome && (
-              <span className="hidden md:inline-flex ds-nav-livepill" aria-label="7 suppliers live">
-                <span className="ds-live-dot" /> 7 live
-              </span>
-            )}
             <div className="hidden md:flex items-center gap-2">
               {!loading && user && <MessageBubble />}
               {!loading && user && <NotificationBell />}
@@ -362,31 +344,21 @@ const Navbar = () => {
                       className="transition-colors rounded-md"
                       style={{
                         fontSize: "13px",
-                        fontWeight: isHome ? 600 : 400,
-                        color: isHome ? "#ffffff" : "#e4e4e7",
-                        background: isHome ? "#0a1628" : "transparent",
-                        border: isHome ? "1px solid #0a1628" : "1px solid #27272a",
+                        fontWeight: 400,
+                        color: "#e4e4e7",
+                        background: "transparent",
+                        border: "1px solid #27272a",
                         cursor: "pointer",
-                        padding: "6px 14px",
+                        padding: "6px 12px",
                         whiteSpace: "nowrap",
                       }}
                       onMouseEnter={(e) => {
-                        if (isHome) {
-                          e.currentTarget.style.background = "#122040";
-                          e.currentTarget.style.borderColor = "#122040";
-                        } else {
-                          e.currentTarget.style.borderColor = "#3f3f46";
-                          e.currentTarget.style.color = "#ffffff";
-                        }
+                        e.currentTarget.style.borderColor = "#3f3f46";
+                        e.currentTarget.style.color = "#ffffff";
                       }}
                       onMouseLeave={(e) => {
-                        if (isHome) {
-                          e.currentTarget.style.background = "#0a1628";
-                          e.currentTarget.style.borderColor = "#0a1628";
-                        } else {
-                          e.currentTarget.style.borderColor = "#27272a";
-                          e.currentTarget.style.color = "#e4e4e7";
-                        }
+                        e.currentTarget.style.borderColor = "#27272a";
+                        e.currentTarget.style.color = "#e4e4e7";
                       }}
                     >
                       Dashboard
@@ -398,39 +370,23 @@ const Navbar = () => {
                       style={{
                         fontSize: "13px",
                         fontWeight: 400,
-                        color: isHome ? "#64748b" : "#a1a1aa",
+                        color: "#a1a1aa",
                         background: "none",
                         border: "none",
                         cursor: "pointer",
                         padding: "6px 8px",
                         whiteSpace: "nowrap",
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = isHome ? "#0a1628" : "#ffffff")}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = isHome ? "#64748b" : "#a1a1aa")}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
                     >
                       Sign Out
                     </button>
                   </>
                 ) : (
-                  <button
-                    onClick={() => navigate("/auth")}
-                    className="rounded-md transition-colors"
-                    style={{
-                      fontSize: "13px",
-                      fontWeight: 600,
-                      color: "#ffffff",
-                      background: "#0a1628",
-                      border: "none",
-                      cursor: "pointer",
-                      padding: "8px 16px",
-                      whiteSpace: "nowrap",
-                      height: "32px",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "#122040")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "#0a1628")}
-                  >
+                  <Button size="sm" onClick={() => navigate("/auth")} className="rounded-md btn-glow h-8">
                     Get Started
-                  </button>
+                  </Button>
                 )}
               </div>
             )}
@@ -443,10 +399,10 @@ const Navbar = () => {
                 width: "40px",
                 height: "40px",
                 background: "transparent",
-                border: isHome ? "1px solid #e2e8f0" : "1px solid #27272a",
+                border: "1px solid #27272a",
                 borderRadius: "8px",
                 cursor: "pointer",
-                color: isHome ? "#0a1628" : "white",
+                color: "white",
               }}
               aria-label="Open navigation menu"
             >
