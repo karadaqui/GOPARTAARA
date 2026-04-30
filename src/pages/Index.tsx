@@ -8,7 +8,7 @@ import PopularSearchesStrip from "@/components/PopularSearchesStrip";
 import BrowseByMakeSection from "@/components/BrowseByMakeSection";
 import FeaturedListingsSection from "@/components/FeaturedListingsSection";
 import SectionDivider from "@/components/SectionDivider";
-import UrgencyBar from "@/components/UrgencyBar";
+
 import LiveActivityStrip from "@/components/LiveActivityStrip";
 import GuaranteesBar from "@/components/GuaranteesBar";
 
