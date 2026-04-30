@@ -1,95 +1,191 @@
-import ScrollReveal from "@/components/ScrollReveal";
+const COMPETITORS = ["GOPARTARA", "carpartscompare.uk", "whatpart.co.uk", "compare.parts"] as const;
 
-const CARDS = [
-  {
-    icon: "⚡",
-    title: "7 suppliers, one search",
-    desc: "We instantly query eBay, Amazon, Green Spark Plug Co., Tyres UK, mytyres.co.uk, EV King and more — simultaneously.",
-    proof: "Most rivals only check 2–3 sites.",
-  },
-  {
-    icon: "💸",
-    title: "Save up to £43 per part",
-    desc: "Live price comparison with strikethrough was-prices and savings highlighted in green so you always pick the best deal.",
-    proof: "Average dealer markup is £65–£90.",
-  },
-  {
-    icon: "🔒",
-    title: "Free, secure, no signup",
-    desc: "Search 1,000,000+ parts without creating an account. SSL encrypted. No card on file. No spam.",
-    proof: "100% free to search — always.",
-  },
+type Cell = string | true | false;
+
+const ROWS: { feature: string; values: [Cell, Cell, Cell, Cell] }[] = [
+  { feature: "Suppliers searched", values: ["7 live", "3", "2", "4"] },
+  { feature: "Photo search", values: [true, false, false, false] },
+  { feature: "VIN search", values: [true, false, false, false] },
+  { feature: "UK Reg plate", values: [true, true, true, false] },
+  { feature: "Price alerts", values: [true, false, false, false] },
+  { feature: "My Garage", values: [true, false, false, false] },
+  { feature: "EU suppliers", values: [true, false, false, false] },
+  { feature: "Free to use", values: [true, true, true, true] },
+  { feature: "P2P Marketplace", values: [true, false, false, true] },
 ];
+
+const renderCell = (value: Cell, isPartara: boolean, feature?: string) => {
+  if (value === true) {
+    return <span style={{ color: "#4ade80", fontSize: "18px", fontWeight: 700 }}>✓</span>;
+  }
+  if (value === false) {
+    return <span style={{ color: "#3f3f46", fontSize: "18px" }}>✗</span>;
+  }
+  const isSuppliersGopartara = isPartara && feature === "Suppliers searched";
+  return (
+    <span
+      style={{
+        color: isSuppliersGopartara ? "#4ade80" : isPartara ? "#ffffff" : "#a1a1aa",
+        fontSize: "14px",
+        fontWeight: isPartara ? 700 : 500,
+      }}
+    >
+      {value}
+    </span>
+  );
+};
 
 const WhyPartaraSection = () => {
   return (
-    <section
-      style={{
-        background: "#f8fafc",
-        borderTop: "1px solid #e2e8f0",
-        padding: "40px 16px",
-      }}
-    >
-      <div className="max-w-6xl mx-auto">
-        <ScrollReveal className="text-center mb-8">
+    <section className="animated-gradient-bg px-4 py-12 md:py-16 relative overflow-hidden">
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: "200px",
+          background:
+            "radial-gradient(ellipse 60% 30% at 50% 0%, rgba(204, 17, 17, 0.06) 0%, transparent 70%)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+      <div className="max-w-6xl mx-auto relative" style={{ zIndex: 1 }}>
+        {/* Header */}
+        <div className="text-center mb-12">
           <p
             style={{
               color: "#cc1111",
-              fontSize: 11,
+              fontSize: "13px",
               fontWeight: 700,
-              letterSpacing: "0.12em",
+              letterSpacing: "0.18em",
               textTransform: "uppercase",
-              marginBottom: 10,
+              marginBottom: "16px",
             }}
           >
-            Why GOPARTARA
+            WHY GOPARTARA
           </p>
-          <h2
-            style={{
-              fontSize: "clamp(22px, 4vw, 32px)",
-              fontWeight: 800,
-              color: "#0f172a",
-              letterSpacing: "-0.02em",
-            }}
-          >
+          <h2 className="text-4xl md:text-5xl font-extrabold text-foreground mb-4 tracking-tight">
             The only search that covers them all.
           </h2>
-          <p style={{ color: "#64748b", fontSize: 14, marginTop: 8 }}>
+          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
             While others search one site, we search seven simultaneously.
           </p>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {CARDS.map((c) => (
-            <div
-              key={c.title}
-              style={{
-                background: "#ffffff",
-                border: "1px solid #e2e8f0",
-                borderRadius: 12,
-                padding: 18,
-              }}
-            >
-              <div style={{ fontSize: 26, marginBottom: 10 }}>{c.icon}</div>
-              <h3 style={{ fontSize: 14, fontWeight: 700, color: "#0f172a", marginBottom: 6 }}>
-                {c.title}
-              </h3>
-              <p style={{ fontSize: 12, color: "#64748b", lineHeight: 1.55 }}>{c.desc}</p>
-              <p
-                style={{
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: "#16a34a",
-                  marginTop: 12,
-                  paddingTop: 10,
-                  borderTop: "1px solid #f1f5f9",
-                }}
-              >
-                ✓ {c.proof}
-              </p>
-            </div>
-          ))}
         </div>
+
+        {/* Table */}
+        <div
+          className="overflow-x-auto"
+          style={{
+            background: "#111111",
+            border: "1px solid #1f1f1f",
+            borderRadius: "16px",
+          }}
+        >
+          <table className="w-full min-w-[680px]" style={{ borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ borderBottom: "1px solid #1f1f1f", background: "#0a0a0a" }}>
+                <th
+                  className="text-left"
+                  style={{
+                    padding: "20px 24px",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    color: "#52525b",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  Feature
+                </th>
+                {COMPETITORS.map((name, idx) => {
+                  const isPartara = idx === 0;
+                  return (
+                    <th
+                      key={name}
+                      className="text-center"
+                      style={{
+                        padding: "20px 16px",
+                        fontSize: isPartara ? "14px" : "11px",
+                        fontWeight: isPartara ? 700 : 400,
+                        color: isPartara ? "#cc1111" : "#3f3f46",
+                        borderLeft: isPartara ? "2px solid #cc1111" : undefined,
+                        background: isPartara ? "rgba(204,17,17,0.08)" : undefined,
+                        letterSpacing: isPartara ? "0.02em" : undefined,
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {name}
+                    </th>
+                  );
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              {ROWS.map((row, rowIdx) => {
+                const rowBg = rowIdx % 2 === 0 ? "#111111" : "#0d0d0d";
+                return (
+                  <tr key={row.feature} style={{ background: rowBg }}>
+                    <td
+                      style={{
+                        padding: "18px 24px",
+                        fontSize: "14px",
+                        fontWeight: 500,
+                        color: "#ffffff",
+                      }}
+                    >
+                      {row.feature}
+                    </td>
+                    {row.values.map((value, colIdx) => {
+                      const isPartara = colIdx === 0;
+                      return (
+                        <td
+                          key={`${row.feature}-${colIdx}`}
+                          className="text-center"
+                          style={{
+                            padding: "18px 16px",
+                            borderLeft: isPartara ? "2px solid #cc1111" : undefined,
+                            background: isPartara ? "rgba(204,17,17,0.04)" : undefined,
+                          }}
+                        >
+                          {renderCell(value, isPartara, row.feature)}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="text-center mt-8">
+          <a
+            href="/search"
+            className="inline-flex items-center justify-center transition-colors hover:bg-[rgba(204,17,17,0.08)]"
+            style={{
+              background: "transparent",
+              color: "#cc1111",
+              fontSize: "13px",
+              fontWeight: 600,
+              padding: "10px 20px",
+              borderRadius: "10px",
+              border: "1px solid rgba(204,17,17,0.3)",
+              textDecoration: "none",
+            }}
+          >
+            Start searching free — we cover all 7 suppliers →
+          </a>
+        </div>
+
+        <p
+          className="text-center mt-6"
+          style={{ fontSize: "12px", color: "#3f3f46" }}
+        >
+          Showing real features as of April 2026. We update this regularly.
+        </p>
       </div>
     </section>
   );

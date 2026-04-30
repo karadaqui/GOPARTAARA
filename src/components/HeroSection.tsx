@@ -316,62 +316,42 @@ const HeroSection = () => {
   return (
     <section
       id="home"
-      className="relative flex items-center justify-center pt-16 pb-8 overflow-x-visible overflow-y-hidden"
-      style={{ background: "#ffffff" }}
+      className="relative flex items-center justify-center pt-16 pb-8 overflow-x-visible overflow-y-hidden animated-gradient-bg"
+      style={{
+        backgroundImage:
+          "radial-gradient(ellipse 80% 40% at 50% -10%, rgba(204,17,17,0.12) 0%, transparent 70%), radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
+        backgroundSize: "auto, 24px 24px",
+        backgroundRepeat: "no-repeat, repeat",
+      }}
     >
+      {/* Background glow orbs */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary/6 blur-[180px] pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-primary/4 blur-[140px] pointer-events-none" />
+
       <div className="container relative z-10 text-center px-4 py-10 sm:py-14">
-        {/* Top badge row */}
-        <div
-          className={`flex flex-wrap items-center justify-center gap-3 mb-8 transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
-        >
-          <span
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              background: "#fef3c7",
-              border: "1px solid #fcd34d",
-              color: "#92400e",
-              fontWeight: 700,
-              fontSize: 11,
-              padding: "5px 12px",
-              borderRadius: 999,
-            }}
-          >
-            🏆 #1 Car Parts Comparison
-          </span>
-          <span
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              color: "#16a34a",
-              fontWeight: 700,
-              fontSize: 11,
-            }}
-          >
-            <span className="live-dot" />
-            Prices verified just now
-          </span>
+        {/* Badge */}
+        <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
+          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            1,000,000+ parts searchable · Free to compare
+          </div>
         </div>
 
         {/* Heading */}
         <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <h1
-            className="font-display mb-4"
+            className="font-display mb-5"
             style={{
-              fontSize: "clamp(40px, 5.2vw, 64px)",
-              fontWeight: 900,
+              fontSize: "clamp(44px, 5.5vw, 72px)",
+              fontWeight: 800,
               letterSpacing: "-0.04em",
-              lineHeight: 1.05,
-              color: "#0f172a",
+              lineHeight: 1.0,
+              color: "#ffffff",
             }}
           >
-            Stop <span className="hero-underline">Overpaying</span> for Car Parts.
+            Find Any Car Part
             <br />
-            <span style={{ color: "#0a1628", fontWeight: 900, letterSpacing: "-0.04em" }}>
-              Instantly.
-            </span>
+            <span style={{ color: "#cc1111", letterSpacing: "-0.04em" }}>Instantly.</span>
           </h1>
         </div>
 
@@ -379,29 +359,16 @@ const HeroSection = () => {
         <div className={`transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
           <p
             style={{
-              fontSize: 16,
-              color: "#64748b",
+              fontSize: "17px",
+              color: "#71717a",
               fontWeight: 400,
-              maxWidth: 620,
+              maxWidth: "460px",
               margin: "0 auto",
-              lineHeight: 1.6,
+              lineHeight: 1.65,
             }}
           >
-            We instantly compare 1,000,000+ parts across 7 trusted global suppliers simultaneously — free, no account needed.
+            The smart search engine that simultaneously checks eBay, mytyres.co.uk, Tyres UK and 4 more global suppliers.
           </p>
-        </div>
-
-        {/* Trust pills row */}
-        <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
-          {[
-            "🔒 Secure & free",
-            "⚡ Results in 3 sec",
-            "✅ No hidden fees",
-            "🌍 Global suppliers",
-            "🔄 Prices live",
-          ].map((p) => (
-            <span key={p} className="trust-pill">{p}</span>
-          ))}
         </div>
 
         {/* Search section */}
@@ -528,16 +495,15 @@ const HeroSection = () => {
                   onSubmit={(e) => { setAutoOpen(false); handleSearch(e); }}
                   className="hero-search-form flex flex-col sm:flex-row items-stretch sm:items-center gap-2 p-2"
                   style={{
-                    background: "#ffffff",
-                    border: "2.5px solid #0a1628",
-                    borderRadius: "0 10px 10px 10px",
-                    boxShadow: "0 4px 20px rgba(10,22,40,0.12)",
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: "14px",
                     transition: "border-color 150ms ease, box-shadow 150ms ease",
                   }}
                 >
                   <div className="flex-1 flex items-center gap-3 px-3 sm:min-h-[52px]">
                     <SearchBarGarageDropdown onSelect={(vq) => setQuery((prev) => prev.trim() ? `${vq} ${prev.trim()}` : vq)} />
-                    <Search style={{ color: "#94a3b8", flexShrink: 0 }} size={18} />
+                    <Search style={{ color: "#52525b", flexShrink: 0 }} size={18} />
                     <input
                       ref={heroInputRef}
                       type="text"
@@ -546,7 +512,7 @@ const HeroSection = () => {
                       onChange={(e) => { setQuery(e.target.value); setAutoOpen(true); }}
                       onFocus={() => setAutoOpen(true)}
                       className="hero-search-input w-full bg-transparent outline-none text-sm sm:text-[15px] py-3"
-                      style={{ color: "#0f172a" }}
+                      style={{ color: "#ffffff" }}
                       disabled={identifying}
                       autoComplete="off"
                       autoCorrect="off"
@@ -568,9 +534,9 @@ const HeroSection = () => {
                       <div
                         className="flex items-center justify-center gap-2 transition-colors"
                         style={{
-                          background: "#f8fafc",
-                          border: "1px solid #e2e8f0",
-                          color: "#64748b",
+                          background: "transparent",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          color: "#a1a1aa",
                           borderRadius: "10px",
                           fontSize: "13px",
                           padding: "0 14px",
@@ -595,12 +561,17 @@ const HeroSection = () => {
                       <button
                         type="button"
                         onClick={() => navigate("/pricing")}
-                        className="shrink-0 flex-1 sm:flex-none flex items-center justify-center gap-1 btn-navy"
+                        className="shrink-0 flex-1 sm:flex-none flex items-center justify-center gap-1 transition-colors"
                         style={{
+                          background: "#cc1111",
+                          color: "#ffffff",
+                          borderRadius: "10px",
+                          fontWeight: 600,
                           fontSize: "15px",
                           height: "44px",
                           padding: "0 24px",
-                          borderRadius: "10px",
+                          border: "none",
+                          cursor: "pointer",
                         }}
                       >
                         <ArrowUp size={14} />
@@ -610,13 +581,18 @@ const HeroSection = () => {
                       <button
                         type="submit"
                         disabled={identifying}
-                        className="shrink-0 flex-1 sm:flex-none btn-navy disabled:opacity-60"
+                        className="shrink-0 flex-1 sm:flex-none transition-transform disabled:opacity-60 hover:scale-[1.02]"
                         style={{
+                          background: "#cc1111",
+                          color: "#ffffff",
+                          borderRadius: "10px",
+                          fontWeight: 600,
                           fontSize: "15px",
                           height: "44px",
                           padding: "0 24px",
-                          borderRadius: "10px",
+                          border: "none",
                           cursor: identifying ? "not-allowed" : "pointer",
+                          transitionDuration: "150ms",
                         }}
                       >
                         Search
