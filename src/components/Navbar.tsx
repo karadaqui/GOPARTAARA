@@ -116,8 +116,9 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-colors ${isHome ? "ds-navbar-light" : ""}`}
+        className={`fixed left-0 right-0 z-50 transition-colors ${isHome ? "ds-navbar-light" : ""}`}
         style={{
+          top: isHome ? "32px" : "0",
           WebkitTransform: "translateZ(0)",
           transform: "translateZ(0)",
           willChange: "transform",
