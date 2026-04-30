@@ -151,11 +151,18 @@ const Navbar = () => {
             }}
             className="no-underline group flex-shrink-0"
           >
-            <span className="logo-text text-xl">
-              <span className="logo-go">GO</span>
-              <span className="logo-part transition-colors duration-200 group-hover:text-zinc-400">
-                PARTARA
-              </span>
+            <span className="logo-text text-xl" style={{ fontWeight: 900 }}>
+              {isHome ? (
+                <>
+                  <span style={{ color: "#cc1111" }}>GOPART</span>
+                  <span style={{ color: "#0f172a" }} className="transition-colors duration-200 group-hover:opacity-70">ARA</span>
+                </>
+              ) : (
+                <>
+                  <span className="logo-go">GO</span>
+                  <span className="logo-part transition-colors duration-200 group-hover:text-zinc-400">PARTARA</span>
+                </>
+              )}
             </span>
           </a>
 
