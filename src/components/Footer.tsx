@@ -51,19 +51,18 @@ const Footer = () => {
   };
 
   return (
-    <footer className="border-t border-border py-12">
+    <footer className="ds-footer-dark border-t py-12">
       <div className="container px-4 md:px-6 lg:px-8">
         {/* Logo + description */}
         <div className="mb-8 md:mb-12 md:grid md:grid-cols-5 md:gap-8">
           <div className="md:col-span-1 text-center md:text-left mb-8 md:mb-0">
             <button onClick={() => handleLink("/")} className="inline-block min-h-[44px]">
-              <span className="logo-text text-xl">
-                <span className="logo-go">GO</span>
-                <span className="logo-part">PART</span>
-                <span className="logo-ara">ARA</span>
+              <span className="logo-text" style={{ fontSize: "18px", fontWeight: 900 }}>
+                <span className="ds-footer-logo-amber">GOPART</span>
+                <span className="ds-footer-logo-white">ARA</span>
               </span>
             </button>
-            <p className="text-muted-foreground text-sm mt-3 leading-relaxed max-w-sm mx-auto md:mx-0">
+            <p className="ds-footer-tagline text-sm mt-3 leading-relaxed max-w-sm mx-auto md:mx-0">
               The smarter way to find car parts. Search 1,000,000+ parts from trusted global suppliers.
             </p>
           </div>
