@@ -104,13 +104,18 @@ serve(async (req) => {
           const cols = csv(line)
           if (lc === 1) {
             hdrs = cols.map(h => h.toLowerCase().trim())
-            const norm = (h: string) => h.replace(/[^a-z0-9]/g, '')
+          const norm = (h: string) => h.replace(/[^a-z0-9]/g, '')
             ni = hdrs.findIndex(h => norm(h).includes('productname'))
             pi = hdrs.findIndex(h => norm(h).includes('searchprice') || norm(h) === 'price')
             ui = hdrs.findIndex(h => norm(h).includes('deeplink'))
             bi = hdrs.findIndex(h => norm(h).includes('brandname') || norm(h) === 'brand')
             descIdx = hdrs.findIndex(h => h.includes('desc'))
-            console.log(`Feed ${feedId} headers: ni=${ni} pi=${pi} ui=${ui} bi=${bi} descIdx=${descIdx}`)
+            // Image URL: priority aw_image_url > merchant_image_url > image_url > aw_thumb_url
+            var imgIdx = hdrs.findIndex(h => norm(h) === 'awimageurl')
+            if (imgIdx < 0) imgIdx = hdrs.findIndex(h => norm(h) === 'merchantimageurl')
+            if (imgIdx < 0) imgIdx = hdrs.findIndex(h => norm(h) === 'imageurl')
+            if (imgIdx < 0) imgIdx = hdrs.findIndex(h => norm(h) === 'awthumburl')
+            console.log(`Feed ${feedId} headers: ni=${ni} pi=${pi} ui=${ui} bi=${bi} descIdx=${descIdx} imgIdx=${imgIdx}`)
             continue
           }
           if (ni < 0 || pi < 0 || ui < 0) continue
