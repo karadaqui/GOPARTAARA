@@ -316,42 +316,62 @@ const HeroSection = () => {
   return (
     <section
       id="home"
-      className="relative flex items-center justify-center pt-16 pb-8 overflow-x-visible overflow-y-hidden animated-gradient-bg"
-      style={{
-        backgroundImage:
-          "radial-gradient(ellipse 80% 40% at 50% -10%, rgba(204,17,17,0.12) 0%, transparent 70%), radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
-        backgroundSize: "auto, 24px 24px",
-        backgroundRepeat: "no-repeat, repeat",
-      }}
+      className="relative flex items-center justify-center pt-16 pb-8 overflow-x-visible overflow-y-hidden"
+      style={{ background: "#ffffff" }}
     >
-      {/* Background glow orbs */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary/6 blur-[180px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-primary/4 blur-[140px] pointer-events-none" />
-
       <div className="container relative z-10 text-center px-4 py-10 sm:py-14">
-        {/* Badge */}
-        <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            1,000,000+ parts searchable · Free to compare
-          </div>
+        {/* Top badge row */}
+        <div
+          className={`flex flex-wrap items-center justify-center gap-3 mb-8 transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+        >
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              background: "#fef3c7",
+              border: "1px solid #fcd34d",
+              color: "#92400e",
+              fontWeight: 700,
+              fontSize: 11,
+              padding: "5px 12px",
+              borderRadius: 999,
+            }}
+          >
+            🏆 #1 Car Parts Comparison
+          </span>
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              color: "#16a34a",
+              fontWeight: 700,
+              fontSize: 11,
+            }}
+          >
+            <span className="live-dot" />
+            Prices verified just now
+          </span>
         </div>
 
         {/* Heading */}
         <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <h1
-            className="font-display mb-5"
+            className="font-display mb-4"
             style={{
-              fontSize: "clamp(44px, 5.5vw, 72px)",
-              fontWeight: 800,
+              fontSize: "clamp(40px, 5.2vw, 64px)",
+              fontWeight: 900,
               letterSpacing: "-0.04em",
-              lineHeight: 1.0,
-              color: "#ffffff",
+              lineHeight: 1.05,
+              color: "#0f172a",
             }}
           >
-            Find Any Car Part
+            Stop <span className="hero-underline">Overpaying</span> for Car Parts.
             <br />
-            <span style={{ color: "#cc1111", letterSpacing: "-0.04em" }}>Instantly.</span>
+            <span style={{ color: "#0a1628", fontWeight: 900, letterSpacing: "-0.04em" }}>
+              Instantly.
+            </span>
           </h1>
         </div>
 
@@ -359,16 +379,29 @@ const HeroSection = () => {
         <div className={`transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
           <p
             style={{
-              fontSize: "17px",
-              color: "#71717a",
+              fontSize: 16,
+              color: "#64748b",
               fontWeight: 400,
-              maxWidth: "460px",
+              maxWidth: 620,
               margin: "0 auto",
-              lineHeight: 1.65,
+              lineHeight: 1.6,
             }}
           >
-            The smart search engine that simultaneously checks eBay, mytyres.co.uk, Tyres UK and 4 more global suppliers.
+            We instantly compare 1,000,000+ parts across 7 trusted global suppliers simultaneously — free, no account needed.
           </p>
+        </div>
+
+        {/* Trust pills row */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-5">
+          {[
+            "🔒 Secure & free",
+            "⚡ Results in 3 sec",
+            "✅ No hidden fees",
+            "🌍 Global suppliers",
+            "🔄 Prices live",
+          ].map((p) => (
+            <span key={p} className="trust-pill">{p}</span>
+          ))}
         </div>
 
         {/* Search section */}
