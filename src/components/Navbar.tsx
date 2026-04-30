@@ -117,11 +117,8 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className="fixed top-0 left-0 right-0 z-50"
+        className="sticky top-0 left-0 right-0 z-50"
         style={{
-          WebkitTransform: "translateZ(0)",
-          transform: "translateZ(0)",
-          willChange: "transform",
           backgroundColor: "#ffffff",
           borderBottom: "1px solid #e2e8f0",
           boxShadow: scrolled ? "0 1px 3px rgba(15,23,42,0.06)" : "none",
