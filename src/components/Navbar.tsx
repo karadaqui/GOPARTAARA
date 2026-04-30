@@ -111,18 +111,20 @@ const Navbar = () => {
     }
   };
 
+  const isHome = pathname === "/";
+
   return (
     <>
       <nav
-        className="fixed top-0 left-0 right-0 z-50 transition-colors"
+        className={`fixed top-0 left-0 right-0 z-50 transition-colors ${isHome ? "ds-navbar-light" : ""}`}
         style={{
           WebkitTransform: "translateZ(0)",
           transform: "translateZ(0)",
           willChange: "transform",
-          backgroundColor: scrolled ? "rgba(8,8,8,0.85)" : "transparent",
-          backdropFilter: scrolled ? "blur(20px)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
+          backgroundColor: isHome ? "#ffffff" : (scrolled ? "rgba(8,8,8,0.85)" : "transparent"),
+          backdropFilter: isHome ? "none" : (scrolled ? "blur(20px)" : "none"),
+          WebkitBackdropFilter: isHome ? "none" : (scrolled ? "blur(20px)" : "none"),
+          borderBottom: isHome ? "1px solid #e2e8f0" : (scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent"),
           transition: "background-color 200ms ease, border-color 200ms ease, backdrop-filter 200ms ease",
         }}
       >
