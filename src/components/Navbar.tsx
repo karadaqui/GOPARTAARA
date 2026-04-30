@@ -432,7 +432,7 @@ const Navbar = () => {
             right: 0,
             bottom: 0,
             zIndex: 9998,
-            backgroundColor: "#080808",
+            backgroundColor: "#ffffff",
             padding: "24px",
             display: "flex",
             flexDirection: "column",
@@ -464,7 +464,8 @@ const Navbar = () => {
             >
               <span className="logo-text text-xl">
                 <span className="logo-go">GO</span>
-                <span className="logo-part">PARTARA</span>
+                <span className="logo-part">PART</span>
+                <span className="logo-ara">ARA</span>
               </span>
             </a>
             <button
@@ -475,9 +476,9 @@ const Navbar = () => {
                 width: "40px",
                 height: "40px",
                 background: "transparent",
-                border: "1px solid #27272a",
+                border: "1px solid #e2e8f0",
                 borderRadius: "8px",
-                color: "white",
+                color: "#0f172a",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -510,8 +511,8 @@ const Navbar = () => {
                   padding: "18px 0",
                   fontSize: "22px",
                   fontWeight: 700,
-                  color: "white",
-                  borderBottom: "1px solid #111111",
+                  color: "#0f172a",
+                  borderBottom: "1px solid #f1f5f9",
                   textDecoration: "none",
                   letterSpacing: "-0.5px",
                   WebkitTapHighlightColor: "transparent",
@@ -529,15 +530,11 @@ const Navbar = () => {
                 <a
                   href="/dashboard"
                   onClick={(e) => handleMobileLinkClick(e, "/dashboard")}
+                  className="btn-navy"
                   style={{
                     display: "block",
-                    background: "transparent",
-                    border: "1px solid #27272a",
-                    color: "white",
                     padding: "14px",
-                    borderRadius: "10px",
                     fontSize: "15px",
-                    fontWeight: 600,
                     width: "100%",
                     textAlign: "center",
                     textDecoration: "none",
@@ -554,9 +551,9 @@ const Navbar = () => {
                   }}
                   style={{
                     display: "block",
-                    background: "#cc1111",
-                    border: "none",
-                    color: "white",
+                    background: "transparent",
+                    border: "1px solid #e2e8f0",
+                    color: "#475569",
                     padding: "14px",
                     borderRadius: "10px",
                     fontSize: "15px",
@@ -577,8 +574,8 @@ const Navbar = () => {
                   style={{
                     display: "block",
                     background: "transparent",
-                    border: "1px solid #27272a",
-                    color: "white",
+                    border: "1px solid #e2e8f0",
+                    color: "#0f172a",
                     padding: "14px",
                     borderRadius: "10px",
                     fontSize: "15px",
@@ -594,15 +591,11 @@ const Navbar = () => {
                 <a
                   href="/auth"
                   onClick={(e) => handleMobileLinkClick(e, "/auth")}
+                  className="btn-navy"
                   style={{
                     display: "block",
-                    background: "#cc1111",
-                    border: "none",
-                    color: "white",
                     padding: "14px",
-                    borderRadius: "10px",
                     fontSize: "15px",
-                    fontWeight: 600,
                     width: "100%",
                     marginTop: "12px",
                     textAlign: "center",
