@@ -42,8 +42,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <SEOHead
-        title="GOPARTARA — Compare Car Parts Prices UK | Search 1M+ Parts Free"
-        description="Search and compare car parts prices from 7 trusted UK & global suppliers simultaneously. Free to use. No account needed. Find brake pads, filters, tyres and more instantly."
+        title="GOPARTARA — Compare Car Parts Prices | Search 1M+ Parts Free"
+        description="Search and compare car parts prices from 7 trusted global suppliers simultaneously. Free to use. No account needed. Find brake pads, filters, tyres and more — shipped worldwide."
         path="/"
         jsonLd={{
           "@context": "https://schema.org",
@@ -53,7 +53,7 @@ const Index = () => {
               "@id": "https://gopartara.com/#website",
               "url": "https://gopartara.com",
               "name": "GOPARTARA",
-              "description": "Search and compare car parts prices from 7 UK & global suppliers simultaneously.",
+              "description": "Search and compare car parts prices from 7 trusted global suppliers simultaneously.",
               "publisher": {
                 "@type": "Organization",
                 "name": "GOPARTARA Ltd",
@@ -80,7 +80,7 @@ const Index = () => {
             "@type": "WebApplication",
             "name": "GOPARTARA",
             "url": "https://gopartara.com",
-            "description": "Compare prices on over 1M+ car parts from trusted UK & Global suppliers.",
+            "description": "Compare prices on over 1,000,000 car parts from trusted global suppliers. Always free.",
             "applicationCategory": "AutomotiveApplication",
             "operatingSystem": "Web",
             "offers": {
@@ -106,7 +106,7 @@ const Index = () => {
       <section className="px-4 mb-8 mt-2">
         <div className="max-w-4xl mx-auto text-center">
           <p style={{ fontSize: "12px", color: "#52525b", margin: "8px 0", textAlign: "center" }}>
-            Trusted by drivers across the UK
+            Trusted by drivers worldwide.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
             {[

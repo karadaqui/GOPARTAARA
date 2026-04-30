@@ -64,7 +64,7 @@ const Footer = () => {
               </span>
             </button>
             <p className="text-muted-foreground text-sm mt-3 leading-relaxed max-w-sm mx-auto md:mx-0">
-              The smarter way to find car parts. Search 1,000,000+ parts from trusted UK &amp; global suppliers.
+              The smarter way to find car parts. Search 1,000,000+ parts from trusted global suppliers.
             </p>
           </div>
 
