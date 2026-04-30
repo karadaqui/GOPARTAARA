@@ -60,14 +60,10 @@ export default function EvCharging() {
 
   return (
     <div className="min-h-screen bg-[#080808] text-white">
-      <Helmet>
-        <title>EV Charging Cables & Accessories | GOPARTARA</title>
-        <meta
-          name="description"
-          content="Find the right EV charging cable for your electric car. Type 1, Type 2, CCS, CHAdeMO and 3-pin cables for all UK and EU EV models."
-        />
-        <link rel="canonical" href="https://gopartara.com/ev-charging" />
-      </Helmet>
+      <SEOHead
+        title="EV Charging Cables & Accessories | GOPARTARA"
+        description="Find the right EV charging cable for your electric car. Type 1, Type 2, CCS, CHAdeMO and 3-pin cables for all UK and EU EV models."
+      />
       <Navbar />
 
       <main className="max-w-6xl mx-auto px-4 py-12">
