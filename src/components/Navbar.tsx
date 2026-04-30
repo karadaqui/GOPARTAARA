@@ -178,8 +178,10 @@ const Navbar = () => {
                   className="transition-colors"
                   style={{
                     fontSize: "14px",
-                    fontWeight: isActive ? 500 : 400,
-                    color: isActive ? "#ffffff" : "#a1a1aa",
+                    fontWeight: isActive ? (isHome ? 700 : 500) : 400,
+                    color: isActive
+                      ? (isHome ? "#0a1628" : "#ffffff")
+                      : (isHome ? "#64748b" : "#a1a1aa"),
                     background: "none",
                     border: "none",
                     cursor: "pointer",
@@ -187,10 +189,10 @@ const Navbar = () => {
                     whiteSpace: "nowrap",
                   }}
                   onMouseEnter={(e) => {
-                    if (!isActive) e.currentTarget.style.color = "#ffffff";
+                    if (!isActive) e.currentTarget.style.color = isHome ? "#0a1628" : "#ffffff";
                   }}
                   onMouseLeave={(e) => {
-                    if (!isActive) e.currentTarget.style.color = "#a1a1aa";
+                    if (!isActive) e.currentTarget.style.color = isHome ? "#64748b" : "#a1a1aa";
                   }}
                 >
                   {l.label}
@@ -209,7 +211,7 @@ const Navbar = () => {
                   fontSize: "14px",
                   lineHeight: 1,
                   fontWeight: 400,
-                  color: "#a1a1aa",
+                  color: isHome ? "#64748b" : "#a1a1aa",
                   background: "none",
                   border: "none",
                   cursor: "pointer",
