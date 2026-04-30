@@ -387,7 +387,7 @@ const Dashboard = () => {
         <div
           className="rounded-2xl p-5 sm:p-6 mb-6"
           style={{
-            background: "linear-gradient(135deg, rgba(204,17,17,0.08) 0%, transparent 60%), #0a0a0a",
+            background: "#0a1628",
             border: "1px solid rgba(204,17,17,0.15)",
           }}
         >
@@ -517,7 +517,7 @@ const Dashboard = () => {
         <div
           className="rounded-2xl p-6 sm:p-8 mb-6"
           style={{
-            background: "linear-gradient(135deg, #0d0000 0%, #1a0000 100%)",
+            background: "linear-gradient(135deg, #0a1628 0%, #1d4ed8 100%)",
             border: "1px solid rgba(204,17,17,0.2)",
           }}
         >
