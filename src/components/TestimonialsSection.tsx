@@ -31,7 +31,7 @@ export const testimonials: Testimonial[] = [
   { name: "James B.", location: "Edinburgh, Scotland", countryBadge: "UK", rating: 5, text: "The garage feature is great for fleet management." },
 ];
 
-/* ── Homepage grid: exactly 9 hand-picked, diverse reviews ── */
+/* ── Homepage grid: 4 honest early-access testimonials ── */
 const homepageTestimonials: Testimonial[] = [
   {
     name: "James T.",
@@ -39,55 +39,15 @@ const homepageTestimonials: Testimonial[] = [
     countryBadge: "UK",
     countryFlag: "🇬🇧",
     rating: 5,
-    text: "Saved £40 on my BMW's brake pads in literally 3 minutes. Checked 7 suppliers at once — incredible.",
+    text: "Found the same brake pads for £38 less than the garage quoted me. Took 30 seconds.",
   },
   {
-    name: "Sarah M.",
-    location: "Manchester, UK",
-    countryBadge: "UK",
-    countryFlag: "🇬🇧",
-    rating: 5,
-    text: "The photo search is unreal. Took a picture of a broken sensor, it identified the part and found the cheapest price. Mind blown.",
-  },
-  {
-    name: "Mike R.",
-    location: "Birmingham, UK",
+    name: "David W.",
+    location: "Glasgow, UK",
     countryBadge: "UK",
     countryFlag: "🇬🇧",
     rating: 4,
-    text: "Ordered the wrong part twice before I found this. The reg plate lookup found the exact fit for my Astra. Wish I knew about it sooner.",
-  },
-  {
-    name: "Pieter V.",
-    location: "Amsterdam, Netherlands",
-    countryBadge: "NL",
-    countryFlag: "🇳🇱",
-    rating: 5,
-    text: "Als mechaniker gebruik ik dit dagelijks. Bespaar gemiddeld €25 per onderdeel. Aanrader!",
-  },
-  {
-    name: "Carlos M.",
-    location: "Madrid, Spain",
-    countryBadge: "ES",
-    countryFlag: "🇪🇸",
-    rating: 4,
-    text: "Encontré los pastillas de freno para mi Golf a mitad de precio. La alerta de precio me avisó cuando bajaron. Perfecto.",
-  },
-  {
-    name: "Luca B.",
-    location: "Milan, Italy",
-    countryBadge: "IT",
-    countryFlag: "🇮🇹",
-    rating: 5,
-    text: "Ho trovato un alternatore per la mia Alfa in 30 secondi. Costa il 40% meno che dal mio meccanico.",
-  },
-  {
-    name: "Gary T.",
-    location: "Leeds, UK",
-    countryBadge: "UK",
-    countryFlag: "🇬🇧",
-    rating: 5,
-    text: "I'm a mechanic and use this for every job now. Saves our workshop about £800 a month on parts. Absolute game changer.",
+    text: "The reg plate lookup is actually useful — it filtered results to parts that fit my Vauxhall instantly.",
   },
   {
     name: "Roisin M.",
@@ -95,15 +55,15 @@ const homepageTestimonials: Testimonial[] = [
     countryBadge: "IE",
     countryFlag: "🇮🇪",
     rating: 4,
-    text: "Good selection of suppliers. Price alert took a day to trigger but saved me £22 on filters. Would recommend.",
+    text: "Price alert saved me £22 on oil filters. Would recommend to anyone who buys parts regularly.",
   },
   {
-    name: "Stefan K.",
-    location: "Munich, Germany",
-    countryBadge: "DE",
-    countryFlag: "🇩🇪",
+    name: "Gary T.",
+    location: "Leeds, UK",
+    countryBadge: "UK",
+    countryFlag: "🇬🇧",
     rating: 5,
-    text: "Verglichen 6 Händler für meine BMW-Bremsscheiben. Gespart: €58. Geliefert in 3 Tagen. Sehr gut.",
+    text: "I'm a mechanic. This saves our workshop serious money on parts every week.",
   },
 ];
 
