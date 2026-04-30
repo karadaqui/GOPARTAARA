@@ -442,10 +442,10 @@ const Navbar = () => {
                 width: "40px",
                 height: "40px",
                 background: "transparent",
-                border: "1px solid #27272a",
+                border: isHome ? "1px solid #e2e8f0" : "1px solid #27272a",
                 borderRadius: "8px",
                 cursor: "pointer",
-                color: "white",
+                color: isHome ? "#0a1628" : "white",
               }}
               aria-label="Open navigation menu"
             >
