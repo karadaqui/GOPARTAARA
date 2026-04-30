@@ -361,21 +361,31 @@ const Navbar = () => {
                       className="transition-colors rounded-md"
                       style={{
                         fontSize: "13px",
-                        fontWeight: 400,
-                        color: "#e4e4e7",
-                        background: "transparent",
-                        border: "1px solid #27272a",
+                        fontWeight: isHome ? 600 : 400,
+                        color: isHome ? "#ffffff" : "#e4e4e7",
+                        background: isHome ? "#0a1628" : "transparent",
+                        border: isHome ? "1px solid #0a1628" : "1px solid #27272a",
                         cursor: "pointer",
-                        padding: "6px 12px",
+                        padding: "6px 14px",
                         whiteSpace: "nowrap",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "#3f3f46";
-                        e.currentTarget.style.color = "#ffffff";
+                        if (isHome) {
+                          e.currentTarget.style.background = "#122040";
+                          e.currentTarget.style.borderColor = "#122040";
+                        } else {
+                          e.currentTarget.style.borderColor = "#3f3f46";
+                          e.currentTarget.style.color = "#ffffff";
+                        }
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "#27272a";
-                        e.currentTarget.style.color = "#e4e4e7";
+                        if (isHome) {
+                          e.currentTarget.style.background = "#0a1628";
+                          e.currentTarget.style.borderColor = "#0a1628";
+                        } else {
+                          e.currentTarget.style.borderColor = "#27272a";
+                          e.currentTarget.style.color = "#e4e4e7";
+                        }
                       }}
                     >
                       Dashboard
@@ -387,23 +397,39 @@ const Navbar = () => {
                       style={{
                         fontSize: "13px",
                         fontWeight: 400,
-                        color: "#a1a1aa",
+                        color: isHome ? "#64748b" : "#a1a1aa",
                         background: "none",
                         border: "none",
                         cursor: "pointer",
                         padding: "6px 8px",
                         whiteSpace: "nowrap",
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = isHome ? "#0a1628" : "#ffffff")}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = isHome ? "#64748b" : "#a1a1aa")}
                     >
                       Sign Out
                     </button>
                   </>
                 ) : (
-                  <Button size="sm" onClick={() => navigate("/auth")} className="rounded-md btn-glow h-8">
+                  <button
+                    onClick={() => navigate("/auth")}
+                    className="rounded-md transition-colors"
+                    style={{
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      color: "#ffffff",
+                      background: "#0a1628",
+                      border: "none",
+                      cursor: "pointer",
+                      padding: "8px 16px",
+                      whiteSpace: "nowrap",
+                      height: "32px",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "#122040")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "#0a1628")}
+                  >
                     Get Started
-                  </Button>
+                  </button>
                 )}
               </div>
             )}
