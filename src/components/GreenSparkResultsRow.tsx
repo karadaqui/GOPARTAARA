@@ -3,13 +3,14 @@ interface GreenSparkResultsRowProps {
   variant?: "row" | "grid";
 }
 
-// TEMP: Awin tracking disabled - restore after 24h
-const buildGspUrl = (path: string) =>
-  `https://www.gsparkplug.com${path}`;
+const wrapAwin = (merchantUrl: string) =>
+  `https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara&p=${encodeURIComponent(merchantUrl)}`;
 
-// TEMP: Awin tracking disabled - restore after 24h
+const buildGspUrl = (path: string) =>
+  wrapAwin(`https://www.gsparkplug.com${path}`);
+
 const buildGspSearchUrl = (q: string) =>
-  `https://www.gsparkplug.com/?q=${encodeURIComponent(q)}`;
+  wrapAwin(`https://www.gsparkplug.com/?q=${encodeURIComponent(q)}`);
 
 interface GspProduct {
   id: string;
