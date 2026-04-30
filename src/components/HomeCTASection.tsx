@@ -41,7 +41,7 @@ const HomeCTASection = () => {
             to="/search"
             className="w-full sm:w-auto justify-center"
             style={{
-              background: "#cc1111",
+              background: "#0a1628",
               color: "white",
               padding: "14px 28px",
               borderRadius: "10px",

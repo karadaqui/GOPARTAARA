@@ -610,7 +610,7 @@ const HeroSection = () => {
                         onClick={() => navigate("/pricing")}
                         className="shrink-0 flex-1 sm:flex-none flex items-center justify-center gap-1 transition-colors"
                         style={{
-                          background: "#cc1111",
+                          background: "#0a1628",
                           color: "#ffffff",
                           borderRadius: "10px",
                           fontWeight: 600,
@@ -630,7 +630,7 @@ const HeroSection = () => {
                         disabled={identifying}
                         className="shrink-0 flex-1 sm:flex-none transition-transform disabled:opacity-60 hover:scale-[1.02]"
                         style={{
-                          background: "#cc1111",
+                          background: "#0a1628",
                           color: "#ffffff",
                           borderRadius: "10px",
                           fontWeight: 600,
@@ -1164,7 +1164,7 @@ const DesktopTabsBar = ({
           left: indicator.left,
           width: indicator.width,
           height: 2,
-          background: "#cc1111",
+          background: "#0a1628",
           borderRadius: 2,
           transition: "left 300ms cubic-bezier(0.4, 0, 0.2, 1), width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
           pointerEvents: "none",
