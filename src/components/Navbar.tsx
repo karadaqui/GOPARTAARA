@@ -299,6 +299,12 @@ const Navbar = () => {
 
           {/* Right: Utilities + auth */}
           <div className="flex items-center gap-2 ml-auto flex-shrink-0">
+            {/* Live "X live" pill — homepage only, desktop only */}
+            {isHome && (
+              <span className="hidden md:inline-flex ds-nav-livepill" aria-label="7 suppliers live">
+                <span className="ds-live-dot" /> 7 live
+              </span>
+            )}
             <div className="hidden md:flex items-center gap-2">
               {!loading && user && <MessageBubble />}
               {!loading && user && <NotificationBell />}
