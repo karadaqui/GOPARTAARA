@@ -92,7 +92,9 @@ const Index = () => {
           },
         ]}
       />
+      <UrgencyBar />
       <Navbar />
+      <div style={{ paddingTop: "32px" }} aria-hidden />
       <HeroSection />
       <SectionDivider />
       <PopularSearchesStrip />
