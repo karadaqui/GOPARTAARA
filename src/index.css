@@ -42,49 +42,50 @@ html, body {
 
 @layer base {
   :root {
-    --background: 220 20% 6%;
-    --foreground: 0 0% 96%;
+    /* LIGHT THEME — page bg #f8fafc, card #ffffff, navy primary #0a1628 */
+    --background: 210 40% 98%;        /* #f8fafc */
+    --foreground: 222 47% 11%;        /* #0f172a */
 
-    --card: 220 18% 10%;
-    --card-foreground: 0 0% 96%;
+    --card: 0 0% 100%;                /* #ffffff */
+    --card-foreground: 222 47% 11%;
 
-    --popover: 220 18% 10%;
-    --popover-foreground: 0 0% 96%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 0 85% 50%;
+    --primary: 217 70% 10%;           /* #0a1628 navy */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 15% 16%;
-    --secondary-foreground: 0 0% 90%;
+    --secondary: 210 40% 96%;         /* #f1f5f9 */
+    --secondary-foreground: 215 25% 27%;  /* #334155 */
 
-    --muted: 220 15% 14%;
-    --muted-foreground: 220 10% 55%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;  /* #64748b */
 
-    --accent: 0 85% 50%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 43 96% 56%;             /* #fbbf24 amber */
+    --accent-foreground: 222 47% 11%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 72% 51%;         /* #dc2626 — used only for "PRICE DROP" badges */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 18%;
-    --input: 220 15% 18%;
-    --ring: 0 85% 50%;
+    --border: 214 32% 91%;            /* #e2e8f0 */
+    --input: 214 32% 91%;
+    --ring: 217 70% 10%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 220 18% 8%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 0 85% 50%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 217 70% 10%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 15% 14%;
-    --sidebar-accent-foreground: 0 0% 90%;
-    --sidebar-border: 220 15% 18%;
-    --sidebar-ring: 0 85% 50%;
+    --sidebar-accent: 210 40% 96%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 217 70% 10%;
 
-    --hero-glow: 0 85% 50%;
-    
+    --hero-glow: 217 70% 10%;
+
     /* Semantic status colors */
-    --success: 142 76% 36%;
+    --success: 142 71% 45%;           /* #16a34a */
     --success-foreground: 0 0% 100%;
   }
 }
@@ -520,23 +521,23 @@ nav a, nav button, button, a {
 
 .logo-go {
   font-size: 1em;
-  font-weight: 800;
+  font-weight: 900;
   color: #cc1111;
   letter-spacing: -0.03em;
 }
 
 .logo-part {
   font-size: 1em;
-  font-weight: 800;
-  color: #ffffff;
+  font-weight: 900;
+  color: #cc1111;
   letter-spacing: -0.03em;
   transition: color 0.2s ease;
 }
 
 .logo-ara {
   font-size: 1em;
-  font-weight: 800;
-  color: white;
+  font-weight: 900;
+  color: #0f172a;
   letter-spacing: -0.03em;
 }
 
@@ -782,3 +783,158 @@ input, textarea, select {
 .search-result-card:hover {
   border-left-color: #cc1111;
 }
+
+/* ============================================
+   LIGHT THEME ADDITIONS — site-wide redesign
+   ============================================ */
+
+/* Live pulsing dot used in navbar "7 live" pill */
+@keyframes live-dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.45; transform: scale(0.85); }
+}
+.live-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #16a34a;
+  animation: live-dot-pulse 1.6s ease-in-out infinite;
+}
+
+/* Primary navy button */
+.btn-navy {
+  background: #0a1628;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  transition: background 150ms ease, transform 150ms ease;
+  cursor: pointer;
+}
+.btn-navy:hover { background: #122040; }
+
+/* Amber CTA button (used on dark sections) */
+.btn-amber {
+  background: #fbbf24;
+  color: #0f172a;
+  border: none;
+  border-radius: 8px;
+  font-weight: 800;
+  transition: background 150ms ease;
+  cursor: pointer;
+}
+.btn-amber:hover { background: #f59e0b; }
+
+/* Trust pill (light) */
+.trust-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  font-size: 11px;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+/* Underline accent on hero word */
+.hero-underline {
+  border-bottom: 3px solid #fbbf24;
+  padding-bottom: 2px;
+}
+
+/* Override animated-gradient-bg to a calm light surface (used by old hero sections) */
+.animated-gradient-bg {
+  background: #ffffff !important;
+  animation: none !important;
+}
+
+/* Override old red focus ring on hero search to navy */
+.hero-search-form:focus-within {
+  border-color: #0a1628 !important;
+  box-shadow: 0 0 0 3px rgba(10,22,40,0.08) !important;
+}
+.hero-search-input::placeholder { color: #94a3b8; }
+
+/* Auth inputs in light theme */
+.auth-input {
+  height: 44px !important;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  color: #0f172a !important;
+  font-size: 14px !important;
+}
+.auth-input::placeholder { color: #94a3b8 !important; }
+.auth-input:focus,
+.auth-input:focus-visible {
+  outline: none !important;
+  border-color: #0a1628 !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(10,22,40,0.08) !important;
+}
+
+/* Article prose — light variant */
+.article-prose            { color: #334155; }
+.article-prose p          { color: #334155; }
+.article-prose h2,
+.article-prose h3,
+.article-prose h4         { color: #0f172a; }
+.article-prose strong,
+.article-prose b          { color: #0f172a; }
+.article-prose a          { color: #0a1628; text-decoration: underline; }
+.article-prose blockquote {
+  border-left: 3px solid #0a1628;
+  background: #f8fafc;
+  color: #475569;
+}
+.article-prose blockquote p { color: #475569; }
+.article-prose ul,
+.article-prose ol         { color: #334155; }
+.article-prose li::marker { color: #94a3b8; }
+.article-prose hr         { border-top: 1px solid #e2e8f0; }
+.article-prose img        { border: 1px solid #e2e8f0; }
+.article-prose code       { background: #f1f5f9; border: 1px solid #e2e8f0; color: #0f172a; }
+.article-prose pre        { background: #0a1628; border: 1px solid #e2e8f0; }
+.article-prose pre code   { color: #f8fafc; }
+.article-prose th         { background: #f8fafc; color: #0f172a; }
+.article-prose td         { color: #334155; }
+.article-prose th, .article-prose td { border: 1px solid #e2e8f0; }
+
+/* Share pill (blog) — light */
+.share-pill {
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+.share-pill:hover {
+  color: #0f172a;
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+/* Card-hover shadow tone in light mode */
+.card-hover:hover {
+  box-shadow: 0 12px 30px -12px rgba(10,22,40,0.18);
+}
+
+/* Subtle navy accent on result card hover */
+.search-result-card:hover {
+  border-left-color: #0a1628;
+}
+
+/* Glow-red shouldn't be red anymore */
+.glow-red { box-shadow: 0 0 28px -10px rgba(10,22,40,0.18); }
+
+/* Fix nav-link underline color */
+.nav-link::after { background: #0a1628; }
+
+/* Pulse badge — navy */
+@keyframes badge-pulse-navy {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(10,22,40,0.35); }
+  50%      { box-shadow: 0 0 0 6px rgba(10,22,40,0); }
+}
+.badge-pulse { animation: badge-pulse-navy 2s ease-in-out infinite; }

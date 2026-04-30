@@ -111,19 +111,18 @@ const Navbar = () => {
     }
   };
 
+  const NAV_MUTED = "#64748b";
+  const NAV_ACTIVE = "#0a1628";
+
   return (
     <>
       <nav
-        className="fixed top-0 left-0 right-0 z-50 transition-colors"
+        className="sticky top-0 left-0 right-0 z-50"
         style={{
-          WebkitTransform: "translateZ(0)",
-          transform: "translateZ(0)",
-          willChange: "transform",
-          backgroundColor: scrolled ? "rgba(8,8,8,0.85)" : "transparent",
-          backdropFilter: scrolled ? "blur(20px)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(20px)" : "none",
-          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "1px solid transparent",
-          transition: "background-color 200ms ease, border-color 200ms ease, backdrop-filter 200ms ease",
+          backgroundColor: "#ffffff",
+          borderBottom: "1px solid #e2e8f0",
+          boxShadow: scrolled ? "0 1px 3px rgba(15,23,42,0.06)" : "none",
+          transition: "box-shadow 200ms ease",
         }}
       >
         <div className="container relative flex items-center gap-4" style={{ height: "56px" }}>
@@ -151,9 +150,8 @@ const Navbar = () => {
           >
             <span className="logo-text text-xl">
               <span className="logo-go">GO</span>
-              <span className="logo-part transition-colors duration-200 group-hover:text-zinc-400">
-                PARTARA
-              </span>
+              <span className="logo-part">PART</span>
+              <span className="logo-ara">ARA</span>
             </span>
           </a>
 
@@ -166,11 +164,10 @@ const Navbar = () => {
                 <button
                   key={l.label}
                   onClick={() => handleNavClick(l.href)}
-                  className="transition-colors"
                   style={{
                     fontSize: "14px",
-                    fontWeight: isActive ? 500 : 400,
-                    color: isActive ? "#ffffff" : "#a1a1aa",
+                    fontWeight: isActive ? 700 : 500,
+                    color: isActive ? NAV_ACTIVE : NAV_MUTED,
                     background: "none",
                     border: "none",
                     cursor: "pointer",
@@ -178,10 +175,10 @@ const Navbar = () => {
                     whiteSpace: "nowrap",
                   }}
                   onMouseEnter={(e) => {
-                    if (!isActive) e.currentTarget.style.color = "#ffffff";
+                    if (!isActive) e.currentTarget.style.color = NAV_ACTIVE;
                   }}
                   onMouseLeave={(e) => {
-                    if (!isActive) e.currentTarget.style.color = "#a1a1aa";
+                    if (!isActive) e.currentTarget.style.color = NAV_MUTED;
                   }}
                 >
                   {l.label}
@@ -192,23 +189,22 @@ const Navbar = () => {
             <div className="relative" onMouseEnter={handleMoreEnter} onMouseLeave={handleMoreLeave}>
               <button
                 type="button"
-                className="transition-colors"
                 style={{
                   display: "flex",
                   alignItems: "center",
                   gap: "4px",
                   fontSize: "14px",
                   lineHeight: 1,
-                  fontWeight: 400,
-                  color: "#a1a1aa",
+                  fontWeight: 500,
+                  color: NAV_MUTED,
                   background: "none",
                   border: "none",
                   cursor: "pointer",
                   padding: "4px 0",
                   whiteSpace: "nowrap",
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                onMouseEnter={(e) => (e.currentTarget.style.color = NAV_ACTIVE)}
+                onMouseLeave={(e) => (e.currentTarget.style.color = NAV_MUTED)}
               >
                 <span style={{ display: "block", lineHeight: "14px" }}>More</span>
                 <ChevronDown
@@ -223,11 +219,9 @@ const Navbar = () => {
                   <div
                     className="rounded-lg p-1 animate-in fade-in-0 zoom-in-95"
                     style={{
-                      backgroundColor: "rgba(10,10,10,0.95)",
-                      backdropFilter: "blur(20px)",
-                      WebkitBackdropFilter: "blur(20px)",
-                      border: "1px solid rgba(255,255,255,0.08)",
-                      boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+                      backgroundColor: "#ffffff",
+                      border: "1px solid #e2e8f0",
+                      boxShadow: "0 8px 24px rgba(15,23,42,0.10)",
                     }}
                   >
                     {(user ? [moreLinks[0], authedMoreLink, ...moreLinks.slice(1)] : moreLinks).map((l) => {
@@ -239,26 +233,26 @@ const Navbar = () => {
                         <button
                           key={l.href}
                           onClick={() => handleNavClick(l.href)}
-                          className="w-full rounded-md px-3 py-2 text-left transition-colors flex items-center gap-2.5"
+                          className="w-full rounded-md px-3 py-2 text-left flex items-center gap-2.5"
                           style={{
                             fontSize: "13px",
-                            fontWeight: isActive ? 500 : 400,
-                            color: isActive ? "#ffffff" : "#a1a1aa",
+                            fontWeight: isActive ? 700 : 500,
+                            color: isActive ? NAV_ACTIVE : NAV_MUTED,
                             background: "none",
                             border: "none",
                             cursor: "pointer",
                             whiteSpace: "nowrap",
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.color = "#ffffff";
-                            e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.05)";
+                            e.currentTarget.style.color = NAV_ACTIVE;
+                            e.currentTarget.style.backgroundColor = "#f8fafc";
                           }}
                           onMouseLeave={(e) => {
-                            if (!isActive) e.currentTarget.style.color = "#a1a1aa";
+                            if (!isActive) e.currentTarget.style.color = NAV_MUTED;
                             e.currentTarget.style.backgroundColor = "transparent";
                           }}
                         >
-                          <Icon size={14} className={l.href === "/ev-charging" ? "" : "opacity-70"} style={l.href === "/ev-charging" ? { color: "#cc1111" } : undefined} />
+                          <Icon size={14} className="opacity-70" />
                           <span className="flex-1">{l.label}</span>
                           {showEliteBadge && (
                             <span
@@ -267,9 +261,9 @@ const Navbar = () => {
                                 fontWeight: 700,
                                 letterSpacing: "0.08em",
                                 textTransform: "uppercase",
-                                color: "#fbbf24",
-                                background: "rgba(251,191,36,0.12)",
-                                border: "1px solid rgba(251,191,36,0.25)",
+                                color: "#92400e",
+                                background: "#fef3c7",
+                                border: "1px solid #fcd34d",
                                 padding: "2px 6px",
                                 borderRadius: 999,
                               }}
@@ -288,6 +282,25 @@ const Navbar = () => {
 
           {/* Right: Utilities + auth */}
           <div className="flex items-center gap-2 ml-auto flex-shrink-0">
+            {/* Live pill */}
+            <span
+              className="hidden sm:inline-flex items-center"
+              style={{
+                gap: 6,
+                background: "#f0fdf4",
+                border: "1px solid #bbf7d0",
+                color: "#16a34a",
+                fontWeight: 700,
+                fontSize: 11,
+                padding: "4px 10px",
+                borderRadius: 999,
+                whiteSpace: "nowrap",
+              }}
+            >
+              <span className="live-dot" />
+              7 live
+            </span>
+
             <div className="hidden md:flex items-center gap-2">
               {!loading && user && <MessageBubble />}
               {!loading && user && <NotificationBell />}
@@ -302,37 +315,37 @@ const Navbar = () => {
                       <>
                         <button
                           onClick={() => navigate("/admin")}
-                          className="transition-colors hidden lg:inline-flex"
+                          className="hidden lg:inline-flex"
                           style={{
-                            fontSize: "13px",
+                            fontSize: 13,
                             fontWeight: 500,
-                            color: "#a1a1aa",
+                            color: NAV_MUTED,
                             background: "none",
                             border: "none",
                             cursor: "pointer",
                             padding: "6px 8px",
                             whiteSpace: "nowrap",
                           }}
-                          onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = NAV_ACTIVE)}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = NAV_MUTED)}
                         >
                           Admin
                         </button>
                         <button
                           onClick={() => navigate("/admin/sales")}
-                          className="transition-colors hidden lg:inline-flex"
+                          className="hidden lg:inline-flex"
                           style={{
-                            fontSize: "13px",
+                            fontSize: 13,
                             fontWeight: 500,
-                            color: "#a1a1aa",
+                            color: NAV_MUTED,
                             background: "none",
                             border: "none",
                             cursor: "pointer",
                             padding: "6px 8px",
                             whiteSpace: "nowrap",
                           }}
-                          onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                          onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = NAV_ACTIVE)}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = NAV_MUTED)}
                         >
                           Sales
                         </button>
@@ -341,24 +354,11 @@ const Navbar = () => {
 
                     <button
                       onClick={() => navigate("/dashboard")}
-                      className="transition-colors rounded-md"
+                      className="btn-navy"
                       style={{
-                        fontSize: "13px",
-                        fontWeight: 400,
-                        color: "#e4e4e7",
-                        background: "transparent",
-                        border: "1px solid #27272a",
-                        cursor: "pointer",
-                        padding: "6px 12px",
+                        fontSize: 13,
+                        padding: "7px 14px",
                         whiteSpace: "nowrap",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "#3f3f46";
-                        e.currentTarget.style.color = "#ffffff";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "#27272a";
-                        e.currentTarget.style.color = "#e4e4e7";
                       }}
                     >
                       Dashboard
@@ -366,27 +366,30 @@ const Navbar = () => {
 
                     <button
                       onClick={signOut}
-                      className="transition-colors"
                       style={{
-                        fontSize: "13px",
-                        fontWeight: 400,
-                        color: "#a1a1aa",
+                        fontSize: 13,
+                        fontWeight: 500,
+                        color: NAV_MUTED,
                         background: "none",
                         border: "none",
                         cursor: "pointer",
                         padding: "6px 8px",
                         whiteSpace: "nowrap",
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = NAV_ACTIVE)}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = NAV_MUTED)}
                     >
                       Sign Out
                     </button>
                   </>
                 ) : (
-                  <Button size="sm" onClick={() => navigate("/auth")} className="rounded-md btn-glow h-8">
+                  <button
+                    onClick={() => navigate("/auth")}
+                    className="btn-navy"
+                    style={{ fontSize: 13, padding: "7px 14px", whiteSpace: "nowrap" }}
+                  >
                     Get Started
-                  </Button>
+                  </button>
                 )}
               </div>
             )}
@@ -399,10 +402,10 @@ const Navbar = () => {
                 width: "40px",
                 height: "40px",
                 background: "transparent",
-                border: "1px solid #27272a",
+                border: "1px solid #e2e8f0",
                 borderRadius: "8px",
                 cursor: "pointer",
-                color: "white",
+                color: "#0f172a",
               }}
               aria-label="Open navigation menu"
             >
@@ -426,7 +429,7 @@ const Navbar = () => {
             right: 0,
             bottom: 0,
             zIndex: 9998,
-            backgroundColor: "#080808",
+            backgroundColor: "#ffffff",
             padding: "24px",
             display: "flex",
             flexDirection: "column",
@@ -458,7 +461,8 @@ const Navbar = () => {
             >
               <span className="logo-text text-xl">
                 <span className="logo-go">GO</span>
-                <span className="logo-part">PARTARA</span>
+                <span className="logo-part">PART</span>
+                <span className="logo-ara">ARA</span>
               </span>
             </a>
             <button
@@ -469,9 +473,9 @@ const Navbar = () => {
                 width: "40px",
                 height: "40px",
                 background: "transparent",
-                border: "1px solid #27272a",
+                border: "1px solid #e2e8f0",
                 borderRadius: "8px",
-                color: "white",
+                color: "#0f172a",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -504,8 +508,8 @@ const Navbar = () => {
                   padding: "18px 0",
                   fontSize: "22px",
                   fontWeight: 700,
-                  color: "white",
-                  borderBottom: "1px solid #111111",
+                  color: "#0f172a",
+                  borderBottom: "1px solid #f1f5f9",
                   textDecoration: "none",
                   letterSpacing: "-0.5px",
                   WebkitTapHighlightColor: "transparent",
@@ -523,15 +527,11 @@ const Navbar = () => {
                 <a
                   href="/dashboard"
                   onClick={(e) => handleMobileLinkClick(e, "/dashboard")}
+                  className="btn-navy"
                   style={{
                     display: "block",
-                    background: "transparent",
-                    border: "1px solid #27272a",
-                    color: "white",
                     padding: "14px",
-                    borderRadius: "10px",
                     fontSize: "15px",
-                    fontWeight: 600,
                     width: "100%",
                     textAlign: "center",
                     textDecoration: "none",
@@ -548,9 +548,9 @@ const Navbar = () => {
                   }}
                   style={{
                     display: "block",
-                    background: "#cc1111",
-                    border: "none",
-                    color: "white",
+                    background: "transparent",
+                    border: "1px solid #e2e8f0",
+                    color: "#475569",
                     padding: "14px",
                     borderRadius: "10px",
                     fontSize: "15px",
@@ -571,8 +571,8 @@ const Navbar = () => {
                   style={{
                     display: "block",
                     background: "transparent",
-                    border: "1px solid #27272a",
-                    color: "white",
+                    border: "1px solid #e2e8f0",
+                    color: "#0f172a",
                     padding: "14px",
                     borderRadius: "10px",
                     fontSize: "15px",
@@ -588,15 +588,11 @@ const Navbar = () => {
                 <a
                   href="/auth"
                   onClick={(e) => handleMobileLinkClick(e, "/auth")}
+                  className="btn-navy"
                   style={{
                     display: "block",
-                    background: "#cc1111",
-                    border: "none",
-                    color: "white",
                     padding: "14px",
-                    borderRadius: "10px",
                     fontSize: "15px",
-                    fontWeight: 600,
                     width: "100%",
                     marginTop: "12px",
                     textAlign: "center",

@@ -15,6 +15,7 @@ import PWAInstallPrompt from "./components/PWAInstallPrompt.tsx";
 import DevToolsGuard from "./components/DevToolsGuard.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
 import TopProgressBar from "./components/TopProgressBar.tsx";
+import UrgencyBar from "./components/UrgencyBar.tsx";
 
 
 import MotTaxReminderRunner from "./components/garage/MotTaxReminderRunner.tsx";
@@ -90,6 +91,7 @@ const App = () => {
             <Suspense fallback={<PageLoader />}>
               
               <div className="pb-20 md:pb-0 overflow-x-hidden w-full max-w-[100vw]">
+              <UrgencyBar />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/auth" element={<Auth />} />
