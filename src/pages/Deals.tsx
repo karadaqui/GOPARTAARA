@@ -169,7 +169,7 @@ const Deals = () => {
             rel="noopener noreferrer"
             className="group block rounded-2xl overflow-hidden border transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-red-950/40"
             style={{
-              background: "linear-gradient(135deg, #0a1628, #1e3a8a)",
+              background: "linear-gradient(135deg, #0d0000, #1a0000)",
               borderColor: "rgba(204,17,17,0.3)",
             }}
           >

@@ -59,7 +59,7 @@ export default function EvCharging() {
   }, [products, search, connector, length]);
 
   return (
-    <div className="min-h-screen bg-[#0a1628] text-white">
+    <div className="min-h-screen bg-[#080808] text-white">
       <SEOHead
         title="EV Charging Cables & Accessories | GOPARTARA"
         description="Find the right EV charging cable for your electric car. Type 1, Type 2, CCS, CHAdeMO and 3-pin cables for all UK and EU EV models."

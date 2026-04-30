@@ -4,7 +4,10 @@ const HomeCTASection = () => {
   return (
     <section
       style={{
-        background: "linear-gradient(135deg, #0a1628 0%, #1d4ed8 100%)",
+        background:
+          "linear-gradient(135deg, #0d0000 0%, #1a0000 50%, #0d0000 100%)",
+        borderTop: "1px solid rgba(204,17,17,0.2)",
+        borderBottom: "1px solid rgba(204,17,17,0.2)",
         padding: "64px 24px",
         textAlign: "center",
       }}
@@ -12,16 +15,22 @@ const HomeCTASection = () => {
       <div className="max-w-3xl mx-auto">
         <h2
           style={{
-            fontSize: "clamp(28px, 6vw, 48px)",
+            fontSize: "clamp(28px, 7vw, 56px)",
             fontWeight: 800,
             letterSpacing: "-0.03em",
-            color: "#ffffff",
-            lineHeight: 1.1,
+            color: "white",
+            lineHeight: 1.05,
           }}
         >
           Search smarter. Pay less.
         </h2>
-        <p style={{ fontSize: "17px", color: "#bfdbfe", marginTop: "12px" }}>
+        <p
+          style={{
+            fontSize: "18px",
+            color: "#71717a",
+            marginTop: "12px",
+          }}
+        >
           Start searching for free — no account needed.
         </p>
         <div
@@ -30,12 +39,21 @@ const HomeCTASection = () => {
         >
           <Link
             to="/search"
-            className="btn-amber w-full sm:w-auto"
+            className="w-full sm:w-auto justify-center"
             style={{
+              background: "#cc1111",
+              color: "white",
               padding: "14px 28px",
+              borderRadius: "10px",
               fontSize: "16px",
+              fontWeight: 600,
+              display: "inline-flex",
+              alignItems: "center",
               maxWidth: "300px",
+              transition: "background-color 150ms ease",
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#b30f0f")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "#cc1111")}
           >
             Search Parts Free →
           </Link>
@@ -44,17 +62,16 @@ const HomeCTASection = () => {
             className="home-cta-secondary w-full sm:w-auto justify-center"
             style={{
               background: "transparent",
-              border: "1px solid rgba(255,255,255,0.4)",
-              color: "#ffffff",
+              border: "1px solid #27272a",
+              color: "#a1a1aa",
               padding: "14px 28px",
-              borderRadius: "8px",
+              borderRadius: "10px",
               fontSize: "16px",
               fontWeight: 600,
               display: "inline-flex",
               alignItems: "center",
               maxWidth: "300px",
-              textDecoration: "none",
-              transition: "color 150ms ease, border-color 150ms ease, background-color 150ms ease",
+              transition: "color 150ms ease, border-color 150ms ease",
             }}
           >
             View Pricing

@@ -147,7 +147,7 @@ const BlogPost = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <Loader2 className="animate-spin text-[#cc1111]" size={32} />
       </div>
     );
@@ -155,7 +155,7 @@ const BlogPost = () => {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-[#0a0a0a]">
         <Navbar />
         <div className="container max-w-3xl py-20 px-4 text-center">
           <h1 className="text-3xl font-bold mb-4 text-white">Post Not Found</h1>
@@ -174,7 +174,7 @@ const BlogPost = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <SEOHead
         title={`${post.title} | GOPARTARA Blog`}
         description={post.meta_description || post.preview}

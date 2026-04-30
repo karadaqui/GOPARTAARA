@@ -30,7 +30,7 @@ const HelpCategoryPage = ({
   articles,
 }: HelpCategoryPageProps) => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <SEOHead
         title={`${title} — Help Center | GOPARTARA`}
         description={description}
