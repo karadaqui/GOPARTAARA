@@ -316,59 +316,52 @@ const HeroSection = () => {
   return (
     <section
       id="home"
-      className="relative flex items-center justify-center pt-16 pb-8 overflow-x-visible overflow-y-hidden animated-gradient-bg"
+      className="ds-hero-light relative flex items-center justify-center pt-16 pb-8 overflow-x-visible overflow-y-hidden"
       style={{
-        backgroundImage:
-          "radial-gradient(ellipse 80% 40% at 50% -10%, rgba(204,17,17,0.12) 0%, transparent 70%), radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
-        backgroundSize: "auto, 24px 24px",
-        backgroundRepeat: "no-repeat, repeat",
+        background: "#ffffff",
       }}
     >
-      {/* Background glow orbs */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-primary/6 blur-[180px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] rounded-full bg-primary/4 blur-[140px] pointer-events-none" />
-
       <div className="container relative z-10 text-center px-4 py-10 sm:py-14">
         {/* Badge */}
         <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            1,000,000+ parts searchable · Free to compare
+          <div className="ds-hero-badge mb-8">
+            🏆 #1 Car Parts Comparison
           </div>
         </div>
 
         {/* Heading */}
         <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-          <h1
-            className="font-display mb-5"
-            style={{
-              fontSize: "clamp(44px, 5.5vw, 72px)",
-              fontWeight: 800,
-              letterSpacing: "-0.04em",
-              lineHeight: 1.0,
-              color: "#ffffff",
-            }}
-          >
-            Find Any Car Part
+          <h1 className="ds-hero-h1 mb-3">
+            Stop <span className="ds-hero-h1-underline">Overpaying</span> for Car Parts.
             <br />
-            <span style={{ color: "#cc1111", letterSpacing: "-0.04em" }}>Instantly.</span>
+            <span style={{ color: "#0a1628" }}>Instantly.</span>
           </h1>
         </div>
 
         {/* Subtitle */}
         <div className={`transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
-          <p
-            style={{
-              fontSize: "17px",
-              color: "#71717a",
-              fontWeight: 400,
-              maxWidth: "460px",
-              margin: "0 auto",
-              lineHeight: 1.65,
-            }}
-          >
-            The smart search engine that simultaneously checks eBay, mytyres.co.uk, Tyres UK and 4 more global suppliers.
+          <p className="ds-hero-sub">
+            We instantly compare 1,000,000+ parts across 7 trusted global suppliers simultaneously — free, no account needed.
           </p>
+        </div>
+
+        {/* Trust pills */}
+        <div className={`transition-[colors,transform] ease-out delay-200 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}>
+          <div className="ds-trust-pills">
+            <span className="ds-trust-pill">🔒 Secure &amp; free</span>
+            <span className="ds-trust-pill">⚡ Results in 3 sec</span>
+            <span className="ds-trust-pill">✅ No hidden fees</span>
+            <span className="ds-trust-pill">🌍 Global suppliers</span>
+            <span className="ds-trust-pill">🔄 Prices live</span>
+          </div>
+        </div>
+
+        {/* Live indicator */}
+        <div className="flex justify-center">
+          <span className="ds-hero-live">
+            <span className="ds-live-dot" />
+            Prices verified just now
+          </span>
         </div>
 
         {/* Search section */}
