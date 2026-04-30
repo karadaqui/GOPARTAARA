@@ -51,19 +51,18 @@ const Footer = () => {
   };
 
   return (
-    <footer className="border-t border-border py-12">
+    <footer className="ds-footer-dark border-t py-12">
       <div className="container px-4 md:px-6 lg:px-8">
         {/* Logo + description */}
         <div className="mb-8 md:mb-12 md:grid md:grid-cols-5 md:gap-8">
           <div className="md:col-span-1 text-center md:text-left mb-8 md:mb-0">
             <button onClick={() => handleLink("/")} className="inline-block min-h-[44px]">
-              <span className="logo-text text-xl">
-                <span className="logo-go">GO</span>
-                <span className="logo-part">PART</span>
-                <span className="logo-ara">ARA</span>
+              <span className="logo-text" style={{ fontSize: "18px", fontWeight: 900 }}>
+                <span className="ds-footer-logo-amber">GOPART</span>
+                <span className="ds-footer-logo-white">ARA</span>
               </span>
             </button>
-            <p className="text-muted-foreground text-sm mt-3 leading-relaxed max-w-sm mx-auto md:mx-0">
+            <p className="ds-footer-tagline text-sm mt-3 leading-relaxed max-w-sm mx-auto md:mx-0">
               The smarter way to find car parts. Search 1,000,000+ parts from trusted global suppliers.
             </p>
           </div>
@@ -72,13 +71,13 @@ const Footer = () => {
           <div className="hidden md:contents">
             {SECTIONS.map((section) => (
               <div key={section.title}>
-                <h4 className="font-semibold text-sm mb-4">{section.title}</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
+                <h4 className="font-semibold text-sm mb-4" style={{ color: "#f0f6fc" }}>{section.title}</h4>
+                <ul className="space-y-2 text-sm">
                   {section.links.map((link) => (
                     <li key={link.label}>
                       <button
                         onClick={() => handleLink(link.href)}
-                        className="hover:text-foreground transition-colors"
+                        className="ds-footer-link transition-colors"
                       >
                         {link.label}
                       </button>
@@ -94,13 +93,13 @@ const Footer = () => {
         <div className="md:hidden grid grid-cols-2 gap-x-6 gap-y-8 mb-8">
           {SECTIONS.map((section) => (
             <div key={section.title}>
-              <h4 className="font-semibold text-sm mb-3">{section.title}</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
+              <h4 className="font-semibold text-sm mb-3" style={{ color: "#f0f6fc" }}>{section.title}</h4>
+              <ul className="space-y-2 text-sm">
                 {section.links.map((link) => (
                   <li key={link.label}>
                     <button
                       onClick={() => handleLink(link.href)}
-                      className="text-left hover:text-foreground transition-colors"
+                      className="ds-footer-link text-left transition-colors"
                     >
                       {link.label}
                     </button>

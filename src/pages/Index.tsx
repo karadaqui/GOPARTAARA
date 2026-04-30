@@ -25,6 +25,7 @@ import BackToTop from "@/components/BackToTop";
 import WelcomeModal from "@/components/WelcomeModal";
 import LocationBanner from "@/components/LocationBanner";
 import ExitIntentBanner from "@/components/ExitIntentBanner";
+import UrgencyBar from "@/components/UrgencyBar";
 
 const Index = () => {
   const location = useLocation();
@@ -91,7 +92,9 @@ const Index = () => {
           },
         ]}
       />
+      <UrgencyBar />
       <Navbar />
+      <div style={{ paddingTop: "32px" }} aria-hidden />
       <HeroSection />
       <SectionDivider />
       <PopularSearchesStrip />
