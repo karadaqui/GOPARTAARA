@@ -551,7 +551,6 @@ const Marketplace = () => {
               </Button>
             </div>
           </>
-        )}
       </div>
 
       <CompareBar items={compareParts} onOpen={() => setShowCompare(true)} onClear={() => setCompareParts([])} />
