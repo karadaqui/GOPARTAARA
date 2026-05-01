@@ -113,7 +113,7 @@ const App = () => {
                 <Route path="/marketplace/:id" element={<ListingDetail />} />
                 <Route path="/seller/:id" element={<SellerProfile />} />
                 <Route path="/pricing" element={<Pricing />} />
-                <Route path="/garage" element={<ProtectedRoute><Garage /></ProtectedRoute>} />
+                <Route path="/garage" element={<Garage />} />
                 <Route path="/refund" element={<Refund />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="/subscription-policy" element={<SubscriptionPolicy />} />
