@@ -290,6 +290,11 @@ const Deals = () => {
                 aria-label={`${deal.title} — Amazon UK`}
                 className="group relative flex flex-col p-4 bg-card border border-border hover:border-red-500/30 rounded-2xl overflow-hidden transition-[colors,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)]"
               >
+                <div className="absolute top-2 left-2">
+                  <span className="inline-flex items-center gap-1 text-[9px] md:text-[10px] bg-red-600/15 border border-red-500/40 text-red-300 rounded-full px-2 py-0.5 font-bold whitespace-nowrap">
+                    🔥 Ends in: {dealCountdown}
+                  </span>
+                </div>
                 <div className="absolute top-2 right-2 max-w-[55%]">
                   <span className="block truncate text-[9px] md:text-[10px] bg-primary/15 border border-primary/30 text-primary group-hover:bg-gradient-to-r group-hover:from-red-600/30 group-hover:to-red-500/20 group-hover:border-red-500/60 group-hover:text-red-300 rounded-full px-2 py-0.5 font-bold transition-colors">
                     {deal.badge}
