@@ -101,7 +101,7 @@ serve(async (req) => {
       brand: r.brand || '',
       shipping: 'Free delivery',
       advertiserId: r.feed_id,
-      image: r.image_url || '',
+      image_url: r.image_url || r.image || '',
     }))
 
     const suppliers = Array.from(new Set(products.map((p) => p.supplier)))
