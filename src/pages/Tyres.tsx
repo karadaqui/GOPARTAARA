@@ -83,6 +83,7 @@ type TyreProduct = {
   title: string;
   price: string;
   image: string;
+  image_url?: string;
   url: string;
   brand: string;
   shipping: string;
@@ -570,6 +571,7 @@ const Tyres = () => {
             {/* Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 px-4">
             {pagedProducts.map((product, i) => {
+                const imageUrl = product.image_url || product.image || '';
                 const currency = getCurrency(product.advertiserId || product.supplierMeta?.id || '4118');
                 const displayPrice = product.price.replace(/[£€]/, currency.symbol);
                 const searchedSize = `${selectedWidth}/${selectedProfile} R${selectedRim.replace('R', '')}`;
@@ -588,9 +590,9 @@ const Tyres = () => {
                       className="block"
                     >
                       <div className="aspect-square bg-zinc-800/50 relative overflow-hidden flex items-center justify-center p-4">
-                        {product.image ? (
+                        {imageUrl ? (
                           <img
-                            src={product.image}
+                            src={imageUrl}
                             alt={product.title}
                             loading="lazy"
                             decoding="async"
