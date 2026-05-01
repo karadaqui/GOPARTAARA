@@ -66,10 +66,23 @@ export default function EvCharging() {
       />
       <Navbar />
 
-      <div className="bg-amber-50 border border-amber-200 rounded-xl max-w-md mx-auto mt-24 p-12 text-center">
+      <div
+        className="w-full flex flex-col items-center justify-center text-center px-4"
+        style={{ backgroundColor: "#111111", minHeight: "60vh" }}
+      >
         <div className="text-6xl mb-4">🔧</div>
-        <h1 className="text-xl font-bold text-amber-900">EV Charging — Under Maintenance</h1>
-        <p className="text-sm text-amber-700 mt-2">We're working on this section. Check back soon.</p>
+        <h1 className="text-white mb-2" style={{ fontSize: "24px", fontWeight: 800 }}>
+          EV Charging — Under Maintenance
+        </h1>
+        <p className="mb-6" style={{ color: "#9ca3af", fontSize: "14px" }}>
+          We're working on improving this section. Check back soon.
+        </p>
+        <span
+          className="bg-red-600 text-white rounded-full px-4 py-1"
+          style={{ fontSize: "12px", fontWeight: 700 }}
+        >
+          🔧 Under Maintenance
+        </span>
       </div>
 
       {false && (
