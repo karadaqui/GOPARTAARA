@@ -332,13 +332,6 @@ const Marketplace = () => {
       />
       <Navbar />
 
-      <AuthGateModal
-        open={authGateOpen}
-        onOpenChange={(open) => { setAuthGateOpen(open); if (!open && !user) navigate("/"); }}
-        title="Sign in to browse the marketplace"
-        description="Create a free account to browse parts from verified UK sellers."
-      />
-
       <div className="container max-w-7xl pt-24 pb-20 px-4 flex-1">
         <div className="text-center mb-6">
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">
@@ -385,15 +378,8 @@ const Marketplace = () => {
           </div>
         </div>
 
-        {!user ? (
-          <div className="glass rounded-2xl p-12 text-center">
-            <Store size={48} className="text-muted-foreground mx-auto mb-4" />
-            <h3 className="font-display text-lg font-bold mb-2">Sign in to browse the marketplace</h3>
-            <p className="text-muted-foreground mb-4">Create a free account to view listings from verified sellers.</p>
-            <Button onClick={() => navigate("/auth")} className="rounded-xl h-11">Get Started</Button>
-          </div>
-        ) : (
-          <>
+        <>
+
             {/* Buyer's accepted offers — Pay Now */}
             {buyerOffers.length > 0 && (
               <div className="mb-8 space-y-3">
@@ -555,8 +541,7 @@ const Marketplace = () => {
                     </div>
                   </div>
                 )}
-              </>
-            )}
+          </>
 
             <div className="glass rounded-2xl p-8 mt-8 text-center">
               <h2 className="font-display text-xl font-bold mb-2">Sell Your Parts on GOPARTARA</h2>
