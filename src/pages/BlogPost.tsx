@@ -255,7 +255,7 @@ const BlogPost = () => {
               <p className="mt-5 text-[13px] text-[#52525b]">
                 {formattedDate}
                 {post.read_time && <> · {post.read_time}</>}
-                {" · By "}{(!post.author || /partara/i.test(post.author)) ? "GOPARTARA Team" : post.author}
+                {" · By Fatma Karadayı"}
               </p>
               <div className="mt-8 mb-10 border-b border-[#1f1f1f]" />
             </header>
