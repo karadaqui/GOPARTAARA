@@ -67,6 +67,12 @@ const Business = () => {
   const [partsPerMonth, setPartsPerMonth] = useState(15);
   const estimatedSavings = partsPerMonth * 15;
 
+  const [vehiclesPerMonth, setVehiclesPerMonth] = useState(10);
+  const [spendPerVehicle, setSpendPerVehicle] = useState(150);
+  const monthlyROI = Math.max(0, vehiclesPerMonth) * Math.max(0, spendPerVehicle) * 0.15;
+  const annualROI = monthlyROI * 12;
+  const percentBack = 15;
+
   return (
     <div className="min-h-screen bg-background">
       <SEOHead
