@@ -95,7 +95,7 @@ const Deals = () => {
     return () => clearInterval(id);
   }, []);
 
-  const { lastUpdatedLabel, countdownLabel } = useMemo(() => {
+  const { lastUpdatedLabel, countdownLabel, dealCountdown } = useMemo(() => {
     // "Updated daily" → assume midnight UK refresh
     const midnight = new Date(now);
     midnight.setHours(24, 0, 0, 0);
@@ -113,6 +113,7 @@ const Deals = () => {
         minute: "2-digit",
       }),
       countdownLabel: `${pad(h)}h ${pad(m)}m ${pad(s)}s`,
+      dealCountdown: `${h}h ${m}m`,
     };
   }, [now]);
 
