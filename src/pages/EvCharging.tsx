@@ -170,6 +170,7 @@ export default function EvCharging() {
           GOPARTARA may earn a commission on purchases made through links on this page.
         </p>
       </main>
+      )}
 
       <Footer />
     </div>
