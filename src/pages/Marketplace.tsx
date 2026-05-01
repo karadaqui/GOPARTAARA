@@ -15,7 +15,7 @@ import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsCo
 import { usePersistentCompare } from "@/hooks/usePersistentCompare";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import AuthGateModal from "@/components/AuthGateModal";
+
 import ScrollReveal from "@/components/ScrollReveal";
 import { toast } from "sonner";
 
@@ -96,7 +96,7 @@ const Marketplace = () => {
   const [search, setSearch] = useState(searchParams.get("q") || "");
   const [category, setCategory] = useState("All");
   const [vehicleFilter, setVehicleFilter] = useState("");
-  const [authGateOpen, setAuthGateOpen] = useState(false);
+  
   const [compareParts, setCompareParts] = usePersistentCompare();
   const [showCompare, setShowCompare] = useState(false);
   const [buyerOffers, setBuyerOffers] = useState<BuyerOffer[]>([]);
@@ -120,9 +120,12 @@ const Marketplace = () => {
   }, []);
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!user) { setAuthGateOpen(true); setLoading(false); return; }
     loadListings();
+  }, []);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) return;
     loadBuyerOffers();
     (async () => {
       try {
@@ -329,13 +332,6 @@ const Marketplace = () => {
       />
       <Navbar />
 
-      <AuthGateModal
-        open={authGateOpen}
-        onOpenChange={(open) => { setAuthGateOpen(open); if (!open && !user) navigate("/"); }}
-        title="Sign in to browse the marketplace"
-        description="Create a free account to browse parts from verified UK sellers."
-      />
-
       <div className="container max-w-7xl pt-24 pb-20 px-4 flex-1">
         <div className="text-center mb-6">
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">
@@ -382,15 +378,8 @@ const Marketplace = () => {
           </div>
         </div>
 
-        {!user ? (
-          <div className="glass rounded-2xl p-12 text-center">
-            <Store size={48} className="text-muted-foreground mx-auto mb-4" />
-            <h3 className="font-display text-lg font-bold mb-2">Sign in to browse the marketplace</h3>
-            <p className="text-muted-foreground mb-4">Create a free account to view listings from verified sellers.</p>
-            <Button onClick={() => navigate("/auth")} className="rounded-xl h-11">Get Started</Button>
-          </div>
-        ) : (
-          <>
+        <>
+
             {/* Buyer's accepted offers — Pay Now */}
             {buyerOffers.length > 0 && (
               <div className="mb-8 space-y-3">
@@ -563,7 +552,6 @@ const Marketplace = () => {
               </Button>
             </div>
           </>
-        )}
       </div>
 
       <CompareBar items={compareParts} onOpen={() => setShowCompare(true)} onClear={() => setCompareParts([])} />
