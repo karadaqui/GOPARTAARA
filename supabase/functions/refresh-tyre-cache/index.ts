@@ -110,8 +110,8 @@ serve(async (req) => {
             ui = hdrs.findIndex(h => norm(h).includes('deeplink'))
             bi = hdrs.findIndex(h => norm(h).includes('brandname') || norm(h) === 'brand')
             descIdx = hdrs.findIndex(h => h.includes('desc'))
-            // Image URL priority: aw_image_url > merchant_image_url > image_url > aw_thumb_url > merchant_thumb
-            const imgCandidates = ['awimageurl', 'merchantimageurl', 'imageurl', 'awthumburl', 'merchantthumb']
+            // Image URL priority: aw_image_url > merchant_image_url > image_url > image > aw_thumb_url > merchant_thumb
+            const imgCandidates = ['awimageurl', 'merchantimageurl', 'imageurl', 'image', 'awthumburl', 'merchantthumb']
             imgIdx = -1
             for (const cand of imgCandidates) {
               const found = hdrs.findIndex(h => norm(h) === cand)
