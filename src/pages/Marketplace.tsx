@@ -120,9 +120,12 @@ const Marketplace = () => {
   }, []);
 
   useEffect(() => {
-    if (authLoading) return;
-    if (!user) { setAuthGateOpen(true); setLoading(false); return; }
     loadListings();
+  }, []);
+
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) return;
     loadBuyerOffers();
     (async () => {
       try {
