@@ -1066,14 +1066,131 @@ const SearchResults = () => {
                 {user && <SearchCounter limitData={searchLimit} />}
               </div>
               {!activeQuery && (
-                <RecentSearches
-                  onSelect={(q) => {
-                    setQuery(q);
-                    setActiveQuery(q);
-                    setCurrentPage(1);
-                    setSearchParams({ q });
-                  }}
-                />
+                <>
+                  <RecentSearches
+                    onSelect={(q) => {
+                      setQuery(q);
+                      setActiveQuery(q);
+                      setCurrentPage(1);
+                      setSearchParams({ q });
+                    }}
+                  />
+
+                  {/* Popular Searches */}
+                  <div className="mt-6">
+                    <p
+                      className="mb-3"
+                      style={{
+                        fontSize: 11,
+                        color: "#52525b",
+                        fontWeight: 600,
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      Popular Searches
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "BMW brake pads",
+                        "Ford Focus clutch",
+                        "VW Golf timing belt",
+                        "NGK spark plugs",
+                        "Vauxhall Astra oil filter",
+                        "Toyota Yaris air filter",
+                      ].map((term) => (
+                        <button
+                          key={term}
+                          type="button"
+                          onClick={() => {
+                            setQuery(term);
+                            setActiveQuery(term);
+                            setCurrentPage(1);
+                            setSearchParams({ q: term });
+                          }}
+                          className="popular-pill transition-colors"
+                          style={{
+                            background: "rgba(255,255,255,0.04)",
+                            border: "1px solid #1f1f1f",
+                            color: "#a1a1aa",
+                            fontSize: 13,
+                            fontWeight: 500,
+                            padding: "8px 14px",
+                            borderRadius: 999,
+                            cursor: "pointer",
+                          }}
+                        >
+                          {term}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Browse by Category */}
+                  <div className="mt-8">
+                    <p
+                      className="mb-3"
+                      style={{
+                        fontSize: 11,
+                        color: "#52525b",
+                        fontWeight: 600,
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      Browse by Category
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                      {[
+                        { icon: "🛑", label: "Brakes" },
+                        { icon: "⚙️", label: "Engine Parts" },
+                        { icon: "🔧", label: "Filters" },
+                        { icon: "⚡", label: "Ignition" },
+                        { icon: "🔩", label: "Suspension" },
+                        { icon: "💡", label: "Lighting" },
+                      ].map((cat) => (
+                        <button
+                          key={cat.label}
+                          type="button"
+                          onClick={() => {
+                            setQuery(cat.label);
+                            setActiveQuery(cat.label);
+                            setCurrentPage(1);
+                            setSearchParams({ q: cat.label });
+                          }}
+                          className="category-card flex items-center gap-3 transition-colors"
+                          style={{
+                            background: "#0d0d0d",
+                            border: "1px solid #1f1f1f",
+                            borderRadius: 10,
+                            padding: "14px 16px",
+                            color: "#e4e4e7",
+                            fontSize: 14,
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            textAlign: "left",
+                          }}
+                        >
+                          <span style={{ fontSize: 20, lineHeight: 1 }}>{cat.icon}</span>
+                          <span>{cat.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <style>{`
+                    .popular-pill:hover {
+                      background: rgba(255,255,255,0.08) !important;
+                      color: #ffffff !important;
+                      border-color: #333333 !important;
+                    }
+                    .category-card:hover {
+                      background: #111111 !important;
+                      border-color: #333333 !important;
+                      color: #ffffff !important;
+                    }
+                  `}</style>
+                </>
               )}
             </div>
           ) : searchMode === "reg" ? (
