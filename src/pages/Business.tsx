@@ -183,6 +183,110 @@ const Business = () => {
           </div>
         </section>
 
+        {/* ROI Calculator */}
+        <section className="container max-w-3xl px-4 mb-20">
+          <div
+            className="rounded-2xl"
+            style={{
+              background: "#111111",
+              border: "1px solid #1f1f1f",
+              padding: 32,
+            }}
+          >
+            <h2 className="font-display text-2xl md:text-3xl font-black text-white text-center mb-2 tracking-tight">
+              Calculate Your Savings
+            </h2>
+            <p className="text-zinc-500 text-sm text-center mb-8">
+              See your potential ROI based on your monthly workload.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              <div>
+                <label
+                  htmlFor="vehiclesPerMonth"
+                  className="block text-sm font-semibold text-zinc-300 mb-2"
+                >
+                  Number of vehicles serviced per month
+                </label>
+                <input
+                  id="vehiclesPerMonth"
+                  type="number"
+                  min={0}
+                  value={vehiclesPerMonth}
+                  onChange={(e) =>
+                    setVehiclesPerMonth(Math.max(0, parseInt(e.target.value || "0", 10)))
+                  }
+                  className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white font-semibold focus:outline-none focus:border-[#cc1111] transition-colors"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="spendPerVehicle"
+                  className="block text-sm font-semibold text-zinc-300 mb-2"
+                >
+                  Average parts spend per vehicle (£)
+                </label>
+                <input
+                  id="spendPerVehicle"
+                  type="number"
+                  min={0}
+                  value={spendPerVehicle}
+                  onChange={(e) =>
+                    setSpendPerVehicle(Math.max(0, parseInt(e.target.value || "0", 10)))
+                  }
+                  className="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-zinc-800 text-white font-semibold focus:outline-none focus:border-[#cc1111] transition-colors"
+                />
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                /* results update live as user types — button reaffirms calculation */
+              }}
+              className="w-full bg-[#cc1111] hover:bg-red-500 text-white font-bold py-3 rounded-xl transition-colors text-sm mb-8"
+            >
+              Calculate
+            </button>
+
+            <div
+              className="rounded-xl p-6 text-center"
+              style={{ background: "rgba(204,17,17,0.08)", border: "1px solid rgba(204,17,17,0.3)" }}
+            >
+              <p className="text-zinc-400 text-sm mb-1">Estimated monthly savings</p>
+              <p
+                className="font-display tracking-tight"
+                style={{ fontSize: 44, fontWeight: 900, color: "#ffffff", lineHeight: 1 }}
+              >
+                £{Math.round(monthlyROI).toLocaleString("en-GB")}
+              </p>
+
+              <div className="my-5 h-px bg-zinc-800" />
+
+              <p className="text-zinc-400 text-sm mb-1">Estimated annual savings</p>
+              <p
+                className="font-display tracking-tight"
+                style={{ fontSize: 32, fontWeight: 900, color: "#cc1111", lineHeight: 1 }}
+              >
+                £{Math.round(annualROI).toLocaleString("en-GB")}
+              </p>
+
+              <p className="text-white text-sm font-semibold mt-5">
+                That&apos;s <span style={{ color: "#cc1111" }}>{percentBack}%</span> back in your pocket.
+              </p>
+            </div>
+
+            <div className="text-center mt-6">
+              <Link
+                to="/pricing"
+                className="inline-flex items-center gap-2 bg-[#cc1111] hover:bg-red-500 text-white font-bold px-6 py-3 rounded-xl transition-colors text-sm"
+              >
+                Start saving today →
+              </Link>
+            </div>
+          </div>
+        </section>
+
         {/* Who it's for */}
         <section className="container max-w-4xl px-4 mb-20">
           <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8">
