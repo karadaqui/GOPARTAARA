@@ -69,30 +69,19 @@ serve(async (req) => {
     // 1) Check cache
     let { rows, oldest } = await queryCache()
 
-    // 2) If empty, trigger refresh and wait, then re-query
+    // 2) If empty, check if whole cache is empty -> warming response, trigger background refresh
     if (rows.length === 0) {
-      // Check if cache table is totally empty (first run) vs just no match for this size
       const { count } = await supabase
         .from('tyre_products_cache')
         .select('*', { count: 'exact', head: true })
 
       if (!count || count === 0) {
-        console.log('Cache is empty, triggering synchronous refresh...')
-        try {
-          await fetch(`${supabaseUrl}/functions/v1/refresh-tyre-cache`, {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${serviceKey}`,
-              'Content-Type': 'application/json',
-            },
-            body: '{}',
-          })
-        } catch (err) {
-          console.error('Sync refresh failed:', err)
-        }
-        const requeried = await queryCache()
-        rows = requeried.rows
-        oldest = requeried.oldest
+        console.log('Cache empty, triggering background refresh and returning warming flag')
+        triggerRefresh()
+        return new Response(
+          JSON.stringify({ products: [], suppliers: [], cached: false, warming: true }),
+          { headers: { ...cors, 'Content-Type': 'application/json' } }
+        )
       }
     } else if (oldest && Date.now() - oldest > CACHE_TTL_MS) {
       // 3) Stale cache: serve stale, refresh in background
