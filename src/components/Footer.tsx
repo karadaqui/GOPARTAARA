@@ -111,6 +111,32 @@ const Footer = () => {
           ))}
         </div>
 
+        {/* Trusted Partners */}
+        <div
+          className="mb-6 rounded-lg px-4 py-4"
+          style={{
+            background: "rgba(255,255,255,0.02)",
+            border: "1px solid rgba(255,255,255,0.05)",
+          }}
+        >
+          <p
+            className="text-center uppercase tracking-wider mb-3"
+            style={{ fontSize: "11px", color: "#71717a", fontWeight: 600, letterSpacing: "0.1em" }}
+          >
+            Trusted Partners
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-xs text-muted-foreground">
+            {["eBay", "Amazon", "Awin", "mytyres.co.uk", "Green Spark Plug Co."].map((name, i, arr) => (
+              <span key={name} className="flex items-center gap-2">
+                <span style={{ color: "#a1a1aa" }}>{name}</span>
+                {i < arr.length - 1 && (
+                  <span aria-hidden="true" style={{ color: "#3f3f46" }}>•</span>
+                )}
+              </span>
+            ))}
+          </div>
+        </div>
+
         <div className="border-t border-border pt-6 flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-4">
             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6 text-center sm:text-left">
