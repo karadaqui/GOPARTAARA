@@ -6,7 +6,7 @@ import BackToTop from "@/components/BackToTop";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Mail, Twitter, Youtube, CheckCircle } from "lucide-react";
+import { Mail, Twitter, Youtube, CheckCircle, Phone, MessageCircle } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -153,6 +153,37 @@ const Contact = () => {
                   value="info@gopartara.com"
                   href="mailto:info@gopartara.com"
                 />
+                <ContactMethod
+                  icon={<Phone size={18} style={{ color: "#cc1111" }} />}
+                  label="Phone / WhatsApp Business"
+                  value="07423 753090"
+                  href="tel:+447423753090"
+                />
+                <div style={{ padding: "0 0 16px 56px", marginTop: "-8px" }}>
+                  <p style={{ fontSize: "13px", color: "#a1a1aa", lineHeight: 1.5, marginBottom: "6px" }}>
+                    Calls may not always be answered. For a faster response, please message us on WhatsApp.
+                  </p>
+                  <p style={{ fontSize: "12px", color: "#71717a", marginBottom: "12px" }}>
+                    Available Monday–Friday, 9am–5pm (UK time)
+                  </p>
+                  <a
+                    href="https://wa.me/447423753090"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 transition-opacity hover:opacity-90"
+                    style={{
+                      background: "#25D366",
+                      color: "white",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      padding: "8px 14px",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    <MessageCircle size={15} />
+                    Message on WhatsApp
+                  </a>
+                </div>
                 <ContactMethod
                   icon={<Twitter size={18} style={{ color: "#cc1111" }} />}
                   label="X (Twitter)"
