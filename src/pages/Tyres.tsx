@@ -598,7 +598,9 @@ const Tyres = () => {
                             onError={(e) => { e.currentTarget.style.display = 'none'; }}
                           />
                         ) : (
-                          <span className="text-5xl opacity-20">○</span>
+                          <div className="w-full h-full flex items-center justify-center bg-zinc-700/50">
+                            <span className="text-5xl">🛞</span>
+                          </div>
                         )}
                         <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
                           <FlagImg advertiserId={product.advertiserId || product.supplierMeta?.id || 'all'} />
