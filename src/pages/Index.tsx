@@ -96,6 +96,79 @@ const Index = () => {
       <SectionDivider />
       <PopularSearchesStrip />
       <SectionDivider />
+
+      {/* As Seen In — Press & Media (placeholder) */}
+      <section
+        className="px-4 py-12"
+        style={{
+          background: "rgba(255,255,255,0.02)",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+        }}
+      >
+        <div className="max-w-5xl mx-auto text-center">
+          <p
+            style={{
+              fontSize: 11,
+              color: "#cc1111",
+              fontWeight: 700,
+              letterSpacing: "0.14em",
+              textTransform: "uppercase",
+              marginBottom: 8,
+            }}
+          >
+            Press &amp; Media
+          </p>
+          <h2
+            className="font-display"
+            style={{
+              fontSize: "24px",
+              fontWeight: 700,
+              color: "#ffffff",
+              letterSpacing: "-0.01em",
+              marginBottom: 28,
+            }}
+          >
+            As seen in
+          </h2>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            {["Autocar", "Top Gear", "Evo Magazine", "Car Throttle", "Auto Express"].map(
+              (name) => (
+                <div
+                  key={name}
+                  className="flex items-center justify-center"
+                  style={{
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: 10,
+                    height: 64,
+                    color: "#a1a1aa",
+                    fontSize: 14,
+                    fontWeight: 600,
+                    letterSpacing: "0.02em",
+                    opacity: 0.4,
+                  }}
+                >
+                  {name}
+                </div>
+              )
+            )}
+          </div>
+
+          <p
+            style={{
+              fontSize: 12,
+              color: "#52525b",
+              marginTop: 20,
+            }}
+          >
+            Media enquiries: press@gopartara.com
+          </p>
+        </div>
+      </section>
+
+      <SectionDivider />
       <FeaturedListingsSection />
       <BrowseByMakeSection />
       <SectionDivider />
