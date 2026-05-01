@@ -87,7 +87,7 @@ export const helpCategories: Record<string, HelpCategoryData> = {
         q: "What's included in the Free plan?",
         a: (
           <>
-            The Free plan lets you make up to 10 searches per month, save up to 5 parts,
+            The Free plan lets you make up to 20 searches per month, save up to 5 parts,
             set up to 5 price alerts, add 1 vehicle to{" "}
             <L href="/garage">My Garage</L>, and create up to 5{" "}
             <L href="/marketplace">marketplace listings</L>. No credit card required.

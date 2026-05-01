@@ -7,7 +7,7 @@ const EBAY_BROWSE_API_URL = "https://api.ebay.com/buy/browse/v1/item_summary/sea
 const EBAY_OAUTH_URL = "https://api.ebay.com/identity/v1/oauth2/token";
 const EBAY_AFFILIATE_CAMPID = "5339148333";
 
-const FREE_LIMIT = 10;
+const FREE_LIMIT = 20;
 const UNLIMITED_PLANS = ["pro", "elite", "admin"];
 
 const VALID_MARKETPLACES = ["EBAY_GB", "EBAY_DE", "EBAY_FR", "EBAY_IT", "EBAY_ES", "EBAY_AU", "EBAY_US", "EBAY_ENCA"];

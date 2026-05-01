@@ -1437,7 +1437,7 @@ const SearchResults = () => {
                     maxWidth: "440px",
                   }}
                 >
-                  You've used all 10 free searches this month. Upgrade to Pro for unlimited searches.
+                  You've used all 20 free searches this month. Upgrade to Pro for unlimited searches.
                 </p>
                 <div className="flex flex-col items-center justify-center gap-3">
                   <a
@@ -2134,7 +2134,7 @@ const SearchResults = () => {
               </div>
               {searchLimitModalType === "free" ? (
                 <>
-                  <h3 className="text-xl font-bold text-white mb-2">You've used all 5 free searches 🔍</h3>
+                  <h3 className="text-xl font-bold text-white mb-2">You've used all 20 free searches 🔍</h3>
                   <p className="text-zinc-400 text-sm mb-6">Upgrade to Pro for unlimited searches, photo search, price alerts and more.</p>
                   <button onClick={() => { setSearchLimitModalOpen(false); navigate("/pricing"); }} className="w-full h-12 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-sm transition-colors">
                     Upgrade to Pro — £9.99/mo
@@ -2146,7 +2146,7 @@ const SearchResults = () => {
               ) : (
                 <>
                   <h3 className="text-xl font-bold text-white mb-2">Search limit reached</h3>
-                  <p className="text-zinc-400 text-sm mb-6">Create a free account for 10 searches/month, or go Pro for unlimited.</p>
+                  <p className="text-zinc-400 text-sm mb-6">Create a free account for 20 searches/month, or go Pro for unlimited.</p>
                   <div className="flex flex-col gap-2">
                     <button onClick={() => { setSearchLimitModalOpen(false); navigate("/auth"); }} className="w-full h-12 rounded-xl bg-white text-black font-semibold text-sm transition-colors hover:bg-zinc-200">
                       Sign Up Free
