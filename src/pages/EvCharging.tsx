@@ -66,20 +66,13 @@ export default function EvCharging() {
       />
       <Navbar />
 
-      <div
-        style={{
-          backgroundColor: "#fef3c7",
-          borderBottom: "2px solid #fcd34d",
-          padding: "12px 24px",
-          color: "#92400e",
-          fontSize: "14px",
-          fontWeight: 600,
-          textAlign: "center",
-        }}
-      >
-        🔧 EV Charging is currently under maintenance. We'll be back shortly.
+      <div className="bg-amber-50 border border-amber-200 rounded-xl max-w-md mx-auto mt-24 p-12 text-center">
+        <div className="text-6xl mb-4">🔧</div>
+        <h1 className="text-xl font-bold text-amber-900">EV Charging — Under Maintenance</h1>
+        <p className="text-sm text-amber-700 mt-2">We're working on this section. Check back soon.</p>
       </div>
 
+      {false && (
       <main className="max-w-6xl mx-auto px-4 py-12">
         {/* Header */}
         <header className="mb-10">
@@ -177,6 +170,7 @@ export default function EvCharging() {
           GOPARTARA may earn a commission on purchases made through links on this page.
         </p>
       </main>
+      )}
 
       <Footer />
     </div>
