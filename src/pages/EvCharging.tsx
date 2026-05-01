@@ -66,6 +66,20 @@ export default function EvCharging() {
       />
       <Navbar />
 
+      <div
+        style={{
+          backgroundColor: "#fef3c7",
+          borderBottom: "2px solid #fcd34d",
+          padding: "12px 24px",
+          color: "#92400e",
+          fontSize: "14px",
+          fontWeight: 600,
+          textAlign: "center",
+        }}
+      >
+        🔧 EV Charging is currently under maintenance. We'll be back shortly.
+      </div>
+
       <main className="max-w-6xl mx-auto px-4 py-12">
         {/* Header */}
         <header className="mb-10">
