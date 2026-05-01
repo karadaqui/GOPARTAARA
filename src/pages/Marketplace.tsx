@@ -541,7 +541,8 @@ const Marketplace = () => {
                     </div>
                   </div>
                 )}
-          </>
+              </>
+            )}
 
             <div className="glass rounded-2xl p-8 mt-8 text-center">
               <h2 className="font-display text-xl font-bold mb-2">Sell Your Parts on GOPARTARA</h2>
