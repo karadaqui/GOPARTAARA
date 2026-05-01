@@ -114,8 +114,8 @@ export const faqItems = [
     a: "Yes, you can change your plan anytime. Upgrades take effect immediately. Downgrades take effect at the next billing cycle.",
   },
   {
-    q: "How does the 30-day money back guarantee work?",
-    a: "If you're not satisfied within 30 days of your first subscription, email us at info@gopartara.com and we'll issue a full refund — no questions asked.",
+    q: "How does the 7-day money back guarantee work?",
+    a: "If you're not satisfied within 7 days of your first subscription, email us at info@gopartara.com and we'll issue a full refund — no questions asked.",
   },
   {
     q: "Do you store my payment details?",
