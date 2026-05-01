@@ -275,6 +275,7 @@ const Blog = () => {
                     <span style={{ color: "#71717a", fontSize: "13px" }}>
                       {formatDate(featured.published_at)}
                       {featured.read_time && <> · {featured.read_time}</>}
+                      {" · By Fatma Karadayı"}
                     </span>
                   </div>
                   <h2
@@ -358,6 +359,7 @@ const Blog = () => {
                         <div style={{ fontSize: "12px", color: "#52525b" }}>
                           {formatDate(post.published_at)}
                           {post.read_time && <> · {post.read_time}</>}
+                          {" · By Fatma Karadayı"}
                         </div>
                       </Link>
                       {isAdmin && (
