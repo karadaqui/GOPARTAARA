@@ -183,21 +183,32 @@ const Tyres = () => {
           }).then(({ data, error }) => {
             if (error) throw error
             const supplier = SUPPLIERS.find((s) => s.id === id);
-            return (data?.products || []).map((p: any) => ({
-              ...p,
-              supplierMeta: supplier as SupplierMeta | undefined,
-              advertiserId: id,
-            }))
+            return {
+              warming: !!data?.warming,
+              products: (data?.products || []).map((p: any) => ({
+                ...p,
+                supplierMeta: supplier as SupplierMeta | undefined,
+                advertiserId: id,
+              })),
+            }
           })
         )
       )
 
       const all: any[] = []
+      let anyWarming = false
       settled.forEach((result) => {
         if (result.status === 'fulfilled') {
-          all.push(...result.value)
+          if (result.value.warming) anyWarming = true
+          all.push(...result.value.products)
         }
       })
+      if (all.length === 0 && anyWarming) {
+        toast({
+          title: "Suppliers are loading",
+          description: "Suppliers are loading for the first time, please search again in 30 seconds.",
+        })
+      }
       setTyreProducts(all)
     } catch (err) {
       console.error('searchTyres error:', err)
@@ -587,7 +598,9 @@ const Tyres = () => {
                             onError={(e) => { e.currentTarget.style.display = 'none'; }}
                           />
                         ) : (
-                          <span className="text-5xl opacity-20">○</span>
+                          <div className="w-full h-full flex items-center justify-center bg-zinc-700/50">
+                            <span className="text-5xl">🛞</span>
+                          </div>
                         )}
                         <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
                           <FlagImg advertiserId={product.advertiserId || product.supplierMeta?.id || 'all'} />
