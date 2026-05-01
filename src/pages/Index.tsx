@@ -97,6 +97,58 @@ const Index = () => {
       <PopularSearchesStrip />
       <SectionDivider />
 
+      {/* The GoPartara Guarantee */}
+      <section
+        className="px-4 py-8"
+        style={{
+          background: "rgba(0,182,122,0.04)",
+          borderLeft: "3px solid #00b67a",
+          borderTop: "1px solid rgba(0,182,122,0.15)",
+          borderBottom: "1px solid rgba(0,182,122,0.15)",
+        }}
+      >
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center justify-center gap-2 mb-5">
+            <span aria-hidden="true" style={{ fontSize: 22 }}>🛡️</span>
+            <h2
+              className="font-display"
+              style={{ color: "#ffffff", fontSize: 20, fontWeight: 700, letterSpacing: "-0.01em" }}
+            >
+              The GoPartara Guarantee
+            </h2>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+            {[
+              { icon: "✅", label: "Free to Search — Always" },
+              { icon: "🔒", label: "Secure & Private" },
+              { icon: "💰", label: "Real Prices, No Markup" },
+              { icon: "⚡", label: "Live Data from 7 Suppliers" },
+            ].map((item) => (
+              <span
+                key={item.label}
+                className="inline-flex items-center gap-2"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(0,182,122,0.35)",
+                  color: "#ffffff",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  padding: "8px 14px",
+                  borderRadius: 999,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                <span aria-hidden="true">{item.icon}</span>
+                {item.label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <SectionDivider />
+
       {/* As Seen In — Press & Media (placeholder) */}
       <section
         className="px-4 py-12"
