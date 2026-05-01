@@ -183,21 +183,32 @@ const Tyres = () => {
           }).then(({ data, error }) => {
             if (error) throw error
             const supplier = SUPPLIERS.find((s) => s.id === id);
-            return (data?.products || []).map((p: any) => ({
-              ...p,
-              supplierMeta: supplier as SupplierMeta | undefined,
-              advertiserId: id,
-            }))
+            return {
+              warming: !!data?.warming,
+              products: (data?.products || []).map((p: any) => ({
+                ...p,
+                supplierMeta: supplier as SupplierMeta | undefined,
+                advertiserId: id,
+              })),
+            }
           })
         )
       )
 
       const all: any[] = []
+      let anyWarming = false
       settled.forEach((result) => {
         if (result.status === 'fulfilled') {
-          all.push(...result.value)
+          if (result.value.warming) anyWarming = true
+          all.push(...result.value.products)
         }
       })
+      if (all.length === 0 && anyWarming) {
+        toast({
+          title: "Suppliers are loading",
+          description: "Suppliers are loading for the first time, please search again in 30 seconds.",
+        })
+      }
       setTyreProducts(all)
     } catch (err) {
       console.error('searchTyres error:', err)
