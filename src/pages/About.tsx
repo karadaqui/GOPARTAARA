@@ -5,6 +5,13 @@ import BackToTop from "@/components/BackToTop";
 import SocialProofStats from "@/components/SocialProofStats";
 import HomeCTASection from "@/components/HomeCTASection";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { User } from "lucide-react";
+
+const TEAM = [
+  { name: "Name coming soon", role: "Founder & CEO", bio: "Leading the GOPARTARA mission to make car parts simple, transparent and fair for every UK driver." },
+  { name: "Name coming soon", role: "Head of Technology", bio: "Building the search infrastructure that pulls live pricing from 7 suppliers in under 3 seconds." },
+  { name: "Name coming soon", role: "Head of Partnerships", bio: "Bringing trusted UK suppliers onto the platform so drivers always get the best available price." },
+];
 
 const SECTION_LABEL: React.CSSProperties = {
   fontSize: "11px",
@@ -168,6 +175,59 @@ const About = () => (
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Meet the Team */}
+      <section className="container px-4 max-w-5xl mx-auto pb-24">
+        <span style={SECTION_LABEL}>Our People</span>
+        <h2
+          className="font-display text-white mb-10"
+          style={{ fontSize: "32px", fontWeight: 800, letterSpacing: "-0.02em" }}
+        >
+          Meet the Team
+        </h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {TEAM.map((m) => (
+            <div
+              key={m.role}
+              style={{
+                background: "#111111",
+                border: "1px solid #1f1f1f",
+                borderRadius: "12px",
+                padding: "24px",
+                textAlign: "center",
+              }}
+            >
+              <div
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  borderRadius: "9999px",
+                  background: "#27272a",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  margin: "0 auto 16px",
+                }}
+              >
+                <User size={36} color="#71717a" />
+              </div>
+              <h3
+                className="font-display text-white"
+                style={{ fontSize: "16px", fontWeight: 700, marginBottom: "4px" }}
+              >
+                {m.name}
+              </h3>
+              <p style={{ fontSize: "12px", color: "#cc1111", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: "12px" }}>
+                {m.role}
+              </p>
+              <p style={{ fontSize: "13px", color: "#a1a1aa", lineHeight: 1.6 }}>{m.bio}</p>
+            </div>
+          ))}
+        </div>
+        <p style={{ fontSize: "13px", color: "#71717a", textAlign: "center", marginTop: "24px", fontStyle: "italic" }}>
+          Team photos and full bios coming soon
+        </p>
       </section>
 
       {/* Stats bar (reused) */}
