@@ -239,6 +239,64 @@ const Index = () => {
 
       <SectionDivider />
 
+      {/* Trustpilot trust section (early stage) */}
+      <section
+        className="px-4 py-10"
+        style={{
+          background: "rgba(255,255,255,0.02)",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+        }}
+      >
+        <div className="max-w-2xl mx-auto text-center">
+          <div
+            className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded"
+            style={{ background: "#00b67a", color: "#ffffff", fontSize: 12, fontWeight: 700, letterSpacing: "0.04em" }}
+          >
+            <span aria-hidden="true">★</span>
+            <span>Trustpilot</span>
+          </div>
+
+          <div
+            aria-label="5 out of 5 stars"
+            className="flex items-center justify-center gap-1 mb-3"
+            style={{ color: "#00b67a", fontSize: 28, lineHeight: 1 }}
+          >
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+
+          <p style={{ color: "#ffffff", fontSize: 20, fontWeight: 700, marginBottom: 4 }}>
+            Excellent
+          </p>
+          <p style={{ color: "#a1a1aa", fontSize: 13, marginBottom: 16 }}>
+            Based on growing user reviews
+          </p>
+
+          <p style={{ color: "#71717a", fontSize: 12, marginBottom: 16, fontStyle: "italic" }}>
+            We're collecting reviews — be one of our first!
+          </p>
+
+          <a
+            href="https://www.trustpilot.com/review/gopartara.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 transition-opacity hover:opacity-90"
+            style={{
+              background: "#00b67a",
+              color: "#ffffff",
+              padding: "10px 20px",
+              borderRadius: 8,
+              fontSize: 14,
+              fontWeight: 700,
+            }}
+          >
+            Leave a Review →
+          </a>
+        </div>
+      </section>
+
+      <SectionDivider />
+
       <ScrollReveal><HomeCTASection /></ScrollReveal>
 
       <HomeShareRow />
