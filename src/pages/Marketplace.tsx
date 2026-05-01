@@ -15,7 +15,7 @@ import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsCo
 import { usePersistentCompare } from "@/hooks/usePersistentCompare";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import AuthGateModal from "@/components/AuthGateModal";
+
 import ScrollReveal from "@/components/ScrollReveal";
 import { toast } from "sonner";
 
@@ -96,7 +96,7 @@ const Marketplace = () => {
   const [search, setSearch] = useState(searchParams.get("q") || "");
   const [category, setCategory] = useState("All");
   const [vehicleFilter, setVehicleFilter] = useState("");
-  const [authGateOpen, setAuthGateOpen] = useState(false);
+  
   const [compareParts, setCompareParts] = usePersistentCompare();
   const [showCompare, setShowCompare] = useState(false);
   const [buyerOffers, setBuyerOffers] = useState<BuyerOffer[]>([]);
