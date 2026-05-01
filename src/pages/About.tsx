@@ -177,57 +177,28 @@ const About = () => (
         </div>
       </section>
 
-      {/* Meet the Team */}
-      <section className="container px-4 max-w-5xl mx-auto pb-24">
-        <span style={SECTION_LABEL}>Our People</span>
-        <h2
-          className="font-display text-white mb-10"
-          style={{ fontSize: "32px", fontWeight: 800, letterSpacing: "-0.02em" }}
-        >
-          Meet the Team
-        </h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          {TEAM.map((m) => (
-            <div
-              key={m.role}
-              style={{
-                background: "#111111",
-                border: "1px solid #1f1f1f",
-                borderRadius: "12px",
-                padding: "24px",
-                textAlign: "center",
-              }}
-            >
-              <div
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  borderRadius: "9999px",
-                  background: "#27272a",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  margin: "0 auto 16px",
-                }}
-              >
-                <User size={36} color="#71717a" />
+      <section className="py-16 px-6 border-t border-white/10">
+        <div className="max-w-4xl mx-auto text-center mb-12">
+          <p className="text-red-500 text-sm font-bold uppercase tracking-widest mb-3">OUR TEAM</p>
+          <h2 className="text-3xl font-bold text-white mb-4">Meet the Team</h2>
+          <p className="text-gray-400">The people building GOPARTARA.</p>
+        </div>
+        <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { role: "Founder & CEO", bio: "Visionary behind GOPARTARA, passionate about making car parts accessible to everyone." },
+            { role: "Head of Technology", bio: "Building the search engine and infrastructure that powers 1M+ part comparisons." },
+            { role: "Head of Partnerships", bio: "Growing our supplier network and forging relationships with the automotive industry." }
+          ].map((member, i) => (
+            <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
+              <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-10 h-10 text-gray-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
               </div>
-              <h3
-                className="font-display text-white"
-                style={{ fontSize: "16px", fontWeight: 700, marginBottom: "4px" }}
-              >
-                {m.name}
-              </h3>
-              <p style={{ fontSize: "12px", color: "#cc1111", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: "12px" }}>
-                {m.role}
-              </p>
-              <p style={{ fontSize: "13px", color: "#a1a1aa", lineHeight: 1.6 }}>{m.bio}</p>
+              <h3 className="text-white font-bold text-lg mb-1">{member.role}</h3>
+              <p className="text-gray-400 text-sm">{member.bio}</p>
             </div>
           ))}
         </div>
-        <p style={{ fontSize: "13px", color: "#71717a", textAlign: "center", marginTop: "24px", fontStyle: "italic" }}>
-          Team photos and full bios coming soon
-        </p>
+        <p className="text-center text-gray-600 text-sm mt-8">Team photos and full bios coming soon.</p>
       </section>
 
       {/* Stats bar (reused) */}
