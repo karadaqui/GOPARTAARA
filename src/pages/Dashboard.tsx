@@ -703,7 +703,7 @@ const Dashboard = () => {
                 <div className="flex-1">
                   <p className="font-display font-bold text-lg text-white">Free Plan</p>
                   <p style={{ fontSize: "12px", color: "#71717a", marginTop: "2px" }}>
-                    £0/mo · 5 searches per month
+                    £0/mo · 20 searches per month
                   </p>
                 </div>
               </div>
