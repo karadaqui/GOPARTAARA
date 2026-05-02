@@ -239,6 +239,52 @@ const Garage = () => {
           </div>
         )}
 
+        {user && !loading && vehicles.length > 0 && (() => {
+          const now = Date.now();
+          const upcoming: { kind: "MOT" | "Tax"; days: number; label: string }[] = [];
+          for (const v of vehicles as any[]) {
+            const label = `${v.make ?? ""} ${v.model ?? ""}`.trim() || "Vehicle";
+            for (const [kind, raw] of [["MOT", v.mot_expiry_date], ["Tax", v.tax_expiry_date]] as const) {
+              if (!raw) continue;
+              const t = new Date(raw).getTime();
+              if (Number.isNaN(t)) continue;
+              const days = Math.ceil((t - now) / 86400000);
+              if (days <= 60) upcoming.push({ kind, days, label });
+            }
+          }
+          upcoming.sort((a, b) => a.days - b.days);
+          if (upcoming.length === 0) return null;
+          const top = upcoming[0];
+          const tone =
+            top.days < 0
+              ? { bg: "bg-red-500/10", border: "border-red-500/30", text: "text-red-400" }
+              : top.days < 30
+              ? { bg: "bg-red-500/10", border: "border-red-500/30", text: "text-red-400" }
+              : { bg: "bg-amber-500/10", border: "border-amber-500/30", text: "text-amber-400" };
+          const phrase =
+            top.days < 0
+              ? `expired ${Math.abs(top.days)} day${Math.abs(top.days) === 1 ? "" : "s"} ago`
+              : top.days === 0
+              ? "expires today"
+              : `expires in ${top.days} day${top.days === 1 ? "" : "s"}`;
+          return (
+            <div className={`mb-4 rounded-xl border ${tone.border} ${tone.bg} px-4 py-3 flex items-start gap-3`}>
+              <span className="text-lg leading-none">⚠️</span>
+              <div className="flex-1 text-sm">
+                <span className={`font-semibold ${tone.text}`}>Upcoming:</span>{" "}
+                <span className="text-foreground">
+                  {top.label} {top.kind} {phrase}
+                </span>
+                {upcoming.length > 1 && (
+                  <span className="text-muted-foreground">
+                    {" "}· +{upcoming.length - 1} more within 60 days
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })()}
+
         {user && !loading && vehicles.length > 0 && (
           <RemindersSummary vehicles={vehicles as any} />
         )}
