@@ -30,6 +30,7 @@ import ExitIntentPopup from "@/components/ExitIntentPopup";
 import FeaturedPartsSection from "@/components/FeaturedPartsSection";
 import FeaturedSupplierSpotlight from "@/components/FeaturedSupplierSpotlight";
 import WhyDriversTrustUs from "@/components/WhyDriversTrustUs";
+import HowToSaveSection from "@/components/HowToSaveSection";
 
 const Index = () => {
   const location = useLocation();
