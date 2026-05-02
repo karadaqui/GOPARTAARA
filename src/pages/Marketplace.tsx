@@ -197,18 +197,43 @@ const Marketplace = () => {
     setLoading(false);
   };
 
-  const filtered = useMemo(() => listings.filter(l => {
-    if (category !== "All" && l.category !== category) return false;
-    if (search) {
-      const q = search.toLowerCase();
-      if (!l.title.toLowerCase().includes(q) && !l.description.toLowerCase().includes(q) && !l.tags.some(t => t.toLowerCase().includes(q))) return false;
+  const justListed = useMemo(
+    () =>
+      [...listings]
+        .sort((a, b) => new Date(b.created_at as any).getTime() - new Date(a.created_at as any).getTime())
+        .slice(0, 3),
+    [listings]
+  );
+
+  const filtered = useMemo(() => {
+    const min = minPrice.trim() === "" ? null : Number(minPrice);
+    const max = maxPrice.trim() === "" ? null : Number(maxPrice);
+    const result = listings.filter(l => {
+      if (category !== "All" && l.category !== category) return false;
+      if (search) {
+        const q = search.toLowerCase();
+        if (!l.title.toLowerCase().includes(q) && !l.description.toLowerCase().includes(q) && !l.tags.some(t => t.toLowerCase().includes(q))) return false;
+      }
+      if (vehicleFilter) {
+        const v = vehicleFilter.toLowerCase();
+        if (!l.compatible_vehicles.some(cv => cv.toLowerCase().includes(v))) return false;
+      }
+      if (min !== null && !Number.isNaN(min) && (l.price ?? 0) < min) return false;
+      if (max !== null && !Number.isNaN(max) && (l.price ?? Infinity) > max) return false;
+      if (conditionFilter !== "All") {
+        const c = conditionFromTags(l.tags);
+        if (c !== conditionFilter) return false;
+      }
+      return true;
+    });
+    if (sortBy === "price_asc") {
+      result.sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity));
+    } else if (sortBy === "price_desc") {
+      result.sort((a, b) => (b.price ?? -Infinity) - (a.price ?? -Infinity));
     }
-    if (vehicleFilter) {
-      const v = vehicleFilter.toLowerCase();
-      if (!l.compatible_vehicles.some(cv => cv.toLowerCase().includes(v))) return false;
-    }
-    return true;
-  }), [listings, category, search, vehicleFilter]);
+    // "newest" — listings already arrive ordered by created_at desc
+    return result;
+  }, [listings, category, search, vehicleFilter, minPrice, maxPrice, conditionFilter, sortBy]);
 
   const isBoosted = (l: any) => l.featured && l.featured_until && new Date(l.featured_until) > new Date();
   const featured = useMemo(() => filtered
