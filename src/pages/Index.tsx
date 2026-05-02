@@ -674,6 +674,7 @@ const Index = () => {
       <WelcomeModal />
       <LocationBanner />
       <ExitIntentBanner />
+      <ExitIntentPopup />
     </div>
   );
 };
