@@ -104,6 +104,7 @@ serve(async (req) => {
           const cols = csv(line)
           if (lc === 1) {
             hdrs = cols.map(h => h.toLowerCase().trim())
+            console.log('=== CSV HEADERS FOR FEED', feedId, '===', JSON.stringify(hdrs))
             console.log('CSV HEADERS:', hdrs.join(', '))
             const norm = (h: string) => h.replace(/[^a-z0-9]/g, '')
             ni = hdrs.findIndex(h => norm(h).includes('productname'))
