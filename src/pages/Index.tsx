@@ -292,6 +292,7 @@ const Index = () => {
       <SectionDivider />
       <FeaturedListingsSection />
       <FeaturedSupplierSpotlight />
+      <WhyDriversTrustUs />
       <BrowseByMakeSection />
       <SectionDivider />
       <SocialProofStats />
