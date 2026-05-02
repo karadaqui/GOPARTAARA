@@ -165,6 +165,13 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
           </h2>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => setCreateOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-destructive hover:bg-destructive/90 text-destructive-foreground text-xs font-semibold rounded-lg transition-colors"
+          >
+            <Plus size={14} />
+            Set New Alert
+          </button>
           <a
             href="/alerts"
             className="text-xs text-muted-foreground hover:text-foreground transition-colors underline-offset-2 hover:underline"
