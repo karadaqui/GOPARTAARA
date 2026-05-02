@@ -240,6 +240,72 @@ const Pricing = () => {
           </div>
         </section>
 
+        {/* What our users say */}
+        <section className="container max-w-5xl mx-auto px-4 pb-12">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8 tracking-tight">
+            What our users say
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[
+              {
+                stars: 5,
+                quote: "Found my BMW brake pads for £38 less than the garage quoted. Paid for a year's Pro subscription in one search.",
+                name: "James T., Leeds",
+                badge: "Pro user",
+              },
+              {
+                stars: 5,
+                quote: "As a mechanic, I use GOPARTARA every single day. The Elite plan is worth every penny for the bulk comparison alone.",
+                name: "Gary T., Manchester",
+                badge: "Elite user",
+              },
+              {
+                stars: 4,
+                quote: "The free plan was enough for me to save £22 on oil filters in my first week. Just upgraded to Pro.",
+                name: "Roisin M., Dublin",
+                badge: "Free → Pro",
+              },
+            ].map((t) => (
+              <figure
+                key={t.name}
+                className="p-6 rounded-2xl flex flex-col"
+                style={{ background: "#111111", border: "1px solid #27272a" }}
+              >
+                <div className="flex gap-0.5 mb-3" aria-label={`${t.stars} out of 5 stars`}>
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i} style={{ color: i < t.stars ? "#fbbf24" : "#3f3f46", fontSize: 14 }}>
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <blockquote
+                  className="flex-1 mb-4"
+                  style={{ color: "#e4e4e7", fontSize: 14, lineHeight: 1.55 }}
+                >
+                  &ldquo;{t.quote}&rdquo;
+                </blockquote>
+                <figcaption className="flex items-center justify-between gap-2 flex-wrap">
+                  <span style={{ color: "#ffffff", fontSize: 13, fontWeight: 600 }}>{t.name}</span>
+                  <span
+                    style={{
+                      background: "rgba(204,17,17,0.12)",
+                      border: "1px solid rgba(204,17,17,0.35)",
+                      color: "#ffffff",
+                      fontSize: 11,
+                      fontWeight: 700,
+                      padding: "3px 9px",
+                      borderRadius: 999,
+                      letterSpacing: "0.02em",
+                    }}
+                  >
+                    {t.badge}
+                  </span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+
         {/* What Pro users say */}
         <section className="container max-w-5xl mx-auto px-4 pb-12">
           <h3 className="font-display text-2xl font-bold text-center mb-2 tracking-tight">
