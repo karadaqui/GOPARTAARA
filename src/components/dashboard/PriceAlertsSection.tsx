@@ -321,6 +321,24 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
                           </span>
                         )}
                       </div>
+                      {alert.current_price != null && (() => {
+                        const cp = Number(alert.current_price);
+                        const tp = Number(alert.target_price);
+                        const pct = targetHit ? 100 : Math.max(5, Math.min(99, Math.round((tp / cp) * 100)));
+                        return (
+                          <div className="mt-2">
+                            <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all ${targetHit ? "bg-emerald-500" : "bg-destructive/70"}`}
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                            <p className="text-[10px] text-muted-foreground/60 mt-1">
+                              {targetHit ? "Target reached" : `${pct}% of the way to your target`}
+                            </p>
+                          </div>
+                        );
+                      })()}
                       <p className="text-[10px] text-muted-foreground/50 mt-1">
                         {alert.last_checked_at
                           ? `Checked ${new Date(alert.last_checked_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`
