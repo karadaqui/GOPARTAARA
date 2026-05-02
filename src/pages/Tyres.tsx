@@ -122,6 +122,7 @@ const Tyres = () => {
   const [brandFilter, setBrandFilter] = useState('all');
   const [seasonFilter, setSeasonFilter] = useState<'all'|'summer'|'winter'|'allseason'>('allseason');
   const [sortBy, setSortBy] = useState<'default'|'price_asc'|'price_desc'>('default');
+  const [priceTier, setPriceTier] = useState<'all'|'budget'|'mid'|'premium'>('all');
   const [compareList, setCompareList] = useState<TyreProduct[]>([]);
   const [showLabelHelp, setShowLabelHelp] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
