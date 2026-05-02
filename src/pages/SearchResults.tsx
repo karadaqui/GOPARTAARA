@@ -1279,6 +1279,10 @@ const SearchResults = () => {
                       border-color: #333333 !important;
                       color: #ffffff !important;
                     }
+                    .trending-card:hover {
+                      background: #111111 !important;
+                      border-color: #333333 !important;
+                    }
                   `}</style>
                 </>
               )}
