@@ -489,6 +489,7 @@ interface PlanCardProps {
   bestValue?: boolean;
   annual?: boolean;
   yearlySaving?: number;
+  annualBadge?: string;
   loading: boolean;
   slowWarning: boolean;
   onSelect: () => void;
