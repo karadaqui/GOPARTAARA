@@ -68,6 +68,7 @@ const Alerts = lazy(() => import("./pages/Alerts.tsx"));
 const EvCharging = lazy(() => import("./pages/EvCharging.tsx"));
 const Status = lazy(() => import("./pages/Status.tsx"));
 const PartSearchRedirect = lazy(() => import("./components/PartSearchRedirect.tsx"));
+const Sitemap = lazy(() => import("./pages/Sitemap.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -134,6 +135,7 @@ const App = () => {
                 <Route path="/cookies" element={<Cookies />} />
                 <Route path="/ev-charging" element={<EvCharging />} />
                 <Route path="/status" element={<Status />} />
+                <Route path="/sitemap" element={<Sitemap />} />
                 <Route path="*" element={<PartSearchRedirect />} />
               </Routes>
               </div>
