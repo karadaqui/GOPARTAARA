@@ -483,37 +483,87 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Nav links */}
+          {/* Nav links — grouped */}
           <nav style={{ flex: 1, marginTop: "8px" }}>
-            {[
-              { label: "Search", href: "/search" },
-              { label: "Marketplace", href: "/marketplace" },
-              ...(user ? [{ label: "My Shop", href: "/my-market" }] : []),
-              { label: "Deals", href: "/deals" },
-              { label: "Pricing", href: "/pricing" },
-              { label: "Help Center", href: "/help" },
-              { label: "About", href: "/about" },
-              { label: "Blog", href: "/blog" },
-            ].map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                onClick={(e) => handleMobileLinkClick(e, link.href)}
-                style={{
-                  display: "block",
-                  padding: "18px 0",
-                  fontSize: "22px",
-                  fontWeight: 700,
-                  color: "white",
-                  borderBottom: "1px solid #111111",
-                  textDecoration: "none",
-                  letterSpacing: "-0.5px",
-                  WebkitTapHighlightColor: "transparent",
-                }}
-              >
-                {link.label}
-              </a>
+            {([
+              {
+                section: "Main",
+                links: [
+                  { label: "Search", href: "/search" },
+                  { label: "Marketplace", href: "/marketplace" },
+                  { label: "Deals", href: "/deals" },
+                  { label: "Pricing", href: "/pricing" },
+                  { label: "Tyres", href: "/tyres" },
+                  ...(user ? [{ label: "My Shop", href: "/my-market" }] : []),
+                ],
+              },
+              {
+                section: "Company",
+                links: [
+                  { label: "About", href: "/about" },
+                  { label: "Blog", href: "/blog" },
+                  { label: "For Business", href: "/business" },
+                ],
+              },
+              {
+                section: "Support",
+                links: [
+                  { label: "Help Center", href: "/help" },
+                  { label: "Contact", href: "/contact" },
+                ],
+              },
+            ] as const).map((group) => (
+              <div key={group.section} style={{ marginBottom: "20px" }}>
+                <div
+                  style={{
+                    fontSize: "11px",
+                    fontWeight: 700,
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                    color: "#52525b",
+                    padding: "8px 0 4px",
+                  }}
+                >
+                  {group.section}
+                </div>
+                {group.links.map((link) => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={(e) => handleMobileLinkClick(e, link.href)}
+                    style={{
+                      display: "block",
+                      padding: "14px 0",
+                      fontSize: "20px",
+                      fontWeight: 600,
+                      color: "white",
+                      borderBottom: "1px solid #1a1a1a",
+                      textDecoration: "none",
+                      letterSpacing: "-0.3px",
+                      WebkitTapHighlightColor: "transparent",
+                    }}
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
             ))}
+
+            {/* Language selector */}
+            <div
+              style={{
+                marginTop: "8px",
+                paddingTop: "16px",
+                borderTop: "1px solid #1a1a1a",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: "12px",
+              }}
+            >
+              <span style={{ fontSize: "13px", color: "#a1a1aa" }}>Language / Region</span>
+              <CountrySelector />
+            </div>
           </nav>
 
           {/* Bottom buttons */}
