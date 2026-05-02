@@ -44,6 +44,37 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
   const [confirmClearAll, setConfirmClearAll] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editPrice, setEditPrice] = useState("");
+  const [createOpen, setCreateOpen] = useState(false);
+  const [newPartName, setNewPartName] = useState("");
+  const [newTargetPrice, setNewTargetPrice] = useState("");
+  const [creating, setCreating] = useState(false);
+
+  const createAlert = async () => {
+    const name = newPartName.trim();
+    const tp = parseFloat(newTargetPrice);
+    if (!name || name.length > 200) { toast.error("Enter a valid part name"); return; }
+    if (!tp || tp <= 0 || tp > 1000000) { toast.error("Enter a valid target price"); return; }
+    setCreating(true);
+    const { data: userData } = await supabase.auth.getUser();
+    const email = userData.user?.email;
+    if (!email) { toast.error("You must be signed in"); setCreating(false); return; }
+    const { error } = await supabase.from("price_alerts").insert({
+      user_id: userId,
+      part_name: name,
+      target_price: tp,
+      email,
+    });
+    setCreating(false);
+    if (error) {
+      toast.error("Failed to create alert");
+    } else {
+      toast.success("Price alert created");
+      setNewPartName("");
+      setNewTargetPrice("");
+      setCreateOpen(false);
+      fetchAlerts();
+    }
+  };
 
   const fetchAlerts = useCallback(async () => {
     const { data, error } = await supabase
