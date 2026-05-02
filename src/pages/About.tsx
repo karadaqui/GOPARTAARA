@@ -177,6 +177,93 @@ const About = () => (
         </div>
       </section>
 
+      {/* Company Timeline */}
+      <section className="container px-4 max-w-3xl mx-auto pb-24">
+        <span style={SECTION_LABEL}>Our Journey</span>
+        <h2
+          className="font-display text-white mb-10"
+          style={{ fontSize: "clamp(24px, 3vw, 32px)", fontWeight: 800, letterSpacing: "-0.01em" }}
+        >
+          Company Timeline
+        </h2>
+
+        <ol style={{ position: "relative", paddingLeft: 28, listStyle: "none" }}>
+          <span
+            aria-hidden
+            style={{
+              position: "absolute",
+              left: 11,
+              top: 6,
+              bottom: 6,
+              width: 2,
+              background: "linear-gradient(to bottom, #cc1111, #27272a)",
+              opacity: 0.6,
+            }}
+          />
+          {[
+            { icon: "🚀", year: "2024", text: "GOPARTARA Founded. The idea: one search engine for all UK car parts." },
+            { icon: "🔧", year: "Early 2025", text: "First 7 suppliers integrated. 1,000,000+ parts searchable for the first time." },
+            { icon: "📈", year: "Mid 2025", text: "Beta launched. First real users start saving money on car parts." },
+            { icon: "🌍", year: "2026", text: "European expansion begins. EU suppliers added. Going global." },
+            { icon: "🎯", year: "Future", text: "500+ suppliers. Mobile app. The world's #1 car parts comparison platform.", future: true },
+          ].map((m, idx, arr) => (
+            <li
+              key={m.year}
+              style={{
+                position: "relative",
+                paddingBottom: idx === arr.length - 1 ? 0 : 28,
+                opacity: m.future ? 0.55 : 1,
+              }}
+            >
+              <span
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  left: -22,
+                  top: 4,
+                  width: 18,
+                  height: 18,
+                  borderRadius: "50%",
+                  background: m.future ? "#1a1a1a" : "#0a0a0a",
+                  border: `2px solid ${m.future ? "#3f3f46" : "#cc1111"}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: 10,
+                }}
+              >
+                {m.icon}
+              </span>
+              <div
+                style={{
+                  background: "#111111",
+                  border: "1px solid #27272a",
+                  borderRadius: 12,
+                  padding: "14px 16px",
+                  marginLeft: 6,
+                }}
+              >
+                <div
+                  style={{
+                    color: m.future ? "#a1a1aa" : "#cc1111",
+                    fontSize: 13,
+                    fontWeight: 800,
+                    letterSpacing: "0.04em",
+                    marginBottom: 4,
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {m.icon} {m.year}
+                </div>
+                <p style={{ color: "#a1a1aa", fontSize: 14, lineHeight: 1.55, margin: 0 }}>
+                  {m.text}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       <section className="py-16 px-6 border-t border-white/10">
         <div className="max-w-4xl mx-auto text-center mb-12">
           <p className="text-red-500 text-sm font-bold uppercase tracking-widest mb-3">OUR TEAM</p>
