@@ -26,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getMakes, getModels, getYears, getAllYears } from "@/data/vehicleDatabase";
 import VehicleExpiryBadges from "@/components/garage/VehicleExpiryBadges";
 import VehicleExpiryEditor from "@/components/garage/VehicleExpiryEditor";
+import RemindersSummary from "@/components/garage/RemindersSummary";
 import VehicleNotes from "@/components/dashboard/VehicleNotes";
 import ServiceHistory from "@/components/garage/ServiceHistory";
 import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
