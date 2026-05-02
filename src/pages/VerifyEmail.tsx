@@ -129,10 +129,35 @@ const VerifyEmail = () => {
             </p>
           )}
 
-          <div className="bg-secondary/50 rounded-xl p-4 mb-6 text-left">
+          <div className="bg-secondary/50 rounded-xl p-4 mb-4 text-left">
+            <p className="text-sm text-foreground font-medium leading-relaxed mb-2">
+              🎉 Welcome to GOPARTARA! Check your email for a confirmation link.
+            </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Click the link in your email to verify your account. Once verified, you'll be automatically redirected to sign in.
             </p>
+          </div>
+
+          {/* Trustpilot review nudge */}
+          <div
+            className="rounded-xl p-4 mb-6 text-left"
+            style={{
+              background: "rgba(0,182,122,0.06)",
+              border: "1px solid rgba(0,182,122,0.25)",
+            }}
+          >
+            <p className="text-sm text-foreground leading-relaxed mb-2">
+              <span aria-hidden="true">⭐</span> We'd love your feedback! Once you've tried the search, please leave us a review on Trustpilot — it really helps us grow.
+            </p>
+            <a
+              href="https://www.trustpilot.com/review/gopartara.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm font-semibold hover:underline"
+              style={{ color: "#00b67a" }}
+            >
+              Leave a review →
+            </a>
           </div>
 
           <p className="text-muted-foreground text-xs mb-4">
