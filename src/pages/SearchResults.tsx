@@ -2005,6 +2005,7 @@ const SearchResults = () => {
                         <a href={item.url} target="_blank" rel="noopener noreferrer" className="block relative">
                           <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
                             <img src={item.imageUrl} alt={item.partName} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }} />
+                            <PriceDropBadge price={item.price} seed={item.url || item.partNumber || item.partName} />
                             {(() => {
                               const isSel = compareParts.some((p) => p.id === item.id);
                               const disabled = !isSel && compareParts.length >= 3;
