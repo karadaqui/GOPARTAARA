@@ -596,6 +596,16 @@ const Marketplace = () => {
               </div>
             ) : (
               <>
+                {justListed.length > 0 && (
+                  <div className="mb-8">
+                    <h2 className="font-display text-lg font-bold mb-4 flex items-center gap-2">
+                      <span aria-hidden>🆕</span> Just Listed
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {justListed.map((l, i) => renderCard(l, false, i))}
+                    </div>
+                  </div>
+                )}
                 {featured.length > 0 && (
                   <div className="mb-8">
                     <h2 className="font-display text-lg font-bold mb-4 flex items-center gap-2">
