@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Copy, Check, Gift, Users, Zap } from "lucide-react";
+import { Copy, Check, Gift, Users, Zap, MessageCircle, Mail } from "lucide-react";
 
 interface ReferralSectionProps {
   userId: string;
