@@ -247,8 +247,9 @@ const PricingSection = () => {
           {individualPlans.map((plan) => {
             const effectivePriceId = annual && plan.annualPriceId ? plan.annualPriceId : plan.priceId;
             const proTrialCta = plan.name === "Pro" && !hadTrial;
-            const yearlySaving = annual && plan.annualPrice !== plan.monthlyPrice
-              ? annualSavings(plan.monthlyPrice, plan.annualPrice)
+            const isPaidAnnual = annual && plan.monthlyPrice !== "£0";
+            const yearlySaving = isPaidAnnual
+              ? ((plan as any).annualSaving ?? annualSavings(plan.monthlyPrice, plan.annualPrice))
               : 0;
             return (
               <PlanCard
@@ -256,9 +257,9 @@ const PricingSection = () => {
                 name={plan.name}
                 tagline={plan.tagline}
                 price={annual ? plan.annualPrice : plan.monthlyPrice}
-                originalPrice={annual && plan.annualPrice !== plan.monthlyPrice ? plan.monthlyPrice : undefined}
-                billedNote={annual ? plan.annualBilled : undefined}
-                period={plan.period}
+                originalPrice={isPaidAnnual ? (plan as any).annualOriginal : undefined}
+                billedNote={isPaidAnnual ? plan.annualBilled : undefined}
+                period={annual && plan.monthlyPrice !== "£0" ? "/yr" : plan.period}
                 features={plan.features}
                 useCase={plan.useCase}
                 cta={plan.cta}
@@ -267,6 +268,7 @@ const PricingSection = () => {
                 bestValue={plan.bestValue}
                 annual={annual}
                 yearlySaving={yearlySaving}
+                annualBadge={isPaidAnnual ? (plan as any).annualBadge : undefined}
                 loading={isLoading(effectivePriceId)}
                 slowWarning={slowWarning}
                 onSelect={proTrialCta ? async () => {
