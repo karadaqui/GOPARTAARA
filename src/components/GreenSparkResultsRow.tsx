@@ -4,7 +4,7 @@ interface GreenSparkResultsRowProps {
 }
 
 const wrapAwin = (merchantUrl: string) =>
-  `https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara&p=${encodeURIComponent(merchantUrl)}`;
+  `https://www.awin1.com/cread.php?awinmid=4200&awinaffid=2845282&ued=${encodeURIComponent(merchantUrl)}`;
 
 const buildGspUrl = (path: string) =>
   wrapAwin(`https://www.gsparkplug.com${path}`);
