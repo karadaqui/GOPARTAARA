@@ -102,6 +102,63 @@ const Index = () => {
       <HeroSection />
       <LiveActivityCounter />
 
+      {/* Trust stats bar */}
+      <section
+        aria-label="Platform statistics"
+        className="px-4 py-8"
+        style={{
+          background: "#0a0a0a",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+        }}
+      >
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4">
+            {[
+              { value: "1,000,000+", label: "Parts searchable" },
+              { value: "7", label: "Live suppliers" },
+              { value: "£43", label: "Average saving per search" },
+              { value: "Free", label: "Always and forever" },
+            ].map((s, i, arr) => (
+              <div
+                key={s.label}
+                className="text-center px-4 py-3"
+                style={{
+                  borderRight:
+                    i < arr.length - 1
+                      ? "1px solid rgba(255,255,255,0.08)"
+                      : "none",
+                }}
+              >
+                <div
+                  className="font-display"
+                  style={{
+                    color: "#ffffff",
+                    fontSize: "clamp(24px, 4vw, 36px)",
+                    fontWeight: 800,
+                    letterSpacing: "-0.02em",
+                    lineHeight: 1.1,
+                    marginBottom: 6,
+                  }}
+                >
+                  {s.value}
+                </div>
+                <div
+                  style={{
+                    color: "#a1a1aa",
+                    fontSize: 12,
+                    fontWeight: 500,
+                    letterSpacing: "0.02em",
+                  }}
+                >
+                  {s.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <FeaturedPartsSection />
 
 
