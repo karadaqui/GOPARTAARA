@@ -572,12 +572,26 @@ const PlanCard = ({
         <p className="text-xs text-muted-foreground mb-2">{billedNote}</p>
       ) : null}
       {annual && yearlySaving && yearlySaving > 0 ? (
-        <span
-          className="inline-flex items-center gap-1 w-fit px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold mb-6"
-          style={{ color: "#4ade80" }}
-        >
-          <Zap size={10} /> Save £{yearlySaving}/year
-        </span>
+        <div className="flex flex-wrap items-center gap-2 mb-6">
+          <span
+            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold"
+            style={{ color: "#4ade80" }}
+          >
+            <Zap size={10} /> You save £{yearlySaving.toFixed(2)}/year
+          </span>
+          {annualBadge && (
+            <span
+              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide"
+              style={{
+                background: "rgba(251,191,36,0.12)",
+                color: "#fbbf24",
+                border: "1px solid rgba(251,191,36,0.25)",
+              }}
+            >
+              {annualBadge}
+            </span>
+          )}
+        </div>
       ) : saving ? (
         <span className="inline-flex items-center gap-1 w-fit px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6">
           <Zap size={10} /> Save {saving}/mo
