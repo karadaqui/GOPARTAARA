@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Search, ArrowRight, Mail, Sparkles, CreditCard, Bell, Car, ShoppingBag, Shield } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Search, ArrowRight, Mail, Sparkles, CreditCard, Bell, Car, ShoppingBag, Shield, MessageCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -110,7 +110,6 @@ const faqs: { q: string; a: React.ReactNode }[] = [
 ];
 
 const Help = () => {
-  const navigate = useNavigate();
   const [query, setQuery] = useState("");
 
   const filteredArticles = useMemo(() => {
@@ -235,6 +234,31 @@ const Help = () => {
                 style={{ height: 52, fontSize: 15 }}
               />
             </div>
+
+            {/* Quick-link pills */}
+            <div className="mt-5 flex flex-wrap justify-center gap-2">
+              {[
+                { label: "How does the search work?", target: "faq-search" },
+                { label: "Is GOPARTARA free?", target: "faq-free" },
+                { label: "How do price alerts work?", target: "faq-alerts" },
+                { label: "How do I add my car to My Garage?", target: "cat-my-garage" },
+              ].map((p) => (
+                <button
+                  key={p.target}
+                  type="button"
+                  onClick={() => {
+                    const el = document.getElementById(p.target);
+                    if (!el) return;
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    el.classList.add("ring-2", "ring-[#cc1111]/40");
+                    setTimeout(() => el.classList.remove("ring-2", "ring-[#cc1111]/40"), 1500);
+                  }}
+                  className="px-3.5 py-1.5 rounded-full bg-[#1a1a1a] hover:bg-[#222222] border border-[#27272a] hover:border-[#3a3a3a] text-[12.5px] text-zinc-300 hover:text-white transition-colors"
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -246,13 +270,22 @@ const Help = () => {
             {filteredCategories.map((c) => (
               <Link
                 key={c.id}
+                id={`cat-${c.id}`}
                 to={`/help/${c.id}`}
                 className="group block rounded-xl border border-[#1f1f1f] bg-[#0f0f0f] hover:bg-[#111111] hover:border-[#2a2a2a] transition-colors p-6"
               >
                 <div className="mb-4">{c.icon}</div>
-                <h3 className="text-[16px] font-semibold text-white group-hover:text-[#cc1111] transition-colors">
-                  {c.title}
-                </h3>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="text-[16px] font-semibold text-white group-hover:text-[#cc1111] transition-colors">
+                    {c.title}
+                  </h3>
+                  <span
+                    className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#1f1f1f] text-zinc-400 border border-[#27272a]"
+                    aria-label={`${c.count} articles`}
+                  >
+                    {c.count}
+                  </span>
+                </div>
                 <p className="mt-1.5 text-[13px] text-zinc-500 leading-relaxed">{c.description}</p>
                 <p className="mt-4 text-[13px] text-[#52525b]">{c.count} articles</p>
               </Link>
@@ -307,45 +340,82 @@ const Help = () => {
             Frequently asked questions
           </h2>
           <Accordion type="single" collapsible className="space-y-2">
-            {faqs.map((f, i) => (
-              <AccordionItem
-                key={i}
-                value={`faq-${i}`}
-                className="border border-[#1f1f1f] rounded-xl px-5 bg-[#0f0f0f]"
-              >
-                <AccordionTrigger className="text-[14px] font-medium text-white hover:no-underline py-4 text-left">
-                  {f.q}
-                </AccordionTrigger>
-                <AccordionContent className="text-[14px] text-zinc-400 pb-4 leading-relaxed">
-                  {f.a}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
+            {faqs.map((f, i) => {
+              const ql = f.q.toLowerCase();
+              const anchorId = ql.includes("free")
+                ? "faq-free"
+                : ql.includes("price alerts")
+                ? "faq-alerts"
+                : ql.includes("supplier") || ql.includes("search")
+                ? "faq-search"
+                : undefined;
+              return (
+                <AccordionItem
+                  key={i}
+                  id={anchorId}
+                  value={`faq-${i}`}
+                  className="border border-[#1f1f1f] rounded-xl px-5 bg-[#0f0f0f] scroll-mt-24"
+                >
+                  <AccordionTrigger className="text-[14px] font-medium text-white hover:no-underline py-4 text-left">
+                    {f.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-[14px] text-zinc-400 pb-4 leading-relaxed">
+                    {f.a}
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
           </Accordion>
         </div>
       </section>
 
-      {/* Bottom CTA */}
+      {/* Still need help? */}
       <section className="px-4 sm:px-6 pb-24">
         <div className="mx-auto max-w-3xl">
-          <div className="rounded-2xl border border-[#cc1111]/20 bg-gradient-to-br from-[#cc1111]/[0.08] to-transparent p-8 sm:p-10 text-center">
+          <div className="rounded-2xl border border-[#27272a] bg-[#0f0f0f] p-8 sm:p-10 text-center">
             <Mail size={28} className="text-[#cc1111] mx-auto mb-4" />
             <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-              Can't find what you're looking for?
+              Still need help?
             </h3>
             <p className="mt-2 text-[14px] text-zinc-400">
-              Email us at{" "}
+              Can't find what you're looking for?
+            </p>
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  // Try to open Chatbase widget if available
+                  const w = window as unknown as { chatbase?: (action: string) => void };
+                  try {
+                    w.chatbase?.("open");
+                  } catch {
+                    /* no-op */
+                  }
+                  // Fallback: click the embedded chat bubble
+                  const btn = document.querySelector<HTMLButtonElement>(
+                    'iframe[id^="chatbase"], button[aria-label*="chat" i]'
+                  );
+                  if (btn && "click" in btn) (btn as HTMLElement).click();
+                }}
+                className="inline-flex items-center gap-2 bg-[#cc1111] hover:bg-[#b30e0e] text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors"
+              >
+                <MessageCircle size={16} /> Chat with us →
+              </button>
+              <a
+                href="https://wa.me/447423753090"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 border border-[#27272a] hover:border-[#3a3a3a] text-zinc-200 hover:text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors bg-[#1a1a1a]"
+              >
+                WhatsApp us →
+              </a>
+            </div>
+            <p className="mt-5 text-[13px] text-zinc-500">
+              Or email{" "}
               <a href="mailto:info@gopartara.com" className="text-[#cc1111] hover:underline">
                 info@gopartara.com
-              </a>{" "}
-              — we reply within 24 hours.
+              </a>
             </p>
-            <button
-              onClick={() => navigate("/contact")}
-              className="mt-6 inline-flex items-center gap-2 bg-[#cc1111] hover:bg-[#b30e0e] text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors"
-            >
-              Send us a message <ArrowRight size={14} />
-            </button>
           </div>
         </div>
       </section>
