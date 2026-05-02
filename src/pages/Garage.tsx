@@ -27,6 +27,7 @@ import { getMakes, getModels, getYears, getAllYears } from "@/data/vehicleDataba
 import VehicleExpiryBadges from "@/components/garage/VehicleExpiryBadges";
 import VehicleExpiryEditor from "@/components/garage/VehicleExpiryEditor";
 import VehicleNotes from "@/components/dashboard/VehicleNotes";
+import ServiceHistory from "@/components/garage/ServiceHistory";
 import BusinessFeatureGate from "@/components/dashboard/BusinessFeatureGate";
 import { useUserPlan } from "@/hooks/useUserPlan";
 import { findDealByBrand, isUKUser } from "@/data/ebayDeals";
