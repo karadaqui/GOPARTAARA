@@ -169,25 +169,31 @@ const About = () => (
         >
           What we stand for.
         </h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {VALUES.map((v) => (
             <div
               key={v.title}
+              className="rounded-2xl transition-colors hover:border-white/[0.18] hover:bg-white/[0.04]"
               style={{
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.08)",
                 borderTop: "2px solid #cc1111",
-                paddingTop: "20px",
+                padding: "24px 20px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
               }}
             >
-              <div aria-hidden style={{ fontSize: "32px", lineHeight: 1, marginBottom: "12px" }}>
+              <div aria-hidden className="text-4xl" style={{ lineHeight: 1 }}>
                 {v.icon}
               </div>
               <h3
                 className="font-display text-white"
-                style={{ fontSize: "20px", fontWeight: 700, marginBottom: "10px", letterSpacing: "-0.01em" }}
+                style={{ fontSize: "18px", fontWeight: 700, letterSpacing: "-0.01em" }}
               >
                 {v.title}
               </h3>
-              <p style={{ fontSize: "14px", color: "#71717a", lineHeight: 1.6 }}>{v.desc}</p>
+              <p style={{ fontSize: "13px", color: "#a1a1aa", lineHeight: 1.55 }}>{v.desc}</p>
             </div>
           ))}
         </div>
