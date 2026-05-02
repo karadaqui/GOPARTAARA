@@ -93,6 +93,22 @@ const HeroSection = () => {
   const [autoOpen, setAutoOpen] = useState(false);
   const [garageVehicle, setGarageVehicle] = useState<{ make: string; model: string; year?: number } | null>(null);
 
+  // Rotating placeholder examples for the part-search input
+  const placeholderExamples = [
+    "e.g. BMW E46 brake pads",
+    "e.g. Ford Focus 1.6 clutch kit",
+    "e.g. 205/55 R16 tyre",
+    "e.g. NGK spark plug B6S",
+    "e.g. VW Golf MK7 timing chain",
+  ];
+  const [placeholderIdx, setPlaceholderIdx] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setPlaceholderIdx((i) => (i + 1) % placeholderExamples.length);
+    }, 3000);
+    return () => clearInterval(id);
+  }, []);
+
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 50);
     return () => clearTimeout(t);
@@ -332,7 +348,12 @@ const HeroSection = () => {
         {/* Badge */}
         <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            <span className="relative flex items-center justify-center w-2 h-2" aria-hidden="true">
+              <span className="absolute inline-flex w-full h-full rounded-full bg-red-500 opacity-75 animate-ping" />
+              <span className="relative inline-flex w-2 h-2 rounded-full bg-red-500" />
+            </span>
+            <span className="font-semibold tracking-wide text-red-400">LIVE</span>
+            <span className="text-muted-foreground/60">·</span>
             1,000,000+ parts searchable · Free to compare
           </div>
         </div>
@@ -367,7 +388,7 @@ const HeroSection = () => {
               lineHeight: 1.65,
             }}
           >
-            The smart search engine that simultaneously checks eBay, mytyres.co.uk, Tyres UK and 4 more global suppliers.
+            The smart search engine that simultaneously checks eBay, mytyres.co.uk, Tyres UK, Green Spark Plug Co., neumaticos-online.es, Pneumatici IT and ReifenDirekt EE.
           </p>
         </div>
 
@@ -507,7 +528,7 @@ const HeroSection = () => {
                     <input
                       ref={heroInputRef}
                       type="text"
-                      placeholder="e.g. BMW E46 brake pads, Ford Focus clutch..."
+                      placeholder={placeholderExamples[placeholderIdx]}
                       value={query}
                       onChange={(e) => { setQuery(e.target.value); setAutoOpen(true); }}
                       onFocus={() => setAutoOpen(true)}
