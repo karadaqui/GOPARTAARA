@@ -11,12 +11,23 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-const SUBJECTS = [
-  "General",
-  "Bug Report",
-  "Partnership",
-  "Press",
-];
+const DEPARTMENTS = [
+  { value: "General enquiry", subjectPrefix: "General Enquiry" },
+  { value: "Technical support", subjectPrefix: "Technical Support" },
+  { value: "Partnership / supplier enquiry", subjectPrefix: "Partnership Enquiry" },
+  { value: "Press & media", subjectPrefix: "Press & Media" },
+  { value: "Business / trade account", subjectPrefix: "Business / Trade Account" },
+  { value: "Report an issue", subjectPrefix: "Issue Report" },
+] as const;
+
+const DEPARTMENT_NOTES: Record<string, string> = {
+  "Partnership / supplier enquiry":
+    "For supplier partnerships, email partnerships@gopartara.com directly for faster response.",
+  "Press & media":
+    "For press enquiries, email press@gopartara.com with your publication name.",
+};
+
+const SUBJECTS = DEPARTMENTS.map((d) => d.value);
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
@@ -36,7 +47,12 @@ const SECTION_LABEL: React.CSSProperties = {
 };
 
 const Contact = () => {
-  const [form, setForm] = useState({ name: "", email: "", subject: "General", message: "" });
+  const [form, setForm] = useState<{ name: string; email: string; subject: string; message: string }>({
+    name: "",
+    email: "",
+    subject: DEPARTMENTS[0].value,
+    message: "",
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -58,10 +74,14 @@ const Contact = () => {
 
     setSending(true);
     try {
+      const dept = DEPARTMENTS.find((d) => d.value === result.data.subject);
+      const subjectPrefix = dept?.subjectPrefix || result.data.subject;
+      const composedSubject = `${subjectPrefix} — ${result.data.message.slice(0, 60)}${result.data.message.length > 60 ? "…" : ""}`;
+
       const { error: dbError } = await supabase.from("contact_messages" as any).insert({
         name: result.data.name,
         email: result.data.email,
-        subject: result.data.subject,
+        subject: composedSubject,
         message: result.data.message,
       } as any);
 
@@ -77,7 +97,7 @@ const Contact = () => {
           templateData: {
             name: result.data.name,
             email: result.data.email,
-            message: `[${result.data.subject}] ${result.data.message}`,
+            message: `[${composedSubject}] ${result.data.message}`,
           },
         },
       });
@@ -92,7 +112,7 @@ const Contact = () => {
       });
 
       setSent(true);
-      setForm({ name: "", email: "", subject: "General", message: "" });
+      setForm({ name: "", email: "", subject: DEPARTMENTS[0].value, message: "" });
     } catch {
       toast({ title: "Error", description: "Failed to send message. Please try again.", variant: "destructive" });
     } finally {
@@ -254,6 +274,43 @@ const Contact = () => {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-3">
+                  <Field label="What can we help you with?" error={errors.subject}>
+                    <select
+                      value={form.subject}
+                      onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                      className="auth-input w-full px-3 appearance-none cursor-pointer"
+                      style={{
+                        backgroundImage:
+                          "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "right 12px center",
+                        paddingRight: "36px",
+                      }}
+                    >
+                      {SUBJECTS.map((s) => (
+                        <option key={s} value={s} style={{ background: "#0a0a0a" }}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                    {DEPARTMENT_NOTES[form.subject] && (
+                      <p
+                        style={{
+                          marginTop: "8px",
+                          padding: "10px 12px",
+                          fontSize: "12.5px",
+                          color: "#fbbf24",
+                          background: "rgba(251,191,36,0.08)",
+                          border: "1px solid rgba(251,191,36,0.25)",
+                          borderRadius: "8px",
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        💡 {DEPARTMENT_NOTES[form.subject]}
+                      </p>
+                    )}
+                  </Field>
+
                   <Field label="Name" error={errors.name}>
                     <Input
                       placeholder="Your name"
@@ -275,26 +332,6 @@ const Contact = () => {
                     />
                   </Field>
 
-                  <Field label="Subject" error={errors.subject}>
-                    <select
-                      value={form.subject}
-                      onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                      className="auth-input w-full px-3 appearance-none cursor-pointer"
-                      style={{
-                        backgroundImage:
-                          "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")",
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "right 12px center",
-                        paddingRight: "36px",
-                      }}
-                    >
-                      {SUBJECTS.map((s) => (
-                        <option key={s} value={s} style={{ background: "#0a0a0a" }}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
 
                   <Field label="Message" error={errors.message}>
                     <Textarea
