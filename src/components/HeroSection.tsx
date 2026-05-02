@@ -619,48 +619,70 @@ const HeroSection = () => {
                 />
                 </div>
 
-                {/* Popular makes — quick-prefill pills */}
-                <div className="mt-4 max-w-3xl mx-auto">
-                  <div className="flex items-center gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "thin" }}>
-                    <span
-                      style={{
-                        fontSize: 12,
-                        color: "#71717a",
-                        fontWeight: 600,
-                        whiteSpace: "nowrap",
-                        flexShrink: 0,
-                      }}
-                    >
-                      Popular makes:
-                    </span>
+                {/* Search by Vehicle Make — 4×3 grid (6×2 on mobile) */}
+                <div className="mt-6 max-w-3xl mx-auto">
+                  <h3
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 700,
+                      color: "#a1a1aa",
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      marginBottom: 12,
+                      textAlign: "center",
+                    }}
+                  >
+                    Search by Vehicle Make
+                  </h3>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-4 gap-2">
                     {[
-                      "BMW", "Ford", "Volkswagen", "Toyota", "Vauxhall", "Audi",
-                      "Mercedes", "Honda", "Nissan", "Peugeot", "Renault", "Hyundai",
-                    ].map((make) => (
+                      { name: "BMW", icon: "🚗" },
+                      { name: "Ford", icon: "🚙" },
+                      { name: "Volkswagen", icon: "🚗" },
+                      { name: "Toyota", icon: "🚕" },
+                      { name: "Vauxhall", icon: "🚐" },
+                      { name: "Audi", icon: "🚗" },
+                      { name: "Mercedes", icon: "⭐" },
+                      { name: "Honda", icon: "🏎️" },
+                      { name: "Nissan", icon: "🚗" },
+                      { name: "Peugeot", icon: "🚗" },
+                      { name: "Renault", icon: "🚗" },
+                      { name: "Hyundai", icon: "🚗" },
+                    ].map((m) => (
                       <button
-                        key={make}
+                        key={m.name}
                         type="button"
                         onClick={() => {
-                          setQuery(`${make} `);
+                          setQuery(`${m.name} `);
                           setAutoOpen(true);
                           heroInputRef.current?.focus();
                         }}
-                        className="transition-colors"
+                        className="transition-[colors,transform] hover:-translate-y-0.5"
                         style={{
-                          flexShrink: 0,
-                          fontSize: 12,
-                          fontWeight: 600,
-                          padding: "6px 12px",
-                          borderRadius: 999,
-                          background: "#1a1a1a",
-                          border: "1px solid #27272a",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 6,
+                          padding: "10px 8px",
+                          borderRadius: 12,
+                          background: "rgba(255,255,255,0.03)",
+                          border: "1px solid rgba(255,255,255,0.08)",
                           color: "#e4e4e7",
+                          fontSize: 13,
+                          fontWeight: 600,
                           whiteSpace: "nowrap",
                         }}
-                        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#27272a"; }}
-                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#1a1a1a"; }}
+                        onMouseEnter={(e) => {
+                          (e.currentTarget as HTMLButtonElement).style.background = "rgba(204,17,17,0.12)";
+                          (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(204,17,17,0.4)";
+                        }}
+                        onMouseLeave={(e) => {
+                          (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.03)";
+                          (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.08)";
+                        }}
                       >
-                        {make}
+                        <span aria-hidden="true" style={{ fontSize: 16 }}>{m.icon}</span>
+                        <span>{m.name}</span>
                       </button>
                     ))}
                   </div>
