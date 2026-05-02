@@ -340,6 +340,92 @@ const Index = () => {
       <Suspense fallback={<div className="h-32" />}>
         <ScrollReveal><HowItWorksSection /></ScrollReveal>
         <SectionDivider />
+
+        {/* See it in action — video placeholder */}
+        <section className="px-4 py-10">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2
+              className="text-2xl md:text-3xl font-bold"
+              style={{ color: "#fafafa", marginBottom: "8px" }}
+            >
+              See GOPARTARA in action
+            </h2>
+            <p
+              style={{
+                fontSize: "14px",
+                color: "#a1a1aa",
+                marginBottom: "24px",
+              }}
+            >
+              Watch how we find the cheapest car part in under 30 seconds
+            </p>
+
+            <div
+              style={{
+                maxWidth: "800px",
+                margin: "0 auto",
+                aspectRatio: "16 / 9",
+                background:
+                  "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0a0a0a 100%)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                borderRadius: "12px",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  width: "72px",
+                  height: "72px",
+                  borderRadius: "50%",
+                  background: "rgba(255,255,255,0.95)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 4px 24px rgba(0,0,0,0.4)",
+                  marginBottom: "16px",
+                }}
+                aria-hidden="true"
+              >
+                <span
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderTop: "14px solid transparent",
+                    borderBottom: "14px solid transparent",
+                    borderLeft: "22px solid #0a0a0a",
+                    marginLeft: "6px",
+                  }}
+                />
+              </div>
+              <p
+                style={{
+                  fontSize: "13px",
+                  color: "#a1a1aa",
+                  margin: 0,
+                }}
+              >
+                Coming soon — full demo video
+              </p>
+            </div>
+
+            <p
+              style={{
+                fontSize: "13px",
+                color: "#71717a",
+                marginTop: "16px",
+              }}
+            >
+              In the meantime, try a live search above →
+            </p>
+          </div>
+        </section>
+
+        <SectionDivider />
         <ScrollReveal><FeaturesSection /></ScrollReveal>
         <SectionDivider />
         <ScrollReveal><WhyPartaraSection /></ScrollReveal>
