@@ -462,6 +462,9 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Newsletter signup */}
+      <NewsletterSignup />
+
       <Footer />
       <BackToTop />
       <WelcomeModal />
