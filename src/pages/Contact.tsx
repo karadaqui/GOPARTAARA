@@ -274,6 +274,43 @@ const Contact = () => {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-3">
+                  <Field label="What can we help you with?" error={errors.subject}>
+                    <select
+                      value={form.subject}
+                      onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                      className="auth-input w-full px-3 appearance-none cursor-pointer"
+                      style={{
+                        backgroundImage:
+                          "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "right 12px center",
+                        paddingRight: "36px",
+                      }}
+                    >
+                      {SUBJECTS.map((s) => (
+                        <option key={s} value={s} style={{ background: "#0a0a0a" }}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                    {DEPARTMENT_NOTES[form.subject] && (
+                      <p
+                        style={{
+                          marginTop: "8px",
+                          padding: "10px 12px",
+                          fontSize: "12.5px",
+                          color: "#fbbf24",
+                          background: "rgba(251,191,36,0.08)",
+                          border: "1px solid rgba(251,191,36,0.25)",
+                          borderRadius: "8px",
+                          lineHeight: 1.5,
+                        }}
+                      >
+                        💡 {DEPARTMENT_NOTES[form.subject]}
+                      </p>
+                    )}
+                  </Field>
+
                   <Field label="Name" error={errors.name}>
                     <Input
                       placeholder="Your name"
@@ -295,26 +332,6 @@ const Contact = () => {
                     />
                   </Field>
 
-                  <Field label="Subject" error={errors.subject}>
-                    <select
-                      value={form.subject}
-                      onChange={(e) => setForm({ ...form, subject: e.target.value })}
-                      className="auth-input w-full px-3 appearance-none cursor-pointer"
-                      style={{
-                        backgroundImage:
-                          "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>\")",
-                        backgroundRepeat: "no-repeat",
-                        backgroundPosition: "right 12px center",
-                        paddingRight: "36px",
-                      }}
-                    >
-                      {SUBJECTS.map((s) => (
-                        <option key={s} value={s} style={{ background: "#0a0a0a" }}>
-                          {s}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
 
                   <Field label="Message" error={errors.message}>
                     <Textarea
