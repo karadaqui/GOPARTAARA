@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import PricingSection, { faqItems } from "@/components/PricingSection";
 import { TestimonialCard, testimonials } from "@/components/TestimonialsSection";
