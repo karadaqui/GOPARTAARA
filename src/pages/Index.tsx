@@ -5,6 +5,7 @@ import HeroSection from "@/components/HeroSection";
 import LiveActivityCounter from "@/components/LiveActivityCounter";
 import SocialProofStats from "@/components/SocialProofStats";
 import HomeCTASection from "@/components/HomeCTASection";
+import SavingsComparison from "@/components/SavingsComparison";
 import PopularSearchesStrip from "@/components/PopularSearchesStrip";
 import BrowseByMakeSection from "@/components/BrowseByMakeSection";
 import FeaturedListingsSection from "@/components/FeaturedListingsSection";
@@ -444,6 +445,8 @@ const Index = () => {
         <ScrollReveal><WhyPartaraSection /></ScrollReveal>
         <SectionDivider />
         <ScrollReveal><TestimonialsSection /></ScrollReveal>
+        <SectionDivider />
+        <ScrollReveal><SavingsComparison /></ScrollReveal>
         <SectionDivider />
         <ScrollReveal><PricingSection /></ScrollReveal>
       </Suspense>
