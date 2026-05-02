@@ -168,7 +168,7 @@ const Tyres = () => {
     setSearched(true)
     setTyreProducts([])
     setCurrentPage(1)
-    setSeasonFilter('all')
+    // Preserve user-selected seasonFilter across searches
     setSortBy('default')
     const ids = ['4118', '10499', '10747', '12716', '12715']
 
