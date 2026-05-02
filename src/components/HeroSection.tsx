@@ -372,7 +372,7 @@ const HeroSection = () => {
               lineHeight: 1.65,
             }}
           >
-            The smart search engine that simultaneously checks eBay, mytyres.co.uk, Tyres UK and 4 more global suppliers.
+            The smart search engine that simultaneously checks eBay, mytyres.co.uk, Tyres UK, Green Spark Plug Co., neumaticos-online.es, Pneumatici IT and ReifenDirekt EE.
           </p>
         </div>
 
