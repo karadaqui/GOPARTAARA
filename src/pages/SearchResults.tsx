@@ -1426,11 +1426,45 @@ const SearchResults = () => {
             {/* ── Results Header ── */}
             <div className="mb-4 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
               <div>
-                <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
-                  {totalResults > 0 ? `${totalResults.toLocaleString()} results` : "Results"}
-                  <span style={{ color: "#333333", fontWeight: 400 }}> · </span>
-                  <span style={{ color: "#888888", fontWeight: 400 }}>{categoryFilter !== "All Parts" ? `${categoryFilter} — ` : ""}{activeQuery}</span>
-                </h1>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
+                    {totalResults > 0 ? `${totalResults.toLocaleString()} results` : "Results"}
+                    <span style={{ color: "#333333", fontWeight: 400 }}> · </span>
+                    <span style={{ color: "#888888", fontWeight: 400 }}>{categoryFilter !== "All Parts" ? `${categoryFilter} — ` : ""}{activeQuery}</span>
+                  </h1>
+                  {totalResults > 0 && activeQuery && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!user) {
+                          sonnerToast("Sign in to save searches and get price alerts", {
+                            description: "Create a free account to track this search.",
+                            action: { label: "Sign in", onClick: () => setAuthGateOpen(true) },
+                          });
+                          return;
+                        }
+                        sonnerToast.success("Search saved!", {
+                          description: "We'll alert you when prices drop.",
+                        });
+                      }}
+                      className="inline-flex items-center gap-1.5 rounded-full transition-colors"
+                      style={{
+                        background: "transparent",
+                        border: "1px solid #27272a",
+                        color: "#e4e4e7",
+                        fontSize: 12,
+                        fontWeight: 600,
+                        padding: "6px 12px",
+                        whiteSpace: "nowrap",
+                      }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#1a1a1a"; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+                      aria-label="Save this search"
+                    >
+                      <span aria-hidden>🔔</span> Save this search
+                    </button>
+                  )}
+                </div>
                 {totalResults > 0 && !liveLoading && (
                   <>
                     <p className="mt-2 flex items-center gap-2 flex-wrap" style={{ fontSize: "13px", color: "#52525b" }}>
