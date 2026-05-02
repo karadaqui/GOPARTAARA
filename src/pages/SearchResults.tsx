@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 import PriceSparkline from "@/components/PriceSparkline";
+import PriceDropBadge from "@/components/PriceDropBadge";
 import { useAuth } from "@/contexts/AuthContext";
 import VehicleLookup from "@/components/VehicleLookup";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
