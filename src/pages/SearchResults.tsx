@@ -2053,6 +2053,32 @@ const SearchResults = () => {
                           <a href={item.url} target="_blank" rel="noopener noreferrer" className="block" title={item.partName}>
                             <p className="text-sm font-medium text-white leading-snug line-clamp-2 min-h-[2.5rem] group-hover:text-red-400 transition-colors">{item.partName}</p>
                           </a>
+                          {/* Supplier + condition + feedback badges */}
+                          <div className="flex items-center flex-wrap gap-1.5 -mt-1">
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-white/[0.04] border border-white/[0.08] text-zinc-300" title="Supplier">
+                              <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#e53238" }} />
+                              eBay
+                            </span>
+                            {(() => {
+                              const c = (item.condition || "").trim().toLowerCase();
+                              const isNew = c === "new" || c.includes("brand new");
+                              return isNew ? (
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold tracking-wide bg-blue-500/15 border border-blue-500/30 text-blue-400" title="Brand new item">
+                                  NEW
+                                </span>
+                              ) : null;
+                            })()}
+                            {item.freeShipping && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400" title="Free postage & packaging">
+                                🚚 Free P&P
+                              </span>
+                            )}
+                            {typeof item.sellerPositivePercent === "number" && item.sellerPositivePercent > 0 && (
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-amber-500/10 border border-amber-500/25 text-amber-400" title="Seller positive feedback">
+                                ⭐ {item.sellerPositivePercent.toFixed(1)}%
+                              </span>
+                            )}
+                          </div>
                           {fitRegLabel && (
                             <span
                               className="inline-flex items-center gap-1 px-1.5 py-0.5 w-fit text-[11px] font-semibold"
