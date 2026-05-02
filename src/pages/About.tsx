@@ -334,6 +334,68 @@ const About = () => (
 
       {/* CTA — same as homepage */}
       <HomeCTASection />
+
+      {/* Join Us / Careers */}
+      <section className="max-w-6xl mx-auto px-4 py-16 md:py-20">
+        <div className="text-center mb-10">
+          <h2 className="font-display text-3xl md:text-5xl font-bold mb-4 tracking-tight">
+            Join the GOPARTARA Team
+          </h2>
+          <p className="text-muted-foreground max-w-xl mx-auto text-base md:text-lg leading-relaxed">
+            We're building the future of car parts discovery. Want to be part of it?
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            { icon: "🛠️", title: "Full Stack Developer", desc: "Remote · Part-time / Full-time · Help build our search engine" },
+            { icon: "📈", title: "Growth & Marketing", desc: "Remote · Part-time · Drive user acquisition across UK & EU" },
+            { icon: "🤝", title: "Supplier Partnerships", desc: "Remote · Part-time · Expand our supplier network to 500+" },
+          ].map((role) => (
+            <div
+              key={role.title}
+              className="flex flex-col h-full transition-colors hover:border-white/15"
+              style={{
+                background: "#111111",
+                border: "1px solid #1f1f1f",
+                borderRadius: "12px",
+                padding: "24px",
+              }}
+            >
+              <div style={{ fontSize: 28, marginBottom: 12 }} aria-hidden="true">{role.icon}</div>
+              <h3 style={{ fontSize: 18, fontWeight: 700, color: "#ffffff", marginBottom: 8 }}>
+                {role.title}
+              </h3>
+              <p style={{ fontSize: 13, color: "#a1a1aa", lineHeight: 1.6, marginBottom: 20, flex: 1 }}>
+                {role.desc}
+              </p>
+              <a
+                href={`mailto:info@gopartara.com?subject=Career Interest: ${encodeURIComponent(role.title)}`}
+                className="inline-flex items-center justify-center transition-opacity hover:opacity-90"
+                style={{
+                  background: "#fbbf24",
+                  color: "#0a1628",
+                  padding: "10px 16px",
+                  borderRadius: 8,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  textDecoration: "none",
+                }}
+              >
+                Express Interest →
+              </a>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-center text-sm mt-8" style={{ color: "#71717a" }}>
+          Don't see your role? Email us at{" "}
+          <a href="mailto:info@gopartara.com" style={{ color: "#fbbf24", textDecoration: "underline" }}>
+            info@gopartara.com
+          </a>{" "}
+          — we're always open to talented people.
+        </p>
+      </section>
     </main>
 
     <Footer />
