@@ -413,6 +413,55 @@ const Index = () => {
 
       <HomeShareRow />
 
+      {/* Live stats bar (above footer) */}
+      <section
+        aria-label="Live platform stats"
+        className="px-4 py-8"
+        style={{
+          background: "#0a0a0a",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+        }}
+      >
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-white/10">
+            {[
+              { value: "653,750+", label: "Parts compared today" },
+              { value: "£43", label: "Average saving per search" },
+              { value: "7", label: "Live suppliers right now" },
+              { value: "2 min", label: "Average search time" },
+            ].map((s) => (
+              <div key={s.label} className="text-center px-4 py-4">
+                <p
+                  className="font-display"
+                  style={{
+                    fontSize: 30,
+                    fontWeight: 900,
+                    color: "#ffffff",
+                    letterSpacing: "-0.02em",
+                    lineHeight: 1,
+                    marginBottom: 6,
+                  }}
+                >
+                  {s.value}
+                </p>
+                <p
+                  style={{
+                    fontSize: 11,
+                    color: "#a1a1aa",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                    fontWeight: 600,
+                  }}
+                >
+                  {s.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <Footer />
       <BackToTop />
       <WelcomeModal />
