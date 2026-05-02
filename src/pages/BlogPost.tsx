@@ -67,18 +67,48 @@ const BlogPost = () => {
     if (!error && data) {
       const p = data as BlogPostData;
       setPost(p);
+
+      const collected: BlogPostData[] = [];
+      const selectCols = "id, title, slug, preview, meta_description, keywords, category, read_time, author, published_at, content";
+
       if (p.category) {
-        const { data: relatedData } = await supabase
+        const { data: sameCat } = await supabase
           .from("blog_posts")
-          .select("id, title, slug, preview, meta_description, keywords, category, read_time, author, published_at, content")
+          .select(selectCols)
           .eq("published", true)
           .eq("category", p.category)
           .neq("id", p.id)
+          .order("published_at", { ascending: false })
           .limit(3);
-        if (relatedData) setRelated(relatedData as BlogPostData[]);
+        if (sameCat) collected.push(...(sameCat as BlogPostData[]));
       }
+
+      if (collected.length < 3) {
+        const excludeIds = [p.id, ...collected.map((c) => c.id)];
+        const { data: fillers } = await supabase
+          .from("blog_posts")
+          .select(selectCols)
+          .eq("published", true)
+          .not("id", "in", `(${excludeIds.join(",")})`)
+          .order("published_at", { ascending: false })
+          .limit(3 - collected.length);
+        if (fillers) collected.push(...(fillers as BlogPostData[]));
+      }
+
+      setRelated(collected.slice(0, 3));
     }
     setLoading(false);
+  };
+
+  const thumbFor = (cat: string | null): { emoji: string; gradient: string } => {
+    switch (cat) {
+      case "Buying Guide": return { emoji: "🛒", gradient: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)" };
+      case "Maintenance": return { emoji: "🔧", gradient: "linear-gradient(135deg, #1a2a1a 0%, #1e3a1e 100%)" };
+      case "Tutorial":    return { emoji: "📖", gradient: "linear-gradient(135deg, #2a1a1a 0%, #3a1e1e 100%)" };
+      case "Education":   return { emoji: "🎓", gradient: "linear-gradient(135deg, #1a1a3a 0%, #1e1e4a 100%)" };
+      case "Comparison":  return { emoji: "⚖️", gradient: "linear-gradient(135deg, #2a2a1a 0%, #3a3a1e 100%)" };
+      default:            return { emoji: "🚗", gradient: "linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)" };
+    }
   };
 
   // Process content: inject ids on h2/h3, build TOC
