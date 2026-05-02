@@ -478,9 +478,53 @@ const Marketplace = () => {
                   );
                 })}
               </div>
-            </div>
 
-            {/* Why sell on GOPARTARA — always visible above grid */}
+              {/* Price / Sort / Condition row */}
+              <div className="flex flex-wrap items-center gap-2 mt-3 pt-3 border-t border-border/40">
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    inputMode="decimal"
+                    value={minPrice}
+                    onChange={e => setMinPrice(e.target.value)}
+                    placeholder="Min £"
+                    className="bg-secondary border-border rounded-xl text-sm h-9 w-24"
+                  />
+                  <span className="text-xs text-muted-foreground">–</span>
+                  <Input
+                    type="number"
+                    inputMode="decimal"
+                    value={maxPrice}
+                    onChange={e => setMaxPrice(e.target.value)}
+                    placeholder="Max £"
+                    className="bg-secondary border-border rounded-xl text-sm h-9 w-24"
+                  />
+                </div>
+
+                <select
+                  value={sortBy}
+                  onChange={e => setSortBy(e.target.value as any)}
+                  className="bg-secondary border border-border rounded-xl text-sm h-9 px-3 text-foreground"
+                  aria-label="Sort by"
+                >
+                  <option value="newest">Newest First</option>
+                  <option value="price_asc">Price: Low to High</option>
+                  <option value="price_desc">Price: High to Low</option>
+                </select>
+
+                <select
+                  value={conditionFilter}
+                  onChange={e => setConditionFilter(e.target.value as any)}
+                  className="bg-secondary border border-border rounded-xl text-sm h-9 px-3 text-foreground"
+                  aria-label="Condition"
+                >
+                  <option value="All">All Conditions</option>
+                  <option value="New">New</option>
+                  <option value="Used - Good">Used - Good</option>
+                  <option value="Used - Fair">Used - Fair</option>
+                </select>
+              </div>
+            </div>
             <div className="mb-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
