@@ -351,6 +351,25 @@ const Blog = () => {
                         className="flex flex-col h-full"
                         style={{ padding: "24px 0" }}
                       >
+                        {(() => { const t = thumbFor(post.category); return (
+                          <div
+                            aria-hidden
+                            style={{
+                              width: "100%",
+                              height: "160px",
+                              borderTopLeftRadius: "12px",
+                              borderTopRightRadius: "12px",
+                              background: t.gradient,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "40px",
+                              marginBottom: "16px",
+                            }}
+                          >
+                            {t.emoji}
+                          </div>
+                        ); })()}
                         <div className="flex items-center gap-2 mb-3">
                           {post.category && (
                             <span
