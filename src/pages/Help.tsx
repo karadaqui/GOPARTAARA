@@ -110,7 +110,6 @@ const faqs: { q: string; a: React.ReactNode }[] = [
 ];
 
 const Help = () => {
-  const navigate = useNavigate();
   const [query, setQuery] = useState("");
 
   const filteredArticles = useMemo(() => {
