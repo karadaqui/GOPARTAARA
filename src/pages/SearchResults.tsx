@@ -2018,7 +2018,9 @@ const SearchResults = () => {
                                     e.stopPropagation();
                                     if (isSel) {
                                       setCompareParts((prev) => prev.filter((p) => p.id !== item.id));
-                                    } else if (!disabled) {
+                                    } else if (compareParts.length >= 3) {
+                                      sonnerToast("Max 3 parts", { description: "You can compare up to 3 parts at a time." });
+                                    } else {
                                       setCompareParts((prev) => [...prev, { id: item.id, title: item.partName, price: item.price, condition: item.condition, sellerName: item.sellerUsername, sellerRating: item.sellerPositivePercent, freeShipping: item.freeShipping, shippingCost: item.shippingCost, location: item.itemLocation, itemCountry: item.itemCountry, url: item.url, imageUrl: item.imageUrl, source: "ebay" as const }]);
                                     }
                                   }}
