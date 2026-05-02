@@ -20,6 +20,7 @@ export const SUPPORTED_COUNTRIES: Country[] = [
   { code: "FR", name: "France", flag: "🇫🇷", ebayMarketplace: "EBAY_FR" },
   { code: "IT", name: "Italy", flag: "🇮🇹", ebayMarketplace: "EBAY_IT" },
   { code: "ES", name: "Spain", flag: "🇪🇸", ebayMarketplace: "EBAY_ES" },
+  { code: "LV", name: "Latvia", flag: "🇱🇻", ebayMarketplace: "EBAY_GB" },
   { code: "AU", name: "Australia", flag: "🇦🇺", ebayMarketplace: "EBAY_AU" },
   { code: "US", name: "United States", flag: "🇺🇸", ebayMarketplace: "EBAY_US" },
   { code: "CA", name: "Canada", flag: "🇨🇦", ebayMarketplace: "EBAY_ENCA" },
