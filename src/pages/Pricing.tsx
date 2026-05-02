@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import PricingSection, { faqItems } from "@/components/PricingSection";
 import { TestimonialCard, testimonials } from "@/components/TestimonialsSection";
@@ -150,6 +150,95 @@ const Pricing = () => {
       <Navbar />
       <div className="pt-24">
         <PricingSection />
+
+        {/* Enterprise & Trade */}
+        <section className="container max-w-5xl mx-auto px-4 pb-12">
+          <div
+            className="rounded-2xl overflow-hidden"
+            style={{
+              background: "#111111",
+              border: "1px solid rgba(204,17,17,0.35)",
+              boxShadow: "0 0 0 1px rgba(251,191,36,0.08) inset",
+            }}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8 md:p-10">
+              {/* Left */}
+              <div>
+                <p
+                  style={{
+                    fontSize: 11,
+                    color: "#cc1111",
+                    fontWeight: 700,
+                    letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                    marginBottom: 10,
+                  }}
+                >
+                  Enterprise &amp; Trade
+                </p>
+                <h3
+                  className="font-display"
+                  style={{
+                    fontSize: 26,
+                    fontWeight: 800,
+                    color: "#ffffff",
+                    letterSpacing: "-0.01em",
+                    lineHeight: 1.15,
+                    marginBottom: 18,
+                  }}
+                >
+                  For garages, fleets &amp; dealerships
+                </h3>
+                <ul className="space-y-2">
+                  {[
+                    "Unlimited everything",
+                    "Team management & roles",
+                    "API access",
+                    "Custom integrations",
+                    "Dedicated account manager",
+                    "Volume pricing",
+                  ].map((item) => (
+                    <li
+                      key={item}
+                      className="flex items-start gap-2"
+                      style={{ color: "#e4e4e7", fontSize: 14 }}
+                    >
+                      <span style={{ color: "#fbbf24", fontWeight: 800 }}>✓</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Right */}
+              <div className="flex flex-col justify-center md:items-end md:text-right">
+                <p
+                  className="font-display"
+                  style={{ fontSize: 28, fontWeight: 900, color: "#ffffff", lineHeight: 1 }}
+                >
+                  Custom pricing
+                </p>
+                <p style={{ color: "#a1a1aa", fontSize: 14, marginTop: 8, marginBottom: 20 }}>
+                  Contact us for a tailored quote
+                </p>
+                <div className="flex flex-col sm:flex-row md:flex-col gap-3 w-full md:w-auto">
+                  <Link
+                    to="/contact"
+                    className="inline-flex items-center justify-center gap-2 bg-[#cc1111] hover:bg-red-500 text-white font-bold px-6 py-3 rounded-xl transition-colors text-sm"
+                  >
+                    Talk to Us →
+                  </Link>
+                  <a
+                    href="mailto:info@gopartara.com?subject=Demo%20Request"
+                    className="inline-flex items-center justify-center gap-2 border border-zinc-700 hover:border-zinc-500 text-zinc-200 hover:text-white font-bold px-6 py-3 rounded-xl transition-colors text-sm"
+                  >
+                    Schedule a Demo →
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* What Pro users say */}
         <section className="container max-w-5xl mx-auto px-4 pb-12">
