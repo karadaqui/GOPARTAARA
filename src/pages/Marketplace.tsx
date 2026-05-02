@@ -96,6 +96,10 @@ const Marketplace = () => {
   const [search, setSearch] = useState(searchParams.get("q") || "");
   const [category, setCategory] = useState("All");
   const [vehicleFilter, setVehicleFilter] = useState("");
+  const [minPrice, setMinPrice] = useState<string>("");
+  const [maxPrice, setMaxPrice] = useState<string>("");
+  const [sortBy, setSortBy] = useState<"newest" | "price_asc" | "price_desc">("newest");
+  const [conditionFilter, setConditionFilter] = useState<"All" | "New" | "Used - Good" | "Used - Fair">("All");
   
   const [compareParts, setCompareParts] = usePersistentCompare();
   const [showCompare, setShowCompare] = useState(false);
