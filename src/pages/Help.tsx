@@ -235,6 +235,31 @@ const Help = () => {
                 style={{ height: 52, fontSize: 15 }}
               />
             </div>
+
+            {/* Quick-link pills */}
+            <div className="mt-5 flex flex-wrap justify-center gap-2">
+              {[
+                { label: "How does the search work?", target: "faq-search" },
+                { label: "Is GOPARTARA free?", target: "faq-free" },
+                { label: "How do price alerts work?", target: "faq-alerts" },
+                { label: "How do I add my car to My Garage?", target: "cat-my-garage" },
+              ].map((p) => (
+                <button
+                  key={p.target}
+                  type="button"
+                  onClick={() => {
+                    const el = document.getElementById(p.target);
+                    if (!el) return;
+                    el.scrollIntoView({ behavior: "smooth", block: "center" });
+                    el.classList.add("ring-2", "ring-[#cc1111]/40");
+                    setTimeout(() => el.classList.remove("ring-2", "ring-[#cc1111]/40"), 1500);
+                  }}
+                  className="px-3.5 py-1.5 rounded-full bg-[#1a1a1a] hover:bg-[#222222] border border-[#27272a] hover:border-[#3a3a3a] text-[12.5px] text-zinc-300 hover:text-white transition-colors"
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </section>
