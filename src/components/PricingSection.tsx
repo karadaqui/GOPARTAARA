@@ -152,7 +152,13 @@ const PricingSection = () => {
   const { plan: subPlan, trialEndsAt } = useSubscription();
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [slowWarning, setSlowWarning] = useState(false);
-  const [annual, setAnnual] = useState(false);
+  const [annual, setAnnual] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try { return localStorage.getItem("pricing_annual") === "1"; } catch { return false; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem("pricing_annual", annual ? "1" : "0"); } catch { /* ignore */ }
+  }, [annual]);
 
   // Derive trial state from cached subscription data — avoids a duplicate
   // `profiles` query on every Pricing render (FIX 7: singleton cache).
