@@ -25,6 +25,7 @@ import BackToTop from "@/components/BackToTop";
 import WelcomeModal from "@/components/WelcomeModal";
 import LocationBanner from "@/components/LocationBanner";
 import ExitIntentBanner from "@/components/ExitIntentBanner";
+import ExitIntentPopup from "@/components/ExitIntentPopup";
 
 const Index = () => {
   const location = useLocation();
