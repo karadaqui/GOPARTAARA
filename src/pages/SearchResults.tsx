@@ -1601,6 +1601,97 @@ const SearchResults = () => {
                     Share this search
                   </button>
                 </div>
+
+              {/* Filter by Vehicle (My Garage) */}
+              <div
+                className="flex items-center gap-2 flex-wrap mb-3"
+                style={{
+                  background: "#0d0d0d",
+                  border: "1px solid #1f1f1f",
+                  borderRadius: 10,
+                  padding: "8px 12px",
+                }}
+              >
+                <span style={{ fontSize: 12, fontWeight: 600, color: "#a1a1aa", whiteSpace: "nowrap" }}>
+                  My Vehicles:
+                </span>
+                {garageVehicles.length === 0 ? (
+                  <button
+                    type="button"
+                    onClick={() => navigate("/garage")}
+                    className="text-xs hover:underline"
+                    style={{ color: "#fbbf24", fontWeight: 600 }}
+                  >
+                    Add your car →
+                  </button>
+                ) : (
+                  garageVehicles.map((v) => {
+                    const label = `${v.make} ${v.model} ${v.year}`;
+                    const active = garageVehicleLabel === label;
+                    return (
+                      <button
+                        key={v.id}
+                        type="button"
+                        onClick={() => {
+                          setGarageVehicleLabel(label);
+                          const baseQuery = (activeQuery || "").replace(/\s+/g, " ").trim();
+                          const stripped = baseQuery
+                            .replace(new RegExp(`\\b${v.make}\\b`, "ig"), "")
+                            .replace(new RegExp(`\\b${v.model}\\b`, "ig"), "")
+                            .replace(new RegExp(`\\b${v.year}\\b`, "g"), "")
+                            .replace(/\s+/g, " ")
+                            .trim();
+                          const nextQuery = `${label}${stripped ? " " + stripped : ""}`.trim();
+                          setQuery(nextQuery);
+                          setActiveQuery(nextQuery);
+                          setCurrentPage(1);
+                          setSearchParams({ q: nextQuery, fromGarage: "true" });
+                        }}
+                        className="inline-flex items-center gap-1 rounded-full transition-colors"
+                        style={{
+                          background: active ? "#fbbf24" : "transparent",
+                          border: `1px solid ${active ? "#fbbf24" : "#27272a"}`,
+                          color: active ? "#0a1628" : "#e4e4e7",
+                          fontSize: 12,
+                          fontWeight: 600,
+                          padding: "4px 10px",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        🚗 {label}
+                      </button>
+                    );
+                  })
+                )}
+                {garageVehicleLabel && (
+                  <span
+                    className="ml-auto inline-flex items-center gap-1 rounded-full"
+                    style={{
+                      background: "rgba(22,163,74,0.12)",
+                      border: "1px solid rgba(22,163,74,0.4)",
+                      color: "#4ade80",
+                      fontSize: 11,
+                      fontWeight: 700,
+                      padding: "3px 8px",
+                    }}
+                  >
+                    Showing parts for: {garageVehicleLabel}
+                    <button
+                      type="button"
+                      aria-label="Clear vehicle filter"
+                      onClick={() => {
+                        setGarageVehicleLabel(null);
+                        searchParams.delete("fromGarage");
+                        setSearchParams(searchParams);
+                      }}
+                      className="hover:opacity-80"
+                    >
+                      <X size={11} />
+                    </button>
+                  </span>
+                )}
+              </div>
+
               <FilterBar
                 conditionFilter={conditionFilter}
                 setConditionFilter={setConditionFilter}
