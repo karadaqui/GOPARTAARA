@@ -341,20 +341,31 @@ const Help = () => {
             Frequently asked questions
           </h2>
           <Accordion type="single" collapsible className="space-y-2">
-            {faqs.map((f, i) => (
-              <AccordionItem
-                key={i}
-                value={`faq-${i}`}
-                className="border border-[#1f1f1f] rounded-xl px-5 bg-[#0f0f0f]"
-              >
-                <AccordionTrigger className="text-[14px] font-medium text-white hover:no-underline py-4 text-left">
-                  {f.q}
-                </AccordionTrigger>
-                <AccordionContent className="text-[14px] text-zinc-400 pb-4 leading-relaxed">
-                  {f.a}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
+            {faqs.map((f, i) => {
+              const ql = f.q.toLowerCase();
+              const anchorId = ql.includes("free")
+                ? "faq-free"
+                : ql.includes("price alerts")
+                ? "faq-alerts"
+                : ql.includes("supplier") || ql.includes("search")
+                ? "faq-search"
+                : undefined;
+              return (
+                <AccordionItem
+                  key={i}
+                  id={anchorId}
+                  value={`faq-${i}`}
+                  className="border border-[#1f1f1f] rounded-xl px-5 bg-[#0f0f0f] scroll-mt-24"
+                >
+                  <AccordionTrigger className="text-[14px] font-medium text-white hover:no-underline py-4 text-left">
+                    {f.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-[14px] text-zinc-400 pb-4 leading-relaxed">
+                    {f.a}
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
           </Accordion>
         </div>
       </section>
