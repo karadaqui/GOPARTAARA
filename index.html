@@ -97,14 +97,37 @@
         "@type": "Organization",
         "name": "GOPARTARA",
         "url": "https://gopartara.com",
-        "logo": "https://gopartara.com/favicon.png",
-        "description": "Global car parts price comparison platform",
+        "logo": "https://gopartara.com/favicon.ico",
+        "description": "Car parts price comparison engine searching 1,000,000+ parts across 7 trusted UK and global suppliers simultaneously.",
         "contactPoint": {
           "@type": "ContactPoint",
-          "email": "info@gopartara.com",
-          "contactType": "customer service"
+          "telephone": "+447423753090",
+          "contactType": "customer service",
+          "availableLanguage": ["English"],
+          "hoursAvailable": "Mo-Fr 09:00-17:00"
         },
-        "sameAs": []
+        "sameAs": [
+          "https://twitter.com/gopartara",
+          "https://www.youtube.com/@gopartara"
+        ]
+      }
+    </script>
+
+    <!-- WebSite Structured Data with SearchAction -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "GOPARTARA",
+        "url": "https://gopartara.com",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://gopartara.com/search?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
       }
     </script>
 </head>
