@@ -1467,6 +1467,40 @@ const SearchResults = () => {
                       <span aria-hidden>🔔</span> Save this search
                     </button>
                   )}
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const url = window.location.href;
+                      try {
+                        await navigator.clipboard.writeText(url);
+                      } catch {
+                        const ta = document.createElement("textarea");
+                        ta.value = url;
+                        document.body.appendChild(ta);
+                        ta.select();
+                        try { document.execCommand("copy"); } catch {}
+                        document.body.removeChild(ta);
+                      }
+                      sonnerToast.success("Search link copied!", {
+                        description: "Share it with anyone.",
+                      });
+                    }}
+                    className="inline-flex items-center gap-1.5 rounded-full transition-colors"
+                    style={{
+                      background: "transparent",
+                      border: "1px solid #27272a",
+                      color: "#e4e4e7",
+                      fontSize: 12,
+                      fontWeight: 600,
+                      padding: "6px 12px",
+                      whiteSpace: "nowrap",
+                    }}
+                    onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#1a1a1a"; }}
+                    onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+                    aria-label="Share this search"
+                  >
+                    <span aria-hidden>🔗</span> Share this search
+                  </button>
                 </div>
                 {totalResults > 0 && !liveLoading && (
                   <>
