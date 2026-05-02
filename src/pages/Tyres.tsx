@@ -472,6 +472,114 @@ const Tyres = () => {
           </div>
         </div>
 
+        {/* EU Tyre Label explainer */}
+        <div className="max-w-2xl mx-auto px-4 mb-8">
+          <button
+            type="button"
+            onClick={() => setShowLabelHelp((s) => !s)}
+            aria-expanded={showLabelHelp}
+            className="w-full flex items-center justify-between rounded-xl px-4 py-3 transition-colors"
+            style={{
+              background: "#111111",
+              border: "1px solid #27272a",
+              color: "#e4e4e7",
+              fontSize: 14,
+              fontWeight: 600,
+            }}
+          >
+            <span>📋 How to read tyre size & EU label</span>
+            <span
+              aria-hidden
+              style={{
+                color: "#a1a1aa",
+                transform: showLabelHelp ? "rotate(180deg)" : "rotate(0deg)",
+                transition: "transform 200ms",
+                display: "inline-block",
+              }}
+            >
+              ▼
+            </span>
+          </button>
+
+          {showLabelHelp && (
+            <div
+              style={{
+                marginTop: 8,
+                background: "#0f0f0f",
+                border: "1px solid #27272a",
+                borderRadius: 12,
+                padding: "16px 18px",
+                color: "#a1a1aa",
+                fontSize: 13,
+                lineHeight: 1.6,
+              }}
+            >
+              {/* Tyre size */}
+              <h3 style={{ color: "#ffffff", fontSize: 13, fontWeight: 700, marginBottom: 8, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                Tyre size — e.g. 205/55 R16
+              </h3>
+              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px 0", display: "grid", gap: 4 }}>
+                <li><span style={{ color: "#cc1111", fontWeight: 700, fontFamily: "monospace" }}>205</span> — width in mm (sidewall to sidewall)</li>
+                <li><span style={{ color: "#cc1111", fontWeight: 700, fontFamily: "monospace" }}>55</span> — profile: sidewall height as % of width</li>
+                <li><span style={{ color: "#cc1111", fontWeight: 700, fontFamily: "monospace" }}>R</span> — Radial construction</li>
+                <li><span style={{ color: "#cc1111", fontWeight: 700, fontFamily: "monospace" }}>16</span> — rim diameter in inches</li>
+              </ul>
+
+              {/* Sidewall diagram */}
+              <h3 style={{ color: "#ffffff", fontSize: 13, fontWeight: 700, marginBottom: 8, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                Where to find it on your tyre
+              </h3>
+              <div
+                style={{
+                  background: "#1a1a1a",
+                  border: "1px solid #27272a",
+                  borderRadius: 10,
+                  padding: "14px 16px",
+                  marginBottom: 16,
+                  fontFamily: "monospace",
+                  textAlign: "center",
+                }}
+              >
+                <div style={{ fontSize: 22, marginBottom: 6 }} aria-hidden>⬛⬛⬛⬛⬛</div>
+                <div style={{ color: "#fbbf24", fontWeight: 700, fontSize: 14, letterSpacing: "0.08em" }}>
+                  205/55&nbsp;R16&nbsp;91V
+                </div>
+                <div style={{ color: "#71717a", fontSize: 11, marginTop: 4 }}>
+                  ↑ moulded into the tyre sidewall
+                </div>
+              </div>
+
+              {/* EU label */}
+              <h3 style={{ color: "#ffffff", fontSize: 13, fontWeight: 700, marginBottom: 8, letterSpacing: "0.04em", textTransform: "uppercase" }}>
+                EU label ratings
+              </h3>
+              <div style={{ display: "grid", gap: 8 }}>
+                <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                  <span style={{ fontSize: 18 }} aria-hidden>⛽</span>
+                  <div>
+                    <strong style={{ color: "#ffffff" }}>Fuel efficiency (A–G)</strong>
+                    <div style={{ fontSize: 12, color: "#71717a" }}>A = lowest rolling resistance, best fuel economy.</div>
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                  <span style={{ fontSize: 18 }} aria-hidden>💧</span>
+                  <div>
+                    <strong style={{ color: "#ffffff" }}>Wet grip (A–G)</strong>
+                    <div style={{ fontSize: 12, color: "#71717a" }}>A = shortest braking distance on wet roads.</div>
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                  <span style={{ fontSize: 18 }} aria-hidden>🔊</span>
+                  <div>
+                    <strong style={{ color: "#ffffff" }}>External noise (dB)</strong>
+                    <div style={{ fontSize: 12, color: "#71717a" }}>Lower dB = quieter. Class A (quietest) to C (loudest).</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Supplier strip */}
         <div className="max-w-2xl mx-auto px-4 mb-12">
           <p className="text-zinc-500 text-[12px] uppercase tracking-widest font-semibold mb-3">
