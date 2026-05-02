@@ -100,7 +100,9 @@ const Marketplace = () => {
   const [maxPrice, setMaxPrice] = useState<string>("");
   const [sortBy, setSortBy] = useState<"newest" | "price_asc" | "price_desc">("newest");
   const [conditionFilter, setConditionFilter] = useState<"All" | "New" | "Used - Good" | "Used - Fair">("All");
-  
+  const [locationFilter, setLocationFilter] = useState<"any" | "10mi" | "25mi" | "50mi" | "uk" | "europe">("any");
+  const [postcode, setPostcode] = useState<string>("");
+
   const [compareParts, setCompareParts] = usePersistentCompare();
   const [showCompare, setShowCompare] = useState(false);
   const [buyerOffers, setBuyerOffers] = useState<BuyerOffer[]>([]);
