@@ -122,9 +122,7 @@ serve(async (req) => {
             ui = hdrs.findIndex(h => norm(h).includes('deeplink'))
             bi = hdrs.findIndex(h => norm(h).includes('brandname') || norm(h) === 'brand')
             descIdx = hdrs.findIndex(h => h.includes('desc'))
-            imgIdx = hdrs.findIndex(h =>
-              ['aw_image_url','merchant_image_url','image_url','image','large_image','aw_thumb_url','merchant_thumb','product_image','img','img_url','picture','photo','thumbnail'].includes(h.toLowerCase().trim())
-            )
+            imgIdx = hdrs.findIndex(h => /image|img|photo|picture|thumb/i.test(h))
             console.log(`Feed ${feedId} headers: ni=${ni} pi=${pi} ui=${ui} bi=${bi} descIdx=${descIdx} imgIdx=${imgIdx}`)
             continue
           }
