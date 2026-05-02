@@ -74,10 +74,14 @@ const Contact = () => {
 
     setSending(true);
     try {
+      const dept = DEPARTMENTS.find((d) => d.value === result.data.subject);
+      const subjectPrefix = dept?.subjectPrefix || result.data.subject;
+      const composedSubject = `${subjectPrefix} — ${result.data.message.slice(0, 60)}${result.data.message.length > 60 ? "…" : ""}`;
+
       const { error: dbError } = await supabase.from("contact_messages" as any).insert({
         name: result.data.name,
         email: result.data.email,
-        subject: result.data.subject,
+        subject: composedSubject,
         message: result.data.message,
       } as any);
 
@@ -93,7 +97,7 @@ const Contact = () => {
           templateData: {
             name: result.data.name,
             email: result.data.email,
-            message: `[${result.data.subject}] ${result.data.message}`,
+            message: `[${composedSubject}] ${result.data.message}`,
           },
         },
       });
