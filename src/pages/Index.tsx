@@ -26,6 +26,7 @@ import WelcomeModal from "@/components/WelcomeModal";
 import LocationBanner from "@/components/LocationBanner";
 import ExitIntentBanner from "@/components/ExitIntentBanner";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
+import FeaturedPartsSection from "@/components/FeaturedPartsSection";
 
 const Index = () => {
   const location = useLocation();
