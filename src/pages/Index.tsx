@@ -527,7 +527,7 @@ function NewsletterSignup() {
               fontWeight: 600,
             }}
           >
-            ✅ You're in! Check your inbox.
+            ✅ You're in! Check your inbox soon.
           </div>
         ) : (
           <form
