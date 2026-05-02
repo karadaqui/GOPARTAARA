@@ -27,27 +27,27 @@ const VALUES = [
   {
     icon: "👁️",
     title: "Transparency",
-    desc: "We show you all prices, even when we don't earn commission. No bias, no hidden ranking.",
+    desc: "We show you every result without bias. We never accept payment to rank results higher.",
   },
   {
     icon: "⚡",
     title: "Speed",
-    desc: "Results in under 3 seconds, pulled live from 7 supplier APIs every single search.",
+    desc: "Search results in under 3 seconds. All 7 suppliers checked simultaneously.",
   },
   {
     icon: "⚖️",
     title: "Fairness",
-    desc: "Every supplier is ranked by price and value — never by who pays us the most.",
+    desc: "Free forever for everyday drivers. No hidden fees. No markups.",
   },
   {
     icon: "🔒",
     title: "Privacy",
-    desc: "Your searches stay yours. We never sell your data and only store what's needed to power your account.",
+    desc: "We never sell your data. Your searches stay private.",
   },
   {
     icon: "💰",
     title: "Savings",
-    desc: "Compare prices from 7 live suppliers in one search — no more overpaying without knowing it.",
+    desc: "Our sole purpose is to save you money on car parts. That's it.",
   },
 ];
 
