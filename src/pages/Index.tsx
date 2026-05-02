@@ -96,6 +96,7 @@ const Index = () => {
       />
       <Navbar />
       <HeroSection />
+      <LiveActivityCounter />
 
       <FeaturedPartsSection />
 
