@@ -50,8 +50,11 @@ const individualPlans = [
     name: "Pro",
     tagline: "For enthusiasts and DIY mechanics",
     monthlyPrice: "£9.99",
-    annualPrice: "£7.99",
-    annualBilled: "Billed £95.88/yr",
+    annualPrice: "£99.99",
+    annualOriginal: "£119.88",
+    annualSaving: 19.89,
+    annualBadge: "Save 2 months free!",
+    annualBilled: "Billed £99.99/yr",
     period: "/mo",
     features: ["Unlimited searches", "Photo search", "Unlimited marketplace listings", "Unlimited parts & alerts", "Unlimited garage vehicles", "Search history", "Price alerts", "Ad-free experience", "10 photos per listing"],
     useCase: "For DIY mechanics and car enthusiasts",
@@ -65,8 +68,11 @@ const individualPlans = [
     name: "Elite",
     tagline: "For mechanics & trade buyers",
     monthlyPrice: "£19.99",
-    annualPrice: "£15.99",
-    annualBilled: "Billed £191.88/yr",
+    annualPrice: "£199.99",
+    annualOriginal: "£239.88",
+    annualSaving: 39.89,
+    annualBadge: "Best value!",
+    annualBilled: "Billed £199.99/yr",
     period: "/mo",
     features: ["Everything in Pro", "Bulk price comparison (up to 20 parts)", "Export search history as CSV", "30-day price history charts", "Garage analytics dashboard", "Priority email support", "Early access to new features"],
     useCase: "For those who buy parts regularly",
@@ -146,7 +152,13 @@ const PricingSection = () => {
   const { plan: subPlan, trialEndsAt } = useSubscription();
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [slowWarning, setSlowWarning] = useState(false);
-  const [annual, setAnnual] = useState(false);
+  const [annual, setAnnual] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    try { return localStorage.getItem("pricing_annual") === "1"; } catch { return false; }
+  });
+  useEffect(() => {
+    try { localStorage.setItem("pricing_annual", annual ? "1" : "0"); } catch { /* ignore */ }
+  }, [annual]);
 
   // Derive trial state from cached subscription data — avoids a duplicate
   // `profiles` query on every Pricing render (FIX 7: singleton cache).
@@ -235,8 +247,9 @@ const PricingSection = () => {
           {individualPlans.map((plan) => {
             const effectivePriceId = annual && plan.annualPriceId ? plan.annualPriceId : plan.priceId;
             const proTrialCta = plan.name === "Pro" && !hadTrial;
-            const yearlySaving = annual && plan.annualPrice !== plan.monthlyPrice
-              ? annualSavings(plan.monthlyPrice, plan.annualPrice)
+            const isPaidAnnual = annual && plan.monthlyPrice !== "£0";
+            const yearlySaving = isPaidAnnual
+              ? ((plan as any).annualSaving ?? annualSavings(plan.monthlyPrice, plan.annualPrice))
               : 0;
             return (
               <PlanCard
@@ -244,9 +257,9 @@ const PricingSection = () => {
                 name={plan.name}
                 tagline={plan.tagline}
                 price={annual ? plan.annualPrice : plan.monthlyPrice}
-                originalPrice={annual && plan.annualPrice !== plan.monthlyPrice ? plan.monthlyPrice : undefined}
-                billedNote={annual ? plan.annualBilled : undefined}
-                period={plan.period}
+                originalPrice={isPaidAnnual ? (plan as any).annualOriginal : undefined}
+                billedNote={isPaidAnnual ? plan.annualBilled : undefined}
+                period={annual && plan.monthlyPrice !== "£0" ? "/yr" : plan.period}
                 features={plan.features}
                 useCase={plan.useCase}
                 cta={plan.cta}
@@ -255,6 +268,7 @@ const PricingSection = () => {
                 bestValue={plan.bestValue}
                 annual={annual}
                 yearlySaving={yearlySaving}
+                annualBadge={isPaidAnnual ? (plan as any).annualBadge : undefined}
                 loading={isLoading(effectivePriceId)}
                 slowWarning={slowWarning}
                 onSelect={proTrialCta ? async () => {
@@ -475,6 +489,7 @@ interface PlanCardProps {
   bestValue?: boolean;
   annual?: boolean;
   yearlySaving?: number;
+  annualBadge?: string;
   loading: boolean;
   slowWarning: boolean;
   onSelect: () => void;
@@ -491,7 +506,7 @@ const FeatureItem = ({ text }: { text: string }) => (
 );
 
 const PlanCard = ({
-  name, tagline, price, period, originalPrice, billedNote, features, searchFeatures, sellerFeatures, useCase, cta, ctaSubtext, popular, bestValue, annual, yearlySaving, loading, slowWarning, onSelect, was, saving, icon: Icon,
+  name, tagline, price, period, originalPrice, billedNote, features, searchFeatures, sellerFeatures, useCase, cta, ctaSubtext, popular, bestValue, annual, yearlySaving, annualBadge, loading, slowWarning, onSelect, was, saving, icon: Icon,
 }: PlanCardProps) => {
   const isBundle = !!(searchFeatures && sellerFeatures);
 
@@ -557,12 +572,26 @@ const PlanCard = ({
         <p className="text-xs text-muted-foreground mb-2">{billedNote}</p>
       ) : null}
       {annual && yearlySaving && yearlySaving > 0 ? (
-        <span
-          className="inline-flex items-center gap-1 w-fit px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold mb-6"
-          style={{ color: "#4ade80" }}
-        >
-          <Zap size={10} /> Save £{yearlySaving}/year
-        </span>
+        <div className="flex flex-wrap items-center gap-2 mb-6">
+          <span
+            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-semibold"
+            style={{ color: "#4ade80" }}
+          >
+            <Zap size={10} /> You save £{yearlySaving.toFixed(2)}/year
+          </span>
+          {annualBadge && (
+            <span
+              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wide"
+              style={{
+                background: "rgba(251,191,36,0.12)",
+                color: "#fbbf24",
+                border: "1px solid rgba(251,191,36,0.25)",
+              }}
+            >
+              {annualBadge}
+            </span>
+          )}
+        </div>
       ) : saving ? (
         <span className="inline-flex items-center gap-1 w-fit px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mb-6">
           <Zap size={10} /> Save {saving}/mo
