@@ -294,7 +294,7 @@ const Tyres = () => {
         }
         return 0;
       });
-  }, [tyreProducts, countryFilter, brandFilter, seasonFilter, sortBy]);
+  }, [tyreProducts, countryFilter, brandFilter, seasonFilter, priceTier, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / ITEMS_PER_PAGE));
   const pagedProducts = filteredProducts.slice(
