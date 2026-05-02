@@ -49,7 +49,7 @@ const RecentSearches = ({ onSelect }: Props) => {
 
   return (
     <div className="mt-4">
-      <p className="text-xs text-zinc-500 mb-2 font-medium">Recent searches:</p>
+      <p className="text-xs text-zinc-500 mb-2 font-medium">Recently searched:</p>
       <div className="flex flex-wrap gap-2">
         {items.map((q) => (
           <button
