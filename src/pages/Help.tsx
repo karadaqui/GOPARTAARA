@@ -271,13 +271,22 @@ const Help = () => {
             {filteredCategories.map((c) => (
               <Link
                 key={c.id}
+                id={`cat-${c.id}`}
                 to={`/help/${c.id}`}
                 className="group block rounded-xl border border-[#1f1f1f] bg-[#0f0f0f] hover:bg-[#111111] hover:border-[#2a2a2a] transition-colors p-6"
               >
                 <div className="mb-4">{c.icon}</div>
-                <h3 className="text-[16px] font-semibold text-white group-hover:text-[#cc1111] transition-colors">
-                  {c.title}
-                </h3>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="text-[16px] font-semibold text-white group-hover:text-[#cc1111] transition-colors">
+                    {c.title}
+                  </h3>
+                  <span
+                    className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#1f1f1f] text-zinc-400 border border-[#27272a]"
+                    aria-label={`${c.count} articles`}
+                  >
+                    {c.count}
+                  </span>
+                </div>
                 <p className="mt-1.5 text-[13px] text-zinc-500 leading-relaxed">{c.description}</p>
                 <p className="mt-4 text-[13px] text-[#52525b]">{c.count} articles</p>
               </Link>
