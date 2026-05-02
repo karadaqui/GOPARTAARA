@@ -108,7 +108,7 @@ const Contact = () => {
       });
 
       setSent(true);
-      setForm({ name: "", email: "", subject: "General", message: "" });
+      setForm({ name: "", email: "", subject: DEPARTMENTS[0].value, message: "" });
     } catch {
       toast({ title: "Error", description: "Failed to send message. Please try again.", variant: "destructive" });
     } finally {
