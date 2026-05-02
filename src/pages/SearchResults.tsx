@@ -914,7 +914,7 @@ const SearchResults = () => {
           handleLoadMore();
         }
       },
-      { rootMargin: "200px 0px" },
+      { rootMargin: "300px 0px" },
     );
     observer.observe(node);
     return () => observer.disconnect();
@@ -2379,7 +2379,15 @@ const SearchResults = () => {
                           </label>
                         </div>
 
-                        {/* Sentinel for IntersectionObserver */}
+                        {/* Auto-load infinite-scroll spinner */}
+                        {autoLoadMore && (loadingMore || liveLoading) && currentPage < totalPages && (
+                          <div className="flex items-center justify-center gap-2 mt-4" style={{ fontSize: 12, color: "#a1a1aa" }}>
+                            <Loader2 className="animate-spin" size={14} />
+                            Loading more results…
+                          </div>
+                        )}
+
+                        {/* Sentinel for IntersectionObserver (300px threshold) */}
                         <div ref={loadMoreSentinelRef} aria-hidden style={{ height: 1, width: "100%" }} />
                       </>
                     ) : (
