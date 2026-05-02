@@ -506,7 +506,7 @@ const FeatureItem = ({ text }: { text: string }) => (
 );
 
 const PlanCard = ({
-  name, tagline, price, period, originalPrice, billedNote, features, searchFeatures, sellerFeatures, useCase, cta, ctaSubtext, popular, bestValue, annual, yearlySaving, loading, slowWarning, onSelect, was, saving, icon: Icon,
+  name, tagline, price, period, originalPrice, billedNote, features, searchFeatures, sellerFeatures, useCase, cta, ctaSubtext, popular, bestValue, annual, yearlySaving, annualBadge, loading, slowWarning, onSelect, was, saving, icon: Icon,
 }: PlanCardProps) => {
   const isBundle = !!(searchFeatures && sellerFeatures);
 
