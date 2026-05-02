@@ -196,8 +196,8 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
       ) : alerts.length === 0 ? (
         <EmptyState
           icon={Bell}
-          title="No price alerts set"
-          description="Set a target price and we'll email you when any part drops below it."
+          title="No price alerts yet"
+          description="Search for a part and click 🔔 to add one — or use 'Set New Alert' above."
           actionLabel="Search Parts →"
           actionTo="/search"
         />
