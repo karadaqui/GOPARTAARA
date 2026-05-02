@@ -22,6 +22,7 @@ import {
   ShieldCheck, Receipt, Check, Share2,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
+import PriceSparkline from "@/components/PriceSparkline";
 import { useAuth } from "@/contexts/AuthContext";
 import VehicleLookup from "@/components/VehicleLookup";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
