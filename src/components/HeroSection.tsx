@@ -618,6 +618,54 @@ const HeroSection = () => {
                   }}
                 />
                 </div>
+
+                {/* Popular makes — quick-prefill pills */}
+                <div className="mt-4 max-w-3xl mx-auto">
+                  <div className="flex items-center gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "thin" }}>
+                    <span
+                      style={{
+                        fontSize: 12,
+                        color: "#71717a",
+                        fontWeight: 600,
+                        whiteSpace: "nowrap",
+                        flexShrink: 0,
+                      }}
+                    >
+                      Popular makes:
+                    </span>
+                    {[
+                      "BMW", "Ford", "Volkswagen", "Toyota", "Vauxhall", "Audi",
+                      "Mercedes", "Honda", "Nissan", "Peugeot", "Renault", "Hyundai",
+                    ].map((make) => (
+                      <button
+                        key={make}
+                        type="button"
+                        onClick={() => {
+                          setQuery(`${make} `);
+                          setAutoOpen(true);
+                          heroInputRef.current?.focus();
+                        }}
+                        className="transition-colors"
+                        style={{
+                          flexShrink: 0,
+                          fontSize: 12,
+                          fontWeight: 600,
+                          padding: "6px 12px",
+                          borderRadius: 999,
+                          background: "#1a1a1a",
+                          border: "1px solid #27272a",
+                          color: "#e4e4e7",
+                          whiteSpace: "nowrap",
+                        }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#27272a"; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#1a1a1a"; }}
+                      >
+                        {make}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="flex flex-col items-center mt-4 gap-2">
                   <p
                     className="text-xs text-muted-foreground flex items-center justify-center gap-1.5 text-center leading-tight"
