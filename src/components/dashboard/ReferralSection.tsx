@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Copy, Check, Gift, Users, Zap } from "lucide-react";
+import { Copy, Check, Gift, Users, Zap, MessageCircle, Mail } from "lucide-react";
 
 interface ReferralSectionProps {
   userId: string;
@@ -75,6 +75,64 @@ const ReferralSection = ({ userId, referralCode, bonusSearches }: ReferralSectio
           {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
         </Button>
       </div>
+
+      {/* Refer a Friend — share card */}
+      {referralLink && (
+        <div
+          className="rounded-2xl p-5 mb-6"
+          style={{
+            background: "linear-gradient(135deg, rgba(251,191,36,0.10), rgba(251,191,36,0.03))",
+            border: "1px solid rgba(251,191,36,0.30)",
+          }}
+        >
+          <h3 className="font-display text-base font-semibold mb-1 flex items-center gap-2">
+            🎁 Refer a Friend
+          </h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Invite a friend to GOPARTARA. When they sign up, you both get{" "}
+            <span style={{ color: "#fbbf24", fontWeight: 600 }}>1 month Pro free</span>.
+          </p>
+          <div className="flex gap-2 mb-3">
+            <Input
+              value={`gopartara.com/join?ref=${referralCode}`}
+              readOnly
+              className="bg-secondary border-border h-10 rounded-xl text-sm font-mono"
+            />
+            <Button
+              onClick={handleCopy}
+              className="h-10 rounded-xl shrink-0 gap-1.5"
+              style={{
+                background: copied ? "#16a34a" : "#fbbf24",
+                color: "#0a1628",
+                fontWeight: 600,
+              }}
+            >
+              {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy Link</>}
+            </Button>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(
+                `Hey! I've been using GOPARTARA to find car parts at the best prices. Sign up with my link and we both get 1 month Pro free: https://gopartara.com/join?ref=${referralCode}`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 h-10 rounded-xl text-sm font-medium transition-colors"
+              style={{ background: "#25D366", color: "#fff" }}
+            >
+              <MessageCircle size={14} /> Share on WhatsApp
+            </a>
+            <a
+              href={`mailto:?subject=${encodeURIComponent("Get 1 month Pro free on GOPARTARA")}&body=${encodeURIComponent(
+                `Hey,\n\nI've been using GOPARTARA to find car parts at the best prices. Sign up with my link and we both get 1 month Pro free:\n\nhttps://gopartara.com/join?ref=${referralCode}\n\nEnjoy!`
+              )}`}
+              className="flex items-center justify-center gap-2 h-10 rounded-xl text-sm font-medium transition-colors bg-secondary hover:bg-secondary/70 text-foreground border border-border"
+            >
+              <Mail size={14} /> Share via Email
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* How it works — 3 step guide */}
       <div className="mb-6">
