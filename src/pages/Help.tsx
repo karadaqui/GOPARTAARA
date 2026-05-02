@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, ArrowRight, Mail, Sparkles, CreditCard, Bell, Car, ShoppingBag, Shield } from "lucide-react";
+import { Search, ArrowRight, Mail, Sparkles, CreditCard, Bell, Car, ShoppingBag, Shield, MessageCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
