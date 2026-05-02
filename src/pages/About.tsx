@@ -265,6 +265,43 @@ const About = () => (
       </section>
 
       <section className="py-16 px-6 border-t border-white/10">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-red-500 text-sm font-bold uppercase tracking-widest mb-3">PRESS & MEDIA</p>
+            <h2 className="text-3xl font-bold text-white mb-3">Press & Media</h2>
+            <p className="text-gray-400 text-base max-w-2xl mx-auto">
+              Journalists and content creators — everything you need to cover GOPARTARA.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              { emoji: "📰", title: "Press Releases", desc: "Latest announcements and company news.", label: "Coming soon", href: null },
+              { emoji: "🎨", title: "Brand Assets", desc: "Logos, colors, and brand guidelines.", label: "Download Kit →", href: "mailto:press@gopartara.com?subject=Media%20Kit%20Request" },
+              { emoji: "📸", title: "Screenshots & Media", desc: "Product screenshots and promotional images.", label: "Request Access →", href: "mailto:press@gopartara.com?subject=Media%20Access%20Request" },
+            ].map((card) => (
+              <div key={card.title} className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col hover:border-white/20 transition-colors">
+                <div className="text-3xl mb-3">{card.emoji}</div>
+                <h3 className="text-lg font-bold text-white mb-2">{card.title}</h3>
+                <p className="text-sm text-gray-400 mb-5 flex-1">{card.desc}</p>
+                {card.href ? (
+                  <a
+                    href={card.href}
+                    className="inline-flex items-center justify-center px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-medium rounded-lg transition-colors"
+                  >
+                    {card.label}
+                  </a>
+                ) : (
+                  <span className="inline-flex items-center justify-center px-4 py-2 bg-white/5 text-gray-500 text-sm font-medium rounded-lg cursor-not-allowed">
+                    {card.label}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 px-6 border-t border-white/10">
         <div className="max-w-4xl mx-auto text-center mb-12">
           <p className="text-red-500 text-sm font-bold uppercase tracking-widest mb-3">OUR TEAM</p>
           <h2 className="text-3xl font-bold text-white mb-4">Meet the Team</h2>
