@@ -528,7 +528,7 @@ const HeroSection = () => {
                     <input
                       ref={heroInputRef}
                       type="text"
-                      placeholder="e.g. BMW E46 brake pads, Ford Focus clutch..."
+                      placeholder={placeholderExamples[placeholderIdx]}
                       value={query}
                       onChange={(e) => { setQuery(e.target.value); setAutoOpen(true); }}
                       onFocus={() => setAutoOpen(true)}
