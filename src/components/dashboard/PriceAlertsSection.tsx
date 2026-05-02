@@ -415,6 +415,66 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Create new alert */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="rounded-2xl sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Set a new price alert</DialogTitle>
+            <DialogDescription>
+              We'll email you when the part drops below your target price.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                Part name
+              </label>
+              <input
+                type="text"
+                value={newPartName}
+                onChange={(e) => setNewPartName(e.target.value)}
+                placeholder="e.g. Brake pads BMW 320d"
+                maxLength={200}
+                className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-foreground text-sm focus:outline-none focus:border-destructive/50"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                Target price (£)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">£</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={newTargetPrice}
+                  onChange={(e) => setNewTargetPrice(e.target.value)}
+                  placeholder="0.00"
+                  className="w-full pl-7 pr-3 py-2 bg-secondary border border-border rounded-lg text-foreground text-sm focus:outline-none focus:border-destructive/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={() => setCreateOpen(false)}
+                className="flex-1 px-4 py-2 border border-border text-muted-foreground text-sm rounded-lg hover:text-foreground transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={createAlert}
+                disabled={creating || !newPartName.trim() || !newTargetPrice}
+                className="flex-1 px-4 py-2 bg-destructive hover:bg-destructive/90 disabled:opacity-40 text-destructive-foreground text-sm font-semibold rounded-lg transition-colors inline-flex items-center justify-center gap-2"
+              >
+                {creating && <Loader2 size={14} className="animate-spin" />}
+                Create Alert
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
