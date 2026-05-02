@@ -120,7 +120,7 @@ const Tyres = () => {
   const [searched, setSearched] = useState(false);
   const [countryFilter, setCountryFilter] = useState('all');
   const [brandFilter, setBrandFilter] = useState('all');
-  const [seasonFilter, setSeasonFilter] = useState<'all'|'summer'|'winter'|'allseason'>('all');
+  const [seasonFilter, setSeasonFilter] = useState<'all'|'summer'|'winter'|'allseason'>('allseason');
   const [sortBy, setSortBy] = useState<'default'|'price_asc'|'price_desc'>('default');
   const [compareList, setCompareList] = useState<TyreProduct[]>([]);
   const [showLabelHelp, setShowLabelHelp] = useState(false);
@@ -168,7 +168,7 @@ const Tyres = () => {
     setSearched(true)
     setTyreProducts([])
     setCurrentPage(1)
-    setSeasonFilter('all')
+    // Preserve user-selected seasonFilter across searches
     setSortBy('default')
     const ids = ['4118', '10499', '10747', '12716', '12715']
 
@@ -417,6 +417,37 @@ const Tyres = () => {
                   <span className="text-zinc-400">sidewall is {selectedProfile}% of width</span>,{' '}
                   fits a <span className="text-zinc-400">{selectedRim}″ rim</span>.
                 </p>
+              </div>
+            </div>
+
+            {/* Tyre Type selector */}
+            <div className="mt-4 mb-3">
+              <label className="block text-[11px] font-semibold tracking-[0.12em] uppercase text-zinc-500 mb-2">
+                Tyre Type
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {([
+                  { id: 'summer', label: '☀️ Summer' },
+                  { id: 'winter', label: '❄️ Winter' },
+                  { id: 'allseason', label: '🌤️ All-Season' },
+                ] as const).map((t) => {
+                  const active = seasonFilter === t.id;
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setSeasonFilter(t.id)}
+                      aria-pressed={active}
+                      className={`rounded-full border px-3 py-2 text-[13px] font-semibold transition-colors ${
+                        active
+                          ? 'border-red-500 bg-red-600/15 text-red-300'
+                          : 'border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
+                      }`}
+                    >
+                      {t.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
