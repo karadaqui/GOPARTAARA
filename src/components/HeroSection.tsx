@@ -332,7 +332,12 @@ const HeroSection = () => {
         {/* Badge */}
         <div className={`transition-[colors,transform] ease-out ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-border/40 bg-card/30 backdrop-blur-md text-xs text-muted-foreground mb-10">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+            <span className="relative flex items-center justify-center w-2 h-2" aria-hidden="true">
+              <span className="absolute inline-flex w-full h-full rounded-full bg-red-500 opacity-75 animate-ping" />
+              <span className="relative inline-flex w-2 h-2 rounded-full bg-red-500" />
+            </span>
+            <span className="font-semibold tracking-wide text-red-400">LIVE</span>
+            <span className="text-muted-foreground/60">·</span>
             1,000,000+ parts searchable · Free to compare
           </div>
         </div>
