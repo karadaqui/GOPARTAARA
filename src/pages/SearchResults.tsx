@@ -1198,6 +1198,76 @@ const SearchResults = () => {
                     </div>
                   </div>
 
+                  {/* Trending today */}
+                  <div className="mt-8">
+                    <p
+                      className="mb-3"
+                      style={{
+                        fontSize: 11,
+                        color: "#52525b",
+                        fontWeight: 600,
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      🔥 Trending today
+                    </p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                      {[
+                        { term: "BMW E46 brake pads", count: "847" },
+                        { term: "Ford Focus 1.6 clutch kit", count: "623" },
+                        { term: "VW Golf MK7 timing chain", count: "445" },
+                        { term: "NGK iridium spark plugs", count: "389" },
+                        { term: "Land Rover Discovery oil filter", count: "312" },
+                        { term: "Toyota Prius hybrid battery", count: "287" },
+                      ].map((t) => (
+                        <button
+                          key={t.term}
+                          type="button"
+                          onClick={() => {
+                            setQuery(t.term);
+                            setActiveQuery(t.term);
+                            setCurrentPage(1);
+                            setSearchParams({ q: t.term });
+                          }}
+                          className="trending-card flex items-center justify-between gap-3 transition-colors"
+                          style={{
+                            background: "#0d0d0d",
+                            border: "1px solid #1f1f1f",
+                            borderRadius: 10,
+                            padding: "12px 14px",
+                            cursor: "pointer",
+                            textAlign: "left",
+                          }}
+                        >
+                          <span
+                            style={{
+                              color: "#ffffff",
+                              fontSize: 13,
+                              fontWeight: 600,
+                              lineHeight: 1.3,
+                              flex: 1,
+                              minWidth: 0,
+                            }}
+                          >
+                            {t.term}
+                          </span>
+                          <span
+                            style={{
+                              color: "#a1a1aa",
+                              fontSize: 11,
+                              fontWeight: 500,
+                              whiteSpace: "nowrap",
+                              flexShrink: 0,
+                            }}
+                          >
+                            <span style={{ color: "#22c55e" }}>🔺</span> {t.count} searches today
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <style>{`
                     .popular-pill:hover {
                       background: rgba(255,255,255,0.08) !important;
@@ -1208,6 +1278,10 @@ const SearchResults = () => {
                       background: #111111 !important;
                       border-color: #333333 !important;
                       color: #ffffff !important;
+                    }
+                    .trending-card:hover {
+                      background: #111111 !important;
+                      border-color: #333333 !important;
                     }
                   `}</style>
                 </>
