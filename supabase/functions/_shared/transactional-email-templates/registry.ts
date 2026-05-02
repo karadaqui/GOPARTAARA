@@ -27,6 +27,7 @@ import { template as welcomePurchase } from './welcome-purchase.tsx'
 import { template as listingRemoved } from './listing-removed.tsx'
 import { template as shopDeletionConfirm } from './shop-deletion-confirm.tsx'
 import { template as shopClosed } from './shop-closed.tsx'
+import { template as welcomeSignup } from './welcome-signup.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'contact-notification': contactNotification,
@@ -47,4 +48,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'listing-removed': listingRemoved,
   'shop-deletion-confirm': shopDeletionConfirm,
   'shop-closed': shopClosed,
+  'welcome-signup': welcomeSignup,
 }
