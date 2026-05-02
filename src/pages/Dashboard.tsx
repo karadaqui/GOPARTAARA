@@ -454,6 +454,100 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Your Savings Summary — top widget */}
+        {(() => {
+          const FREE_LIMIT = 5;
+          const used = isAdmin || isPro ? 0 : Math.min(monthlySearchCount, FREE_LIMIT);
+          const pct = isAdmin || isPro ? 100 : Math.min(100, Math.round((used / FREE_LIMIT) * 100));
+          return (
+            <div
+              className="rounded-2xl p-5 sm:p-6 mb-6"
+              style={{
+                background: "linear-gradient(135deg, #111111 0%, #0a0a0a 100%)",
+                border: "1px solid #27272a",
+                borderLeft: "3px solid #cc1111",
+              }}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span style={{ fontSize: 13, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase", color: "#fbbf24" }}>
+                  💰 Your Savings Summary
+                </span>
+              </div>
+              <div className="flex items-baseline gap-2 mb-1 flex-wrap">
+                <span
+                  className="font-display"
+                  style={{ fontSize: "clamp(28px, 4vw, 40px)", fontWeight: 800, color: "#ffffff", letterSpacing: "-0.02em", lineHeight: 1.1 }}
+                >
+                  £0
+                </span>
+                <span style={{ color: "#a1a1aa", fontSize: 14, fontWeight: 600 }}>saved so far</span>
+              </div>
+              <p style={{ color: "#71717a", fontSize: 13, marginBottom: 16 }}>
+                Start searching to track your savings vs. local dealer prices
+              </p>
+
+              {/* Progress bar — free users only */}
+              {!isAdmin && !isPro && (
+                <div className="mb-4">
+                  <div className="flex justify-between mb-1.5" style={{ fontSize: 11, color: "#a1a1aa", fontWeight: 600 }}>
+                    <span>{used} of {FREE_LIMIT} searches used this month</span>
+                    <span style={{ color: "#71717a" }}>{pct}%</span>
+                  </div>
+                  <div style={{ width: "100%", height: 6, background: "#1f1f1f", borderRadius: 999, overflow: "hidden" }}>
+                    <div
+                      style={{
+                        width: `${pct}%`,
+                        height: "100%",
+                        background: pct >= 80 ? "#cc1111" : "#fbbf24",
+                        transition: "width 300ms",
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Quick stat boxes */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
+                {[
+                  { label: "Searches this month", value: monthlySearchCount },
+                  { label: "Price alerts active", value: priceAlertsCount },
+                  { label: "Parts saved", value: savedPartsCount },
+                ].map((s) => (
+                  <div
+                    key={s.label}
+                    style={{
+                      background: "#0a0a0a",
+                      border: "1px solid #1f1f1f",
+                      borderRadius: 10,
+                      padding: "10px 12px",
+                    }}
+                  >
+                    <div style={{ color: "#71717a", fontSize: 11, fontWeight: 600, marginBottom: 2 }}>{s.label}</div>
+                    <div style={{ color: "#ffffff", fontSize: 18, fontWeight: 800, fontFamily: "var(--font-display, inherit)" }}>{s.value}</div>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => navigate("/search")}
+                className="inline-flex items-center gap-1.5 rounded-xl transition-colors"
+                style={{
+                  background: "#cc1111",
+                  color: "#ffffff",
+                  fontWeight: 700,
+                  fontSize: 14,
+                  padding: "10px 18px",
+                }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#a30d0d"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#cc1111"; }}
+              >
+                Start Searching →
+              </button>
+            </div>
+          );
+        })()}
+
         {/* Section 2 — Usage Stats (premium metric cards) */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           <StatCard
