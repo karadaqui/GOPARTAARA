@@ -252,10 +252,19 @@ const SkeletonCard = () => {
       {/* Image placeholder */}
       <div style={{ width: "100%", height: "180px", ...shimmer }} />
       <div className="p-4 space-y-3">
-        {/* Title placeholder */}
-        <div style={{ width: "70%", height: "16px", borderRadius: "4px", ...shimmer }} />
-        {/* Price placeholder */}
-        <div style={{ width: "40%", height: "20px", borderRadius: "4px", ...shimmer }} />
+        {/* Title — two lines */}
+        <div style={{ width: "90%", height: "12px", borderRadius: "4px", ...shimmer }} />
+        <div style={{ width: "65%", height: "12px", borderRadius: "4px", ...shimmer }} />
+        {/* Badge row */}
+        <div className="flex gap-1.5 pt-1">
+          <div style={{ width: "44px", height: "16px", borderRadius: "6px", ...shimmer }} />
+          <div style={{ width: "34px", height: "16px", borderRadius: "6px", ...shimmer }} />
+          <div style={{ width: "60px", height: "16px", borderRadius: "6px", ...shimmer }} />
+        </div>
+        {/* Price */}
+        <div style={{ width: "40%", height: "22px", borderRadius: "4px", ...shimmer }} />
+        {/* Button */}
+        <div style={{ width: "100%", height: "36px", borderRadius: "10px", marginTop: "4px", ...shimmer }} />
       </div>
     </div>
   );
