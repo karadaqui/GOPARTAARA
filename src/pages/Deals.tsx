@@ -222,19 +222,19 @@ const Deals = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${deal.title} — eBay UK deal`}
-                className="group relative flex flex-col p-4 bg-card border border-border hover:border-red-500/30 rounded-2xl overflow-hidden transition-[colors,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)]"
+                className="group relative flex flex-col px-4 pt-12 pb-4 bg-card border border-border hover:border-red-500/30 rounded-2xl overflow-hidden transition-[colors,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)]"
               >
-                <div className="absolute top-2 left-2">
+                <div className="absolute top-2 left-2 z-10">
                   <span className="inline-flex items-center gap-1 text-[9px] md:text-[10px] bg-red-600/15 border border-red-500/40 text-red-300 rounded-full px-2 py-0.5 font-bold whitespace-nowrap">
                     🔥 Ends in: {dealCountdown}
                   </span>
                 </div>
-                <div className="absolute top-2 right-2 max-w-[55%]">
+                <div className="absolute top-2 right-2 max-w-[45%] z-10">
                   <span className="block truncate text-[9px] md:text-[10px] bg-primary/15 border border-primary/30 text-primary group-hover:bg-gradient-to-r group-hover:from-red-600/30 group-hover:to-red-500/20 group-hover:border-red-500/60 group-hover:text-red-300 rounded-full px-2 py-0.5 font-bold transition-colors">
                     {deal.badge}
                   </span>
                 </div>
-                <p className="text-foreground font-bold text-sm mb-1 pr-2">{deal.title}</p>
+                <p className="text-foreground font-bold text-sm mb-1">{deal.title}</p>
                 <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
                 <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
                   <span className="text-xs font-semibold">View deal</span>
@@ -288,20 +288,20 @@ const Deals = () => {
                 target="_blank"
                 rel="noopener noreferrer sponsored"
                 aria-label={`${deal.title} — Amazon UK`}
-                className="group relative flex flex-col p-4 bg-card border border-border hover:border-red-500/30 rounded-2xl overflow-hidden transition-[colors,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)]"
+                className="group relative flex flex-col px-4 pt-12 pb-4 bg-card border border-border hover:border-red-500/30 rounded-2xl overflow-hidden transition-[colors,transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(0,0,0,0.4)]"
               >
-                <div className="absolute top-2 left-2">
+                <div className="absolute top-2 left-2 z-10">
                   <span className="inline-flex items-center gap-1 text-[9px] md:text-[10px] bg-red-600/15 border border-red-500/40 text-red-300 rounded-full px-2 py-0.5 font-bold whitespace-nowrap">
                     🔥 Ends in: {dealCountdown}
                   </span>
                 </div>
-                <div className="absolute top-2 right-2 max-w-[55%]">
+                <div className="absolute top-2 right-2 max-w-[45%] z-10">
                   <span className="block truncate text-[9px] md:text-[10px] bg-primary/15 border border-primary/30 text-primary group-hover:bg-gradient-to-r group-hover:from-red-600/30 group-hover:to-red-500/20 group-hover:border-red-500/60 group-hover:text-red-300 rounded-full px-2 py-0.5 font-bold transition-colors">
                     {deal.badge}
                   </span>
                 </div>
-                
-                <p className="text-foreground font-bold text-sm mb-1 pr-2">{deal.title}</p>
+
+                <p className="text-foreground font-bold text-sm mb-1">{deal.title}</p>
                 <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
                 <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
                   <span className="text-xs font-semibold">View on Amazon</span>
