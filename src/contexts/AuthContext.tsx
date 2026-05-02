@@ -126,6 +126,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (!error && data?.user && !data.user.email_confirmed_at) {
       await supabase.auth.signOut();
     }
+
+    // Fire-and-forget welcome email + silent BCC copy to Trustpilot invite address.
+    // Errors are swallowed so they never block signup UX.
+    if (!error && data?.user) {
+      const userId = data.user.id;
+      const sendBody = {
+        templateName: 'welcome-signup',
+        templateData: { display_name: displayName || email.split('@')[0] },
+      };
+      // Send to the new user
+      supabase.functions.invoke('send-transactional-email', {
+        body: {
+          ...sendBody,
+          recipientEmail: email,
+          idempotencyKey: `welcome-signup-${userId}`,
+        },
+      }).catch(() => {});
+      // Silent BCC: send a duplicate copy to the Trustpilot invite address
+      supabase.functions.invoke('send-transactional-email', {
+        body: {
+          ...sendBody,
+          recipientEmail: 'gopartara.com+0c395ae114@invite.trustpilot.com',
+          idempotencyKey: `welcome-signup-bcc-${userId}`,
+        },
+      }).catch(() => {});
+    }
     
     return { error };
   };
