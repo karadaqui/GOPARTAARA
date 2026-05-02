@@ -122,6 +122,7 @@ const Tyres = () => {
   const [brandFilter, setBrandFilter] = useState('all');
   const [seasonFilter, setSeasonFilter] = useState<'all'|'summer'|'winter'|'allseason'>('allseason');
   const [sortBy, setSortBy] = useState<'default'|'price_asc'|'price_desc'>('default');
+  const [priceTier, setPriceTier] = useState<'all'|'budget'|'mid'|'premium'>('all');
   const [compareList, setCompareList] = useState<TyreProduct[]>([]);
   const [showLabelHelp, setShowLabelHelp] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
@@ -272,6 +273,14 @@ const Tyres = () => {
         if (seasonFilter === 'all') return true;
         return detectSeason(p.title) === seasonFilter;
       })
+      .filter(p => {
+        if (priceTier === 'all') return true;
+        const price = parseFloat((p.price || '0').replace(/[^0-9.]/g, '')) || 0;
+        if (priceTier === 'budget') return price > 0 && price < 50;
+        if (priceTier === 'mid') return price >= 50 && price <= 100;
+        if (priceTier === 'premium') return price > 100;
+        return true;
+      })
       .sort((a, b) => {
         if (sortBy === 'price_asc') {
           const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
@@ -285,7 +294,7 @@ const Tyres = () => {
         }
         return 0;
       });
-  }, [tyreProducts, countryFilter, brandFilter, seasonFilter, sortBy]);
+  }, [tyreProducts, countryFilter, brandFilter, seasonFilter, priceTier, sortBy]);
 
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / ITEMS_PER_PAGE));
   const pagedProducts = filteredProducts.slice(
@@ -500,6 +509,67 @@ const Tyres = () => {
                 </button>
               );
             })}
+          </div>
+        </div>
+
+        {/* Best tyres for your budget */}
+        <div className="max-w-2xl mx-auto px-4 mt-8 mb-2">
+          <h2 className="text-white text-lg font-bold mb-1">Best tyres for your budget</h2>
+          <p className="text-zinc-500 text-[13px] mb-4">Pick a price tier and we'll filter the results</p>
+          <div className="grid gap-3">
+            {([
+              { tier: 'budget', icon: '💚', label: 'Budget', desc: 'Under £50 per tyre · Great value everyday driving', color: '#22c55e' },
+              { tier: 'mid', icon: '💛', label: 'Mid-Range', desc: '£50–£100 per tyre · Balanced performance and value', color: '#fbbf24' },
+              { tier: 'premium', icon: '❤️', label: 'Premium', desc: '£100+ per tyre · Top brands: Michelin, Continental, Bridgestone', color: '#ef4444' },
+            ] as const).map((t) => {
+              const active = priceTier === t.tier;
+              return (
+                <div
+                  key={t.tier}
+                  className="flex items-center gap-4 rounded-xl px-4 py-4 transition-colors"
+                  style={{
+                    background: '#111111',
+                    border: '1px solid ' + (active ? t.color : '#27272a'),
+                    borderLeft: `4px solid ${t.color}`,
+                  }}
+                >
+                  <div className="text-2xl shrink-0" aria-hidden>{t.icon}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-white font-bold text-[15px]">{t.label}</div>
+                    <div className="text-zinc-400 text-[13px]">{t.desc}</div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPriceTier(t.tier);
+                      setCurrentPage(1);
+                      if (selectedWidth && selectedProfile && selectedRim && !searched) {
+                        searchTyres();
+                      } else if (!searched) {
+                        toast({ title: 'Pick a tyre size', description: 'Select width, profile, and rim above, then tap a tier.' });
+                      }
+                    }}
+                    className="shrink-0 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors"
+                    style={{
+                      background: active ? t.color : 'transparent',
+                      color: active ? '#0a0a0a' : '#e4e4e7',
+                      border: `1px solid ${active ? t.color : '#3f3f46'}`,
+                    }}
+                  >
+                    {active ? 'Filtering ✓' : 'Search this tier →'}
+                  </button>
+                </div>
+              );
+            })}
+            {priceTier !== 'all' && (
+              <button
+                type="button"
+                onClick={() => { setPriceTier('all'); setCurrentPage(1); }}
+                className="text-zinc-500 hover:text-zinc-300 text-[12px] text-center mt-1"
+              >
+                Clear price filter
+              </button>
+            )}
           </div>
         </div>
 
