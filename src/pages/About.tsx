@@ -169,7 +169,7 @@ const About = () => (
         >
           What we stand for.
         </h2>
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {VALUES.map((v) => (
             <div
               key={v.title}
@@ -178,6 +178,9 @@ const About = () => (
                 paddingTop: "20px",
               }}
             >
+              <div aria-hidden style={{ fontSize: "32px", lineHeight: 1, marginBottom: "12px" }}>
+                {v.icon}
+              </div>
               <h3
                 className="font-display text-white"
                 style={{ fontSize: "20px", fontWeight: 700, marginBottom: "10px", letterSpacing: "-0.01em" }}
