@@ -107,7 +107,49 @@ const VehicleExpiryEditor = ({ vehicleId, motExpiryDate, taxExpiryDate, onUpdate
     <div>
       <label className="text-[10px] text-muted-foreground mb-1 block">{label}</label>
       <div className="relative">
-        {/* Native, hidden but functional date input — sits behind the visible button */}
+        {value ? (
+          <div className="flex items-center gap-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="flex-1 justify-start text-left text-xs rounded-lg h-8 pointer-events-none"
+              disabled={saving}
+              tabIndex={-1}
+            >
+              <CalendarIcon className="mr-1.5 h-3 w-3" />
+              {format(value, "dd MMM yyyy")}
+            </Button>
+            <button
+              type="button"
+              className="h-8 px-2 text-[11px] inline-flex items-center text-primary hover:underline disabled:opacity-50"
+              disabled={saving}
+              onClick={() => openPicker(inputRef)}
+              aria-label={`Edit ${label}`}
+            >
+              <Pencil className="h-3 w-3 mr-1" />
+              Edit
+            </button>
+          </div>
+        ) : (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className={cn(
+              "w-full justify-start text-left text-xs rounded-lg h-8 pointer-events-none",
+              "text-muted-foreground",
+            )}
+            disabled={saving}
+            tabIndex={-1}
+          >
+            <CalendarIcon className="mr-1.5 h-3 w-3" />
+            Set date
+          </Button>
+        )}
+        {/* Native date input — sits ON TOP so the user gesture lands on it,
+            which is required by browsers to open the date picker.
+            When a date is set, leave the right-side "Edit" link uncovered. */}
         <input
           ref={inputRef}
           type="date"
@@ -119,51 +161,12 @@ const VehicleExpiryEditor = ({ vehicleId, motExpiryDate, taxExpiryDate, onUpdate
             setValue(next);
             onCommit(next);
           }}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          className={cn(
+            "absolute inset-y-0 left-0 opacity-0 cursor-pointer z-10",
+            value ? "right-[68px]" : "right-0",
+          )}
           aria-label={label}
         />
-        {value ? (
-          <div className="flex items-center gap-1">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="flex-1 justify-start text-left text-xs rounded-lg h-8"
-              disabled={saving}
-              onClick={() => openPicker(inputRef)}
-            >
-              <CalendarIcon className="mr-1.5 h-3 w-3" />
-              {format(value, "dd MMM yyyy")}
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-8 px-2 text-[11px]"
-              disabled={saving}
-              onClick={() => openPicker(inputRef)}
-              aria-label={`Edit ${label}`}
-            >
-              <Pencil className="h-3 w-3 mr-1" />
-              Edit
-            </Button>
-          </div>
-        ) : (
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className={cn(
-              "w-full justify-start text-left text-xs rounded-lg h-8",
-              "text-muted-foreground",
-            )}
-            disabled={saving}
-            onClick={() => openPicker(inputRef)}
-          >
-            <CalendarIcon className="mr-1.5 h-3 w-3" />
-            Set date
-          </Button>
-        )}
       </div>
     </div>
   );
