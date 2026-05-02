@@ -15,6 +15,7 @@ import {
 import type { Tables } from "@/integrations/supabase/types";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
 import PriceAlertsSection from "@/components/dashboard/PriceAlertsSection";
+import RecentlyViewedWidget from "@/components/dashboard/RecentlyViewedWidget";
 import MyGarageSection from "@/components/dashboard/MyGarageSection";
 import GarageAnalyticsSection from "@/components/dashboard/GarageAnalyticsSection";
 import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
