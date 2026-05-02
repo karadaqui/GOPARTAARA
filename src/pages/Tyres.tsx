@@ -718,6 +718,39 @@ const Tyres = () => {
                 const displayTitle = product.title.includes(selectedWidth)
                   ? product.title
                   : `${searchedSize} — ${product.title}`;
+
+                // Brand-based gradient + initials fallback (so each card looks visually different)
+                const brandKey = (product.brand || product.title.split(' ')[0] || 'Tyre').trim();
+                const BRAND_GRADIENTS: Record<string, string> = {
+                  Michelin: 'linear-gradient(135deg,#003d7a 0%,#0066cc 100%)',
+                  Continental: 'linear-gradient(135deg,#ea7600 0%,#ffb000 100%)',
+                  Bridgestone: 'linear-gradient(135deg,#c8102e 0%,#ff4d4d 100%)',
+                  Pirelli: 'linear-gradient(135deg,#ffcc00 0%,#ffeb66 100%)',
+                  Goodyear: 'linear-gradient(135deg,#003478 0%,#0055aa 100%)',
+                  Dunlop: 'linear-gradient(135deg,#fdb913 0%,#ffd966 100%)',
+                  Hankook: 'linear-gradient(135deg,#e60012 0%,#ff5566 100%)',
+                  Yokohama: 'linear-gradient(135deg,#003366 0%,#0066aa 100%)',
+                  Falken: 'linear-gradient(135deg,#1a1a1a 0%,#4a4a4a 100%)',
+                  Toyo: 'linear-gradient(135deg,#cc0000 0%,#ff4444 100%)',
+                  Nokian: 'linear-gradient(135deg,#0078d4 0%,#40a0e8 100%)',
+                  Kumho: 'linear-gradient(135deg,#e30613 0%,#ff5060 100%)',
+                  Nexen: 'linear-gradient(135deg,#005baa 0%,#338ed4 100%)',
+                  Maxxis: 'linear-gradient(135deg,#cf0a2c 0%,#ff4060 100%)',
+                  Vredestein: 'linear-gradient(135deg,#e87722 0%,#ffaa55 100%)',
+                  Avon: 'linear-gradient(135deg,#004990 0%,#3377bb 100%)',
+                  Uniroyal: 'linear-gradient(135deg,#003087 0%,#3360b8 100%)',
+                  BFGoodrich: 'linear-gradient(135deg,#cc0000 0%,#1a1a1a 100%)',
+                  Firestone: 'linear-gradient(135deg,#e4002b 0%,#ff4d6b 100%)',
+                };
+                let brandGradient = BRAND_GRADIENTS[brandKey];
+                if (!brandGradient) {
+                  let hash = 0;
+                  for (let j = 0; j < brandKey.length; j++) hash = brandKey.charCodeAt(j) + ((hash << 5) - hash);
+                  const hue = Math.abs(hash) % 360;
+                  brandGradient = `linear-gradient(135deg, hsl(${hue} 65% 30%) 0%, hsl(${(hue + 30) % 360} 70% 50%) 100%)`;
+                }
+                const initials = brandKey.slice(0, 2).toUpperCase();
+
                 return (
                   <div
                     key={`${product.supplierMeta?.id || ''}-${product.id || i}`}
@@ -737,13 +770,25 @@ const Tyres = () => {
                             loading="lazy"
                             decoding="async"
                             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                            onError={(e) => {
+                              const img = e.currentTarget;
+                              img.style.display = 'none';
+                              const fb = img.nextElementSibling as HTMLElement | null;
+                              if (fb) fb.style.display = 'flex';
+                            }}
                           />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-zinc-700/50">
-                            <span className="text-5xl">🛞</span>
-                          </div>
-                        )}
+                        ) : null}
+                        <div
+                          className="w-full h-full flex-col items-center justify-center text-white"
+                          style={{
+                            display: imageUrl ? 'none' : 'flex',
+                            background: brandGradient,
+                          }}
+                        >
+                          <span className="text-3xl mb-1 opacity-90">🛞</span>
+                          <span className="text-lg font-black tracking-wider drop-shadow-md">{initials}</span>
+                          <span className="text-[10px] uppercase tracking-widest opacity-70 mt-0.5">{brandKey}</span>
+                        </div>
                         <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm rounded-full px-2 py-1">
                           <FlagImg advertiserId={product.advertiserId || product.supplierMeta?.id || 'all'} />
                         </div>
