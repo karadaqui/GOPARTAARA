@@ -8,7 +8,7 @@ export default function CookieBanner() {
     const consent = localStorage.getItem('gopartara_cookie_consent');
     if (!consent) {
       setMounted(true);
-      const timer = setTimeout(() => setVisible(true), 1000);
+      const timer = setTimeout(() => setVisible(true), 600);
       return () => clearTimeout(timer);
     }
   }, []);
@@ -16,13 +16,7 @@ export default function CookieBanner() {
   const handleAccept = () => {
     localStorage.setItem('gopartara_cookie_consent', 'accepted');
     setVisible(false);
-    setTimeout(() => setMounted(false), 350);
-  };
-
-  const handleReject = () => {
-    localStorage.setItem('gopartara_cookie_consent', 'rejected');
-    setVisible(false);
-    setTimeout(() => setMounted(false), 350);
+    setTimeout(() => setMounted(false), 300);
   };
 
   if (!mounted) return null;
@@ -37,93 +31,68 @@ export default function CookieBanner() {
         zIndex: 9999,
         background: '#111111',
         borderTop: '1px solid #1f1f1f',
-        padding: '20px 40px',
+        padding: '12px 24px',
+        maxHeight: '60px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: '24px',
+        gap: '16px',
         transform: visible ? 'translateY(0)' : 'translateY(100%)',
-        transition: 'transform 0.35s ease',
-        flexWrap: 'wrap',
+        transition: 'transform 0.3s ease',
       }}
     >
-      <div style={{ maxWidth: '700px' }}>
-        <p style={{
-          color: 'white',
-          fontSize: '14px',
-          fontWeight: 600,
-          margin: '0 0 4px 0',
-        }}>
-          🍪 We use cookies
-        </p>
-        <p style={{
-          color: '#71717a',
+      <p
+        style={{
+          color: '#d4d4d8',
           fontSize: '13px',
           margin: 0,
-          lineHeight: 1.6,
-        }}>
-          We use essential cookies to make our site work. We'd also like
-          to set optional analytics cookies to help us improve it. See our{' '}
-          <a
-            href="/privacy"
-            style={{ color: '#cc1111', textDecoration: 'underline' }}
-          >
-            Cookie Policy
-          </a>
-          {' '}for details.
-        </p>
-      </div>
+          lineHeight: 1.4,
+          flex: 1,
+          minWidth: 0,
+        }}
+      >
+        We use cookies to improve your experience. By using GOPARTARA, you agree to our{' '}
+        <a href="/privacy" style={{ color: '#cc1111', textDecoration: 'underline' }}>
+          Privacy Policy
+        </a>
+        .
+      </p>
 
-      <div style={{
-        display: 'flex',
-        gap: '12px',
-        flexShrink: 0,
-      }}>
-        <button
-          onClick={handleReject}
+      <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+        <a
+          href="/cookies"
           style={{
             background: 'transparent',
             border: '1px solid #27272a',
             color: '#a1a1aa',
-            padding: '10px 20px',
-            borderRadius: '8px',
-            fontSize: '13px',
+            padding: '6px 14px',
+            borderRadius: '6px',
+            fontSize: '12px',
             fontWeight: 500,
             cursor: 'pointer',
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={e => {
-            (e.target as HTMLButtonElement).style.borderColor = '#3f3f46';
-            (e.target as HTMLButtonElement).style.color = 'white';
-          }}
-          onMouseLeave={e => {
-            (e.target as HTMLButtonElement).style.borderColor = '#27272a';
-            (e.target as HTMLButtonElement).style.color = '#a1a1aa';
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            whiteSpace: 'nowrap',
           }}
         >
-          Reject Non-Essential
-        </button>
+          Manage Preferences
+        </a>
         <button
           onClick={handleAccept}
           style={{
             background: '#cc1111',
             border: 'none',
             color: 'white',
-            padding: '10px 20px',
-            borderRadius: '8px',
-            fontSize: '13px',
+            padding: '6px 16px',
+            borderRadius: '6px',
+            fontSize: '12px',
             fontWeight: 600,
             cursor: 'pointer',
-            transition: 'all 0.2s',
-          }}
-          onMouseEnter={e => {
-            (e.target as HTMLButtonElement).style.background = '#e01111';
-          }}
-          onMouseLeave={e => {
-            (e.target as HTMLButtonElement).style.background = '#cc1111';
+            whiteSpace: 'nowrap',
           }}
         >
-          Accept All
+          Accept
         </button>
       </div>
     </div>
