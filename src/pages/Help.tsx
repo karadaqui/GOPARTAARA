@@ -370,27 +370,53 @@ const Help = () => {
         </div>
       </section>
 
-      {/* Bottom CTA */}
+      {/* Still need help? */}
       <section className="px-4 sm:px-6 pb-24">
         <div className="mx-auto max-w-3xl">
-          <div className="rounded-2xl border border-[#cc1111]/20 bg-gradient-to-br from-[#cc1111]/[0.08] to-transparent p-8 sm:p-10 text-center">
+          <div className="rounded-2xl border border-[#27272a] bg-[#0f0f0f] p-8 sm:p-10 text-center">
             <Mail size={28} className="text-[#cc1111] mx-auto mb-4" />
             <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-              Can't find what you're looking for?
+              Still need help?
             </h3>
             <p className="mt-2 text-[14px] text-zinc-400">
-              Email us at{" "}
+              Can't find what you're looking for?
+            </p>
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  // Try to open Chatbase widget if available
+                  const w = window as unknown as { chatbase?: (action: string) => void };
+                  try {
+                    w.chatbase?.("open");
+                  } catch {
+                    /* no-op */
+                  }
+                  // Fallback: click the embedded chat bubble
+                  const btn = document.querySelector<HTMLButtonElement>(
+                    'iframe[id^="chatbase"], button[aria-label*="chat" i]'
+                  );
+                  if (btn && "click" in btn) (btn as HTMLElement).click();
+                }}
+                className="inline-flex items-center gap-2 bg-[#cc1111] hover:bg-[#b30e0e] text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors"
+              >
+                <MessageCircle size={16} /> Chat with us →
+              </button>
+              <a
+                href="https://wa.me/447423753090"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 border border-[#27272a] hover:border-[#3a3a3a] text-zinc-200 hover:text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors bg-[#1a1a1a]"
+              >
+                WhatsApp us →
+              </a>
+            </div>
+            <p className="mt-5 text-[13px] text-zinc-500">
+              Or email{" "}
               <a href="mailto:info@gopartara.com" className="text-[#cc1111] hover:underline">
                 info@gopartara.com
-              </a>{" "}
-              — we reply within 24 hours.
+              </a>
             </p>
-            <button
-              onClick={() => navigate("/contact")}
-              className="mt-6 inline-flex items-center gap-2 bg-[#cc1111] hover:bg-[#b30e0e] text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors"
-            >
-              Send us a message <ArrowRight size={14} />
-            </button>
           </div>
         </div>
       </section>
