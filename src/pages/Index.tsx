@@ -468,15 +468,14 @@ const Index = () => {
             <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
           </div>
 
-          <p style={{ color: "#ffffff", fontSize: 20, fontWeight: 700, marginBottom: 4 }}>
-            Excellent
+          <p style={{ color: "#ffffff", fontSize: 20, fontWeight: 700, marginBottom: 8 }}>
+            Leave us a review on Trustpilot
           </p>
-          <p style={{ color: "#a1a1aa", fontSize: 13, marginBottom: 16 }}>
-            Based on growing user reviews
+          <p style={{ color: "#a1a1aa", fontSize: 14, marginBottom: 6 }}>
+            We're brand new — be one of our first reviewers and help us grow!
           </p>
-
-          <p style={{ color: "#71717a", fontSize: 12, marginBottom: 16, fontStyle: "italic" }}>
-            We're collecting reviews — be one of our first!
+          <p style={{ color: "#71717a", fontSize: 12, marginBottom: 18, fontStyle: "italic" }}>
+            Every review helps us improve and reach more drivers.
           </p>
 
           <a
@@ -493,7 +492,7 @@ const Index = () => {
               fontWeight: 700,
             }}
           >
-            Leave a Review →
+            Review GOPARTARA →
           </a>
         </div>
       </section>
