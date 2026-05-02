@@ -1789,6 +1789,34 @@ const SearchResults = () => {
                         <a href={item.url} target="_blank" rel="noopener noreferrer" className="block relative">
                           <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
                             <img src={item.imageUrl} alt={item.partName} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500" loading="lazy" decoding="async" onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }} />
+                            {(() => {
+                              const isSel = compareParts.some((p) => p.id === item.id);
+                              const disabled = !isSel && compareParts.length >= 3;
+                              return (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    if (isSel) {
+                                      setCompareParts((prev) => prev.filter((p) => p.id !== item.id));
+                                    } else if (!disabled) {
+                                      setCompareParts((prev) => [...prev, { id: item.id, title: item.partName, price: item.price, condition: item.condition, sellerName: item.sellerUsername, sellerRating: item.sellerPositivePercent, freeShipping: item.freeShipping, shippingCost: item.shippingCost, location: item.itemLocation, itemCountry: item.itemCountry, url: item.url, imageUrl: item.imageUrl, source: "ebay" as const }]);
+                                    }
+                                  }}
+                                  disabled={disabled}
+                                  aria-label={isSel ? "Remove from compare" : "Add to compare"}
+                                  title={disabled ? "Max 3 parts" : isSel ? "Remove from compare" : "Add to compare"}
+                                  className={`absolute top-2 left-2 z-10 w-6 h-6 rounded-md flex items-center justify-center border transition-colors ${
+                                    isSel
+                                      ? "bg-red-500 border-red-500 text-white"
+                                      : "bg-black/60 border-white/20 text-transparent hover:border-white/60 hover:text-white/40 backdrop-blur-sm"
+                                  } ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+                                >
+                                  <Check size={14} strokeWidth={3} />
+                                </button>
+                              );
+                            })()}
                             <span className="absolute bottom-2 right-2 text-xl" title={isGlobal ? (item.itemCountry || "Global") : country.name}>
                               {isGlobal ? (
                                 <span className="flex items-center gap-1">
