@@ -420,6 +420,37 @@ const Tyres = () => {
               </div>
             </div>
 
+            {/* Tyre Type selector */}
+            <div className="mt-4 mb-3">
+              <label className="block text-[11px] font-semibold tracking-[0.12em] uppercase text-zinc-500 mb-2">
+                Tyre Type
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {([
+                  { id: 'summer', label: '☀️ Summer' },
+                  { id: 'winter', label: '❄️ Winter' },
+                  { id: 'allseason', label: '🌤️ All-Season' },
+                ] as const).map((t) => {
+                  const active = seasonFilter === t.id;
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setSeasonFilter(t.id)}
+                      aria-pressed={active}
+                      className={`rounded-full border px-3 py-2 text-[13px] font-semibold transition-colors ${
+                        active
+                          ? 'border-red-500 bg-red-600/15 text-red-300'
+                          : 'border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
+                      }`}
+                    >
+                      {t.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <button
               type="button"
               onClick={searchTyres}
