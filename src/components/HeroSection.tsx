@@ -93,6 +93,22 @@ const HeroSection = () => {
   const [autoOpen, setAutoOpen] = useState(false);
   const [garageVehicle, setGarageVehicle] = useState<{ make: string; model: string; year?: number } | null>(null);
 
+  // Rotating placeholder examples for the part-search input
+  const placeholderExamples = [
+    "e.g. BMW E46 brake pads",
+    "e.g. Ford Focus 1.6 clutch kit",
+    "e.g. 205/55 R16 tyre",
+    "e.g. NGK spark plug B6S",
+    "e.g. VW Golf MK7 timing chain",
+  ];
+  const [placeholderIdx, setPlaceholderIdx] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => {
+      setPlaceholderIdx((i) => (i + 1) % placeholderExamples.length);
+    }, 3000);
+    return () => clearInterval(id);
+  }, []);
+
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 50);
     return () => clearTimeout(t);
