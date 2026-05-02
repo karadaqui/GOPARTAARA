@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
@@ -462,12 +462,116 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Newsletter signup */}
+      <NewsletterSignup />
+
       <Footer />
       <BackToTop />
       <WelcomeModal />
       <LocationBanner />
       <ExitIntentBanner />
     </div>
+  );
+};
+
+const NewsletterSignup = () => {
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    setSubmitted(true);
+  };
+
+  return (
+    <section
+      aria-label="Newsletter signup"
+      style={{
+        background: "#0a0a0a",
+        borderTop: "1px solid rgba(255,255,255,0.06)",
+        borderLeft: "3px solid #cc1111",
+      }}
+    >
+      <div className="max-w-3xl mx-auto px-4 py-10 text-center">
+        <div style={{ fontSize: 32, lineHeight: 1, marginBottom: 10 }} aria-hidden>
+          📧
+        </div>
+        <h2
+          className="font-display"
+          style={{
+            fontSize: "clamp(20px, 2.4vw, 26px)",
+            fontWeight: 800,
+            color: "#ffffff",
+            letterSpacing: "-0.01em",
+            marginBottom: 8,
+          }}
+        >
+          Get the best car parts deals in your inbox
+        </h2>
+        <p style={{ color: "#a1a1aa", fontSize: 13, marginBottom: 20 }}>
+          Weekly deals digest · Price drop alerts · No spam, ever
+        </p>
+
+        {submitted ? (
+          <div
+            role="status"
+            style={{
+              display: "inline-block",
+              background: "rgba(22,163,74,0.12)",
+              border: "1px solid rgba(22,163,74,0.4)",
+              color: "#86efac",
+              padding: "10px 18px",
+              borderRadius: 12,
+              fontSize: 14,
+              fontWeight: 600,
+            }}
+          >
+            ✅ You're in! Check your inbox.
+          </div>
+        ) : (
+          <form
+            onSubmit={onSubmit}
+            className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto"
+          >
+            <input
+              type="email"
+              required
+              placeholder="your@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="flex-1 outline-none"
+              style={{
+                background: "#111111",
+                border: "1px solid #27272a",
+                borderRadius: 12,
+                padding: "11px 14px",
+                fontSize: 14,
+                color: "#ffffff",
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                background: "#cc1111",
+                color: "#ffffff",
+                fontWeight: 700,
+                fontSize: 14,
+                padding: "11px 20px",
+                borderRadius: 12,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Subscribe Free →
+            </button>
+          </form>
+        )}
+
+        <p style={{ color: "#52525b", fontSize: 12, marginTop: 14 }}>
+          Join drivers already saving money. Unsubscribe anytime.
+        </p>
+      </div>
+    </section>
   );
 };
 
