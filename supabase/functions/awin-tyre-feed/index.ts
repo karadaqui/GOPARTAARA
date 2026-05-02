@@ -52,6 +52,11 @@ serve(async (req) => {
         q = q.eq('feed_id', actualId)
       }
 
+      // Prefer rows that actually have an image URL so cards don't all show the placeholder.
+      // PostgREST orders nulls last by default; we also sort empty strings to the bottom by
+      // ordering by image_url descending (non-empty https URLs sort above empty strings).
+      q = q.not('image_url', 'is', null).neq('image_url', '').order('price', { ascending: true })
+
       const { data, error } = await q.limit(200)
       if (error) {
         console.error('Cache query error:', error)
