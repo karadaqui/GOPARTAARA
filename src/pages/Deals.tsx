@@ -78,14 +78,16 @@ const EBAY_ALL_URL = ebayAff("https://www.ebay.co.uk/deals/automotive");
 
 // ───────── Amazon UK (Amazon Associates) ─────────
 const AMAZON_DEALS = [
-  { title: "Today's Deals — Car Parts", subtitle: "Discounted brakes, filters, exhausts & more", url: "https://www.amazon.co.uk/Car-Parts-Todays-Deals-Automotive/s?rh=n:301309031,p_n_deal_type:26901098031&tag=gopartara-21", badge: "Top picks" },
-  { title: "Tools & Garage Equipment", subtitle: "Jacks, diagnostic tools, ramps & more", url: "https://www.amazon.co.uk/s?k=garage+tools+equipment&rh=n:301309031&tag=gopartara-21&sort=discount-rank", badge: "Workshop" },
-  { title: "Car Care & Detailing", subtitle: "Polish, wax, shampoos & detailing kits", url: "https://www.amazon.co.uk/s?k=car+care+cleaning&rh=n:301309031&tag=gopartara-21&sort=discount-rank", badge: "Detailing" },
-  { title: "Tyres & Wheels", subtitle: "All-season, winter & summer tyres", url: "https://www.amazon.co.uk/s?k=tyres+wheels&rh=n:301309031&tag=gopartara-21&sort=discount-rank", badge: "Big savings" },
-  { title: "Car Electronics & Tech", subtitle: "Dash cams, GPS, CarPlay adapters", url: "https://www.amazon.co.uk/s?k=dash+cam+car+electronics&rh=n:301309031&tag=gopartara-21&sort=discount-rank", badge: "Hot deals" },
-  { title: "Performance & Tuning", subtitle: "Exhausts, intakes, tuning parts", url: "https://www.amazon.co.uk/s?k=car+performance+parts&rh=n:301309031&tag=gopartara-21&sort=discount-rank", badge: "Performance" },
+  { icon: "🔧", title: "Car Parts", subtitle: "Brakes, filters, exhausts & more", url: "https://www.amazon.co.uk/deals?ref_=nav_cs_gb&tag=gopartara-21&discounts-widget=%2522%257B%255C%2522state%255C%2522%253A%257B%255C%2522refinementFilters%255C%2522%253A%257B%255C%2522departments%255C%2522%253A%255B%255C%2522248878031%252F301309031%255C%2522%255D%257D%257D%252C%255C%2522version%255C%2522%253A1%257D%2522", badge: "Top picks" },
+  { icon: "🚗", title: "Car Accessories", subtitle: "Mounts, organizers, seat covers", url: "https://www.amazon.co.uk/deals?ref_=nav_cs_gb&tag=gopartara-21&discounts-widget=%2522%257B%255C%2522state%255C%2522%253A%257B%255C%2522refinementFilters%255C%2522%253A%257B%255C%2522departments%255C%2522%253A%255B%255C%2522248878031%252F301308031%255C%2522%255D%257D%257D%252C%255C%2522version%255C%2522%253A1%257D%2522", badge: "Essentials" },
+  { icon: "🧽", title: "Car & Motorbike Care", subtitle: "Polish, wax, shampoos & kits", url: "https://www.amazon.co.uk/deals?ref_=nav_cs_gb&tag=gopartara-21&discounts-widget=%2522%257B%255C%2522state%255C%2522%253A%257B%255C%2522refinementFilters%255C%2522%253A%257B%255C%2522departments%255C%2522%253A%255B%255C%2522248878031%252F303891031%255C%2522%255D%257D%257D%252C%255C%2522version%255C%2522%253A1%257D%2522", badge: "Detailing" },
+  { icon: "🔨", title: "Tools & Equipment", subtitle: "Jacks, diagnostic tools, ramps", url: "https://www.amazon.co.uk/deals?ref_=nav_cs_gb&tag=gopartara-21&discounts-widget=%2522%257B%255C%2522state%255C%2522%253A%257B%255C%2522refinementFilters%255C%2522%253A%257B%255C%2522departments%255C%2522%253A%255B%255C%2522248878031%252F2486235031%255C%2522%255D%257D%257D%252C%255C%2522version%255C%2522%253A1%257D%2522", badge: "Workshop" },
+  { icon: "🛞", title: "Tyres & Rims", subtitle: "All-season, winter & summer tyres", url: "https://www.amazon.co.uk/deals?ref_=nav_cs_gb&tag=gopartara-21&discounts-widget=%2522%257B%255C%2522state%255C%2522%253A%257B%255C%2522refinementFilters%255C%2522%253A%257B%255C%2522departments%255C%2522%253A%255B%255C%2522248878031%252F307675031%255C%2522%255D%257D%257D%252C%255C%2522version%255C%2522%253A1%257D%2522", badge: "Big savings" },
+  { icon: "🛢️", title: "Oils & Fluids", subtitle: "Engine oil, coolant, brake fluid", url: "https://www.amazon.co.uk/deals?ref_=nav_cs_gb&tag=gopartara-21&discounts-widget=%2522%257B%255C%2522state%255C%2522%253A%257B%255C%2522refinementFilters%255C%2522%253A%257B%255C%2522departments%255C%2522%253A%255B%255C%2522248878031%252F301315031%255C%2522%255D%257D%257D%252C%255C%2522version%255C%2522%253A1%257D%2522", badge: "Essentials" },
+  { icon: "🎨", title: "Paintwork", subtitle: "Touch-up, primers, sprays", url: "https://www.amazon.co.uk/deals?ref_=nav_cs_gb&tag=gopartara-21&discounts-widget=%2522%257B%255C%2522state%255C%2522%253A%257B%255C%2522refinementFilters%255C%2522%253A%257B%255C%2522departments%255C%2522%253A%255B%255C%2522248878031%252F303890031%255C%2522%255D%257D%257D%252C%255C%2522version%255C%2522%253A1%257D%2522", badge: "Style" },
+  { icon: "🏍️", title: "Motorbike Parts", subtitle: "Bike parts, helmets & gear", url: "https://www.amazon.co.uk/deals?ref_=nav_cs_gb&tag=gopartara-21&discounts-widget=%2522%257B%255C%2522state%255C%2522%253A%257B%255C%2522refinementFilters%255C%2522%253A%257B%255C%2522departments%255C%2522%253A%255B%255C%2522248878031%252F301311031%255C%2522%255D%257D%257D%252C%255C%2522version%255C%2522%253A1%257D%2522", badge: "Bikers" },
 ];
-const AMAZON_ALL_URL = "https://www.amazon.co.uk/Car-Parts-Automotive/b?node=301309031&tag=gopartara-21";
+const AMAZON_ALL_URL = "https://www.amazon.co.uk/deals?ref_=nav_cs_gb&tag=gopartara-21&discounts-widget=%2522%257B%255C%2522state%255C%2522%253A%257B%255C%2522refinementFilters%255C%2522%253A%257B%255C%2522departments%255C%2522%253A%255B%255C%2522248878031%255C%2522%255D%257D%257D%252C%255C%2522version%255C%2522%253A1%257D%2522";
 
 
 const Deals = () => {
@@ -279,6 +281,7 @@ const Deals = () => {
               <span className="group-hover:translate-x-0.5 transition-transform">→</span>
             </a>
           </div>
+          <p className="text-muted-foreground text-xs mt-2">🔄 Amazon deals update automatically throughout the day</p>
 
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-6">
             {AMAZON_DEALS.map((deal) => (
@@ -301,10 +304,11 @@ const Deals = () => {
                   </span>
                 </div>
 
+                <div className="text-2xl mb-1">{deal.icon}</div>
                 <p className="text-foreground font-bold text-sm mb-1">{deal.title}</p>
                 <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
                 <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
-                  <span className="text-xs font-semibold">View on Amazon</span>
+                  <span className="text-xs font-semibold">View Amazon Deals</span>
                   <span className="text-xs group-hover:translate-x-0.5 transition-transform">→</span>
                 </div>
               </a>
