@@ -914,7 +914,7 @@ const SearchResults = () => {
           handleLoadMore();
         }
       },
-      { rootMargin: "200px 0px" },
+      { rootMargin: "300px 0px" },
     );
     observer.observe(node);
     return () => observer.disconnect();
