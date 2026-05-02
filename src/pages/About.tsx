@@ -396,6 +396,33 @@ const About = () => (
           — we're always open to talented people.
         </p>
       </section>
+
+      {/* Company Information */}
+      <section className="max-w-3xl mx-auto px-4 pb-16">
+        <div
+          style={{
+            background: "#111111",
+            border: "1px solid #1f1f1f",
+            borderRadius: 12,
+            padding: 20,
+          }}
+        >
+          <h2 style={{ fontSize: 13, fontWeight: 700, color: "#a1a1aa", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>
+            Company Information
+          </h2>
+          <dl style={{ fontSize: 13, color: "#a1a1aa", lineHeight: 1.8 }}>
+            <div><span style={{ color: "#71717a" }}>Company:</span> <span style={{ color: "#d4d4d8" }}>Partara Ltd</span></div>
+            <div><span style={{ color: "#71717a" }}>Registered in:</span> <span style={{ color: "#d4d4d8" }}>England &amp; Wales</span></div>
+            <div><span style={{ color: "#71717a" }}>Trading as:</span> <span style={{ color: "#d4d4d8" }}>GOPARTARA</span></div>
+            <div>
+              <span style={{ color: "#71717a" }}>Email:</span>{" "}
+              <a href="mailto:info@gopartara.com" style={{ color: "#fbbf24", textDecoration: "underline" }}>
+                info@gopartara.com
+              </a>
+            </div>
+          </dl>
+        </div>
+      </section>
     </main>
 
     <Footer />
