@@ -2347,68 +2347,75 @@ const SearchResults = () => {
                   }}
                 />
               ) : (
-              <div className="flex flex-col items-center justify-center py-20 mb-8 px-4">
-                <Search size={80} strokeWidth={1.25} className="mb-6" style={{ color: "#3f3f46" }} />
+              <div className="flex flex-col items-center justify-center py-16 mb-8 px-4">
+                <div className="text-7xl mb-5" aria-hidden="true">🔍</div>
                 <h2 className="text-xl sm:text-2xl font-bold text-white mb-2 text-center">
-                  No results for <span className="text-[#cc1111]">"{activeQuery}"</span>
+                  No exact matches found for <span className="text-[#fbbf24]">"{activeQuery}"</span>
                 </h2>
-                <p className="text-sm text-zinc-500 mb-8 text-center max-w-md">
-                  Try: broader terms · check spelling · remove filters
+                <p className="text-sm text-zinc-400 mb-6 text-center max-w-md">
+                  Don't worry — try one of the suggestions below or search all available parts.
                 </p>
 
-                {/* Suggestion chips */}
-                <div className="flex flex-wrap items-center justify-center gap-2 mb-8 max-w-xl">
-                  <span className="text-[11px] uppercase tracking-wider text-zinc-600 mr-1">Try:</span>
-                  {["BMW brake pads", "Ford Focus clutch", "VW Golf filters"].map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => {
-                        setQuery(s);
-                        setActiveQuery(s);
-                        setSelectedCategory(null);
-                        setCurrentPage(1);
-                        setSearchParams({ q: s });
-                      }}
-                      className="px-3 py-1.5 rounded-full text-xs font-medium bg-[#111111] border border-[#27272a] text-zinc-300 hover:text-white hover:border-[#3f3f46] transition-colors"
-                    >
-                      {s}
-                    </button>
-                  ))}
+                {/* Suggestion pills */}
+                <div className="w-full max-w-xl mb-6">
+                  <p className="text-[11px] uppercase tracking-wider text-zinc-500 text-center mb-3 font-semibold">
+                    Try these instead:
+                  </p>
+                  <div className="flex flex-wrap items-center justify-center gap-2">
+                    {(() => {
+                      const q = activeQuery.toLowerCase();
+                      const base = q.split(/\s+/)[0] || "";
+                      const dynamic = base
+                        ? [`${base} parts`, `${base} oil filter`, `${base} brake pads`, `${base} accessories`]
+                        : ["BMW brake pads", "Ford Focus clutch", "VW Golf filters", "Audi A4 oil filter"];
+                      return dynamic.slice(0, 4).map((s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => {
+                            setQuery(s);
+                            setActiveQuery(s);
+                            setSelectedCategory(null);
+                            setCurrentPage(1);
+                            setSearchParams({ q: s });
+                          }}
+                          className="px-4 py-2 rounded-full text-xs font-medium bg-[#111111] border border-[#27272a] text-zinc-300 hover:text-white hover:border-[#fbbf24] hover:bg-[#1a1a1a] transition-colors"
+                        >
+                          {s}
+                        </button>
+                      ));
+                    })()}
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-2 mb-8">
+                {/* Primary CTAs */}
+                <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+                  <button
+                    onClick={() => { setQuery(""); setActiveQuery(""); setSelectedCategory(null); setCurrentPage(1); setSearchParams({}); }}
+                    className="px-5 py-2.5 rounded-xl bg-[#fbbf24] hover:bg-[#f59e0b] text-[#0a1628] text-sm font-bold transition-colors"
+                  >
+                    Search all parts →
+                  </button>
                   {activeFilterCount > 0 && (
                     <button
                       onClick={clearAllFilters}
-                      className="px-4 py-2 rounded-xl bg-[#cc1111] hover:bg-[#b30e0e] text-white text-sm font-semibold transition-colors"
+                      className="px-4 py-2.5 rounded-xl bg-[#1a1a1a] border border-white/10 text-sm font-medium text-zinc-300 hover:bg-[#222] hover:border-white/20 transition-colors"
                     >
                       Clear filters
                     </button>
                   )}
-                  <button
-                    onClick={() => { setQuery(""); setActiveQuery(""); setSearchParams({}); }}
-                    className="px-4 py-2 rounded-xl bg-[#1a1a1a] border border-white/10 text-sm font-medium text-zinc-300 hover:bg-[#222] hover:border-white/20 transition-colors"
-                  >
-                    Clear search
-                  </button>
                 </div>
 
-                {/* Search tips collapsible */}
-                <details className="w-full max-w-md group">
-                  <summary className="cursor-pointer flex items-center justify-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors list-none [&::-webkit-details-marker]:hidden">
-                    <ChevronDown size={14} className="transition-transform group-open:rotate-180" />
-                    Search tips
-                  </summary>
-                  <ul className="mt-4 space-y-2 text-xs text-zinc-500 leading-relaxed border border-[#1f1f1f] bg-[#0f0f0f] rounded-xl p-4">
-                    <li>• Use the part name + brand, e.g. <span className="text-zinc-300">"BMW brake pads"</span></li>
-                    <li>• Search by reg plate from the homepage to get fitment-checked results</li>
-                    <li>• Try the OEM part number if you know it (printed on the old part)</li>
-                    <li>• Remove model year if you're getting too few matches</li>
-                    <li>• Switch your country in the marketplace selector for more results</li>
-                  </ul>
-                </details>
+                {/* Tips */}
+                <div
+                  className="w-full max-w-xl text-center text-xs text-zinc-400 leading-relaxed rounded-xl px-4 py-3"
+                  style={{ background: "rgba(251,191,36,0.06)", border: "1px solid rgba(251,191,36,0.2)" }}
+                >
+                  <span className="font-semibold text-zinc-200">💡 Tips:</span>{" "}
+                  Try a shorter search term · Check your spelling · Use part number instead of name
+                </div>
               </div>
+
               )
             )}
 
