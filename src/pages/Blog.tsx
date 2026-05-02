@@ -241,6 +241,17 @@ const Blog = () => {
           const formatDate = (d: string) =>
             new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
+          const thumbFor = (cat: string | null): { emoji: string; gradient: string } => {
+            switch (cat) {
+              case "Buying Guide": return { emoji: "🛒", gradient: "linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)" };
+              case "Maintenance": return { emoji: "🔧", gradient: "linear-gradient(135deg, #1a2a1a 0%, #1e3a1e 100%)" };
+              case "Tutorial":    return { emoji: "📖", gradient: "linear-gradient(135deg, #2a1a1a 0%, #3a1e1e 100%)" };
+              case "Education":   return { emoji: "🎓", gradient: "linear-gradient(135deg, #1a1a3a 0%, #1e1e4a 100%)" };
+              case "Comparison":  return { emoji: "⚖️", gradient: "linear-gradient(135deg, #2a2a1a 0%, #3a3a1e 100%)" };
+              default:            return { emoji: "🚗", gradient: "linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%)" };
+            }
+          };
+
           return (
             <>
               {/* Featured post — hero card */}
