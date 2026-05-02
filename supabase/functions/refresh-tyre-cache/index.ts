@@ -60,9 +60,19 @@ serve(async (req) => {
     let totalInserted = 0
     const perFeed: Record<string, number> = {}
 
-    // Clear cache first
-    const { error: delErr } = await supabase.from('tyre_products_cache').delete().gt('id', 0)
-    if (delErr) console.error('Clear cache error:', delErr)
+    // Clear cache first - delete in chunks to avoid statement timeout
+    for (let i = 0; i < 50; i++) {
+      const { data: rows, error: selErr } = await supabase
+        .from('tyre_products_cache')
+        .select('id')
+        .limit(1000)
+      if (selErr) { console.error('Select for clear error:', selErr); break }
+      if (!rows || rows.length === 0) break
+      const ids = rows.map((r: any) => r.id)
+      const { error: delErr } = await supabase.from('tyre_products_cache').delete().in('id', ids)
+      if (delErr) { console.error('Clear cache chunk error:', delErr); break }
+      if (rows.length < 1000) break
+    }
 
     for (const feedId of Object.keys(HARDCODED)) {
       const feed = HARDCODED[feedId]
@@ -112,9 +122,7 @@ serve(async (req) => {
             ui = hdrs.findIndex(h => norm(h).includes('deeplink'))
             bi = hdrs.findIndex(h => norm(h).includes('brandname') || norm(h) === 'brand')
             descIdx = hdrs.findIndex(h => h.includes('desc'))
-            imgIdx = hdrs.findIndex(h =>
-              ['aw_image_url','merchant_image_url','image_url','image','large_image','aw_thumb_url','merchant_thumb','product_image','img','img_url','picture','photo','thumbnail'].includes(h.toLowerCase().trim())
-            )
+            imgIdx = hdrs.findIndex(h => /image|img|photo|picture|thumb/i.test(h))
             console.log(`Feed ${feedId} headers: ni=${ni} pi=${pi} ui=${ui} bi=${bi} descIdx=${descIdx} imgIdx=${imgIdx}`)
             continue
           }
