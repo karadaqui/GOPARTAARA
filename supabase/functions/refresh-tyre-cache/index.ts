@@ -60,9 +60,19 @@ serve(async (req) => {
     let totalInserted = 0
     const perFeed: Record<string, number> = {}
 
-    // Clear cache first
-    const { error: delErr } = await supabase.from('tyre_products_cache').delete().gt('id', 0)
-    if (delErr) console.error('Clear cache error:', delErr)
+    // Clear cache first - delete in chunks to avoid statement timeout
+    for (let i = 0; i < 50; i++) {
+      const { data: rows, error: selErr } = await supabase
+        .from('tyre_products_cache')
+        .select('id')
+        .limit(1000)
+      if (selErr) { console.error('Select for clear error:', selErr); break }
+      if (!rows || rows.length === 0) break
+      const ids = rows.map((r: any) => r.id)
+      const { error: delErr } = await supabase.from('tyre_products_cache').delete().in('id', ids)
+      if (delErr) { console.error('Clear cache chunk error:', delErr); break }
+      if (rows.length < 1000) break
+    }
 
     for (const feedId of Object.keys(HARDCODED)) {
       const feed = HARDCODED[feedId]
