@@ -290,6 +290,7 @@ const Index = () => {
 
       <SectionDivider />
       <FeaturedListingsSection />
+      <FeaturedSupplierSpotlight />
       <BrowseByMakeSection />
       <SectionDivider />
       <SocialProofStats />
