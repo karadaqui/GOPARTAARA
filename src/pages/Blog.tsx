@@ -266,6 +266,25 @@ const Blog = () => {
                     padding: "40px",
                   }}
                 >
+                  {(() => { const t = thumbFor(featured.category); return (
+                    <div
+                      aria-hidden
+                      style={{
+                        width: "100%",
+                        height: "160px",
+                        borderTopLeftRadius: "12px",
+                        borderTopRightRadius: "12px",
+                        background: t.gradient,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "40px",
+                        marginBottom: "20px",
+                      }}
+                    >
+                      {t.emoji}
+                    </div>
+                  ); })()}
                   <div className="flex items-center gap-3 mb-4 flex-wrap">
                     {featured.category && (
                       <span
