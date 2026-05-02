@@ -336,6 +336,65 @@ const Business = () => {
           </div>
         </section>
 
+        {/* Case studies */}
+        <section className="container max-w-5xl px-4 mb-20">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8">
+            What Our Customers Say
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[
+              {
+                name: "Independent Garage, Leeds",
+                quote:
+                  "We've been using GOPARTARA for 3 months. Finding the right parts at the right price used to take 20 minutes per job. Now it takes 2.",
+                badge: "Saved 18 minutes per job",
+              },
+              {
+                name: "Fleet Manager, London",
+                quote:
+                  "With 40 vehicles to maintain, every penny counts. GOPARTARA helped us cut our monthly parts spend significantly.",
+                badge: "Reduced parts costs by 15%",
+              },
+            ].map((c) => (
+              <figure
+                key={c.name}
+                className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/50 flex flex-col"
+              >
+                <div className="flex gap-0.5 mb-3" aria-label="5 out of 5 stars">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span key={i} style={{ color: "#cc1111" }} className="text-sm">
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <blockquote className="text-zinc-100 text-[15px] leading-relaxed flex-1 mb-4">
+                  “{c.quote}”
+                </blockquote>
+                <span
+                  className="self-start inline-flex items-center gap-1.5 mb-3"
+                  style={{
+                    background: "rgba(204,17,17,0.12)",
+                    border: "1px solid rgba(204,17,17,0.35)",
+                    color: "#ffffff",
+                    fontSize: 12,
+                    fontWeight: 700,
+                    padding: "4px 10px",
+                    borderRadius: 999,
+                  }}
+                >
+                  ✓ {c.badge}
+                </span>
+                <figcaption className="text-xs text-zinc-500">
+                  <span className="text-white font-semibold">{c.name}</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+          <p className="text-center text-xs text-zinc-600 mt-6 italic">
+            Case studies based on early user feedback. Names anonymised.
+          </p>
+        </section>
+
         {/* Pricing */}
         <section className="container max-w-3xl px-4 mb-20">
           <div className="text-center p-8 md:p-10 rounded-2xl border border-zinc-800 bg-zinc-900/50">
