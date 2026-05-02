@@ -17,7 +17,7 @@ export const isClassicPartSearch = (query: string): boolean => {
 
 const GreenSparkFeaturedCard = ({ searchQuery }: GreenSparkFeaturedCardProps) => {
   const merchantSearchUrl = `https://www.gsparkplug.com/?q=${encodeURIComponent(searchQuery)}`;
-  const affiliateUrl = `https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara&p=${encodeURIComponent(merchantSearchUrl)}`;
+  const affiliateUrl = `https://www.awin1.com/cread.php?awinmid=4200&awinaffid=2845282&ued=${encodeURIComponent(merchantSearchUrl)}`;
 
   return (
     <a
