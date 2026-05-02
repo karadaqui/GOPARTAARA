@@ -525,6 +525,30 @@ const Marketplace = () => {
                   <option value="Used - Good">Used - Good</option>
                   <option value="Used - Fair">Used - Fair</option>
                 </select>
+
+                <select
+                  value={locationFilter}
+                  onChange={e => setLocationFilter(e.target.value as any)}
+                  className="bg-secondary border border-border rounded-xl text-sm h-9 px-3 text-foreground"
+                  aria-label="Location"
+                >
+                  <option value="any">📍 Any location</option>
+                  <option value="10mi">📍 Within 10 miles</option>
+                  <option value="25mi">📍 Within 25 miles</option>
+                  <option value="50mi">📍 Within 50 miles</option>
+                  <option value="uk">📍 UK only</option>
+                  <option value="europe">📍 Europe</option>
+                </select>
+
+                {(locationFilter === "10mi" || locationFilter === "25mi" || locationFilter === "50mi") && (
+                  <Input
+                    value={postcode}
+                    onChange={e => setPostcode(e.target.value.toUpperCase())}
+                    placeholder="Enter postcode"
+                    className="bg-secondary border-border rounded-xl text-sm h-9 w-36"
+                    aria-label="Postcode"
+                  />
+                )}
               </div>
             </div>
             <div className="mb-8">
