@@ -1,189 +1,118 @@
-import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
-import SafeImage from "@/components/SafeImage";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { ExternalLink, Zap } from "lucide-react";
-
-interface EvProduct {
-  id: string;
-  name: string;
-  description: string;
-  price: string;
-  image_url: string;
-  affiliate_url: string;
-  brand: string;
-  category: string;
-}
-
-const CONNECTOR_TYPES = ["Type 1", "Type 2", "CCS", "CHAdeMO", "3-pin"] as const;
-const CABLE_LENGTHS = ["3m", "5m", "7m", "10m"] as const;
+import { toast } from "sonner";
 
 export default function EvCharging() {
-  const [products, setProducts] = useState<EvProduct[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [connector, setConnector] = useState<string>("");
-  const [length, setLength] = useState<string>("");
+  const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    let active = true;
-    (async () => {
-      try {
-        const { data, error } = await supabase.functions.invoke("fetch-ev-king-products");
-        if (error) throw error;
-        if (active) setProducts(Array.isArray(data) ? data : (data?.products || []));
-      } catch (e) {
-        console.error("EV products load failed", e);
-      } finally {
-        if (active) setLoading(false);
-      }
-    })();
-    return () => { active = false; };
-  }, []);
-
-  const filtered = useMemo(() => {
-    const q = search.toLowerCase().trim();
-    return products.filter((p) => {
-      const haystack = `${p.name} ${p.description}`.toLowerCase();
-      if (q && !haystack.includes(q)) return false;
-      if (connector && !haystack.includes(connector.toLowerCase())) return false;
-      if (length && !haystack.includes(length.toLowerCase())) return false;
-      return true;
-    });
-  }, [products, search, connector, length]);
+  const handleNotify = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = email.trim();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const list = JSON.parse(localStorage.getItem("ev_charging_notify_list") || "[]");
+      if (!list.includes(trimmed)) list.push(trimmed);
+      localStorage.setItem("ev_charging_notify_list", JSON.stringify(list));
+      toast.success("You're on the list!", {
+        description: "We'll email you when EV Charging launches.",
+      });
+      setEmail("");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white">
+    <div className="min-h-screen flex flex-col" style={{ background: "#0a0a0a" }}>
       <SEOHead
-        title="EV Charging Cables & Accessories | GOPARTARA"
-        description="Find the right EV charging cable for your electric car. Type 1, Type 2, CCS, CHAdeMO and 3-pin cables for all UK and EU EV models."
+        title="EV Charging — Coming Soon | GOPARTARA"
+        description="EV charging point data and EV-specific parts coming soon to GOPARTARA."
       />
       <Navbar />
 
-      <div
-        className="w-full flex flex-col items-center justify-center text-center px-4"
-        style={{ backgroundColor: "#111111", minHeight: "60vh" }}
-      >
-        <div className="text-6xl mb-4">🔧</div>
-        <h1 className="text-white mb-2" style={{ fontSize: "24px", fontWeight: 800 }}>
-          EV Charging — Under Maintenance
-        </h1>
-        <p className="mb-6" style={{ color: "#9ca3af", fontSize: "14px" }}>
-          We're working on improving this section. Check back soon.
-        </p>
-        <span
-          className="bg-red-600 text-white rounded-full px-4 py-1"
-          style={{ fontSize: "12px", fontWeight: 700 }}
-        >
-          🔧 Under Maintenance
-        </span>
-      </div>
+      <main className="flex-1 flex items-center justify-center px-4 py-20">
+        <div className="w-full max-w-xl mx-auto text-center">
+          <div className="text-6xl mb-6" aria-hidden="true">🔧</div>
 
-      {false && (
-      <main className="max-w-6xl mx-auto px-4 py-12">
-        {/* Header */}
-        <header className="mb-10">
-          <Badge className="mb-4 bg-[#cc1111]/15 text-[#ff6b6b] border border-[#cc1111]/30 hover:bg-[#cc1111]/20">
-            <Zap className="w-3 h-3 mr-1.5" />
-            Powered by EV King — UK's leading EV accessories retailer
-          </Badge>
-          <h1 className="text-3xl md:text-5xl font-semibold tracking-tight mb-3">
-            EV Charging Cables &amp; Accessories
+          <span
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-6"
+            style={{
+              background: "rgba(204,17,17,0.12)",
+              border: "1px solid rgba(204,17,17,0.4)",
+              color: "#ff5252",
+              fontSize: 12,
+              fontWeight: 700,
+              letterSpacing: "0.04em",
+            }}
+          >
+            🔧 Under Development
+          </span>
+
+          <h1
+            className="font-display tracking-tight mb-4"
+            style={{ color: "#ffffff", fontSize: "clamp(28px, 5vw, 44px)", fontWeight: 800 }}
+          >
+            EV Charging — Coming Soon
           </h1>
-          <p className="text-zinc-400 text-base md:text-lg max-w-2xl">
-            Find the right charging cable for your electric car. All UK and EU EV models covered.
+
+          <p
+            className="mb-10 mx-auto"
+            style={{ color: "#a1a1aa", fontSize: 16, lineHeight: 1.6, maxWidth: 480 }}
+          >
+            We're integrating EV charging point data and EV-specific parts. Check back soon.
           </p>
-        </header>
 
-        {/* Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
-          <Input
-            placeholder="Search products…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500"
-          />
-          <select
-            value={connector}
-            onChange={(e) => setConnector(e.target.value)}
-            className="h-10 rounded-md bg-zinc-900 border border-zinc-800 text-white px-3 text-sm"
+          <form
+            onSubmit={handleNotify}
+            className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto"
           >
-            <option value="">All connector types</option>
-            {CONNECTOR_TYPES.map((c) => <option key={c} value={c}>{c}</option>)}
-          </select>
-          <select
-            value={length}
-            onChange={(e) => setLength(e.target.value)}
-            className="h-10 rounded-md bg-zinc-900 border border-zinc-800 text-white px-3 text-sm"
-          >
-            <option value="">Any cable length</option>
-            {CABLE_LENGTHS.map((l) => <option key={l} value={l}>{l}</option>)}
-          </select>
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
+              aria-label="Email address"
+              className="flex-1 outline-none"
+              style={{
+                background: "#111111",
+                border: "1px solid #27272a",
+                color: "#ffffff",
+                borderRadius: 8,
+                padding: "12px 14px",
+                fontSize: 14,
+              }}
+            />
+            <button
+              type="submit"
+              disabled={submitting}
+              className="transition-opacity hover:opacity-90 disabled:opacity-60"
+              style={{
+                background: "#cc1111",
+                color: "#ffffff",
+                borderRadius: 8,
+                padding: "12px 20px",
+                fontSize: 14,
+                fontWeight: 700,
+                whiteSpace: "nowrap",
+              }}
+            >
+              Notify Me →
+            </button>
+          </form>
+
+          <p className="mt-4" style={{ color: "#71717a", fontSize: 13 }}>
+            Be the first to know when EV Charging goes live.
+          </p>
         </div>
-
-        {/* Grid */}
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-[360px] bg-zinc-900" />
-            ))}
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-20 text-zinc-500">
-            No products match your filters.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filtered.map((p) => (
-              <article
-                key={p.id}
-                className="bg-zinc-900/60 border border-zinc-800 rounded-lg overflow-hidden flex flex-col hover:border-[#cc1111]/50 transition-colors"
-              >
-                <div className="aspect-square bg-white flex items-center justify-center overflow-hidden">
-                  <SafeImage
-                    src={p.image_url}
-                    alt={p.name}
-                    className="w-full h-full object-contain p-4"
-                  />
-                </div>
-                <div className="p-4 flex flex-col flex-1">
-                  {p.brand && (
-                    <div className="text-[11px] uppercase tracking-wider text-zinc-500 mb-1">
-                      {p.brand}
-                    </div>
-                  )}
-                  <h3 className="text-sm font-medium line-clamp-2 mb-2 min-h-[40px]">
-                    {p.name}
-                  </h3>
-                  <div className="text-lg font-semibold text-white mb-3">{p.price}</div>
-                  <a
-                    href={p.affiliate_url}
-                    target="_blank"
-                    rel="noopener noreferrer sponsored"
-                    className="mt-auto"
-                  >
-                    <Button className="w-full bg-[#cc1111] hover:bg-[#a50d0d] text-white">
-                      View on EV King
-                      <ExternalLink className="w-4 h-4 ml-2" />
-                    </Button>
-                  </a>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-
-        <p className="text-xs text-zinc-600 mt-10 text-center">
-          GOPARTARA may earn a commission on purchases made through links on this page.
-        </p>
       </main>
-      )}
 
       <Footer />
     </div>
