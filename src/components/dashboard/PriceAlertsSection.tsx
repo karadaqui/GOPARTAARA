@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Loader2, Package, Bell } from "lucide-react";
+import { Loader2, Package, Bell, Plus } from "lucide-react";
 import EmptyState from "@/components/EmptyState";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -13,6 +13,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface PriceAlert {
   id: string;
@@ -37,6 +44,37 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
   const [confirmClearAll, setConfirmClearAll] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editPrice, setEditPrice] = useState("");
+  const [createOpen, setCreateOpen] = useState(false);
+  const [newPartName, setNewPartName] = useState("");
+  const [newTargetPrice, setNewTargetPrice] = useState("");
+  const [creating, setCreating] = useState(false);
+
+  const createAlert = async () => {
+    const name = newPartName.trim();
+    const tp = parseFloat(newTargetPrice);
+    if (!name || name.length > 200) { toast.error("Enter a valid part name"); return; }
+    if (!tp || tp <= 0 || tp > 1000000) { toast.error("Enter a valid target price"); return; }
+    setCreating(true);
+    const { data: userData } = await supabase.auth.getUser();
+    const email = userData.user?.email;
+    if (!email) { toast.error("You must be signed in"); setCreating(false); return; }
+    const { error } = await supabase.from("price_alerts").insert({
+      user_id: userId,
+      part_name: name,
+      target_price: tp,
+      email,
+    });
+    setCreating(false);
+    if (error) {
+      toast.error("Failed to create alert");
+    } else {
+      toast.success("Price alert created");
+      setNewPartName("");
+      setNewTargetPrice("");
+      setCreateOpen(false);
+      fetchAlerts();
+    }
+  };
 
   const fetchAlerts = useCallback(async () => {
     const { data, error } = await supabase
@@ -127,6 +165,13 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
           </h2>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => setCreateOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-destructive hover:bg-destructive/90 text-destructive-foreground text-xs font-semibold rounded-lg transition-colors"
+          >
+            <Plus size={14} />
+            Set New Alert
+          </button>
           <a
             href="/alerts"
             className="text-xs text-muted-foreground hover:text-foreground transition-colors underline-offset-2 hover:underline"
@@ -151,8 +196,8 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
       ) : alerts.length === 0 ? (
         <EmptyState
           icon={Bell}
-          title="No price alerts set"
-          description="Set a target price and we'll email you when any part drops below it."
+          title="No price alerts yet"
+          description="Search for a part and click 🔔 to add one — or use 'Set New Alert' above."
           actionLabel="Search Parts →"
           actionTo="/search"
         />
@@ -276,6 +321,24 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
                           </span>
                         )}
                       </div>
+                      {alert.current_price != null && (() => {
+                        const cp = Number(alert.current_price);
+                        const tp = Number(alert.target_price);
+                        const pct = targetHit ? 100 : Math.max(5, Math.min(99, Math.round((tp / cp) * 100)));
+                        return (
+                          <div className="mt-2">
+                            <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all ${targetHit ? "bg-emerald-500" : "bg-destructive/70"}`}
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                            <p className="text-[10px] text-muted-foreground/60 mt-1">
+                              {targetHit ? "Target reached" : `${pct}% of the way to your target`}
+                            </p>
+                          </div>
+                        );
+                      })()}
                       <p className="text-[10px] text-muted-foreground/50 mt-1">
                         {alert.last_checked_at
                           ? `Checked ${new Date(alert.last_checked_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`
@@ -352,6 +415,66 @@ const PriceAlertsSection = ({ userId }: { userId: string }) => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Create new alert */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="rounded-2xl sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Set a new price alert</DialogTitle>
+            <DialogDescription>
+              We'll email you when the part drops below your target price.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-2">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                Part name
+              </label>
+              <input
+                type="text"
+                value={newPartName}
+                onChange={(e) => setNewPartName(e.target.value)}
+                placeholder="e.g. Brake pads BMW 320d"
+                maxLength={200}
+                className="w-full px-3 py-2 bg-secondary border border-border rounded-lg text-foreground text-sm focus:outline-none focus:border-destructive/50"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1.5 block">
+                Target price (£)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">£</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={newTargetPrice}
+                  onChange={(e) => setNewTargetPrice(e.target.value)}
+                  placeholder="0.00"
+                  className="w-full pl-7 pr-3 py-2 bg-secondary border border-border rounded-lg text-foreground text-sm focus:outline-none focus:border-destructive/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+              </div>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={() => setCreateOpen(false)}
+                className="flex-1 px-4 py-2 border border-border text-muted-foreground text-sm rounded-lg hover:text-foreground transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={createAlert}
+                disabled={creating || !newPartName.trim() || !newTargetPrice}
+                className="flex-1 px-4 py-2 bg-destructive hover:bg-destructive/90 disabled:opacity-40 text-destructive-foreground text-sm font-semibold rounded-lg transition-colors inline-flex items-center justify-center gap-2"
+              >
+                {creating && <Loader2 size={14} className="animate-spin" />}
+                Create Alert
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
