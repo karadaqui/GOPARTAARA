@@ -93,6 +93,66 @@ const Index = () => {
       />
       <Navbar />
       <HeroSection />
+
+      {/* Live social proof ticker */}
+      <div
+        aria-label="Live activity ticker"
+        style={{
+          background: "#0a0a0a",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          overflow: "hidden",
+          padding: "8px 0",
+        }}
+      >
+        <style>{`
+          @keyframes gp-ticker-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+          .gp-ticker-track {
+            display: inline-flex;
+            white-space: nowrap;
+            animation: gp-ticker-scroll 60s linear infinite;
+            will-change: transform;
+          }
+          .gp-ticker-track:hover { animation-play-state: paused; }
+          @media (prefers-reduced-motion: reduce) {
+            .gp-ticker-track { animation: none; }
+          }
+        `}</style>
+        <div style={{ width: "100%", overflow: "hidden" }}>
+          <div className="gp-ticker-track">
+            {Array.from({ length: 2 }).map((_, dup) => (
+              <div key={dup} style={{ display: "inline-flex", alignItems: "center" }}>
+                {[
+                  "🔍 Someone in Manchester just found brake pads for £38 less",
+                  "⚡ 653,750 results for BMW parts",
+                  "💰 Average saving today: £43",
+                  "🛞 205/55 R16 tyres compared across 5 suppliers",
+                  "🔧 Ford Focus clutch kit — 12 results found",
+                  "⭐ 7 trusted suppliers checked simultaneously",
+                  "🏆 1,000,000+ parts searchable right now",
+                ].map((msg, i) => (
+                  <span
+                    key={`${dup}-${i}`}
+                    style={{
+                      color: "#a1a1aa",
+                      fontSize: 12,
+                      fontWeight: 500,
+                      padding: "0 28px",
+                      borderRight: "1px solid rgba(255,255,255,0.08)",
+                    }}
+                  >
+                    {msg}
+                  </span>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <SectionDivider />
       <PopularSearchesStrip />
       <SectionDivider />
