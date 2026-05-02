@@ -47,7 +47,12 @@ const SECTION_LABEL: React.CSSProperties = {
 };
 
 const Contact = () => {
-  const [form, setForm] = useState({ name: "", email: "", subject: DEPARTMENTS[0].value, message: "" });
+  const [form, setForm] = useState<{ name: string; email: string; subject: string; message: string }>({
+    name: "",
+    email: "",
+    subject: DEPARTMENTS[0].value,
+    message: "",
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
