@@ -2379,7 +2379,7 @@ const SearchResults = () => {
                                 const next = e.target.checked;
                                 setAutoLoadMore(next);
                                 try {
-                                  localStorage.setItem("auto_load_results", next ? "1" : "0");
+                                  localStorage.setItem("autoLoadResults", next ? "1" : "0");
                                 } catch {/* ignore */}
                               }}
                             />
