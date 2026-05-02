@@ -29,6 +29,7 @@ import ExitIntentBanner from "@/components/ExitIntentBanner";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
 import FeaturedPartsSection from "@/components/FeaturedPartsSection";
 import FeaturedSupplierSpotlight from "@/components/FeaturedSupplierSpotlight";
+import WhyDriversTrustUs from "@/components/WhyDriversTrustUs";
 
 const Index = () => {
   const location = useLocation();
@@ -291,6 +292,7 @@ const Index = () => {
       <SectionDivider />
       <FeaturedListingsSection />
       <FeaturedSupplierSpotlight />
+      <WhyDriversTrustUs />
       <BrowseByMakeSection />
       <SectionDivider />
       <SocialProofStats />
