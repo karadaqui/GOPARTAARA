@@ -281,6 +281,7 @@ const Deals = () => {
               <span className="group-hover:translate-x-0.5 transition-transform">→</span>
             </a>
           </div>
+          <p className="text-muted-foreground text-xs mt-2">🔄 Amazon deals update automatically throughout the day</p>
 
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-6">
             {AMAZON_DEALS.map((deal) => (
@@ -303,10 +304,11 @@ const Deals = () => {
                   </span>
                 </div>
 
+                <div className="text-2xl mb-1">{deal.icon}</div>
                 <p className="text-foreground font-bold text-sm mb-1">{deal.title}</p>
                 <p className="text-muted-foreground text-xs mb-3 flex-1">{deal.subtitle}</p>
                 <div className="flex items-center gap-1 text-muted-foreground group-hover:text-primary transition-colors">
-                  <span className="text-xs font-semibold">View on Amazon</span>
+                  <span className="text-xs font-semibold">View Amazon Deals</span>
                   <span className="text-xs group-hover:translate-x-0.5 transition-transform">→</span>
                 </div>
               </a>
