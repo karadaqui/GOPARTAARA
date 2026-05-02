@@ -889,6 +889,9 @@ const Dashboard = () => {
           </div>
         )}
 
+        {/* Recently Viewed (from localStorage) */}
+        <RecentlyViewedWidget />
+
         {/* Blog Generator */}
         <div className="mb-6">
           <BlogGenerateSection />
