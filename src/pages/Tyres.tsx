@@ -123,6 +123,7 @@ const Tyres = () => {
   const [seasonFilter, setSeasonFilter] = useState<'all'|'summer'|'winter'|'allseason'>('all');
   const [sortBy, setSortBy] = useState<'default'|'price_asc'|'price_desc'>('default');
   const [compareList, setCompareList] = useState<TyreProduct[]>([]);
+  const [showLabelHelp, setShowLabelHelp] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
