@@ -462,6 +462,123 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Competitor comparison */}
+      <section
+        aria-label="Why GOPARTARA beats the rest"
+        style={{ background: "#0a0a0a", borderTop: "1px solid rgba(255,255,255,0.06)" }}
+      >
+        <div className="max-w-5xl mx-auto px-4 py-14">
+          <div className="text-center mb-8">
+            <span
+              style={{
+                display: "inline-block",
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "#cc1111",
+                marginBottom: 8,
+              }}
+            >
+              Comparison
+            </span>
+            <h2
+              className="font-display"
+              style={{
+                fontSize: "clamp(22px, 2.6vw, 30px)",
+                fontWeight: 800,
+                color: "#ffffff",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Why GOPARTARA beats the rest
+            </h2>
+          </div>
+
+          <div
+            style={{
+              background: "#111111",
+              border: "1px solid #27272a",
+              borderRadius: 14,
+              overflow: "hidden",
+            }}
+          >
+            <div style={{ overflowX: "auto" }}>
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  fontSize: 14,
+                  color: "#e4e4e7",
+                  minWidth: 560,
+                }}
+              >
+                <thead>
+                  <tr style={{ background: "#0f0f0f" }}>
+                    {["Feature", "GOPARTARA", "CarPartsCompare", "WhatPart"].map((h, i) => (
+                      <th
+                        key={h}
+                        style={{
+                          textAlign: i === 0 ? "left" : "center",
+                          padding: "14px 16px",
+                          fontSize: 12,
+                          fontWeight: 800,
+                          letterSpacing: "0.06em",
+                          textTransform: "uppercase",
+                          color: i === 1 ? "#ffffff" : "#a1a1aa",
+                          background: i === 1 ? "#cc1111" : undefined,
+                          borderBottom: "1px solid #27272a",
+                        }}
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { feature: "Suppliers checked simultaneously", gp: "7 ✅", cpc: "1 ❌", wp: "1 ❌" },
+                    { feature: "UK Reg Plate search", gp: "✅", cpc: "❌", wp: "✅" },
+                    { feature: "Photo search", gp: "✅", cpc: "❌", wp: "❌" },
+                    { feature: "Tyre comparison", gp: "✅", cpc: "❌", wp: "❌" },
+                    { feature: "P2P Marketplace", gp: "✅", cpc: "❌", wp: "❌" },
+                    { feature: "Price alerts", gp: "✅", cpc: "❌", wp: "❌" },
+                    { feature: "Always free", gp: "✅", cpc: "✅", wp: "✅" },
+                  ].map((row, idx) => (
+                    <tr key={row.feature} style={{ borderTop: idx === 0 ? "none" : "1px solid #1f1f1f" }}>
+                      <td style={{ padding: "13px 16px", color: "#e4e4e7", fontWeight: 500 }}>
+                        {row.feature}
+                      </td>
+                      <td
+                        style={{
+                          padding: "13px 16px",
+                          textAlign: "center",
+                          background: "rgba(204,17,17,0.08)",
+                          color: "#ffffff",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {row.gp}
+                      </td>
+                      <td style={{ padding: "13px 16px", textAlign: "center", color: "#a1a1aa" }}>
+                        {row.cpc}
+                      </td>
+                      <td style={{ padding: "13px 16px", textAlign: "center", color: "#a1a1aa" }}>
+                        {row.wp}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <p style={{ color: "#52525b", fontSize: 11, marginTop: 12, textAlign: "center" }}>
+            Comparison based on publicly available features at time of writing.
+          </p>
+        </div>
+      </section>
+
       {/* Newsletter signup */}
       <NewsletterSignup />
 
