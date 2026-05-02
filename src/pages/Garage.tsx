@@ -543,6 +543,7 @@ const Garage = () => {
                     <VehicleNotes vehicleId={v.id} userId={user.id} />
                   </BusinessFeatureGate>
                 )}
+                <ServiceHistory vehicleId={v.id} />
                 <Button
                   variant="outline"
                   size="sm"
