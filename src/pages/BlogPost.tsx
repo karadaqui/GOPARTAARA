@@ -431,34 +431,53 @@ const BlogPost = () => {
               </button>
             </div>
 
-            {/* Related */}
+            {/* Related — You might also like */}
             {related.length > 0 && (
               <div className="mt-16 pt-12 border-t border-[#1f1f1f]">
                 <h2 className="text-2xl font-bold text-white mb-6 tracking-tight">
-                  More from the GOPARTARA Blog
+                  You might also like
                 </h2>
-                <div className="grid sm:grid-cols-3 gap-5">
-                  {related.map((r) => (
-                    <Link
-                      key={r.id}
-                      to={`/blog/${r.slug}`}
-                      className="group block rounded-xl border border-[#1f1f1f] bg-[#0f0f0f] hover:border-[#27272a] p-5 transition-colors"
-                    >
-                      {r.category && (
-                        <span className="inline-block text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#cc1111] text-white">
-                          {r.category}
-                        </span>
-                      )}
-                      <h3 className="font-bold text-[15px] text-white mt-3 mb-2 line-clamp-2 leading-snug group-hover:text-[#cc1111] transition-colors">
-                        {r.title}
-                      </h3>
-                      <p className="text-[13px] text-zinc-500 line-clamp-2 leading-relaxed">{r.preview}</p>
-                      <div className="mt-3 text-[12px] text-[#52525b]">
-                        {new Date(r.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
-                        {r.read_time && <> · {r.read_time}</>}
-                      </div>
-                    </Link>
-                  ))}
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {related.map((r) => {
+                    const t = thumbFor(r.category);
+                    return (
+                      <Link
+                        key={r.id}
+                        to={`/blog/${r.slug}`}
+                        className="group flex flex-col rounded-xl border border-[#1f1f1f] bg-[#0f0f0f] hover:border-[#27272a] overflow-hidden transition-colors"
+                      >
+                        <div
+                          className="flex items-center justify-center"
+                          style={{
+                            background: t.gradient,
+                            aspectRatio: "16 / 9",
+                            fontSize: "44px",
+                          }}
+                          aria-hidden="true"
+                        >
+                          {t.emoji}
+                        </div>
+                        <div className="p-5 flex flex-col flex-1">
+                          {r.category && (
+                            <span className="inline-block self-start text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#cc1111] text-white">
+                              {r.category}
+                            </span>
+                          )}
+                          <h3 className="font-bold text-[15px] text-white mt-3 mb-2 line-clamp-2 leading-snug group-hover:text-[#cc1111] transition-colors">
+                            {r.title}
+                          </h3>
+                          {r.read_time && (
+                            <div className="text-[12px] text-[#52525b] mb-3">
+                              {r.read_time}
+                            </div>
+                          )}
+                          <span className="mt-auto text-[13px] font-semibold text-[#cc1111] group-hover:underline">
+                            Read article →
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )}
