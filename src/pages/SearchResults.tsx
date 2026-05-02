@@ -22,6 +22,7 @@ import {
   ShieldCheck, Receipt, Check, Share2,
 } from "lucide-react";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
+import PriceSparkline from "@/components/PriceSparkline";
 import { useAuth } from "@/contexts/AuthContext";
 import VehicleLookup from "@/components/VehicleLookup";
 import SearchBarGarageDropdown from "@/components/SearchBarGarageDropdown";
@@ -1823,6 +1824,7 @@ const SearchResults = () => {
                               const conv = locale.convertPrice(item.price);
                               return conv ? <p className="text-xs text-zinc-500 mt-0.5">≈ {conv.symbol}{conv.converted.toFixed(2)}</p> : null;
                             })()}
+                            <PriceSparkline price={item.price} seed={item.url || item.partNumber || item.partName} />
                           </div>
                           {priceBadge && (
                             <div className={`w-full flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-semibold mt-1 ${
