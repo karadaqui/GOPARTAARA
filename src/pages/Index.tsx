@@ -474,7 +474,7 @@ const Index = () => {
   );
 };
 
-const NewsletterSignup = () => {
+function NewsletterSignup() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
