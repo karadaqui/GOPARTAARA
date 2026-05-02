@@ -31,15 +31,16 @@ interface CompareBarProps {
 }
 
 export const CompareBar = ({ items, onOpen, onClear }: CompareBarProps) => {
-  if (items.length === 0) return null;
+  // Only show when 2+ items selected
+  if (items.length < 2) return null;
 
   return (
     <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 animate-in slide-in-from-bottom-4 fade-in duration-300">
-      <div className="glass-strong rounded-2xl px-5 py-3 flex items-center gap-4 shadow-2xl shadow-background/60 border border-primary/20">
+      <div className="glass-strong rounded-2xl px-5 py-3 flex items-center gap-3 sm:gap-4 shadow-2xl shadow-background/60 border border-primary/20">
         <Scale size={18} className="text-primary shrink-0" />
-        <div className="flex items-center gap-2">
+        <div className="hidden sm:flex items-center gap-2">
           {items.map((item) => (
-            <div key={item.id} className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-secondary overflow-hidden border border-border/50">
+            <div key={item.id} className="w-10 h-10 rounded-lg bg-secondary overflow-hidden border border-border/50">
               {item.imageUrl ? (
                 <img src={item.imageUrl} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover" />
               ) : (
@@ -48,15 +49,18 @@ export const CompareBar = ({ items, onOpen, onClear }: CompareBarProps) => {
             </div>
           ))}
           {Array.from({ length: 3 - items.length }).map((_, i) => (
-            <div key={`empty-${i}`} className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg border border-dashed border-border/40" />
+            <div key={`empty-${i}`} className="w-10 h-10 rounded-lg border border-dashed border-border/40" />
           ))}
         </div>
-        <Button size="sm" onClick={onOpen} disabled={items.length < 2} className="rounded-xl gap-1.5 text-xs sm:text-sm">
-          <Scale size={14} />
-          Compare ({items.length})
+        <span className="text-xs sm:text-sm font-medium text-foreground whitespace-nowrap">
+          Comparing {items.length} part{items.length === 1 ? "" : "s"}
+        </span>
+        <Button size="sm" onClick={onOpen} className="rounded-xl gap-1.5 text-xs sm:text-sm">
+          View Comparison →
         </Button>
-        <button onClick={onClear} className="text-muted-foreground hover:text-foreground transition-colors">
-          <X size={16} />
+        <button onClick={onClear} className="text-xs text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap" title="Clear selection">
+          <span className="hidden sm:inline">Clear selection</span>
+          <X size={16} className="sm:hidden" />
         </button>
       </div>
     </div>
