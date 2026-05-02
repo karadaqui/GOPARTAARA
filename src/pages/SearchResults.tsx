@@ -323,6 +323,23 @@ const SearchResults = () => {
   const [pendingSearchQuery, setPendingSearchQuery] = useState("");
   const isFromGarage = searchParams.get("fromGarage") === "true";
   const [garageVehicleLabel, setGarageVehicleLabel] = useState<string | null>(null);
+  const [garageVehicles, setGarageVehicles] = useState<Array<{ id: string; make: string; model: string; year: number }>>([]);
+
+  useEffect(() => {
+    if (!user) { setGarageVehicles([]); return; }
+    let active = true;
+    (async () => {
+      try {
+        const { data } = await supabase
+          .from("user_vehicles")
+          .select("id, make, model, year")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false });
+        if (active && Array.isArray(data)) setGarageVehicles(data as any);
+      } catch { /* silent */ }
+    })();
+    return () => { active = false; };
+  }, [user]);
   const [vinCountryInfo, setVinCountryInfo] = useState<VinCountryInfo | null>(null);
   const [vinCountryModalOpen, setVinCountryModalOpen] = useState(false);
 
