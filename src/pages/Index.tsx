@@ -96,6 +96,9 @@ const Index = () => {
       <Navbar />
       <HeroSection />
 
+      <FeaturedPartsSection />
+
+
       {/* Live social proof ticker */}
       <div
         aria-label="Live activity ticker"
