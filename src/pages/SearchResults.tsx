@@ -1066,16 +1066,18 @@ const SearchResults = () => {
               <div className="sm:hidden flex justify-center mt-1">
                 {user && <SearchCounter limitData={searchLimit} />}
               </div>
+              {user && (
+                <RecentSearches
+                  onSelect={(q) => {
+                    setQuery(q);
+                    setActiveQuery(q);
+                    setCurrentPage(1);
+                    setSearchParams({ q });
+                  }}
+                />
+              )}
               {!activeQuery && (
                 <>
-                  <RecentSearches
-                    onSelect={(q) => {
-                      setQuery(q);
-                      setActiveQuery(q);
-                      setCurrentPage(1);
-                      setSearchParams({ q });
-                    }}
-                  />
 
                   {/* Popular Searches */}
                   <div className="mt-6">
