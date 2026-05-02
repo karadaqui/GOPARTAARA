@@ -273,6 +273,14 @@ const Tyres = () => {
         if (seasonFilter === 'all') return true;
         return detectSeason(p.title) === seasonFilter;
       })
+      .filter(p => {
+        if (priceTier === 'all') return true;
+        const price = parseFloat((p.price || '0').replace(/[^0-9.]/g, '')) || 0;
+        if (priceTier === 'budget') return price > 0 && price < 50;
+        if (priceTier === 'mid') return price >= 50 && price <= 100;
+        if (priceTier === 'premium') return price > 100;
+        return true;
+      })
       .sort((a, b) => {
         if (sortBy === 'price_asc') {
           const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
