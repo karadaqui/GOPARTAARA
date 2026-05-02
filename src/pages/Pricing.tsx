@@ -136,14 +136,48 @@ const Pricing = () => {
           {
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            "mainEntity": faqItems.map((item) => ({
-              "@type": "Question",
-              "name": item.q,
-              "acceptedAnswer": {
-                "@type": "Answer",
-                "text": item.a,
+            "mainEntity": [
+              ...faqItems.map((item) => ({
+                "@type": "Question",
+                "name": item.q,
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": item.a,
+                },
+              })),
+              {
+                "@type": "Question",
+                "name": "Is GOPARTARA really free?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes, the Free plan is always free. No credit card required. You get 20 searches per month.",
+                },
               },
-            })),
+              {
+                "@type": "Question",
+                "name": "Can I cancel anytime?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes, you can cancel your Pro or Elite subscription at any time. No long-term contracts.",
+                },
+              },
+              {
+                "@type": "Question",
+                "name": "What happens when I hit my search limit?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "On the Free plan, once you hit 20 searches you can upgrade to Pro for unlimited searches or wait until the next month.",
+                },
+              },
+              {
+                "@type": "Question",
+                "name": "Do you store my payment details?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Payments are processed securely by Stripe. We never store your card details.",
+                },
+              },
+            ],
           },
         ]}
       />
