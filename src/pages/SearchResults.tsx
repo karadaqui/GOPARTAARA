@@ -321,7 +321,15 @@ const SearchResults = () => {
   const [loadingMore, setLoadingMore] = useState(false);
   const [autoLoadMore, setAutoLoadMore] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
-    return localStorage.getItem("auto_load_results") === "1";
+    // Migrate legacy key → new camelCase key
+    const legacy = localStorage.getItem("auto_load_results");
+    const current = localStorage.getItem("autoLoadResults");
+    if (current === null && legacy !== null) {
+      localStorage.setItem("autoLoadResults", legacy);
+      localStorage.removeItem("auto_load_results");
+      return legacy === "1";
+    }
+    return current === "1";
   });
   const loadMoreSentinelRef = useRef<HTMLDivElement>(null);
   const userPlan = useUserPlan();
@@ -2371,7 +2379,7 @@ const SearchResults = () => {
                                 const next = e.target.checked;
                                 setAutoLoadMore(next);
                                 try {
-                                  localStorage.setItem("auto_load_results", next ? "1" : "0");
+                                  localStorage.setItem("autoLoadResults", next ? "1" : "0");
                                 } catch {/* ignore */}
                               }}
                             />
