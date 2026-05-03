@@ -782,6 +782,37 @@ const Tyres = () => {
                 <option value="price_asc">💰 Cheapest first</option>
                 <option value="price_desc">💎 Most expensive first</option>
               </select>
+              <div className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 rounded-xl px-2 py-1">
+                <span className="text-zinc-500 text-xs">£</span>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Min"
+                  value={minPrice}
+                  onChange={e => { setMinPrice(e.target.value); setCurrentPage(1); }}
+                  className="w-16 bg-transparent text-sm text-white outline-none placeholder:text-zinc-600"
+                />
+                <span className="text-zinc-600 text-xs">—</span>
+                <span className="text-zinc-500 text-xs">£</span>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Max"
+                  value={maxPrice}
+                  onChange={e => { setMaxPrice(e.target.value); setCurrentPage(1); }}
+                  className="w-16 bg-transparent text-sm text-white outline-none placeholder:text-zinc-600"
+                />
+                {(minPrice || maxPrice) && (
+                  <button
+                    type="button"
+                    onClick={() => { setMinPrice(''); setMaxPrice(''); }}
+                    className="text-zinc-500 hover:text-white text-xs px-1"
+                    aria-label="Clear price range"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
               <p className="text-zinc-600 text-xs">{filteredProducts.length} tyres found</p>
             </div>
 
