@@ -278,20 +278,23 @@ const Tyres = () => {
     return ['all', ...Array.from(set).sort()];
   }, [tyreProducts]);
 
-  const displayed = allResults
-    .filter(t => {
-      if (seasonFilter === 'summer') return /summer/i.test(t.name || '');
-      if (seasonFilter === 'winter') return /winter|wintrac|wintercontact|ultragr|nordic/i.test(t.name || '');
-      if (seasonFilter === 'allseason') return /all.?season|all season|4s |quadraxer|solus vier/i.test(t.name || '');
-      return true;
-    })
-    .sort((a, b) => {
-      const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
-      const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
-      if (sortBy === 'asc') return pa - pb;
-      if (sortBy === 'desc') return pb - pa;
-      return 0;
-    });
+  const displayedTyres = (() => {
+    const all = allResults;
+    const isWinter = (t: any) => /winter|wintrac|wintercontact|ultragr|nordic|ice/i.test(t.name || '');
+    const isAllSeason = (t: any) => /all.?season|4s |quadraxer|solus vier/i.test(t.name || '');
+    if (seasonFilter === 'summer') return all.filter((t: any) => !isWinter(t) && !isAllSeason(t));
+    if (seasonFilter === 'winter') return all.filter(isWinter);
+    if (seasonFilter === 'allseason') return all.filter(isAllSeason);
+    return all;
+  })();
+
+  const displayed = [...displayedTyres].sort((a, b) => {
+    const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
+    const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
+    if (sortBy === 'asc') return pa - pb;
+    if (sortBy === 'desc') return pb - pa;
+    return 0;
+  });
 
   const totalPages = Math.max(1, Math.ceil(displayed.length / ITEMS_PER_PAGE));
 
