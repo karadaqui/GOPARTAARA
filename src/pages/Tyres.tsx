@@ -733,7 +733,7 @@ const Tyres = () => {
               ].map(s => (
                 <button
                   key={s.id}
-                  onClick={() => { setSeasonFilter(s.id as 'all'|'summer'|'winter'|'allseason'); setCurrentPage(1); }}
+                  onClick={() => setSeasonFilter(s.id as 'all'|'summer'|'winter'|'allseason')}
                   className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
                     seasonFilter === s.id
                       ? 'bg-red-600 border-red-500 text-white'
@@ -758,15 +758,28 @@ const Tyres = () => {
                   </option>
                 ))}
               </select>
-              <select
-                value={sortBy}
-                onChange={e => { setSortBy(e.target.value as 'default'|'price_asc'|'price_desc'); setCurrentPage(1); }}
-                className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none hover:border-zinc-600 focus:border-red-500"
+              <button
+                type="button"
+                onClick={() => setSortBy('asc')}
+                className={`rounded-xl border px-3 py-2 text-sm font-semibold transition-colors ${
+                  sortBy === 'asc'
+                    ? 'bg-red-600 border-red-500 text-white'
+                    : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
+                }`}
               >
-                <option value="default">Default</option>
-                <option value="price_asc">💰 Cheapest first</option>
-                <option value="price_desc">💎 Most expensive first</option>
-              </select>
+                Price: Low→High
+              </button>
+              <button
+                type="button"
+                onClick={() => setSortBy('desc')}
+                className={`rounded-xl border px-3 py-2 text-sm font-semibold transition-colors ${
+                  sortBy === 'desc'
+                    ? 'bg-red-600 border-red-500 text-white'
+                    : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
+                }`}
+              >
+                Price: High→Low
+              </button>
               <div className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 rounded-xl px-2 py-1">
                 <span className="text-zinc-500 text-xs">£</span>
                 <input
@@ -798,12 +811,12 @@ const Tyres = () => {
                   </button>
                 )}
               </div>
-              <p className="text-zinc-600 text-xs">Showing {filteredProducts.length} of {tyreProducts.length} tyres</p>
+              <p className="text-zinc-600 text-xs">Showing {displayed.length} results</p>
             </div>
 
             {/* Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 px-4">
-            {pagedProducts.map((product, i) => {
+            {displayed.map((product, i) => {
                 const imageUrl = product.image_url || product.image || '';
                 const currency = getCurrency(product.advertiserId || product.supplierMeta?.id || '4118');
                 const displayPrice = product.price.replace(/[£€]/, currency.symbol);
