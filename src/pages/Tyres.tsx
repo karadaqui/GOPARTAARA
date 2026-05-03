@@ -225,6 +225,7 @@ const Tyres = () => {
       }
       setTyreProducts(all)
       setAllResults(all)
+      ;(window as any)._tyreData = all
     } catch (err) {
       console.error('searchTyres error:', err)
     } finally {
@@ -426,8 +427,9 @@ const Tyres = () => {
               <label className="block text-[11px] font-semibold tracking-[0.12em] uppercase text-zinc-500 mb-2">
                 Tyre Type
               </label>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 {([
+                  { id: 'all', label: '🔍 All' },
                   { id: 'summer', label: '☀️ Summer' },
                   { id: 'winter', label: '❄️ Winter' },
                   { id: 'allseason', label: '🌤️ All-Season' },
@@ -437,7 +439,17 @@ const Tyres = () => {
                     <button
                       key={t.id}
                       type="button"
-                      onClick={() => setSeasonFilter(t.id)}
+                      onClick={() => {
+                        setSeasonFilter(t.id);
+                        const data = (window as any)._tyreData || [];
+                        if (t.id === 'all') { setTyreProducts(data); return; }
+                        const re = t.id === 'summer'
+                          ? /summer/i
+                          : t.id === 'winter'
+                            ? /winter|wintrac|wintercontact|ultragr|nordic/i
+                            : /all.?season|all season|4s |quadraxer|solus vier/i;
+                        setTyreProducts(data.filter((x: any) => re.test(x.name || '')));
+                      }}
                       aria-pressed={active}
                       className={`rounded-full border px-3 py-2 text-[13px] font-semibold transition-colors ${
                         active
@@ -731,7 +743,18 @@ const Tyres = () => {
               ].map(s => (
                 <button
                   key={s.id}
-                  onClick={() => setSeasonFilter(s.id as 'all'|'summer'|'winter'|'allseason')}
+                  onClick={() => {
+                    const id = s.id as 'all'|'summer'|'winter'|'allseason';
+                    setSeasonFilter(id);
+                    const data = (window as any)._tyreData || [];
+                    if (id === 'all') { setTyreProducts(data); return; }
+                    const re = id === 'summer'
+                      ? /summer/i
+                      : id === 'winter'
+                        ? /winter|wintrac|wintercontact|ultragr|nordic/i
+                        : /all.?season|all season|4s |quadraxer|solus vier/i;
+                    setTyreProducts(data.filter((x: any) => re.test(x.name || '')));
+                  }}
                   className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
                     seasonFilter === s.id
                       ? 'bg-red-600 border-red-500 text-white'
