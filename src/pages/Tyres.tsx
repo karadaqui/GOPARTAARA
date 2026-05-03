@@ -99,16 +99,11 @@ const getCurrency = (supplierId: string) => {
 
 const matchesSeason = (product: any, season: 'all'|'summer'|'winter'|'allseason'): boolean => {
   if (season === 'all') return true
-  const text = `${product.title || ''} ${product.description || ''} ${product.season || ''}`.toLowerCase()
-  if (season === 'summer') {
-    if (/\b(winter|all[-\s]?season|4\s?season)\b/.test(text)) return false
-    return /summer|sport|potenza|pilot sport|eagle|cinturato|primacy|energy|efficientgrip|turanza|ultracontact|ventus|bluresponse|ziex/.test(text) || !/winter|all[-\s]?season|4\s?season/.test(text)
-  }
-  if (season === 'winter') {
-    return /winter|blizzak|winguard|nordic|wintercraft|alpin|snowproof|snow|frigo|hiver|inverno|xice|pilot alpin|ice contact|wintrac/.test(text)
-  }
+  const name = `${product.name || product.title || ''}`.toLowerCase()
+  if (season === 'summer') return name.includes('summer')
+  if (season === 'winter') return name.includes('winter')
   // allseason
-  return /all[-\s]?season|4\s?season|crossclimate|vector|weathermaster|kinergy 4s|allroad|quatrac|cinturato all season/.test(text)
+  return /all.season|all season|4s |4-season|quadraxer|solus vier|allseason|crossclimate|vector 4|quatrac|kinergy 4s/i.test(name)
 }
 
 // kept for TyreCompareModal compatibility
