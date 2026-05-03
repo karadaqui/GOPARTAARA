@@ -52,8 +52,6 @@ serve(async (req) => {
         q = q.eq('feed_id', actualId)
       }
 
-      q = q.order('price', { ascending: true })
-
       const { data, error } = await q.limit(200)
       if (error) {
         console.error('Cache query error:', error)
