@@ -535,9 +535,7 @@ const Tyres = () => {
                     onClick={() => {
                       setPriceTier(t.tier);
                       setCurrentPage(1);
-                      if (selectedWidth && selectedProfile && selectedRim && !searched) {
-                        searchTyres();
-                      } else if (!searched) {
+                      if (!searched) {
                         toast({ title: 'Pick a tyre size', description: 'Select width, profile, and rim above, then tap a tier.' });
                       }
                     }}
