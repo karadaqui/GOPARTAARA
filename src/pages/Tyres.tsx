@@ -736,18 +736,7 @@ const Tyres = () => {
               ].map(s => (
                 <button
                   key={s.id}
-                  onClick={() => {
-                    const id = s.id as 'all'|'summer'|'winter'|'allseason';
-                    setSeasonFilter(id);
-                    const data = (window as any)._tyreData || [];
-                    if (id === 'all') { setTyreProducts(data); return; }
-                    const re = id === 'summer'
-                      ? /summer/i
-                      : id === 'winter'
-                        ? /winter|wintrac|wintercontact|ultragr|nordic/i
-                        : /all.?season|all season|4s |quadraxer|solus vier/i;
-                    setTyreProducts(data.filter((x: any) => re.test(x.name || '')));
-                  }}
+                  onClick={() => setSeasonFilter(s.id as 'all'|'summer'|'winter'|'allseason')}
                   className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
                     seasonFilter === s.id
                       ? 'bg-red-600 border-red-500 text-white'
