@@ -97,14 +97,26 @@ const getCurrency = (supplierId: string) => {
   return { symbol: '€', code: 'EUR' };
 };
 
+const matchesSeason = (product: any, season: 'all'|'summer'|'winter'|'allseason'): boolean => {
+  if (season === 'all') return true
+  const text = `${product.title || ''} ${product.description || ''} ${product.season || ''}`.toLowerCase()
+  if (season === 'summer') {
+    if (/\b(winter|all[-\s]?season|4\s?season)\b/.test(text)) return false
+    return /summer|sport|potenza|pilot sport|eagle|cinturato|primacy|energy|efficientgrip|turanza|ultracontact|ventus|bluresponse|ziex/.test(text) || !/winter|all[-\s]?season|4\s?season/.test(text)
+  }
+  if (season === 'winter') {
+    return /winter|blizzak|winguard|nordic|wintercraft|alpin|snowproof|snow|frigo|hiver|inverno|xice|pilot alpin|ice contact|wintrac/.test(text)
+  }
+  // allseason
+  return /all[-\s]?season|4\s?season|crossclimate|vector|weathermaster|kinergy 4s|allroad|quatrac|cinturato all season/.test(text)
+}
+
+// kept for TyreCompareModal compatibility
 const detectSeason = (title: string): 'summer' | 'winter' | 'allseason' | 'unknown' => {
   const t = title.toLowerCase()
-  const winterKeywords = ['winter', 'blizzak', 'winguard', 'ice', 'nordic', 'spike', 'polaris', 'wintercraft', 'alpin', 'snowproof', 'snow', 'frigo', 'arctiva', 'north', 'hiver', 'inverno', 'xice', 'pilot alpin']
-  const summerKeywords = ['summer', 'sport', 'potenza', 'pilot sport', 'eagle', 'cinturato', 'primacy', 'energy', 'efficientgrip', 'turanza', 'ultracontact', 'contisport', 'n blue', 'n fera', 'ventus', 'roadhawk', 'bluresponse', 'ziex']
-  const allSeasonKeywords = ['all season', 'allseason', 'all-season', '4season', '4 season', 'seasonproof', 'crossclimate', 'vector', 'allroad', 'a/s', 'as ', 'contact', 'weathermaster', 'winguard sport suv', 'kinergy 4s', 'nautilus']
-  if (allSeasonKeywords.some(k => t.includes(k))) return 'allseason'
-  if (winterKeywords.some(k => t.includes(k))) return 'winter'
-  if (summerKeywords.some(k => t.includes(k))) return 'summer'
+  if (/all[-\s]?season|4\s?season|crossclimate|vector|quatrac/.test(t)) return 'allseason'
+  if (/winter|blizzak|winguard|alpin|snow|inverno|hiver/.test(t)) return 'winter'
+  if (/summer|sport|potenza|primacy|turanza|cinturato/.test(t)) return 'summer'
   return 'unknown'
 }
 
