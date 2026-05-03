@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Heart, Bell, ChevronLeft, ChevronRight, Scale } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -80,6 +80,7 @@ type SupplierMeta = {
 
 type TyreProduct = {
   id: string;
+  name?: string;
   title: string;
   price: string;
   image: string;
@@ -122,12 +123,13 @@ const Tyres = () => {
   const [selectedProfile, setSelectedProfile] = useState('55');
   const [selectedRim, setSelectedRim] = useState('16');
   const [tyreProducts, setTyreProducts] = useState<TyreProduct[]>([]);
+  const [allResults, setAllResults] = React.useState<TyreProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [countryFilter, setCountryFilter] = useState('all');
   const [brandFilter, setBrandFilter] = useState('all');
-  const [seasonFilter, setSeasonFilter] = useState<'all'|'summer'|'winter'|'allseason'>('all');
-  const [sortBy, setSortBy] = useState<'default'|'price_asc'|'price_desc'>('default');
+  const [seasonFilter, setSeasonFilter] = React.useState<'all'|'summer'|'winter'|'allseason'>('all');
+  const [sortBy, setSortBy] = React.useState<'none'|'asc'|'desc'>('none');
   const [priceTier, setPriceTier] = useState<'all'|'budget'|'mid'|'premium'>('all');
   const [minPrice, setMinPrice] = useState<string>('');
   const [maxPrice, setMaxPrice] = useState<string>('');
@@ -176,9 +178,10 @@ const Tyres = () => {
     setLoading(true)
     setSearched(true)
     setTyreProducts([])
+    setAllResults([])
     setCurrentPage(1)
     // Preserve user-selected seasonFilter across searches
-    setSortBy('default')
+    setSortBy('none')
     const ids = ['4118', '10499', '10747', '12716', '12715']
 
     try {
@@ -221,6 +224,7 @@ const Tyres = () => {
         })
       }
       setTyreProducts(all)
+      setAllResults(all)
     } catch (err) {
       console.error('searchTyres error:', err)
     } finally {
@@ -273,35 +277,22 @@ const Tyres = () => {
     return ['all', ...Array.from(set).sort()];
   }, [tyreProducts]);
 
-  const filteredProducts = useMemo(() => {
-    const min = parseFloat(minPrice) || 0;
-    const max = parseFloat(maxPrice) || Infinity;
-    return tyreProducts
-      .filter(p => countryFilter === 'all' || p.advertiserId === countryFilter)
-      .filter(p => brandFilter === 'all' || (p.brand || '').toLowerCase() === brandFilter.toLowerCase())
-      .filter(p => matchesSeason(p, seasonFilter))
-      .filter(p => {
-        const price = parseFloat((p.price || '0').replace(/[^0-9.]/g, '')) || 0;
-        if (priceTier === 'budget' && !(price > 0 && price < 50)) return false;
-        if (priceTier === 'mid' && !(price >= 50 && price <= 100)) return false;
-        if (priceTier === 'premium' && !(price > 100)) return false;
-        if (price < min || price > max) return false;
-        return true;
-      })
-      .sort((a, b) => {
-        const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
-        const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
-        if (sortBy === 'price_asc') return pa - pb;
-        if (sortBy === 'price_desc') return pb - pa;
-        return 0;
-      });
-  }, [tyreProducts, countryFilter, brandFilter, seasonFilter, priceTier, sortBy, minPrice, maxPrice]);
+  const displayed = allResults
+    .filter(t => {
+      if (seasonFilter === 'summer') return /summer/i.test(t.name || '');
+      if (seasonFilter === 'winter') return /winter|wintrac|wintercontact|ultragr|nordic/i.test(t.name || '');
+      if (seasonFilter === 'allseason') return /all.?season|all season|4s |quadraxer|solus vier/i.test(t.name || '');
+      return true;
+    })
+    .sort((a, b) => {
+      const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
+      const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
+      if (sortBy === 'asc') return pa - pb;
+      if (sortBy === 'desc') return pb - pa;
+      return 0;
+    });
 
-  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / ITEMS_PER_PAGE));
-  const pagedProducts = filteredProducts.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+  const totalPages = Math.max(1, Math.ceil(displayed.length / ITEMS_PER_PAGE));
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -544,9 +535,7 @@ const Tyres = () => {
                     onClick={() => {
                       setPriceTier(t.tier);
                       setCurrentPage(1);
-                      if (selectedWidth && selectedProfile && selectedRim && !searched) {
-                        searchTyres();
-                      } else if (!searched) {
+                      if (!searched) {
                         toast({ title: 'Pick a tyre size', description: 'Select width, profile, and rim above, then tap a tier.' });
                       }
                     }}
@@ -742,7 +731,7 @@ const Tyres = () => {
               ].map(s => (
                 <button
                   key={s.id}
-                  onClick={() => { setSeasonFilter(s.id as 'all'|'summer'|'winter'|'allseason'); setCurrentPage(1); }}
+                  onClick={() => setSeasonFilter(s.id as 'all'|'summer'|'winter'|'allseason')}
                   className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
                     seasonFilter === s.id
                       ? 'bg-red-600 border-red-500 text-white'
@@ -767,15 +756,28 @@ const Tyres = () => {
                   </option>
                 ))}
               </select>
-              <select
-                value={sortBy}
-                onChange={e => { setSortBy(e.target.value as 'default'|'price_asc'|'price_desc'); setCurrentPage(1); }}
-                className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-sm text-white outline-none hover:border-zinc-600 focus:border-red-500"
+              <button
+                type="button"
+                onClick={() => setSortBy('asc')}
+                className={`rounded-xl border px-3 py-2 text-sm font-semibold transition-colors ${
+                  sortBy === 'asc'
+                    ? 'bg-red-600 border-red-500 text-white'
+                    : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
+                }`}
               >
-                <option value="default">Default</option>
-                <option value="price_asc">💰 Cheapest first</option>
-                <option value="price_desc">💎 Most expensive first</option>
-              </select>
+                Price: Low→High
+              </button>
+              <button
+                type="button"
+                onClick={() => setSortBy('desc')}
+                className={`rounded-xl border px-3 py-2 text-sm font-semibold transition-colors ${
+                  sortBy === 'desc'
+                    ? 'bg-red-600 border-red-500 text-white'
+                    : 'bg-zinc-900 border-zinc-800 text-zinc-400 hover:border-zinc-600'
+                }`}
+              >
+                Price: High→Low
+              </button>
               <div className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 rounded-xl px-2 py-1">
                 <span className="text-zinc-500 text-xs">£</span>
                 <input
@@ -807,12 +809,12 @@ const Tyres = () => {
                   </button>
                 )}
               </div>
-              <p className="text-zinc-600 text-xs">Showing {filteredProducts.length} of {tyreProducts.length} tyres</p>
+              <p className="text-zinc-600 text-xs">Showing {displayed.length} results</p>
             </div>
 
             {/* Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 px-4">
-            {pagedProducts.map((product, i) => {
+            {displayed.map((product, i) => {
                 const imageUrl = product.image_url || product.image || '';
                 const currency = getCurrency(product.advertiserId || product.supplierMeta?.id || '4118');
                 const displayPrice = product.price.replace(/[£€]/, currency.symbol);
