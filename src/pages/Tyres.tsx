@@ -101,9 +101,9 @@ const matchesSeason = (product: any, season: 'all'|'summer'|'winter'|'allseason'
   if (season === 'all') return true
   const name = `${product.name || product.title || ''}`.toLowerCase()
   if (season === 'summer') return name.includes('summer')
-  if (season === 'winter') return name.includes('winter')
+  if (season === 'winter') return /winter|wintrac|wintersport|wintercontact|ultragr|nordisk|nordic/i.test(name)
   // allseason
-  return /all.season|all season|4s |4-season|quadraxer|solus vier|allseason|crossclimate|vector 4|quatrac|kinergy 4s/i.test(name)
+  return /all.?season|all season|4s |4-season|quadraxer|solus vier|allseason|4 season/i.test(name)
 }
 
 // kept for TyreCompareModal compatibility
