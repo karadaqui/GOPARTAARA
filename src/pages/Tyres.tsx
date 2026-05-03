@@ -97,14 +97,26 @@ const getCurrency = (supplierId: string) => {
   return { symbol: '€', code: 'EUR' };
 };
 
+const matchesSeason = (product: any, season: 'all'|'summer'|'winter'|'allseason'): boolean => {
+  if (season === 'all') return true
+  const text = `${product.title || ''} ${product.description || ''} ${product.season || ''}`.toLowerCase()
+  if (season === 'summer') {
+    if (/\b(winter|all[-\s]?season|4\s?season)\b/.test(text)) return false
+    return /summer|sport|potenza|pilot sport|eagle|cinturato|primacy|energy|efficientgrip|turanza|ultracontact|ventus|bluresponse|ziex/.test(text) || !/winter|all[-\s]?season|4\s?season/.test(text)
+  }
+  if (season === 'winter') {
+    return /winter|blizzak|winguard|nordic|wintercraft|alpin|snowproof|snow|frigo|hiver|inverno|xice|pilot alpin|ice contact|wintrac/.test(text)
+  }
+  // allseason
+  return /all[-\s]?season|4\s?season|crossclimate|vector|weathermaster|kinergy 4s|allroad|quatrac|cinturato all season/.test(text)
+}
+
+// kept for TyreCompareModal compatibility
 const detectSeason = (title: string): 'summer' | 'winter' | 'allseason' | 'unknown' => {
   const t = title.toLowerCase()
-  const winterKeywords = ['winter', 'blizzak', 'winguard', 'ice', 'nordic', 'spike', 'polaris', 'wintercraft', 'alpin', 'snowproof', 'snow', 'frigo', 'arctiva', 'north', 'hiver', 'inverno', 'xice', 'pilot alpin']
-  const summerKeywords = ['summer', 'sport', 'potenza', 'pilot sport', 'eagle', 'cinturato', 'primacy', 'energy', 'efficientgrip', 'turanza', 'ultracontact', 'contisport', 'n blue', 'n fera', 'ventus', 'roadhawk', 'bluresponse', 'ziex']
-  const allSeasonKeywords = ['all season', 'allseason', 'all-season', '4season', '4 season', 'seasonproof', 'crossclimate', 'vector', 'allroad', 'a/s', 'as ', 'contact', 'weathermaster', 'winguard sport suv', 'kinergy 4s', 'nautilus']
-  if (allSeasonKeywords.some(k => t.includes(k))) return 'allseason'
-  if (winterKeywords.some(k => t.includes(k))) return 'winter'
-  if (summerKeywords.some(k => t.includes(k))) return 'summer'
+  if (/all[-\s]?season|4\s?season|crossclimate|vector|quatrac/.test(t)) return 'allseason'
+  if (/winter|blizzak|winguard|alpin|snow|inverno|hiver/.test(t)) return 'winter'
+  if (/summer|sport|potenza|primacy|turanza|cinturato/.test(t)) return 'summer'
   return 'unknown'
 }
 
@@ -120,9 +132,11 @@ const Tyres = () => {
   const [searched, setSearched] = useState(false);
   const [countryFilter, setCountryFilter] = useState('all');
   const [brandFilter, setBrandFilter] = useState('all');
-  const [seasonFilter, setSeasonFilter] = useState<'all'|'summer'|'winter'|'allseason'>('allseason');
+  const [seasonFilter, setSeasonFilter] = useState<'all'|'summer'|'winter'|'allseason'>('all');
   const [sortBy, setSortBy] = useState<'default'|'price_asc'|'price_desc'>('default');
   const [priceTier, setPriceTier] = useState<'all'|'budget'|'mid'|'premium'>('all');
+  const [minPrice, setMinPrice] = useState<string>('');
+  const [maxPrice, setMaxPrice] = useState<string>('');
   const [compareList, setCompareList] = useState<TyreProduct[]>([]);
   const [showLabelHelp, setShowLabelHelp] = useState(false);
   const [showCompareModal, setShowCompareModal] = useState(false);
@@ -266,35 +280,28 @@ const Tyres = () => {
   }, [tyreProducts]);
 
   const filteredProducts = useMemo(() => {
+    const min = parseFloat(minPrice) || 0;
+    const max = parseFloat(maxPrice) || Infinity;
     return tyreProducts
       .filter(p => countryFilter === 'all' || p.advertiserId === countryFilter)
       .filter(p => brandFilter === 'all' || (p.brand || '').toLowerCase() === brandFilter.toLowerCase())
+      .filter(p => matchesSeason(p, seasonFilter))
       .filter(p => {
-        if (seasonFilter === 'all') return true;
-        return detectSeason(p.title) === seasonFilter;
-      })
-      .filter(p => {
-        if (priceTier === 'all') return true;
         const price = parseFloat((p.price || '0').replace(/[^0-9.]/g, '')) || 0;
-        if (priceTier === 'budget') return price > 0 && price < 50;
-        if (priceTier === 'mid') return price >= 50 && price <= 100;
-        if (priceTier === 'premium') return price > 100;
+        if (priceTier === 'budget' && !(price > 0 && price < 50)) return false;
+        if (priceTier === 'mid' && !(price >= 50 && price <= 100)) return false;
+        if (priceTier === 'premium' && !(price > 100)) return false;
+        if (price < min || price > max) return false;
         return true;
       })
       .sort((a, b) => {
-        if (sortBy === 'price_asc') {
-          const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
-          const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
-          return pa - pb;
-        }
-        if (sortBy === 'price_desc') {
-          const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
-          const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
-          return pb - pa;
-        }
+        const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
+        const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
+        if (sortBy === 'price_asc') return pa - pb;
+        if (sortBy === 'price_desc') return pb - pa;
         return 0;
       });
-  }, [tyreProducts, countryFilter, brandFilter, seasonFilter, priceTier, sortBy]);
+  }, [tyreProducts, countryFilter, brandFilter, seasonFilter, priceTier, sortBy, minPrice, maxPrice]);
 
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / ITEMS_PER_PAGE));
   const pagedProducts = filteredProducts.slice(
@@ -775,6 +782,37 @@ const Tyres = () => {
                 <option value="price_asc">💰 Cheapest first</option>
                 <option value="price_desc">💎 Most expensive first</option>
               </select>
+              <div className="flex items-center gap-1.5 bg-zinc-900 border border-zinc-800 rounded-xl px-2 py-1">
+                <span className="text-zinc-500 text-xs">£</span>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Min"
+                  value={minPrice}
+                  onChange={e => { setMinPrice(e.target.value); setCurrentPage(1); }}
+                  className="w-16 bg-transparent text-sm text-white outline-none placeholder:text-zinc-600"
+                />
+                <span className="text-zinc-600 text-xs">—</span>
+                <span className="text-zinc-500 text-xs">£</span>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Max"
+                  value={maxPrice}
+                  onChange={e => { setMaxPrice(e.target.value); setCurrentPage(1); }}
+                  className="w-16 bg-transparent text-sm text-white outline-none placeholder:text-zinc-600"
+                />
+                {(minPrice || maxPrice) && (
+                  <button
+                    type="button"
+                    onClick={() => { setMinPrice(''); setMaxPrice(''); }}
+                    className="text-zinc-500 hover:text-white text-xs px-1"
+                    aria-label="Clear price range"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
               <p className="text-zinc-600 text-xs">{filteredProducts.length} tyres found</p>
             </div>
 
