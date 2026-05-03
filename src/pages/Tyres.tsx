@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Heart, Bell, ChevronLeft, ChevronRight, Scale } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -80,6 +80,7 @@ type SupplierMeta = {
 
 type TyreProduct = {
   id: string;
+  name?: string;
   title: string;
   price: string;
   image: string;
@@ -122,12 +123,13 @@ const Tyres = () => {
   const [selectedProfile, setSelectedProfile] = useState('55');
   const [selectedRim, setSelectedRim] = useState('16');
   const [tyreProducts, setTyreProducts] = useState<TyreProduct[]>([]);
+  const [allResults, setAllResults] = React.useState<TyreProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [countryFilter, setCountryFilter] = useState('all');
   const [brandFilter, setBrandFilter] = useState('all');
-  const [seasonFilter, setSeasonFilter] = useState<'all'|'summer'|'winter'|'allseason'>('all');
-  const [sortBy, setSortBy] = useState<'default'|'price_asc'|'price_desc'>('default');
+  const [seasonFilter, setSeasonFilter] = React.useState<'all'|'summer'|'winter'|'allseason'>('all');
+  const [sortBy, setSortBy] = React.useState<'none'|'asc'|'desc'>('none');
   const [priceTier, setPriceTier] = useState<'all'|'budget'|'mid'|'premium'>('all');
   const [minPrice, setMinPrice] = useState<string>('');
   const [maxPrice, setMaxPrice] = useState<string>('');
@@ -176,9 +178,10 @@ const Tyres = () => {
     setLoading(true)
     setSearched(true)
     setTyreProducts([])
+    setAllResults([])
     setCurrentPage(1)
     // Preserve user-selected seasonFilter across searches
-    setSortBy('default')
+    setSortBy('none')
     const ids = ['4118', '10499', '10747', '12716', '12715']
 
     try {
@@ -221,6 +224,7 @@ const Tyres = () => {
         })
       }
       setTyreProducts(all)
+      setAllResults(all)
     } catch (err) {
       console.error('searchTyres error:', err)
     } finally {
@@ -273,35 +277,22 @@ const Tyres = () => {
     return ['all', ...Array.from(set).sort()];
   }, [tyreProducts]);
 
-  const filteredProducts = useMemo(() => {
-    const min = parseFloat(minPrice) || 0;
-    const max = parseFloat(maxPrice) || Infinity;
-    return tyreProducts
-      .filter(p => countryFilter === 'all' || p.advertiserId === countryFilter)
-      .filter(p => brandFilter === 'all' || (p.brand || '').toLowerCase() === brandFilter.toLowerCase())
-      .filter(p => matchesSeason(p, seasonFilter))
-      .filter(p => {
-        const price = parseFloat((p.price || '0').replace(/[^0-9.]/g, '')) || 0;
-        if (priceTier === 'budget' && !(price > 0 && price < 50)) return false;
-        if (priceTier === 'mid' && !(price >= 50 && price <= 100)) return false;
-        if (priceTier === 'premium' && !(price > 100)) return false;
-        if (price < min || price > max) return false;
-        return true;
-      })
-      .sort((a, b) => {
-        const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
-        const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
-        if (sortBy === 'price_asc') return pa - pb;
-        if (sortBy === 'price_desc') return pb - pa;
-        return 0;
-      });
-  }, [tyreProducts, countryFilter, brandFilter, seasonFilter, priceTier, sortBy, minPrice, maxPrice]);
+  const displayed = allResults
+    .filter(t => {
+      if (seasonFilter === 'summer') return /summer/i.test(t.name || '');
+      if (seasonFilter === 'winter') return /winter|wintrac|wintercontact|ultragr|nordic/i.test(t.name || '');
+      if (seasonFilter === 'allseason') return /all.?season|all season|4s |quadraxer|solus vier/i.test(t.name || '');
+      return true;
+    })
+    .sort((a, b) => {
+      const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
+      const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
+      if (sortBy === 'asc') return pa - pb;
+      if (sortBy === 'desc') return pb - pa;
+      return 0;
+    });
 
-  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / ITEMS_PER_PAGE));
-  const pagedProducts = filteredProducts.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+  const totalPages = Math.max(1, Math.ceil(displayed.length / ITEMS_PER_PAGE));
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
