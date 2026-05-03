@@ -807,7 +807,7 @@ const Tyres = () => {
                   </button>
                 )}
               </div>
-              <p className="text-zinc-600 text-xs">Showing {filteredProducts.length} results</p>
+              <p className="text-zinc-600 text-xs">Showing {filteredProducts.length} of {tyreProducts.length} tyres</p>
             </div>
 
             {/* Grid */}
