@@ -122,7 +122,6 @@ const Tyres = () => {
   const [selectedWidth, setSelectedWidth] = useState('205');
   const [selectedProfile, setSelectedProfile] = useState('55');
   const [selectedRim, setSelectedRim] = useState('16');
-  const [tyreProducts, setTyreProducts] = useState<TyreProduct[]>([]);
   const [allResults, setAllResults] = React.useState<TyreProduct[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
@@ -177,7 +176,6 @@ const Tyres = () => {
     console.log('searchTyres called', { selectedWidth, selectedProfile, selectedRim })
     setLoading(true)
     setSearched(true)
-    setTyreProducts([])
     setAllResults([])
     setCurrentPage(1)
     // Preserve user-selected seasonFilter across searches
@@ -223,7 +221,6 @@ const Tyres = () => {
           description: "Suppliers are loading for the first time, please search again in 30 seconds.",
         })
       }
-      setTyreProducts(all)
       setAllResults(all)
       ;(window as any)._tyreData = all
     } catch (err) {
@@ -274,21 +271,22 @@ const Tyres = () => {
   };
 
   const brands = useMemo(() => {
-    const set = new Set(tyreProducts.map(p => p.brand).filter(Boolean));
+    const set = new Set(allResults.map(p => p.brand).filter(Boolean));
     return ['all', ...Array.from(set).sort()];
-  }, [tyreProducts]);
+  }, [allResults]);
 
-  const displayedTyres = (() => {
-    const all = allResults;
-    const isWinter = (t: any) => /winter|wintrac|wintercontact|ultragr|nordic|ice/i.test(t.name || '');
-    const isAllSeason = (t: any) => /all.?season|4s |quadraxer|solus vier/i.test(t.name || '');
-    if (seasonFilter === 'summer') return all.filter((t: any) => !isWinter(t) && !isAllSeason(t));
-    if (seasonFilter === 'winter') return all.filter(isWinter);
-    if (seasonFilter === 'allseason') return all.filter(isAllSeason);
-    return all;
-  })();
+  const isWinterTyre = (t: any) => /winter|wintrac|wintercontact|ultragr|nordic|ice/i.test(t.title || t.name || '');
+  const isAllSeasonTyre = (t: any) => /all.?season|4s |quadraxer|solus vier/i.test(t.title || t.name || '');
 
-  const displayed = [...displayedTyres].sort((a, b) => {
+  const seasonFiltered = seasonFilter === 'summer'
+    ? allResults.filter(t => !isWinterTyre(t) && !isAllSeasonTyre(t))
+    : seasonFilter === 'winter'
+    ? allResults.filter(isWinterTyre)
+    : seasonFilter === 'allseason'
+    ? allResults.filter(isAllSeasonTyre)
+    : allResults;
+
+  const displayed = [...seasonFiltered].sort((a, b) => {
     const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
     const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
     if (sortBy === 'asc') return pa - pb;
