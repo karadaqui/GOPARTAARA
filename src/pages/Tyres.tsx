@@ -287,7 +287,14 @@ const Tyres = () => {
     ? allResults.filter(isAllSeasonTyre)
     : allResults;
 
-  const displayed = [...seasonFiltered].sort((a, b) => {
+  const supplierFiltered = countryFilter && countryFilter !== 'all'
+    ? seasonFiltered.filter(t => {
+        const id = String(t.advertiserId ?? t.supplierMeta?.id ?? '');
+        return id === String(countryFilter);
+      })
+    : seasonFiltered;
+
+  const displayed = [...supplierFiltered].sort((a, b) => {
     const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
     const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
     if (sortBy === 'asc') return pa - pb;
