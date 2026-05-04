@@ -703,7 +703,7 @@ const Tyres = () => {
         </div>
 
         {/* Filters + Results */}
-        {tyreProducts.length > 0 && (
+        {allResults.length > 0 && (
           <div className="max-w-6xl mx-auto mb-16">
             {/* Supplier pills */}
             <div className="flex gap-2 overflow-x-auto scrollbar-hide mb-4 px-4">
@@ -1021,7 +1021,7 @@ const Tyres = () => {
         )}
 
         {/* No results */}
-        {searched && !loading && tyreProducts.length === 0 && (
+        {searched && !loading && allResults.length === 0 && (
           <div className="text-center py-20 px-4">
             <div className="w-20 h-20 rounded-full border-4 border-zinc-800 flex items-center justify-center mx-auto mb-4">
               <span className="text-3xl">○</span>
