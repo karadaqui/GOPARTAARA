@@ -222,6 +222,7 @@ const Tyres = () => {
         })
       }
       setAllResults(all)
+      setSeasonFilter('all')
       ;(window as any)._tyreData = all
     } catch (err) {
       console.error('searchTyres error:', err)
