@@ -6,36 +6,25 @@ const cors = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const HARDCODED: Record<string, { cur: string; supplier: string; url: string; useDesc?: boolean }> = {
-  '12641': {
-    cur: '£',
-    supplier: 'mytyres.co.uk',
-    url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12641/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost',
-  },
-  '93988': {
-    cur: '£',
-    supplier: 'Tyres UK',
-    useDesc: true,
-    url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93988/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription',
-  },
-  '93986': {
-    cur: '€',
-    supplier: 'neumaticos-online.es',
-    useDesc: true,
-    url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93986/format/csv/language/es/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription',
-  },
-  '93986_pneumatici': {
-    cur: '€',
-    supplier: 'Pneumatici IT',
-    useDesc: true,
-    url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93986/format/csv/language/it/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription',
-  },
-  '66605': {
-    cur: '€',
-    supplier: 'ReifenDirekt EE',
-    useDesc: true,
-    url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/66605/format/csv/language/et/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription',
-  },
+const FEED_LIST_URL = 'https://ui.awin.com/productdata-darwin-download/publisher/2845282/f0b723c9643205a96aeb31377b805e02/1/feedList'
+
+const TYRE_KEYWORDS = ['tyre', 'reifen', 'pneuma', 'neumatico', 'mytyres', 'gomme', 'pneu', 'wheel']
+
+// Currency by region/language
+function detectCurrency(region: string, language: string): string {
+  const r = (region || '').toLowerCase()
+  const l = (language || '').toLowerCase()
+  if (r === 'gb' || r === 'uk' || l === 'en') return '£'
+  if (r === 'us') return '$'
+  return '€'
+}
+
+interface FeedMeta {
+  feedId: string
+  cur: string
+  supplier: string
+  url: string
+  useDesc: boolean
 }
 
 function csv(line: string) {
@@ -53,10 +42,71 @@ function csv(line: string) {
 // Extract tyre size as "WWW/PP RNN" from a string (product_name or description)
 function extractSize(text: string): { width: string; profile: string; rim: string; size: string } | null {
   if (!text) return null
-  // Match patterns: 205/55 R16, 205/55R16, 205/55-16, 205/55 16
   const m = text.match(/(\d{3})\s*\/\s*(\d{2})\s*[ -]?\s*R?\s*(\d{2})/i)
   if (!m) return null
   return { width: m[1], profile: m[2], rim: m[3], size: `${m[1]}/${m[2]} R${m[3]}` }
+}
+
+async function fetchFeedList(): Promise<Record<string, FeedMeta>> {
+  const res = await fetch(FEED_LIST_URL)
+  if (!res.ok) throw new Error(`feedList fetch failed: ${res.status}`)
+  const text = await res.text()
+  const lines = text.split('\n').filter(l => l.trim())
+  if (lines.length < 2) return {}
+
+  const headers = csv(lines[0]).map(h => h.toLowerCase().trim())
+  const idx = (name: string) => headers.findIndex(h => h.replace(/[^a-z0-9]/g, '').includes(name))
+  const feedIdIdx = idx('feedid')
+  const advIdIdx = idx('advertiserid')
+  const advNameIdx = idx('advertisername')
+  const regionIdx = idx('primaryregion')
+  const langIdx = idx('language')
+  const urlIdx = headers.findIndex(h => h.includes('url') || h.includes('download'))
+
+  console.log('feedList headers:', headers.join(', '))
+  console.log(`indices: feedId=${feedIdIdx} advName=${advNameIdx} url=${urlIdx}`)
+
+  const out: Record<string, FeedMeta> = {}
+  for (let i = 1; i < lines.length; i++) {
+    const cols = csv(lines[i])
+    const feedId = (cols[feedIdIdx] || '').trim()
+    const advName = (cols[advNameIdx] || '').trim()
+    const region = (cols[regionIdx] || '').trim()
+    const language = (cols[langIdx] || '').trim()
+    let url = (cols[urlIdx] || '').trim()
+    if (!feedId || !advName || !url) continue
+
+    const lower = advName.toLowerCase()
+    if (!TYRE_KEYWORDS.some(k => lower.includes(k))) continue
+
+    // Ensure CSV format with required columns; downloadUrl is usually a gzip CSV.
+    // We use it as-is.
+    out[feedId] = {
+      feedId,
+      cur: detectCurrency(region, language),
+      supplier: advName,
+      url,
+      useDesc: true,
+    }
+  }
+  console.log(`Matched ${Object.keys(out).length} tyre feeds:`, Object.values(out).map(f => `${f.feedId}=${f.supplier}`).join(', '))
+  return out
+}
+
+async function fetchFeedBody(url: string): Promise<ReadableStream<Uint8Array> | null> {
+  const res = await fetch(url)
+  if (!res.body) return null
+  // If gzip, decompress
+  const ce = res.headers.get('content-encoding') || ''
+  const isGz = url.includes('compression/gzip') || url.endsWith('.gz') || ce.includes('gzip')
+  if (isGz) {
+    try {
+      return res.body.pipeThrough(new DecompressionStream('gzip'))
+    } catch {
+      return res.body
+    }
+  }
+  return res.body
 }
 
 serve(async (req) => {
@@ -71,15 +121,20 @@ serve(async (req) => {
   try {
     const url = new URL(req.url)
     const feedIdParam = url.searchParams.get('feedId')
-    const feedIds = feedIdParam
-      ? (HARDCODED[feedIdParam] ? [feedIdParam] : [])
-      : Object.keys(HARDCODED)
 
-    if (feedIdParam && feedIds.length === 0) {
-      return new Response(
-        JSON.stringify({ success: false, error: `Unknown feedId: ${feedIdParam}` }),
-        { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } }
-      )
+    const allFeeds = await fetchFeedList()
+
+    let feedIds: string[]
+    if (feedIdParam) {
+      if (!allFeeds[feedIdParam]) {
+        return new Response(
+          JSON.stringify({ success: false, error: `Unknown or non-tyre feedId: ${feedIdParam}`, available: Object.keys(allFeeds) }),
+          { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } }
+        )
+      }
+      feedIds = [feedIdParam]
+    } else {
+      feedIds = Object.keys(allFeeds)
     }
 
     let totalInserted = 0
@@ -99,16 +154,16 @@ serve(async (req) => {
     }
 
     for (const feedId of feedIds) {
-      const feed = HARDCODED[feedId]
+      const feed = allFeeds[feedId]
       console.log(`Fetching feed ${feedId} (${feed.supplier})...`)
 
-      const res = await fetch(feed.url)
-      if (!res.body) {
+      const body = await fetchFeedBody(feed.url)
+      if (!body) {
         console.error(`No body for feed ${feedId}`)
         continue
       }
 
-      const reader = res.body.getReader()
+      const reader = body.getReader()
       const dec = new TextDecoder()
       let buf = ''
       let lc = 0
@@ -125,7 +180,7 @@ serve(async (req) => {
         batch.length = 0
       }
 
-      reading: while (true) {
+      while (true) {
         const { done, value } = await reader.read()
         if (done) break
         buf += dec.decode(value, { stream: true })
@@ -138,8 +193,6 @@ serve(async (req) => {
           const cols = csv(line)
           if (lc === 1) {
             hdrs = cols.map(h => h.toLowerCase().trim())
-            console.log('=== CSV HEADERS FOR FEED', feedId, '===', JSON.stringify(hdrs))
-            console.log('CSV HEADERS:', hdrs.join(', '))
             const norm = (h: string) => h.replace(/[^a-z0-9]/g, '')
             ni = hdrs.findIndex(h => norm(h).includes('productname'))
             pi = hdrs.findIndex(h => norm(h).includes('searchprice') || norm(h) === 'price')
@@ -155,13 +208,12 @@ serve(async (req) => {
           const name = (cols[ni] || '').replace(/^"|"$/g, '').trim()
           const desc = descIdx >= 0 ? (cols[descIdx] || '').replace(/^"|"$/g, '').trim() : ''
           const price = parseFloat(cols[pi] || '0')
-          const url = (cols[ui] || '').replace(/^"|"$/g, '').trim()
+          const linkUrl = (cols[ui] || '').replace(/^"|"$/g, '').trim()
           const brand = (cols[bi] || '').replace(/^"|"$/g, '').trim()
           const imageUrl = imgIdx >= 0 ? (cols[imgIdx] || '').replace(/^"|"$/g, '').trim() : ''
 
-          if (!url || !url.startsWith('http') || price <= 0) continue
+          if (!linkUrl || !linkUrl.startsWith('http') || price <= 0) continue
 
-          // Extract tyre size from name first, then description
           const size = extractSize(name) || (feed.useDesc ? extractSize(desc) : null)
           if (!size) continue
 
@@ -173,14 +225,14 @@ serve(async (req) => {
             product_name: displayName,
             price,
             currency: feed.cur,
-            url,
+            url: linkUrl,
             brand,
             image_url: imageUrl,
             width: size.width,
             profile: size.profile,
             rim: size.rim,
             tyre_size: size.size,
-            raw_data: { name, desc, price, url, brand },
+            raw_data: { name, desc, price, url: linkUrl, brand },
           })
 
           if (batch.length >= 500) {
@@ -189,7 +241,6 @@ serve(async (req) => {
         }
       }
 
-      // Final flush
       await flush()
       reader.cancel().catch(() => {})
 
@@ -199,7 +250,7 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ success: true, count: totalInserted, perFeed }),
+      JSON.stringify({ success: true, count: totalInserted, perFeed, discovered: Object.keys(allFeeds).length }),
       { headers: { ...cors, 'Content-Type': 'application/json' } }
     )
   } catch (e: any) {
