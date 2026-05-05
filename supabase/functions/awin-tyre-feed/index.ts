@@ -52,7 +52,7 @@ serve(async (req) => {
         q = q.eq('feed_id', actualId)
       }
 
-      const { data, error } = await q.limit(200)
+      const { data, error } = await q.limit(2000)
       if (error) {
         console.error('Cache query error:', error)
         return { rows: [] as any[], oldest: 0 }
