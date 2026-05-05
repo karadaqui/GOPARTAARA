@@ -7,30 +7,30 @@ const cors = {
 }
 
 const HARDCODED: Record<string, { cur: string; supplier: string; url: string; useDesc?: boolean }> = {
-  '4118': {
+  '12641': {
     cur: '£',
     supplier: 'mytyres.co.uk',
     url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/12641/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost',
   },
-  '12715': {
+  '93988': {
     cur: '£',
     supplier: 'Tyres UK',
     useDesc: true,
     url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93988/format/csv/language/en/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription',
   },
-  '12716': {
+  '93986': {
+    cur: '€',
+    supplier: 'neumaticos-online.es',
+    useDesc: true,
+    url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93986/format/csv/language/es/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription',
+  },
+  '93986_pneumatici': {
     cur: '€',
     supplier: 'Pneumatici IT',
     useDesc: true,
     url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93986/format/csv/language/it/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription',
   },
-  '10499': {
-    cur: '€',
-    supplier: 'neumaticos-online.es',
-    useDesc: true,
-    url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/23179/format/csv/language/es/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription',
-  },
-  '10747': {
+  '66605': {
     cur: '€',
     supplier: 'ReifenDirekt EE',
     useDesc: true,
