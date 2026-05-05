@@ -465,7 +465,7 @@ const Tyres = () => {
                     <button
                       key={t.id}
                       type="button"
-                      onClick={() => setSeasonFilter(t.id)}
+                      onClick={() => { setSeasonFilter(t.id); setCurrentPage(1); }}
                       aria-pressed={active}
                       className={`rounded-full border px-3 py-2 text-[13px] font-semibold transition-colors ${
                         active
@@ -759,7 +759,7 @@ const Tyres = () => {
               ].map(s => (
                 <button
                   key={s.id}
-                  onClick={() => setSeasonFilter(s.id as 'all'|'summer'|'winter'|'allseason')}
+                  onClick={() => { setSeasonFilter(s.id as 'all'|'summer'|'winter'|'allseason'); setCurrentPage(1); }}
                   className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
                     seasonFilter === s.id
                       ? 'bg-red-600 border-red-500 text-white'
@@ -786,7 +786,7 @@ const Tyres = () => {
               </select>
               <button
                 type="button"
-                onClick={() => setSortBy('asc')}
+                onClick={() => { setSortBy('asc'); setCurrentPage(1); }}
                 className={`rounded-xl border px-3 py-2 text-sm font-semibold transition-colors ${
                   sortBy === 'asc'
                     ? 'bg-red-600 border-red-500 text-white'
@@ -797,7 +797,7 @@ const Tyres = () => {
               </button>
               <button
                 type="button"
-                onClick={() => setSortBy('desc')}
+                onClick={() => { setSortBy('desc'); setCurrentPage(1); }}
                 className={`rounded-xl border px-3 py-2 text-sm font-semibold transition-colors ${
                   sortBy === 'desc'
                     ? 'bg-red-600 border-red-500 text-white'
@@ -829,7 +829,7 @@ const Tyres = () => {
                 {(minPrice || maxPrice) && (
                   <button
                     type="button"
-                    onClick={() => { setMinPrice(''); setMaxPrice(''); }}
+                    onClick={() => { setMinPrice(''); setMaxPrice(''); setCurrentPage(1); }}
                     className="text-zinc-500 hover:text-white text-xs px-1"
                     aria-label="Clear price range"
                   >
