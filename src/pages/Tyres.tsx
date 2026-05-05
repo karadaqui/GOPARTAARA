@@ -289,12 +289,29 @@ const Tyres = () => {
 
   const supplierFiltered = countryFilter && countryFilter !== 'all'
     ? seasonFiltered.filter(t => {
-        const id = String(t.advertiserId ?? t.supplierMeta?.id ?? '');
-        return id === String(countryFilter);
+        const id = String((t as any).advertiserId ?? (t as any).supplierMeta?.id ?? '');
+        const name = String((t as any).supplier ?? (t as any).supplierMeta?.name ?? '').toLowerCase();
+        return id === String(countryFilter) || name.includes(String(countryFilter).toLowerCase());
       })
     : seasonFiltered;
 
-  const displayed = [...supplierFiltered].sort((a, b) => {
+  const brandFiltered = brandFilter && brandFilter !== 'all' && brandFilter !== ''
+    ? supplierFiltered.filter(t => {
+        const brand = String((t as any).brand ?? (t as any).manufacturer ?? (t as any).name ?? '').toLowerCase();
+        return brand.includes(brandFilter.toLowerCase());
+      })
+    : supplierFiltered;
+
+  const minP = minPrice ? parseFloat(minPrice) : 0;
+  const maxP = maxPrice ? parseFloat(maxPrice) : Infinity;
+  const priceFiltered = (minPrice || maxPrice)
+    ? brandFiltered.filter(t => {
+        const p = parseFloat((t.price || '0').replace(/[^0-9.]/g, ''));
+        return p >= minP && p <= maxP;
+      })
+    : brandFiltered;
+
+  const displayed = [...priceFiltered].sort((a, b) => {
     const pa = parseFloat((a.price || '0').replace(/[^0-9.]/g, ''));
     const pb = parseFloat((b.price || '0').replace(/[^0-9.]/g, ''));
     if (sortBy === 'asc') return pa - pb;
