@@ -20,9 +20,21 @@ const HARDCODED: Record<string, { cur: string; supplier: string; url: string; us
   },
   '12716': {
     cur: '€',
-    supplier: 'neumaticos-online.es',
+    supplier: 'Pneumatici IT',
     useDesc: true,
     url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/93986/format/csv/language/it/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription',
+  },
+  '10499': {
+    cur: '€',
+    supplier: 'neumaticos-online.es',
+    useDesc: true,
+    url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/23179/format/csv/language/es/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription',
+  },
+  '10747': {
+    cur: '€',
+    supplier: 'ReifenDirekt EE',
+    useDesc: true,
+    url: 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/fid/66605/format/csv/language/et/delimiter/%2C/compression/none/adultcontent/1/columns/aw_product_id%2Cproduct_name%2Csearch_price%2Cmerchant_image_url%2Caw_deep_link%2Cbrand_name%2Cdelivery_cost%2Cdescription',
   },
 }
 
