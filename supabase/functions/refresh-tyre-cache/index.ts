@@ -69,15 +69,27 @@ serve(async (req) => {
   )
 
   try {
+    const url = new URL(req.url)
+    const feedIdParam = url.searchParams.get('feedId')
+    const feedIds = feedIdParam
+      ? (HARDCODED[feedIdParam] ? [feedIdParam] : [])
+      : Object.keys(HARDCODED)
+
+    if (feedIdParam && feedIds.length === 0) {
+      return new Response(
+        JSON.stringify({ success: false, error: `Unknown feedId: ${feedIdParam}` }),
+        { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+
     let totalInserted = 0
     const perFeed: Record<string, number> = {}
 
-    // Clear cache first - delete in chunks to avoid statement timeout
+    // Clear cache: scoped to selected feed if param given, otherwise full clear
     for (let i = 0; i < 50; i++) {
-      const { data: rows, error: selErr } = await supabase
-        .from('tyre_products_cache')
-        .select('id')
-        .limit(1000)
+      let q = supabase.from('tyre_products_cache').select('id').limit(1000)
+      if (feedIdParam) q = q.eq('feed_id', feedIdParam)
+      const { data: rows, error: selErr } = await q
       if (selErr) { console.error('Select for clear error:', selErr); break }
       if (!rows || rows.length === 0) break
       const ids = rows.map((r: any) => r.id)
@@ -86,7 +98,7 @@ serve(async (req) => {
       if (rows.length < 1000) break
     }
 
-    for (const feedId of Object.keys(HARDCODED)) {
+    for (const feedId of feedIds) {
       const feed = HARDCODED[feedId]
       console.log(`Fetching feed ${feedId} (${feed.supplier})...`)
 
