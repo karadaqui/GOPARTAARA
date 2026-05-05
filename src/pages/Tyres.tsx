@@ -842,7 +842,7 @@ const Tyres = () => {
 
             {/* Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 px-4">
-            {displayed.map((product, i) => {
+            {displayed.slice((currentPage-1)*ITEMS_PER_PAGE, currentPage*ITEMS_PER_PAGE).map((product, i) => {
                 const imageUrl = product.image_url || product.image || '';
                 const currency = getCurrency(product.advertiserId || product.supplierMeta?.id || '4118');
                 const displayPrice = product.price.replace(/[£€]/, currency.symbol);
