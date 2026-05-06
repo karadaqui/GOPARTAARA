@@ -99,6 +99,7 @@ serve(async (req) => {
       url: r.url,
       supplier: r.supplier_name,
       brand: r.brand || '',
+      category: (r as any).category || '',
       shipping: 'Free delivery',
       advertiserId: r.feed_id,
       image_url: r.image_url || r.image || '',
