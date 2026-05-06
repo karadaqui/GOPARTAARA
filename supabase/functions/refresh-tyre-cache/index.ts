@@ -218,6 +218,7 @@ serve(async (req) => {
           const linkUrl = (cols[ui] || '').replace(/^"|"$/g, '').trim()
           const brand = (cols[bi] || '').replace(/^"|"$/g, '').trim()
           const imageUrl = imgIdx >= 0 ? (cols[imgIdx] || '').replace(/^"|"$/g, '').trim() : ''
+          const category = catIdx >= 0 ? (cols[catIdx] || '').replace(/^"|"$/g, '').trim() : ''
 
           if (!linkUrl || !linkUrl.startsWith('http') || price <= 0) continue
 
