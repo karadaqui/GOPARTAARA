@@ -2695,6 +2695,26 @@ const SearchResults = () => {
         featureLabel={upgradeLabel}
         requiredPlan={upgradeRequiredPlan}
       />
+      {liveResults.length > 0 && activeQuery && (
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-8">
+          <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-base sm:text-lg font-bold text-foreground mb-1">🔧 ECS Tuning</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Specialist in European performance &amp; OEM parts — Audi, BMW, VW, Mercedes, Porsche
+              </p>
+            </div>
+            <a
+              href={`https://click.linksynergy.com/deeplink?id=4697137&mid=43304&murl=https%3A%2F%2Fwww.ecstuning.com%2FSearch%2FSiteSearch%2F${encodeURIComponent(activeQuery)}%2F`}
+              target="_blank"
+              rel="noopener noreferrer sponsored"
+              className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-colors whitespace-nowrap flex-shrink-0"
+            >
+              Search on ECS Tuning →
+            </a>
+          </div>
+        </div>
+      )}
       <Footer />
     </div>
   );
