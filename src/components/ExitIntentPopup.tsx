@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { isValidEmail } from "@/lib/sanitize";
 
-const STORAGE_KEY = "exit_intent_popup_shown";
+const EMAIL_CAPTURED_KEY = "emailCaptured";
+const LAST_SHOWN_KEY = "popupLastShown";
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const MOBILE_DELAY_MS = 30_000;
 
 const ExitIntentPopup = () => {
@@ -15,12 +17,14 @@ const ExitIntentPopup = () => {
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
-      if (sessionStorage.getItem(STORAGE_KEY) === "true") return;
+      if (localStorage.getItem(EMAIL_CAPTURED_KEY) === "true") return;
+      const last = localStorage.getItem(LAST_SHOWN_KEY);
+      if (last && Date.now() - Number(last) < ONE_DAY_MS) return;
     } catch {}
 
     const markShown = () => {
       try {
-        sessionStorage.setItem(STORAGE_KEY, "true");
+        localStorage.setItem(LAST_SHOWN_KEY, String(Date.now()));
       } catch {}
     };
 
@@ -70,6 +74,9 @@ const ExitIntentPopup = () => {
     } catch {
       // silent — non-critical
     } finally {
+      try {
+        localStorage.setItem(EMAIL_CAPTURED_KEY, "true");
+      } catch {}
       setSubmitting(false);
       toast.success("You're in! We'll send free price alerts.");
       close();
