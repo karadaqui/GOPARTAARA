@@ -74,6 +74,9 @@ const ExitIntentPopup = () => {
     } catch {
       // silent — non-critical
     } finally {
+      try {
+        localStorage.setItem(EMAIL_CAPTURED_KEY, "true");
+      } catch {}
       setSubmitting(false);
       toast.success("You're in! We'll send free price alerts.");
       close();
