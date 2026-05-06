@@ -80,7 +80,13 @@ async function fetchFeedList(): Promise<Record<string, FeedMeta>> {
     if (!TYRE_KEYWORDS.some(k => lower.includes(k))) continue
 
     // Ensure CSV format with required columns; downloadUrl is usually a gzip CSV.
-    // We use it as-is.
+    // Inject brand_name and merchant_category into the /columns/ segment if present.
+    url = url.replace(/\/columns\/([^/]+)\//, (_m, cols) => {
+      const list = cols.split(',').map((c: string) => c.trim()).filter(Boolean)
+      if (!list.includes('brand_name')) list.push('brand_name')
+      if (!list.includes('merchant_category')) list.push('merchant_category')
+      return `/columns/${list.join(',')}/`
+    })
     out[feedId] = {
       feedId,
       cur: detectCurrency(region, language),
