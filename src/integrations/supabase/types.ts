@@ -662,6 +662,48 @@ export type Database = {
         }
         Relationships: []
       }
+      parts_cache: {
+        Row: {
+          advertiser_id: string | null
+          brand: string | null
+          category: string | null
+          id: string
+          image_url: string | null
+          in_stock: boolean | null
+          name: string
+          price: string | null
+          supplier: string | null
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          advertiser_id?: string | null
+          brand?: string | null
+          category?: string | null
+          id: string
+          image_url?: string | null
+          in_stock?: boolean | null
+          name: string
+          price?: string | null
+          supplier?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          advertiser_id?: string | null
+          brand?: string | null
+          category?: string | null
+          id?: string
+          image_url?: string | null
+          in_stock?: boolean | null
+          name?: string
+          price?: string | null
+          supplier?: string | null
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       price_alerts: {
         Row: {
           active: boolean
