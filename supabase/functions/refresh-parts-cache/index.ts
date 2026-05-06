@@ -21,45 +21,102 @@ function parseLine(line: string, delim: string): string[] {
   return out.map((s) => s.replace(/^"|"$/g, '').trim())
 }
 
-async function fetchAndDecode(url: string): Promise<string> {
+// Returns a streaming text reader of the decompressed CSV from a remote ZIP/gzip/plain CSV URL.
+// Reads only enough bytes to parse the ZIP local file header, then pipes the rest through
+// a streaming deflate-raw decompressor — never buffering the full payload in memory.
+async function openCsvStream(url: string): Promise<ReadableStream<Uint8Array>> {
   const res = await fetch(url)
-  if (!res.ok) throw new Error(`Feed fetch failed: ${res.status}`)
-  const buf = new Uint8Array(await res.arrayBuffer())
+  if (!res.ok || !res.body) throw new Error(`Feed fetch failed: ${res.status}`)
 
-  // ZIP file: locate first local file header, decompress raw deflate payload
-  if (buf[0] === 0x50 && buf[1] === 0x4b) {
-    // Find local file header signature 0x04034b50
-    let i = 0
-    if (!(buf[i] === 0x50 && buf[i + 1] === 0x4b && buf[i + 2] === 0x03 && buf[i + 3] === 0x04)) {
-      throw new Error('Unexpected ZIP layout')
-    }
-    const compMethod = buf[i + 8] | (buf[i + 9] << 8)
-    const compSize = buf[i + 18] | (buf[i + 19] << 8) | (buf[i + 20] << 16) | (buf[i + 21] << 24)
-    const fileNameLen = buf[i + 26] | (buf[i + 27] << 8)
-    const extraLen = buf[i + 28] | (buf[i + 29] << 8)
-    const dataStart = i + 30 + fileNameLen + extraLen
-    const dataEnd = compSize > 0 ? dataStart + compSize : buf.length
-    const payload = buf.slice(dataStart, dataEnd)
+  const reader = res.body.getReader()
+  // Peek at first 4 bytes to detect format
+  const first = await reader.read()
+  if (first.done || !first.value) throw new Error('Empty feed body')
+  let head = first.value
 
-    if (compMethod === 0) {
-      return new TextDecoder().decode(payload)
+  // Helper: ensure we have at least n bytes accumulated in `head`
+  const ensure = async (n: number) => {
+    while (head.length < n) {
+      const r = await reader.read()
+      if (r.done) break
+      const merged = new Uint8Array(head.length + r.value.length)
+      merged.set(head, 0)
+      merged.set(r.value, head.length)
+      head = merged
     }
-    if (compMethod === 8) {
-      const ds = new DecompressionStream('deflate-raw')
-      const stream = new Response(payload).body!.pipeThrough(ds)
-      return await new Response(stream).text()
-    }
+  }
+
+  // ZIP
+  if (head[0] === 0x50 && head[1] === 0x4b && head[2] === 0x03 && head[3] === 0x04) {
+    await ensure(30)
+    const compMethod = head[8] | (head[9] << 8)
+    const fileNameLen = head[26] | (head[27] << 8)
+    const extraLen = head[28] | (head[29] << 8)
+    const headerSize = 30 + fileNameLen + extraLen
+    await ensure(headerSize)
+    const payloadStart = head.slice(headerSize)
+
+    // Build a stream that emits payloadStart then continues reading remaining bytes from reader.
+    const remaining = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        if (payloadStart.length) controller.enqueue(payloadStart)
+        try {
+          while (true) {
+            const r = await reader.read()
+            if (r.done) break
+            controller.enqueue(r.value)
+          }
+          controller.close()
+        } catch (e) {
+          controller.error(e)
+        }
+      },
+      cancel() { reader.cancel().catch(() => {}) },
+    })
+
+    if (compMethod === 0) return remaining
+    if (compMethod === 8) return remaining.pipeThrough(new DecompressionStream('deflate-raw'))
     throw new Error(`Unsupported zip compression: ${compMethod}`)
   }
 
   // gzip
-  if (buf[0] === 0x1f && buf[1] === 0x8b) {
-    const ds = new DecompressionStream('gzip')
-    const stream = new Response(buf).body!.pipeThrough(ds)
-    return await new Response(stream).text()
+  if (head[0] === 0x1f && head[1] === 0x8b) {
+    const remaining = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        controller.enqueue(head)
+        try {
+          while (true) {
+            const r = await reader.read()
+            if (r.done) break
+            controller.enqueue(r.value)
+          }
+          controller.close()
+        } catch (e) {
+          controller.error(e)
+        }
+      },
+      cancel() { reader.cancel().catch(() => {}) },
+    })
+    return remaining.pipeThrough(new DecompressionStream('gzip'))
   }
 
-  return new TextDecoder().decode(buf)
+  // plain
+  return new ReadableStream<Uint8Array>({
+    async start(controller) {
+      controller.enqueue(head)
+      try {
+        while (true) {
+          const r = await reader.read()
+          if (r.done) break
+          controller.enqueue(r.value)
+        }
+        controller.close()
+      } catch (e) {
+        controller.error(e)
+      }
+    },
+    cancel() { reader.cancel().catch(() => {}) },
+  })
 }
 
 serve(async (req) => {
@@ -72,29 +129,18 @@ serve(async (req) => {
   )
 
   try {
-    const csvText = await fetchAndDecode(FEED_URL)
-    const lines = csvText.split('\n').filter((l) => l.trim())
-    if (lines.length < 2) {
-      return new Response(JSON.stringify({ success: false, error: 'Empty feed' }), {
-        status: 200,
-        headers: { ...cors, 'Content-Type': 'application/json' },
-      })
-    }
+    const csvStream = await openCsvStream(FEED_URL)
+    const reader = csvStream.getReader()
+    const dec = new TextDecoder()
 
+    let buf = ''
+    let lc = 0
+    let headers: string[] = []
+    let iLink = -1, iName = -1, iPrice = -1, iBrand = -1, iImg = -1, iCat = -1, iStock = -1, iMid = -1
     const delim = '|'
-    const headers = parseLine(lines[0], delim).map((h) => h.toLowerCase())
-    const idx = (n: string) => headers.indexOf(n)
-    const iLink = idx('aw_deep_link')
-    const iName = idx('product_name')
-    const iPrice = idx('search_price')
-    const iBrand = idx('brand_name')
-    const iImg = idx('merchant_image_url')
-    const iCat = idx('merchant_category')
-    const iStock = idx('in_stock')
-    const iMid = idx('merchant_id')
-
     const batch: any[] = []
     let totalUpserted = 0
+    const seen = new Set<string>()
 
     const flush = async () => {
       if (batch.length === 0) return
@@ -104,12 +150,33 @@ serve(async (req) => {
       batch.length = 0
     }
 
-    for (let i = 1; i < lines.length; i++) {
-      const cols = parseLine(lines[i], delim)
+    const handleLine = async (line: string) => {
+      if (!line.trim()) return
+      lc++
+      if (lc === 1) {
+        headers = parseLine(line, delim).map((h) => h.toLowerCase())
+        iLink = headers.indexOf('aw_deep_link')
+        iName = headers.indexOf('product_name')
+        iPrice = headers.indexOf('search_price')
+        iBrand = headers.indexOf('brand_name')
+        iImg = headers.indexOf('merchant_image_url')
+        iCat = headers.indexOf('merchant_category')
+        iStock = headers.indexOf('in_stock')
+        iMid = headers.indexOf('merchant_id')
+        console.log('Headers:', headers.join(','))
+        return
+      }
+
+      const cols = parseLine(line, delim)
       const name = cols[iName] || ''
       const link = cols[iLink] || ''
       const merchantId = cols[iMid] || ''
-      if (!name || !link) continue
+      if (!name || !link) return
+
+      const id = `${merchantId}-${name}`.slice(0, 500)
+      // dedupe within run to avoid "ON CONFLICT DO UPDATE command cannot affect row a second time"
+      if (seen.has(id)) return
+      seen.add(id)
 
       const priceRaw = (cols[iPrice] || '').trim()
       const priceNum = parseFloat(priceRaw)
@@ -119,7 +186,7 @@ serve(async (req) => {
       const inStock = stockRaw === '1' || stockRaw === 'yes' || stockRaw === 'true' || stockRaw === 'in stock'
 
       batch.push({
-        id: `${merchantId}-${name}`.slice(0, 500),
+        id,
         name,
         price,
         brand: cols[iBrand] || '',
@@ -134,6 +201,16 @@ serve(async (req) => {
 
       if (batch.length >= 500) await flush()
     }
+
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      buf += dec.decode(value, { stream: true })
+      const lines = buf.split('\n')
+      buf = lines.pop() || ''
+      for (const line of lines) await handleLine(line)
+    }
+    if (buf.trim()) await handleLine(buf)
     await flush()
 
     return new Response(
