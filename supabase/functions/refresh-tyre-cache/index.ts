@@ -206,7 +206,8 @@ serve(async (req) => {
             bi = hdrs.findIndex(h => norm(h).includes('brandname') || norm(h) === 'brand')
             descIdx = hdrs.findIndex(h => h.includes('desc'))
             imgIdx = hdrs.findIndex(h => /image|img|photo|picture|thumb/i.test(h))
-            console.log(`Feed ${feedId} headers: ni=${ni} pi=${pi} ui=${ui} bi=${bi} descIdx=${descIdx} imgIdx=${imgIdx}`)
+            catIdx = hdrs.findIndex(h => norm(h).includes('merchantcategory') || norm(h) === 'category')
+            console.log(`Feed ${feedId} headers: ni=${ni} pi=${pi} ui=${ui} bi=${bi} descIdx=${descIdx} imgIdx=${imgIdx} catIdx=${catIdx}`)
             continue
           }
           if (ni < 0 || pi < 0 || ui < 0) continue
