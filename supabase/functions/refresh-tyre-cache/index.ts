@@ -80,7 +80,13 @@ async function fetchFeedList(): Promise<Record<string, FeedMeta>> {
     if (!TYRE_KEYWORDS.some(k => lower.includes(k))) continue
 
     // Ensure CSV format with required columns; downloadUrl is usually a gzip CSV.
-    // We use it as-is.
+    // Inject brand_name and merchant_category into the /columns/ segment if present.
+    url = url.replace(/\/columns\/([^/]+)\//, (_m, cols) => {
+      const list = cols.split(',').map((c: string) => c.trim()).filter(Boolean)
+      if (!list.includes('brand_name')) list.push('brand_name')
+      if (!list.includes('merchant_category')) list.push('merchant_category')
+      return `/columns/${list.join(',')}/`
+    })
     out[feedId] = {
       feedId,
       cur: detectCurrency(region, language),
@@ -118,146 +124,138 @@ serve(async (req) => {
     { auth: { persistSession: false } }
   )
 
-  try {
-    const url = new URL(req.url)
-    const feedIdParam = url.searchParams.get('feedId')
+  const url = new URL(req.url)
+  const feedIdParam = url.searchParams.get('feedId')
 
-    const allFeeds = await fetchFeedList()
+  const work = async () => {
+    try {
+      const allFeeds = await fetchFeedList()
 
-    let feedIds: string[]
-    if (feedIdParam) {
-      if (!allFeeds[feedIdParam]) {
-        return new Response(
-          JSON.stringify({ success: false, error: `Unknown or non-tyre feedId: ${feedIdParam}`, available: Object.keys(allFeeds) }),
-          { status: 400, headers: { ...cors, 'Content-Type': 'application/json' } }
-        )
-      }
-      feedIds = [feedIdParam]
-    } else {
-      feedIds = Object.keys(allFeeds)
-    }
-
-    let totalInserted = 0
-    const perFeed: Record<string, number> = {}
-
-    // Clear cache: scoped to selected feed if param given, otherwise full clear
-    for (let i = 0; i < 50; i++) {
-      let q = supabase.from('tyre_products_cache').select('id').limit(1000)
-      if (feedIdParam) q = q.eq('feed_id', feedIdParam)
-      const { data: rows, error: selErr } = await q
-      if (selErr) { console.error('Select for clear error:', selErr); break }
-      if (!rows || rows.length === 0) break
-      const ids = rows.map((r: any) => r.id)
-      const { error: delErr } = await supabase.from('tyre_products_cache').delete().in('id', ids)
-      if (delErr) { console.error('Clear cache chunk error:', delErr); break }
-      if (rows.length < 1000) break
-    }
-
-    for (const feedId of feedIds) {
-      const feed = allFeeds[feedId]
-      console.log(`Fetching feed ${feedId} (${feed.supplier})...`)
-
-      const body = await fetchFeedBody(feed.url)
-      if (!body) {
-        console.error(`No body for feed ${feedId}`)
-        continue
+      let feedIds: string[]
+      if (feedIdParam) {
+        if (!allFeeds[feedIdParam]) {
+          console.error(`Unknown feedId: ${feedIdParam}; available: ${Object.keys(allFeeds).join(',')}`)
+          return
+        }
+        feedIds = [feedIdParam]
+      } else {
+        feedIds = Object.keys(allFeeds)
       }
 
-      const reader = body.getReader()
-      const dec = new TextDecoder()
-      let buf = ''
-      let lc = 0
-      let hdrs: string[] = []
-      let ni = -1, pi = -1, ui = -1, bi = -1, descIdx = -1, imgIdx = -1
-      const batch: any[] = []
-      let feedInserted = 0
-
-      const flush = async () => {
-        if (batch.length === 0) return
-        const { error } = await supabase.from('tyre_products_cache').insert(batch)
-        if (error) console.error(`Insert error feed ${feedId}:`, error.message)
-        else feedInserted += batch.length
-        batch.length = 0
+      // Clear cache: scoped to selected feed if param given, otherwise full clear
+      for (let i = 0; i < 50; i++) {
+        let q = supabase.from('tyre_products_cache').select('id').limit(1000)
+        if (feedIdParam) q = q.eq('feed_id', feedIdParam)
+        const { data: rows, error: selErr } = await q
+        if (selErr) { console.error('Select for clear error:', selErr); break }
+        if (!rows || rows.length === 0) break
+        const ids = rows.map((r: any) => r.id)
+        const { error: delErr } = await supabase.from('tyre_products_cache').delete().in('id', ids)
+        if (delErr) { console.error('Clear cache chunk error:', delErr); break }
+        if (rows.length < 1000) break
       }
 
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        buf += dec.decode(value, { stream: true })
-        const lines = buf.split('\n')
-        buf = lines.pop() || ''
+      for (const feedId of feedIds) {
+        const feed = allFeeds[feedId]
+        console.log(`Fetching feed ${feedId} (${feed.supplier})...`)
 
-        for (const line of lines) {
-          if (!line.trim()) continue
-          lc++
-          const cols = csv(line)
-          if (lc === 1) {
-            hdrs = cols.map(h => h.toLowerCase().trim())
-            const norm = (h: string) => h.replace(/[^a-z0-9]/g, '')
-            ni = hdrs.findIndex(h => norm(h).includes('productname'))
-            pi = hdrs.findIndex(h => norm(h).includes('searchprice') || norm(h) === 'price')
-            ui = hdrs.findIndex(h => norm(h).includes('deeplink'))
-            bi = hdrs.findIndex(h => norm(h).includes('brandname') || norm(h) === 'brand')
-            descIdx = hdrs.findIndex(h => h.includes('desc'))
-            imgIdx = hdrs.findIndex(h => /image|img|photo|picture|thumb/i.test(h))
-            console.log(`Feed ${feedId} headers: ni=${ni} pi=${pi} ui=${ui} bi=${bi} descIdx=${descIdx} imgIdx=${imgIdx}`)
-            continue
-          }
-          if (ni < 0 || pi < 0 || ui < 0) continue
+        const body = await fetchFeedBody(feed.url)
+        if (!body) { console.error(`No body for feed ${feedId}`); continue }
 
-          const name = (cols[ni] || '').replace(/^"|"$/g, '').trim()
-          const desc = descIdx >= 0 ? (cols[descIdx] || '').replace(/^"|"$/g, '').trim() : ''
-          const price = parseFloat(cols[pi] || '0')
-          const linkUrl = (cols[ui] || '').replace(/^"|"$/g, '').trim()
-          const brand = (cols[bi] || '').replace(/^"|"$/g, '').trim()
-          const imageUrl = imgIdx >= 0 ? (cols[imgIdx] || '').replace(/^"|"$/g, '').trim() : ''
+        const reader = body.getReader()
+        const dec = new TextDecoder()
+        let buf = ''
+        let lc = 0
+        let hdrs: string[] = []
+        let ni = -1, pi = -1, ui = -1, bi = -1, descIdx = -1, imgIdx = -1, catIdx = -1
+        const batch: any[] = []
+        let feedInserted = 0
 
-          if (!linkUrl || !linkUrl.startsWith('http') || price <= 0) continue
+        const flush = async () => {
+          if (batch.length === 0) return
+          const { error } = await supabase.from('tyre_products_cache').insert(batch)
+          if (error) console.error(`Insert error feed ${feedId}:`, error.message)
+          else feedInserted += batch.length
+          batch.length = 0
+        }
 
-          const size = extractSize(name) || (feed.useDesc ? extractSize(desc) : null)
-          if (!size) continue
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          buf += dec.decode(value, { stream: true })
+          const lines = buf.split('\n')
+          buf = lines.pop() || ''
 
-          const displayName = feed.useDesc && desc ? desc : name
+          for (const line of lines) {
+            if (!line.trim()) continue
+            lc++
+            const cols = csv(line)
+            if (lc === 1) {
+              hdrs = cols.map(h => h.toLowerCase().trim())
+              const norm = (h: string) => h.replace(/[^a-z0-9]/g, '')
+              ni = hdrs.findIndex(h => norm(h).includes('productname'))
+              pi = hdrs.findIndex(h => norm(h).includes('searchprice') || norm(h) === 'price')
+              ui = hdrs.findIndex(h => norm(h).includes('deeplink'))
+              bi = hdrs.findIndex(h => norm(h).includes('brandname') || norm(h) === 'brand')
+              descIdx = hdrs.findIndex(h => h.includes('desc'))
+              imgIdx = hdrs.findIndex(h => /image|img|photo|picture|thumb/i.test(h))
+              catIdx = hdrs.findIndex(h => norm(h).includes('merchantcategory') || norm(h) === 'category')
+              console.log(`Feed ${feedId} headers: ni=${ni} pi=${pi} ui=${ui} bi=${bi} descIdx=${descIdx} imgIdx=${imgIdx} catIdx=${catIdx}`)
+              continue
+            }
+            if (ni < 0 || pi < 0 || ui < 0) continue
 
-          batch.push({
-            feed_id: feedId,
-            supplier_name: feed.supplier,
-            product_name: displayName,
-            price,
-            currency: feed.cur,
-            url: linkUrl,
-            brand,
-            image_url: imageUrl,
-            width: size.width,
-            profile: size.profile,
-            rim: size.rim,
-            tyre_size: size.size,
-            raw_data: { name, desc, price, url: linkUrl, brand },
-          })
+            const name = (cols[ni] || '').replace(/^"|"$/g, '').trim()
+            const desc = descIdx >= 0 ? (cols[descIdx] || '').replace(/^"|"$/g, '').trim() : ''
+            const price = parseFloat(cols[pi] || '0')
+            const linkUrl = (cols[ui] || '').replace(/^"|"$/g, '').trim()
+            const brand = (cols[bi] || '').replace(/^"|"$/g, '').trim()
+            const imageUrl = imgIdx >= 0 ? (cols[imgIdx] || '').replace(/^"|"$/g, '').trim() : ''
+            const category = catIdx >= 0 ? (cols[catIdx] || '').replace(/^"|"$/g, '').trim() : ''
 
-          if (batch.length >= 500) {
-            await flush()
+            if (!linkUrl || !linkUrl.startsWith('http') || price <= 0) continue
+
+            const size = extractSize(name) || (feed.useDesc ? extractSize(desc) : null)
+            if (!size) continue
+
+            const displayName = feed.useDesc && desc ? desc : name
+
+            batch.push({
+              feed_id: feedId,
+              supplier_name: feed.supplier,
+              product_name: displayName,
+              price,
+              currency: feed.cur,
+              url: linkUrl,
+              brand,
+              category,
+              image_url: imageUrl,
+              width: size.width,
+              profile: size.profile,
+              rim: size.rim,
+              tyre_size: size.size,
+              raw_data: { name, desc, price, url: linkUrl, brand },
+            })
+
+            if (batch.length >= 500) await flush()
           }
         }
+
+        await flush()
+        reader.cancel().catch(() => {})
+
+        console.log(`Feed ${feedId} done: ${feedInserted} inserted`)
       }
-
-      await flush()
-      reader.cancel().catch(() => {})
-
-      perFeed[feedId] = feedInserted
-      totalInserted += feedInserted
-      console.log(`Feed ${feedId} done: ${feedInserted} inserted`)
+    } catch (e: any) {
+      console.error('refresh-tyre-cache background error:', e)
     }
-
-    return new Response(
-      JSON.stringify({ success: true, count: totalInserted, perFeed, discovered: Object.keys(allFeeds).length }),
-      { headers: { ...cors, 'Content-Type': 'application/json' } }
-    )
-  } catch (e: any) {
-    console.error('refresh-tyre-cache error:', e)
-    return new Response(
-      JSON.stringify({ success: false, error: e.message }),
-      { status: 500, headers: { ...cors, 'Content-Type': 'application/json' } }
-    )
   }
+
+  // @ts-ignore EdgeRuntime is provided by Supabase Edge Runtime
+  try { EdgeRuntime.waitUntil(work()) } catch { work() }
+
+  return new Response(
+    JSON.stringify({ success: true, started: true, feedId: feedIdParam || 'all' }),
+    { headers: { ...cors, 'Content-Type': 'application/json' } }
+  )
 })

@@ -1276,6 +1276,7 @@ export type Database = {
         Row: {
           brand: string | null
           cached_at: string | null
+          category: string | null
           currency: string | null
           feed_id: string
           id: number
@@ -1293,6 +1294,7 @@ export type Database = {
         Insert: {
           brand?: string | null
           cached_at?: string | null
+          category?: string | null
           currency?: string | null
           feed_id: string
           id?: number
@@ -1310,6 +1312,7 @@ export type Database = {
         Update: {
           brand?: string | null
           cached_at?: string | null
+          category?: string | null
           currency?: string | null
           feed_id?: string
           id?: number

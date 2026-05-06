@@ -1,0 +1,1 @@
+ALTER TABLE public.tyre_products_cache ADD COLUMN IF NOT EXISTS category text;
