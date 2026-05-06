@@ -235,6 +235,7 @@ serve(async (req) => {
             currency: feed.cur,
             url: linkUrl,
             brand,
+            category,
             image_url: imageUrl,
             width: size.width,
             profile: size.profile,
