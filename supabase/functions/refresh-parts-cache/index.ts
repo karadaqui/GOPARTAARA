@@ -6,7 +6,7 @@ const cors = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-const FEED_URL = 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/language/en/fid/32377/columns/aw_deep_link,product_name,search_price,brand_name,merchant_image_url,merchant_category,in_stock,merchant_name,merchant_id,currency/format/csv/delimiter/%7C/compression/zip/'
+const FEED_URL = 'https://productdata.awin.com/datafeed/download/apikey/f0b723c9643205a96aeb31377b805e02/language/en/fid/32377/columns/aw_deep_link,product_name,search_price,brand_name,merchant_image_url,merchant_category,in_stock,merchant_name,merchant_id,currency/format/csv/delimiter/%7C/compression/gzip/'
 
 function parseLine(line: string, delim: string): string[] {
   const out: string[] = []
