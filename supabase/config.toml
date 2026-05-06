@@ -21,3 +21,7 @@ project_id = "bkwieknlxvkrzluongif"
     verify_jwt = false
   [functions.refresh-tyre-cache]
     verify_jwt = false
+  [functions.refresh-parts-cache]
+    verify_jwt = false
+  [functions.awin-parts-feed]
+    verify_jwt = false
