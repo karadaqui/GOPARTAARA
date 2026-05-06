@@ -174,7 +174,7 @@ serve(async (req) => {
       let buf = ''
       let lc = 0
       let hdrs: string[] = []
-      let ni = -1, pi = -1, ui = -1, bi = -1, descIdx = -1, imgIdx = -1
+      let ni = -1, pi = -1, ui = -1, bi = -1, descIdx = -1, imgIdx = -1, catIdx = -1
       const batch: any[] = []
       let feedInserted = 0
 
