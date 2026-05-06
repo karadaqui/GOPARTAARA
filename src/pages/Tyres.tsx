@@ -295,10 +295,7 @@ const Tyres = () => {
     : seasonFiltered;
 
   const brandFiltered = brandFilter && brandFilter !== 'all' && brandFilter !== ''
-    ? supplierFiltered.filter(t => {
-        const brand = String((t as any).brand ?? (t as any).manufacturer ?? (t as any).name ?? '').toLowerCase();
-        return brand.includes(brandFilter.toLowerCase());
-      })
+    ? supplierFiltered.filter(t => (t.brand || '').toLowerCase() === brandFilter.toLowerCase())
     : supplierFiltered;
 
   const minP = minPrice ? parseFloat(minPrice) : 0;
