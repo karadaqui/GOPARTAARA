@@ -579,8 +579,8 @@ const Tyres = () => {
                 <select
                   value={supplier}
                   onChange={(e) => { setSupplier(e.target.value); resetPage(); }}
-                  className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white shrink-0 cursor-pointer"
-                  style={{ background: 'transparent', border: `1px solid ${BORDER_2}` }}
+                  className="rounded-lg px-3 py-1.5 text-xs font-semibold shrink-0 cursor-pointer bg-zinc-900 text-white"
+                  style={{ border: `1px solid ${BORDER_2}`, backgroundColor: '#18181b', color: 'white', colorScheme: 'dark' }}
                 >
                   <option value="all">All Suppliers</option>
                   {uniqueSuppliers.map((s) => (
@@ -591,8 +591,8 @@ const Tyres = () => {
                 <select
                   value={brand}
                   onChange={(e) => { setBrand(e.target.value); resetPage(); }}
-                  className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white shrink-0 cursor-pointer max-w-[140px]"
-                  style={{ background: 'transparent', border: `1px solid ${BORDER_2}` }}
+                  className="rounded-lg px-3 py-1.5 text-xs font-semibold shrink-0 cursor-pointer max-w-[140px] bg-zinc-900 text-white"
+                  style={{ border: `1px solid ${BORDER_2}`, backgroundColor: '#18181b', color: 'white', colorScheme: 'dark' }}
                 >
                   <option value="all">All Brands</option>
                   {uniqueBrands.map((b) => <option key={b} value={b}>{b}</option>)}
