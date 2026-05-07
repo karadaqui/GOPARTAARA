@@ -105,9 +105,9 @@ const Tyres = () => {
   );
 
   let displayed = [...allResults];
-  if (season === 'summer') displayed = displayed.filter((t) => !isWinter(t) && !isAllSeason(t));
-  if (season === 'winter') displayed = displayed.filter((t) => isWinter(t));
-  if (season === 'allseason') displayed = displayed.filter((t) => isAllSeason(t));
+  if (season === 'winter') displayed = displayed.filter((t) => /winter|wintrac|wintercontact|ultragr|nordic|ice/i.test(t.name || ''));
+  if (season === 'summer') displayed = displayed.filter((t) => !/winter|wintrac|wintercontact|ultragr|nordic|ice/i.test(t.name || '') && !/all.?season|4s |quadraxer|solus vier/i.test(t.name || ''));
+  if (season === 'allseason') displayed = displayed.filter((t) => /all.?season|4s |quadraxer|solus vier/i.test(t.name || ''));
   if (supplier !== 'all') displayed = displayed.filter((t) => String(t.advertiserId) === String(supplier));
   if (brand !== 'all') displayed = displayed.filter((t) => (t.brand || '').toLowerCase() === brand.toLowerCase());
   if (minPrice) displayed = displayed.filter((t) => priceNum(t.price) >= parseFloat(minPrice));
