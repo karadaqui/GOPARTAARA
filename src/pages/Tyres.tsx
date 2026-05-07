@@ -696,12 +696,6 @@ const Tyres = () => {
                       ) : (
                         <div className="text-zinc-700 text-[10px]">No image</div>
                       )}
-                      <span
-                        className="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold tracking-wide"
-                        style={seasonStyle}
-                      >
-                        {cardSeason}
-                      </span>
                     </div>
 
                     <div className="p-2.5 flex-1 flex flex-col gap-1.5">
@@ -709,6 +703,13 @@ const Tyres = () => {
                         {t.brand || 'Unknown Brand'}
                       </div>
                       <h3 className="text-[11px] font-medium text-zinc-300 line-clamp-2 leading-snug min-h-[2rem]">{t.name}</h3>
+
+                      <span
+                        className="inline-flex self-start items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide"
+                        style={seasonStyle}
+                      >
+                        {cardSeason}
+                      </span>
 
                       <div className="text-lg font-black mt-0.5" style={{ color: RED }}>{t.price}</div>
                       <div className="text-[9px] text-zinc-500 uppercase tracking-wider">Tyre only</div>
