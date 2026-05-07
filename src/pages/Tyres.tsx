@@ -246,16 +246,6 @@ const Tyres = () => {
   const initials = (name?: string) =>
     (name || '?').split(/\s+/).map((s) => s[0]).slice(0, 2).join('').toUpperCase();
 
-  const applyTier = (lo: string, hi: string) => {
-    setMinPrice(lo);
-    setMaxPrice(hi);
-    resetPage();
-    if (searched) {
-      requestAnimationFrame(() => window.scrollTo({ top: 600, behavior: 'smooth' }));
-    } else {
-      handleSearch();
-    }
-  };
 
   const applyPopular = (s: { w: string; p: string; r: string }) => {
     setWidth(s.w);
