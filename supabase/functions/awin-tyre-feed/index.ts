@@ -65,6 +65,7 @@ serve(async (req) => {
           .select(cols)
           .eq('tyre_size', tyreSize)
           .eq('feed_id', actualId)
+          .range(0, 99999)
         if (error) console.error('Cache query error:', error)
         rows = data || []
       } else {
@@ -78,6 +79,7 @@ serve(async (req) => {
               .select(cols)
               .eq('tyre_size', tyreSize)
               .eq('feed_id', fid)
+              .range(0, 99999)
           )
         )
         for (const { data, error } of results) {
