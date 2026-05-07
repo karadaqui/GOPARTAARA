@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS idx_tyre_products_cache_feed_id ON public.tyre_products_cache (feed_id);
