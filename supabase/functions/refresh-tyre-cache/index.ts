@@ -89,7 +89,7 @@ async function fetchFeedList(): Promise<Record<string, FeedMeta>> {
     })
     // Feeds where `name` contains the model and `desc` contains size or marketing blurb.
     // For these, use `name` as product_name (useDesc=false).
-    const NAME_AS_PRODUCT_FEEDS = new Set(['12715', '93988', '93986', '23179', '10499', '66605'])
+    const NAME_AS_PRODUCT_FEEDS = new Set(['12715', '93988', '93986', '93986_pneumatici', '23179', '10499', '66605'])
     out[feedId] = {
       feedId,
       cur: detectCurrency(region, language),
