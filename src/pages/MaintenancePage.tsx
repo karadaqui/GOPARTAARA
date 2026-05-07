@@ -35,7 +35,7 @@ const MaintenancePage = () => {
   );
 };
 
-const PREVIEW_KEY = "preview=gopartara2026";
+const PREVIEW_KEY = "preview=gp#9x2k";
 
 export const withMaintenance = (Component: React.ComponentType) => {
   const Wrapped = () => {
