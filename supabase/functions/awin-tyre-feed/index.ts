@@ -66,14 +66,8 @@ serve(async (req) => {
         if (error) console.error('Cache query error:', error)
         rows = data || []
       } else {
-        // Discover all feed_ids that have products for this tyre size
-        const feedsResult = await supabase
-          .from('tyre_products_cache')
-          .select('feed_id')
-          .eq('tyre_size', tyreSize)
-        if (feedsResult.error) console.error('Feed discovery error:', feedsResult.error)
-        const feedIds = [...new Set((feedsResult.data || []).map((r: any) => r.feed_id))]
-        console.log(`Discovered ${feedIds.length} feed_ids for ${tyreSize}`)
+        const feedIds = ['12641', '4118', '12715', '66605', '93986_pneumatici', '23179', '93988', '93986', '10499']
+        console.log(`Querying ${feedIds.length} hardcoded feed_ids for ${tyreSize}`)
 
         const results = await Promise.all(
           feedIds.map((fid) =>
@@ -82,6 +76,7 @@ serve(async (req) => {
               .select(cols)
               .eq('tyre_size', tyreSize)
               .eq('feed_id', fid)
+              .limit(500)
           )
         )
         for (const { data, error } of results) {
