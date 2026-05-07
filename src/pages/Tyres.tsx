@@ -433,103 +433,45 @@ const Tyres = () => {
                   aria-label="Tyre diagram with width, profile and rim measurements"
                 >
                   <defs>
-                    <radialGradient id="tyreRubber2" cx="50%" cy="50%" r="50%">
+                    <radialGradient id="tyreRubberS" cx="50%" cy="50%" r="50%">
                       <stop offset="0%" stopColor="#1c1c1f" />
                       <stop offset="70%" stopColor="#0f0f11" />
                       <stop offset="100%" stopColor="#040405" />
                     </radialGradient>
-                    <radialGradient id="rimMetal2" cx="50%" cy="40%" r="55%">
+                    <radialGradient id="rimMetalS" cx="50%" cy="40%" r="55%">
                       <stop offset="0%" stopColor="#a1a1aa" />
                       <stop offset="55%" stopColor="#52525b" />
                       <stop offset="100%" stopColor="#27272a" />
                     </radialGradient>
-                    <radialGradient id="hubMetal" cx="50%" cy="40%" r="55%">
-                      <stop offset="0%" stopColor="#71717a" />
-                      <stop offset="100%" stopColor="#27272a" />
-                    </radialGradient>
-                    <marker id="arrEndR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                    <marker id="arrEndS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
                       <path d="M0,0 L10,5 L0,10 z" fill="#dc2626" />
-                    </marker>
-                    <marker id="arrStartR" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto">
-                      <path d="M10,0 L0,5 L10,10 z" fill="#dc2626" />
                     </marker>
                   </defs>
 
-                  {/* OUTER TYRE — tread ring */}
-                  <circle cx="250" cy="190" r="170" fill="url(#tyreRubber2)" stroke="#3f3f46" strokeWidth="1.5" />
-                  {/* Tread groove dashes around perimeter */}
-                  <circle cx="250" cy="190" r="162" fill="none" stroke="#000" strokeWidth="14" strokeDasharray="7 5" opacity="0.85" />
-                  {/* Tread inner edge highlight */}
-                  <circle cx="250" cy="190" r="148" fill="none" stroke="#27272a" strokeWidth="1" />
-                  {/* Sidewall ring (between tread and rim) */}
-                  <circle cx="250" cy="190" r="142" fill="#0c0c0e" />
-                  {/* Sidewall radial markings */}
-                  {Array.from({ length: 36 }).map((_, i) => {
-                    const a = (i * 10 * Math.PI) / 180;
-                    const r1 = 102, r2 = 140;
-                    return (
-                      <line
-                        key={i}
-                        x1={250 + r1 * Math.cos(a)}
-                        y1={190 + r1 * Math.sin(a)}
-                        x2={250 + r2 * Math.cos(a)}
-                        y2={190 + r2 * Math.sin(a)}
-                        stroke="#1a1a1d"
-                        strokeWidth="0.6"
-                      />
-                    );
-                  })}
-                  {/* RIM outer edge */}
-                  <circle cx="250" cy="190" r="100" fill="url(#rimMetal2)" stroke="#52525b" strokeWidth="1.5" />
-                  {/* Rim inner cavity */}
-                  <circle cx="250" cy="190" r="78" fill="#0a0a0c" stroke="#3f3f46" strokeWidth="1" />
-                  {/* Wheel spokes */}
-                  {[0, 60, 120, 180, 240, 300].map((deg) => {
-                    const a = (deg * Math.PI) / 180;
-                    return (
-                      <line
-                        key={deg}
-                        x1={250 + 22 * Math.cos(a)}
-                        y1={190 + 22 * Math.sin(a)}
-                        x2={250 + 76 * Math.cos(a)}
-                        y2={190 + 76 * Math.sin(a)}
-                        stroke="#52525b"
-                        strokeWidth="7"
-                        strokeLinecap="round"
-                      />
-                    );
-                  })}
-                  {/* Hub center */}
-                  <circle cx="250" cy="190" r="22" fill="url(#hubMetal)" stroke="#71717a" strokeWidth="1.5" />
-                  <circle cx="250" cy="190" r="6" fill="#18181b" stroke="#52525b" strokeWidth="1" />
+                  {/* Tyre body */}
+                  <circle cx="250" cy="200" r="160" fill="url(#tyreRubberS)" stroke="#3f3f46" strokeWidth="1.5" />
+                  {/* Tread groove */}
+                  <circle cx="250" cy="200" r="152" fill="none" stroke="#000" strokeWidth="12" strokeDasharray="8 5" opacity="0.85" />
+                  {/* Sidewall ring */}
+                  <circle cx="250" cy="200" r="135" fill="#0c0c0e" stroke="#1f1f22" strokeWidth="1" />
+                  {/* Rim */}
+                  <circle cx="250" cy="200" r="80" fill="url(#rimMetalS)" stroke="#52525b" strokeWidth="1.5" />
+                  <circle cx="250" cy="200" r="18" fill="#27272a" stroke="#71717a" strokeWidth="1.5" />
 
-                  {/* PROFILE arrow — vertical on right sidewall */}
-                  <line x1="430" y1="48" x2="430" y2="138" stroke="#dc2626" strokeWidth="2" markerStart="url(#arrStartR)" markerEnd="url(#arrEndR)" />
-                  <line x1="395" y1="48" x2="435" y2="48" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
-                  <line x1="335" y1="138" x2="435" y2="138" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
-                  {/* Red callout box */}
-                  <rect x="447" y="78" width="44" height="22" rx="3" fill="#dc2626" />
-                  <text x="469" y="94" textAnchor="middle" fill="#fff" fontSize="13" fontWeight="900" fontFamily="ui-monospace,monospace">{profile}</text>
-                  <text x="469" y="112" textAnchor="middle" fill="#fff" fontSize="8.5" fontWeight="800" letterSpacing="1">ASPECT</text>
-                  <text x="469" y="122" textAnchor="middle" fill="#a1a1aa" fontSize="7.5" fontWeight="700" letterSpacing="0.8">RATIO (%)</text>
+                  {/* 1. WIDTH arrow — pointing to top of tyre */}
+                  <line x1="120" y1="55" x2="246" y2="38" stroke="#dc2626" strokeWidth="2" markerEnd="url(#arrEndS)" />
+                  <rect x="20" y="40" width="100" height="26" rx="4" fill="#dc2626" />
+                  <text x="70" y="58" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="900" fontFamily="ui-monospace,monospace">WIDTH · {width}mm</text>
 
-                  {/* RIM arrow — horizontal across rim diameter */}
-                  <line x1="152" y1="190" x2="348" y2="190" stroke="#dc2626" strokeWidth="2" markerStart="url(#arrStartR)" markerEnd="url(#arrEndR)" />
-                  {/* Red callout box for rim */}
-                  <rect x="226" y="170" width="48" height="22" rx="3" fill="#dc2626" />
-                  <text x="250" y="186" textAnchor="middle" fill="#fff" fontSize="13" fontWeight="900" fontFamily="ui-monospace,monospace">{rim}"</text>
+                  {/* 2. PROFILE arrow — pointing to sidewall (between tread and rim, right side) */}
+                  <line x1="380" y1="200" x2="345" y2="200" stroke="#dc2626" strokeWidth="2" markerEnd="url(#arrEndS)" />
+                  <rect x="380" y="187" width="105" height="26" rx="4" fill="#dc2626" />
+                  <text x="432" y="205" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="900" fontFamily="ui-monospace,monospace">PROFILE · {profile}%</text>
 
-                  {/* WIDTH arrow — horizontal across full tyre */}
-                  <line x1="80" y1="370" x2="420" y2="370" stroke="#dc2626" strokeWidth="2" markerStart="url(#arrStartR)" markerEnd="url(#arrEndR)" />
-                  <line x1="80" y1="190" x2="80" y2="375" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
-                  <line x1="420" y1="190" x2="420" y2="375" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
-                  {/* Red callout box for width */}
-                  <rect x="222" y="354" width="56" height="22" rx="3" fill="#dc2626" />
-                  <text x="250" y="370" textAnchor="middle" fill="#fff" fontSize="13" fontWeight="900" fontFamily="ui-monospace,monospace">{width}</text>
-
-                  {/* Bottom labels */}
-                  <text x="250" y="392" textAnchor="middle" fill="#a1a1aa" fontSize="9" fontWeight="800" letterSpacing="2">WIDTH (mm)</text>
-                  <text x="250" y="216" textAnchor="middle" fill="#a1a1aa" fontSize="8" fontWeight="800" letterSpacing="1.5">RIM DIAMETER (inches)</text>
+                  {/* 3. RIM arrow — pointing to centre rim */}
+                  <line x1="120" y1="345" x2="225" y2="225" stroke="#dc2626" strokeWidth="2" markerEnd="url(#arrEndS)" />
+                  <rect x="20" y="335" width="100" height="26" rx="4" fill="#dc2626" />
+                  <text x="70" y="353" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="900" fontFamily="ui-monospace,monospace">RIM · {rim}"</text>
                 </svg>
               </div>
 
