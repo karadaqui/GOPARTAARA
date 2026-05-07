@@ -427,93 +427,114 @@ const Tyres = () => {
 
               <div className="flex-1 flex items-center justify-center">
                 <svg
-                  viewBox="0 0 400 350"
+                  viewBox="0 0 500 400"
                   className="w-full max-w-md h-auto"
                   xmlns="http://www.w3.org/2000/svg"
-                  aria-label="Tyre cross-section diagram with measurement arrows"
+                  aria-label="Tyre diagram with width, profile and rim measurements"
                 >
                   <defs>
-                    <linearGradient id="treadGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#2a2a2d" />
-                      <stop offset="100%" stopColor="#0e0e10" />
-                    </linearGradient>
-                    <linearGradient id="sidewallGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#1a1a1d" />
-                      <stop offset="100%" stopColor="#0a0a0c" />
-                    </linearGradient>
-                    <linearGradient id="rimGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#3f3f46" />
-                      <stop offset="50%" stopColor="#71717a" />
-                      <stop offset="100%" stopColor="#3f3f46" />
-                    </linearGradient>
-                    <marker id="arrEnd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                    <radialGradient id="tyreRubber2" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="#1c1c1f" />
+                      <stop offset="70%" stopColor="#0f0f11" />
+                      <stop offset="100%" stopColor="#040405" />
+                    </radialGradient>
+                    <radialGradient id="rimMetal2" cx="50%" cy="40%" r="55%">
+                      <stop offset="0%" stopColor="#a1a1aa" />
+                      <stop offset="55%" stopColor="#52525b" />
+                      <stop offset="100%" stopColor="#27272a" />
+                    </radialGradient>
+                    <radialGradient id="hubMetal" cx="50%" cy="40%" r="55%">
+                      <stop offset="0%" stopColor="#71717a" />
+                      <stop offset="100%" stopColor="#27272a" />
+                    </radialGradient>
+                    <marker id="arrEndR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
                       <path d="M0,0 L10,5 L0,10 z" fill="#dc2626" />
                     </marker>
-                    <marker id="arrStart" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                    <marker id="arrStartR" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto">
                       <path d="M10,0 L0,5 L10,10 z" fill="#dc2626" />
                     </marker>
                   </defs>
 
-                  {/* Tyre body — full outer rectangle */}
-                  <path
-                    d="M 60 240 L 60 100 Q 60 40 120 40 L 280 40 Q 340 40 340 100 L 340 240 Z"
-                    fill="url(#sidewallGrad)"
-                    stroke="#3f3f46"
-                    strokeWidth="1.5"
-                  />
-                  {/* Tread block on top */}
-                  <path
-                    d="M 60 100 Q 60 40 120 40 L 280 40 Q 340 40 340 100 L 340 130 L 60 130 Z"
-                    fill="url(#treadGrad)"
-                    stroke="#3f3f46"
-                    strokeWidth="1"
-                  />
-                  {/* Tread grooves */}
-                  {[100, 140, 180, 200, 220, 260, 300].map((x) => (
-                    <line key={x} x1={x} y1="42" x2={x} y2="128" stroke="#000" strokeWidth="3" opacity="0.7" />
-                  ))}
-                  {/* Tread surface texture lines */}
-                  {[55, 75, 95, 115].map((y) => (
-                    <line key={y} x1="62" y1={y} x2="338" y2={y} stroke="#0a0a0a" strokeWidth="0.5" opacity="0.6" />
-                  ))}
+                  {/* OUTER TYRE — tread ring */}
+                  <circle cx="250" cy="190" r="170" fill="url(#tyreRubber2)" stroke="#3f3f46" strokeWidth="1.5" />
+                  {/* Tread groove dashes around perimeter */}
+                  <circle cx="250" cy="190" r="162" fill="none" stroke="#000" strokeWidth="14" strokeDasharray="7 5" opacity="0.85" />
+                  {/* Tread inner edge highlight */}
+                  <circle cx="250" cy="190" r="148" fill="none" stroke="#27272a" strokeWidth="1" />
+                  {/* Sidewall ring (between tread and rim) */}
+                  <circle cx="250" cy="190" r="142" fill="#0c0c0e" />
+                  {/* Sidewall radial markings */}
+                  {Array.from({ length: 36 }).map((_, i) => {
+                    const a = (i * 10 * Math.PI) / 180;
+                    const r1 = 102, r2 = 140;
+                    return (
+                      <line
+                        key={i}
+                        x1={250 + r1 * Math.cos(a)}
+                        y1={190 + r1 * Math.sin(a)}
+                        x2={250 + r2 * Math.cos(a)}
+                        y2={190 + r2 * Math.sin(a)}
+                        stroke="#1a1a1d"
+                        strokeWidth="0.6"
+                      />
+                    );
+                  })}
+                  {/* RIM outer edge */}
+                  <circle cx="250" cy="190" r="100" fill="url(#rimMetal2)" stroke="#52525b" strokeWidth="1.5" />
+                  {/* Rim inner cavity */}
+                  <circle cx="250" cy="190" r="78" fill="#0a0a0c" stroke="#3f3f46" strokeWidth="1" />
+                  {/* Wheel spokes */}
+                  {[0, 60, 120, 180, 240, 300].map((deg) => {
+                    const a = (deg * Math.PI) / 180;
+                    return (
+                      <line
+                        key={deg}
+                        x1={250 + 22 * Math.cos(a)}
+                        y1={190 + 22 * Math.sin(a)}
+                        x2={250 + 76 * Math.cos(a)}
+                        y2={190 + 76 * Math.sin(a)}
+                        stroke="#52525b"
+                        strokeWidth="7"
+                        strokeLinecap="round"
+                      />
+                    );
+                  })}
+                  {/* Hub center */}
+                  <circle cx="250" cy="190" r="22" fill="url(#hubMetal)" stroke="#71717a" strokeWidth="1.5" />
+                  <circle cx="250" cy="190" r="6" fill="#18181b" stroke="#52525b" strokeWidth="1" />
 
-                  {/* Rim opening (cut-out at bottom) */}
-                  <rect x="110" y="190" width="180" height="50" fill="#050507" />
-                  {/* Rim metal band */}
-                  <rect x="110" y="195" width="180" height="40" fill="url(#rimGrad)" stroke="#52525b" strokeWidth="1" rx="2" />
-                  {/* Rim bolt detail */}
-                  <circle cx="200" cy="215" r="4" fill="#18181b" stroke="#71717a" strokeWidth="1" />
+                  {/* PROFILE arrow — vertical on right sidewall */}
+                  <line x1="430" y1="48" x2="430" y2="138" stroke="#dc2626" strokeWidth="2" markerStart="url(#arrStartR)" markerEnd="url(#arrEndR)" />
+                  <line x1="395" y1="48" x2="435" y2="48" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
+                  <line x1="335" y1="138" x2="435" y2="138" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
+                  {/* Red callout box */}
+                  <rect x="447" y="78" width="44" height="22" rx="3" fill="#dc2626" />
+                  <text x="469" y="94" textAnchor="middle" fill="#fff" fontSize="13" fontWeight="900" fontFamily="ui-monospace,monospace">{profile}</text>
+                  <text x="469" y="112" textAnchor="middle" fill="#fff" fontSize="8.5" fontWeight="800" letterSpacing="1">ASPECT</text>
+                  <text x="469" y="122" textAnchor="middle" fill="#a1a1aa" fontSize="7.5" fontWeight="700" letterSpacing="0.8">RATIO (%)</text>
 
-                  {/* Inner sidewall edges (where tyre meets rim) */}
-                  <line x1="110" y1="195" x2="110" y2="240" stroke="#27272a" strokeWidth="1" />
-                  <line x1="290" y1="195" x2="290" y2="240" stroke="#27272a" strokeWidth="1" />
+                  {/* RIM arrow — horizontal across rim diameter */}
+                  <line x1="152" y1="190" x2="348" y2="190" stroke="#dc2626" strokeWidth="2" markerStart="url(#arrStartR)" markerEnd="url(#arrEndR)" />
+                  {/* Red callout box for rim */}
+                  <rect x="226" y="170" width="48" height="22" rx="3" fill="#dc2626" />
+                  <text x="250" y="186" textAnchor="middle" fill="#fff" fontSize="13" fontWeight="900" fontFamily="ui-monospace,monospace">{rim}"</text>
 
-                  {/* PROFILE arrow — vertical, left sidewall */}
-                  <line x1="38" y1="130" x2="38" y2="195" stroke="#dc2626" strokeWidth="1.8" markerStart="url(#arrStart)" markerEnd="url(#arrEnd)" />
-                  <line x1="34" y1="130" x2="60" y2="130" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="2 2" />
-                  <line x1="34" y1="195" x2="110" y2="195" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="2 2" />
-                  <text x="14" y="158" fill="#fff" fontSize="10" fontWeight="800" letterSpacing="1.5">{profile}%</text>
-                  <text x="6" y="172" fill="#a1a1aa" fontSize="7.5" fontWeight="700" letterSpacing="1">PROFILE</text>
-                  <text x="6" y="182" fill="#a1a1aa" fontSize="7.5" fontWeight="700" letterSpacing="1">(HEIGHT)</text>
+                  {/* WIDTH arrow — horizontal across full tyre */}
+                  <line x1="80" y1="370" x2="420" y2="370" stroke="#dc2626" strokeWidth="2" markerStart="url(#arrStartR)" markerEnd="url(#arrEndR)" />
+                  <line x1="80" y1="190" x2="80" y2="375" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
+                  <line x1="420" y1="190" x2="420" y2="375" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
+                  {/* Red callout box for width */}
+                  <rect x="222" y="354" width="56" height="22" rx="3" fill="#dc2626" />
+                  <text x="250" y="370" textAnchor="middle" fill="#fff" fontSize="13" fontWeight="900" fontFamily="ui-monospace,monospace">{width}</text>
 
-                  {/* RIM arrow — horizontal, across rim opening */}
-                  <line x1="110" y1="265" x2="290" y2="265" stroke="#dc2626" strokeWidth="1.8" markerStart="url(#arrStart)" markerEnd="url(#arrEnd)" />
-                  <line x1="110" y1="240" x2="110" y2="270" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="2 2" />
-                  <line x1="290" y1="240" x2="290" y2="270" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="2 2" />
-                  <text x="200" y="282" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="800" letterSpacing="2">R{rim}</text>
-                  <text x="200" y="294" textAnchor="middle" fill="#a1a1aa" fontSize="8" fontWeight="700" letterSpacing="1.5">RIM DIAMETER</text>
-
-                  {/* WIDTH arrow — horizontal, across full tyre */}
-                  <line x1="60" y1="320" x2="340" y2="320" stroke="#dc2626" strokeWidth="1.8" markerStart="url(#arrStart)" markerEnd="url(#arrEnd)" />
-                  <line x1="60" y1="240" x2="60" y2="325" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="2 2" />
-                  <line x1="340" y1="240" x2="340" y2="325" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="2 2" />
-                  <text x="200" y="338" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="800" letterSpacing="2">{width}mm</text>
-                  <text x="200" y="349" textAnchor="middle" fill="#a1a1aa" fontSize="8" fontWeight="700" letterSpacing="1.5">WIDTH</text>
+                  {/* Bottom labels */}
+                  <text x="250" y="392" textAnchor="middle" fill="#a1a1aa" fontSize="9" fontWeight="800" letterSpacing="2">WIDTH (mm)</text>
+                  <text x="250" y="216" textAnchor="middle" fill="#a1a1aa" fontSize="8" fontWeight="800" letterSpacing="1.5">RIM DIAMETER (inches)</text>
                 </svg>
               </div>
 
               <div className="mt-4 pt-4 border-t text-center text-xs text-zinc-400" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
-                Found on your tyre sidewall — usually printed in large numbers
+                These numbers are printed on your tyre sidewall
               </div>
             </div>
           </div>
