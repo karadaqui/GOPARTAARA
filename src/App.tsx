@@ -72,18 +72,13 @@ const Sitemap = lazy(() => import("./pages/Sitemap.tsx"));
 
 const queryClient = new QueryClient();
 
-import Maintenance from "./pages/Maintenance.tsx";
+import { withMaintenance } from "./pages/MaintenancePage.tsx";
+
+const TyresMaintained = withMaintenance(Tyres);
+const MarketplaceMaintained = withMaintenance(Marketplace);
+const EvChargingMaintained = withMaintenance(EvCharging);
 
 const App = () => {
-  const isMaintenance =
-    import.meta.env.VITE_MAINTENANCE_MODE === "true" &&
-    typeof window !== "undefined" &&
-    !window.location.search.includes("preview=gopartara2026");
-
-  if (isMaintenance) {
-    return <Maintenance />;
-  }
-
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
