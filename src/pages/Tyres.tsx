@@ -646,7 +646,7 @@ const Tyres = () => {
             {/* Tyre grid */}
             <div
               key={`${season}-${supplier}-${brand}-${page}`}
-              className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"
             >
               {pageItems.map((t) => {
                 const priceVal = parseFloat((t.price || '0').replace(/[^0-9.]/g, ''));
@@ -654,10 +654,18 @@ const Tyres = () => {
                 const cardKey = `${t.name}-${t.supplier}-${t.price}`;
                 const isWish = wishlist.has(cardKey);
                 const isCmp = compare.has(cardKey);
+                const winter = isWinterTyre(t.name || '');
+                const allSeason = isAllSeasonTyre(t.name || '');
+                const cardSeason = winter ? '❄️ Winter' : allSeason ? '🌤️ All Season' : '☀️ Summer';
+                const seasonStyle = winter
+                  ? { background: 'rgba(59,130,246,0.15)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.4)' }
+                  : allSeason
+                  ? { background: 'rgba(22,163,74,0.15)', color: '#4ade80', border: '1px solid rgba(22,163,74,0.4)' }
+                  : { background: 'rgba(249,115,22,0.15)', color: '#fb923c', border: '1px solid rgba(249,115,22,0.4)' };
                 return (
                   <div
                     key={cardKey}
-                    className="group rounded-2xl overflow-hidden flex flex-col transition-all hover:-translate-y-1"
+                    className="group rounded-xl overflow-hidden flex flex-col transition-all hover:-translate-y-1"
                     style={{
                       background: CARD,
                       border: `1px solid ${BORDER}`,
@@ -672,50 +680,41 @@ const Tyres = () => {
                     }}
                   >
                     {/* Brand gradient bar */}
-                    <div className="h-1.5 w-full" style={{ background: brandGradient(t.brand) }} />
+                    <div className="h-1 w-full" style={{ background: brandGradient(t.brand) }} />
 
-                    <div className="relative aspect-square flex items-center justify-center p-6" style={{ background: CARD_2 }}>
+                    <div className="relative aspect-square flex items-center justify-center p-3" style={{ background: CARD_2 }}>
                       {t.image_url ? (
                         <SafeImage src={t.image_url} alt={t.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
                       ) : (
-                        <div className="text-zinc-700 text-xs">No image</div>
+                        <div className="text-zinc-700 text-[10px]">No image</div>
                       )}
-                      <div className="absolute bottom-2 right-3 text-[9px] uppercase tracking-wider text-zinc-600 font-bold">
-                        {t.supplier}
-                      </div>
+                      <span
+                        className="absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold tracking-wide"
+                        style={seasonStyle}
+                      >
+                        {cardSeason}
+                      </span>
                     </div>
 
-                    <div className="p-4 flex-1 flex flex-col gap-2">
-                      <h3 className="text-sm font-bold text-white line-clamp-2 leading-snug min-h-[2.5rem]">{t.name}</h3>
+                    <div className="p-2.5 flex-1 flex flex-col gap-1.5">
+                      <div className="text-[11px] font-black text-white uppercase tracking-wide truncate">
+                        {t.brand || 'Unknown Brand'}
+                      </div>
+                      <h3 className="text-[11px] font-medium text-zinc-300 line-clamp-2 leading-snug min-h-[2rem]">{t.name}</h3>
 
-                      {t.brand && (
-                        <div className="flex items-center gap-2">
-                          <div
-                            className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black text-white"
-                            style={{ background: brandGradient(t.brand) }}
-                          >
-                            {initials(t.brand)}
-                          </div>
-                          <span className="text-xs text-zinc-400 uppercase tracking-wide font-semibold">{t.brand}</span>
-                        </div>
-                      )}
+                      <div className="text-lg font-black mt-0.5" style={{ color: RED }}>{t.price}</div>
+                      <div className="text-[9px] text-zinc-500 uppercase tracking-wider">Tyre only</div>
 
-                      <div className="text-2xl font-black mt-1" style={{ color: RED }}>{t.price}</div>
-                      <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Tyre only · Rim not included</div>
-
-                      <div className="flex items-center justify-between text-xs text-zinc-400 pt-2 border-t border-zinc-800/60">
-                        <div className="flex items-center gap-1.5">
-                          <Flag id={String(t.advertiserId)} /> {t.supplier}
+                      <div className="flex items-center justify-between text-[10px] text-zinc-400 pt-1.5 border-t border-zinc-800/60">
+                        <div className="flex items-center gap-1">
+                          <Flag id={String(t.advertiserId)} />
+                          <span className="truncate max-w-[60px]">{t.supplier}</span>
                         </div>
                         {freeDelivery && (
-                          <span className="flex items-center gap-1 text-green-400 font-semibold">
-                            <Truck className="h-3 w-3" /> Free
+                          <span className="flex items-center gap-0.5 text-green-400 font-semibold">
+                            <Truck className="h-2.5 w-2.5" /> Free
                           </span>
                         )}
-                      </div>
-
-                      <div className="flex items-center gap-1 text-[10px] text-zinc-500">
-                        <Globe className="h-3 w-3" /> Ships to UK + 35 countries
                       </div>
 
                       <div className="flex items-center gap-2 mt-2">
