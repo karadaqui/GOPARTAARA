@@ -146,8 +146,22 @@ serve(async (req) => {
 
     const suppliers = Array.from(new Set(products.map((p) => p.supplier_name)))
 
+    const total = products.length
+    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+    const currentPage = Math.min(page, totalPages)
+    const start = (currentPage - 1) * PAGE_SIZE
+    const pageProducts = products.slice(start, start + PAGE_SIZE)
+
     return new Response(
-      JSON.stringify({ products, suppliers, total: products.length, cached: true }),
+      JSON.stringify({
+        products: pageProducts,
+        suppliers,
+        total,
+        page: currentPage,
+        totalPages,
+        pageSize: PAGE_SIZE,
+        cached: true,
+      }),
       { headers: { ...cors, 'Content-Type': 'application/json' } }
     )
   } catch (e: any) {
