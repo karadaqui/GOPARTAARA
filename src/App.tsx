@@ -74,7 +74,6 @@ const queryClient = new QueryClient();
 
 import { withMaintenance } from "./pages/MaintenancePage.tsx";
 
-const TyresMaintained = withMaintenance(Tyres);
 const MarketplaceMaintained = withMaintenance(Marketplace);
 const EvChargingMaintained = withMaintenance(EvCharging);
 
@@ -131,7 +130,7 @@ const App = () => {
                 <Route path="/admin/sales" element={<ProtectedRoute><AdminSales /></ProtectedRoute>} />
                 <Route path="/confirm-shop-delete/:token" element={<ConfirmShopDelete />} />
                 <Route path="/recent" element={<RecentParts />} />
-                <Route path="/tyres" element={<TyresMaintained />} />
+                <Route path="/tyres" element={<Tyres />} />
                 <Route path="/deals" element={<Deals />} />
                 <Route path="/affiliate-disclosure" element={<AffiliateDisclosure />} />
                 <Route path="/business" element={<Business />} />
