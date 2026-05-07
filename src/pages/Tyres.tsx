@@ -121,7 +121,14 @@ const Tyres = () => {
 
   const SeasonBtn = ({ value, label }: { value: typeof season; label: string }) => (
     <button
-      onClick={() => { setSeason(value); resetPage(); }}
+      onClick={() => {
+        setSeason(value);
+        setPage(1);
+        if (value === 'summer') console.log('SET SUMMER');
+        else if (value === 'winter') console.log('SET WINTER');
+        else if (value === 'allseason') console.log('SET ALLSEASON');
+        else console.log('SET ALL');
+      }}
       className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
         season === value ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground border border-border hover:bg-muted'
       }`}
@@ -266,6 +273,7 @@ const Tyres = () => {
               Showing {pageItems.length} of {displayed.length} results
             </div>
 
+            {(() => { console.log('RENDERING', displayed.length, 'items, first 3:', displayed.slice(0,3).map(t => t.name)); return null; })()}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {pageItems.map((t) => (
                 <div key={t.id} className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col">
