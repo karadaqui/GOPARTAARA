@@ -717,36 +717,36 @@ const Tyres = () => {
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2 mt-2">
+                      <div className="flex items-center gap-1 mt-1.5">
                         <button
                           onClick={() => toggleSet(compare, cardKey, setCompare)}
                           aria-label="Compare"
-                          className="p-2 rounded-lg transition-all"
+                          className="p-1.5 rounded-md transition-all"
                           style={{
                             background: isCmp ? RED : 'transparent',
                             color: isCmp ? '#fff' : '#a1a1aa',
                             border: `1px solid ${isCmp ? RED : BORDER_2}`,
                           }}
                         >
-                          <Scale className="h-4 w-4" />
+                          <Scale className="h-3 w-3" />
                         </button>
                         <button
                           onClick={() => toggleSet(wishlist, cardKey, setWishlist)}
                           aria-label="Wishlist"
-                          className="p-2 rounded-lg transition-all"
+                          className="p-1.5 rounded-md transition-all"
                           style={{
                             background: isWish ? RED : 'transparent',
                             color: isWish ? '#fff' : '#a1a1aa',
                             border: `1px solid ${isWish ? RED : BORDER_2}`,
                           }}
                         >
-                          <Heart className="h-4 w-4" fill={isWish ? '#fff' : 'none'} />
+                          <Heart className="h-3 w-3" fill={isWish ? '#fff' : 'none'} />
                         </button>
                         <a
                           href={t.url}
                           target="_blank"
                           rel="noopener noreferrer sponsored"
-                          className="flex-1 inline-flex items-center justify-center px-3 py-2 rounded-lg text-xs font-bold text-white transition-all hover:opacity-90"
+                          className="flex-1 inline-flex items-center justify-center px-2 py-1.5 rounded-md text-[11px] font-bold text-white transition-all hover:opacity-90"
                           style={{ background: RED, boxShadow: `0 6px 16px -6px ${RED}` }}
                         >
                           Buy →
