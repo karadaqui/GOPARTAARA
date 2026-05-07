@@ -163,12 +163,13 @@ const Tyres = () => {
   };
 
   const uniqueSuppliers = useMemo(() => {
-    const map = new Map<string, string>();
+    const byName = new Map<string, { id: string; name: string }>();
     allResults.forEach((t) => {
-      const id = String(t.advertiserId);
-      if (!map.has(id)) map.set(id, t.supplier_name);
+      const name = (t as any).supplier_name || (t as any).supplier || '';
+      if (!name) return;
+      if (!byName.has(name)) byName.set(name, { id: String(t.advertiserId), name });
     });
-    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+    return Array.from(byName.values());
   }, [allResults]);
 
   const uniqueBrands = useMemo(
