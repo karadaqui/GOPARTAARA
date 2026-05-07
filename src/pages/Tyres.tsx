@@ -79,8 +79,6 @@ const Tyres = () => {
     setSearched(true);
     setSearchError(null);
     setPage(1);
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
     try {
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/awin-tyre-feed`;
       const response = await fetch(url, {
@@ -91,17 +89,14 @@ const Tyres = () => {
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
         body: JSON.stringify({ width, profile, rim }),
-        signal: controller.signal,
       });
-      clearTimeout(timeout);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       setAllResults((data?.products || []) as Tyre[]);
     } catch (e: any) {
-      clearTimeout(timeout);
       console.error(e);
       setAllResults([]);
-      setSearchError(e?.name === 'AbortError' ? 'Search timed out — please try again' : 'Search failed — please try again');
+      setSearchError('Search failed — please try again');
     } finally {
       setLoading(false);
     }
