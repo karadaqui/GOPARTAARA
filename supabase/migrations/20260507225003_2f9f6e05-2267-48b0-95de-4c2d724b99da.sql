@@ -1,0 +1,1 @@
+DELETE FROM public.tyre_products_cache WHERE ctid IN (SELECT ctid FROM public.tyre_products_cache WHERE feed_id = '12641' LIMIT 100000);
