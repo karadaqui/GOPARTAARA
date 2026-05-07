@@ -139,6 +139,34 @@ const Tyres = () => {
     displayed = [...displayed].sort((a, b) => parseFloat((b.price || '0').replace(/[^0-9.]/g, '')) - parseFloat((a.price || '0').replace(/[^0-9.]/g, '')));
   }
 
+  if (sort === 'none') {
+    if (season === 'winter') {
+      displayed = [...displayed].sort((a, b) => {
+        const aM = isWinterTyre(a.name || '');
+        const bM = isWinterTyre(b.name || '');
+        if (aM && !bM) return -1;
+        if (!aM && bM) return 1;
+        return 0;
+      });
+    } else if (season === 'summer') {
+      displayed = [...displayed].sort((a, b) => {
+        const aM = !isWinterTyre(a.name || '') && !isAllSeasonTyre(a.name || '');
+        const bM = !isWinterTyre(b.name || '') && !isAllSeasonTyre(b.name || '');
+        if (aM && !bM) return -1;
+        if (!aM && bM) return 1;
+        return 0;
+      });
+    } else if (season === 'allseason') {
+      displayed = [...displayed].sort((a, b) => {
+        const aM = isAllSeasonTyre(a.name || '');
+        const bM = isAllSeasonTyre(b.name || '');
+        if (aM && !bM) return -1;
+        if (!aM && bM) return 1;
+        return 0;
+      });
+    }
+  }
+
   const totalPages = Math.max(1, Math.ceil(displayed.length / 24));
   const safePage = Math.min(page, totalPages);
   const pageItems = displayed.slice((safePage - 1) * 24, safePage * 24);
