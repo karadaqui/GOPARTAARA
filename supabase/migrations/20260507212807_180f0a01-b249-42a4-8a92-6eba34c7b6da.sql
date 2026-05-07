@@ -1,0 +1,1 @@
+DELETE FROM public.tyre_products_cache WHERE feed_id = '93986_pneumatici';
