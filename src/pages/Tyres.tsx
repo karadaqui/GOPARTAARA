@@ -430,48 +430,55 @@ const Tyres = () => {
                   viewBox="0 0 500 400"
                   className="w-full max-w-md h-auto"
                   xmlns="http://www.w3.org/2000/svg"
-                  aria-label="Tyre diagram with width, profile and rim measurements"
+                  aria-label="Tyre cross-section diagram with width, profile and rim measurements"
                 >
                   <defs>
-                    <radialGradient id="tyreRubberS" cx="50%" cy="50%" r="50%">
-                      <stop offset="0%" stopColor="#1c1c1f" />
-                      <stop offset="70%" stopColor="#0f0f11" />
-                      <stop offset="100%" stopColor="#040405" />
-                    </radialGradient>
-                    <radialGradient id="rimMetalS" cx="50%" cy="40%" r="55%">
+                    <linearGradient id="tyreCS" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#27272a" />
+                      <stop offset="50%" stopColor="#1c1c1f" />
+                      <stop offset="100%" stopColor="#0a0a0c" />
+                    </linearGradient>
+                    <linearGradient id="rimCS" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#a1a1aa" />
-                      <stop offset="55%" stopColor="#52525b" />
-                      <stop offset="100%" stopColor="#27272a" />
-                    </radialGradient>
-                    <marker id="arrEndS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                      <stop offset="100%" stopColor="#52525b" />
+                    </linearGradient>
+                    <marker id="arrCS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
                       <path d="M0,0 L10,5 L0,10 z" fill="#dc2626" />
+                    </marker>
+                    <marker id="arrCSStart" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                      <path d="M10,0 L0,5 L10,10 z" fill="#dc2626" />
                     </marker>
                   </defs>
 
-                  {/* Tyre body */}
-                  <circle cx="250" cy="200" r="160" fill="url(#tyreRubberS)" stroke="#3f3f46" strokeWidth="1.5" />
-                  {/* Tread groove */}
-                  <circle cx="250" cy="200" r="152" fill="none" stroke="#000" strokeWidth="12" strokeDasharray="8 5" opacity="0.85" />
-                  {/* Sidewall ring */}
-                  <circle cx="250" cy="200" r="135" fill="#0c0c0e" stroke="#1f1f22" strokeWidth="1" />
-                  {/* Rim */}
-                  <circle cx="250" cy="200" r="80" fill="url(#rimMetalS)" stroke="#52525b" strokeWidth="1.5" />
-                  <circle cx="250" cy="200" r="18" fill="#27272a" stroke="#71717a" strokeWidth="1.5" />
+                  {/* Tyre cross-section body */}
+                  <rect x="80" y="110" width="340" height="210" rx="22" fill="url(#tyreCS)" stroke="#3f3f46" strokeWidth="1.5" />
+                  {/* Tread grooves on top */}
+                  {[128, 142, 156].map((y) => (
+                    <line key={y} x1="100" y1={y} x2="400" y2={y} stroke="#000" strokeWidth="3" opacity="0.7" />
+                  ))}
+                  {/* Inner rim opening (cut-out) */}
+                  <ellipse cx="250" cy="305" rx="135" ry="22" fill="#0a0a0c" stroke="#1f1f22" strokeWidth="1" />
+                  {/* Rim metal band */}
+                  <rect x="115" y="288" width="270" height="14" rx="3" fill="url(#rimCS)" stroke="#71717a" strokeWidth="0.8" />
 
-                  {/* 1. WIDTH arrow — pointing to top of tyre */}
-                  <line x1="120" y1="55" x2="246" y2="38" stroke="#dc2626" strokeWidth="2" markerEnd="url(#arrEndS)" />
-                  <rect x="20" y="40" width="100" height="26" rx="4" fill="#dc2626" />
-                  <text x="70" y="58" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="900" fontFamily="ui-monospace,monospace">WIDTH · {width}mm</text>
+                  {/* WIDTH — horizontal arrow above the tyre */}
+                  <line x1="80" y1="80" x2="420" y2="80" stroke="#dc2626" strokeWidth="2" markerStart="url(#arrCSStart)" markerEnd="url(#arrCS)" />
+                  <line x1="80" y1="86" x2="80" y2="108" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
+                  <line x1="420" y1="86" x2="420" y2="108" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
+                  <rect x="195" y="62" width="110" height="26" rx="4" fill="#dc2626" />
+                  <text x="250" y="80" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="900" fontFamily="ui-monospace,monospace">WIDTH · {width}mm</text>
 
-                  {/* 2. PROFILE arrow — pointing to sidewall (between tread and rim, right side) */}
-                  <line x1="380" y1="200" x2="345" y2="200" stroke="#dc2626" strokeWidth="2" markerEnd="url(#arrEndS)" />
-                  <rect x="380" y="187" width="105" height="26" rx="4" fill="#dc2626" />
-                  <text x="432" y="205" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="900" fontFamily="ui-monospace,monospace">PROFILE · {profile}%</text>
+                  {/* PROFILE — vertical arrow on right side (sidewall height) */}
+                  <line x1="450" y1="112" x2="450" y2="300" stroke="#dc2626" strokeWidth="2" markerStart="url(#arrCSStart)" markerEnd="url(#arrCS)" />
+                  <line x1="422" y1="112" x2="455" y2="112" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
+                  <line x1="388" y1="300" x2="455" y2="300" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
+                  <rect x="395" y="195" width="105" height="26" rx="4" fill="#dc2626" />
+                  <text x="447" y="213" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="900" fontFamily="ui-monospace,monospace">PROFILE · {profile}%</text>
 
-                  {/* 3. RIM arrow — pointing to centre rim */}
-                  <line x1="120" y1="345" x2="225" y2="225" stroke="#dc2626" strokeWidth="2" markerEnd="url(#arrEndS)" />
-                  <rect x="20" y="335" width="100" height="26" rx="4" fill="#dc2626" />
-                  <text x="70" y="353" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="900" fontFamily="ui-monospace,monospace">RIM · {rim}"</text>
+                  {/* RIM — arrow pointing to inner rim opening */}
+                  <line x1="60" y1="370" x2="225" y2="305" stroke="#dc2626" strokeWidth="2" markerEnd="url(#arrCS)" />
+                  <rect x="20" y="358" width="100" height="26" rx="4" fill="#dc2626" />
+                  <text x="70" y="376" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="900" fontFamily="ui-monospace,monospace">RIM · R{rim}</text>
                 </svg>
               </div>
 
