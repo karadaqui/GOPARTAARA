@@ -62,6 +62,7 @@ const Tyres = () => {
   const [allResults, setAllResults] = useState<Tyre[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   const [season, setSeason] = useState<'all' | 'summer' | 'winter' | 'allseason'>('all');
   const [supplier, setSupplier] = useState<string>('all');
