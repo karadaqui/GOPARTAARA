@@ -104,20 +104,44 @@ const Tyres = () => {
     [allResults]
   );
 
-  let displayed = [...allResults];
-  if (season === 'winter') displayed = displayed.filter((t) => /winter|wintrac|wintercontact|ultragr|nordic|ice/i.test(t.name || ''));
-  if (season === 'summer') displayed = displayed.filter((t) => !/winter|wintrac|wintercontact|ultragr|nordic|ice/i.test(t.name || '') && !/all.?season|4s |quadraxer|solus vier/i.test(t.name || ''));
-  if (season === 'allseason') displayed = displayed.filter((t) => /all.?season|4s |quadraxer|solus vier/i.test(t.name || ''));
-  if (supplier !== 'all') displayed = displayed.filter((t) => String(t.advertiserId) === String(supplier));
-  if (brand !== 'all') displayed = displayed.filter((t) => (t.brand || '').toLowerCase() === brand.toLowerCase());
-  if (minPrice) displayed = displayed.filter((t) => priceNum(t.price) >= parseFloat(minPrice));
-  if (maxPrice) displayed = displayed.filter((t) => priceNum(t.price) <= parseFloat(maxPrice));
-  if (sort === 'asc') displayed.sort((a, b) => priceNum(a.price) - priceNum(b.price));
-  if (sort === 'desc') displayed.sort((a, b) => priceNum(b.price) - priceNum(a.price));
+  const isWinterTyre = (name: string) => /winter|wintrac|wintercontact|ultragr|nordisk|nordic|ice/i.test(name);
+  const isAllSeasonTyre = (name: string) => /all.?season|allseason|all season|4 season|4-season|4s |quadraxer|solus vier/i.test(name);
 
-  const totalPages = Math.max(1, Math.ceil(displayed.length / ITEMS_PER_PAGE));
+  let displayed = [...allResults];
+
+  if (season === 'winter') {
+    displayed = displayed.filter(t => isWinterTyre(t.name || ''));
+  } else if (season === 'summer') {
+    displayed = displayed.filter(t => !isWinterTyre(t.name || '') && !isAllSeasonTyre(t.name || ''));
+  } else if (season === 'allseason') {
+    displayed = displayed.filter(t => isAllSeasonTyre(t.name || ''));
+  }
+
+  if (supplier !== 'all' && supplier !== '') {
+    displayed = displayed.filter(t => String(t.advertiserId) === String(supplier));
+  }
+
+  if (brand !== 'all' && brand !== '') {
+    displayed = displayed.filter(t => (t.brand || '').toLowerCase() === brand.toLowerCase());
+  }
+
+  if (minPrice) {
+    displayed = displayed.filter(t => parseFloat((t.price || '0').replace(/[^0-9.]/g, '')) >= parseFloat(minPrice));
+  }
+
+  if (maxPrice) {
+    displayed = displayed.filter(t => parseFloat((t.price || '0').replace(/[^0-9.]/g, '')) <= parseFloat(maxPrice));
+  }
+
+  if (sort === 'asc') {
+    displayed = [...displayed].sort((a, b) => parseFloat((a.price || '0').replace(/[^0-9.]/g, '')) - parseFloat((b.price || '0').replace(/[^0-9.]/g, '')));
+  } else if (sort === 'desc') {
+    displayed = [...displayed].sort((a, b) => parseFloat((b.price || '0').replace(/[^0-9.]/g, '')) - parseFloat((a.price || '0').replace(/[^0-9.]/g, '')));
+  }
+
+  const totalPages = Math.max(1, Math.ceil(displayed.length / 24));
   const safePage = Math.min(page, totalPages);
-  const pageItems = displayed.slice((safePage - 1) * ITEMS_PER_PAGE, safePage * ITEMS_PER_PAGE);
+  const pageItems = displayed.slice((safePage - 1) * 24, safePage * 24);
 
   const SeasonBtn = ({ value, label }: { value: typeof season; label: string }) => (
     <button
