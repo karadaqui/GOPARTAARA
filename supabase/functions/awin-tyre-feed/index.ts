@@ -51,41 +51,43 @@ serve(async (req) => {
       }).catch((err) => console.error('Background refresh failed:', err))
     }
 
-    // Helper: query cache and shape response (optionally filter by advertiserId/feed_id)
-    const queryCache = async () => {
-      const cols = 'feed_id, supplier_name, product_name, price, currency, url, brand, category, image_url, cached_at'
+    // Helper: fetch ALL rows for a feed_id by paginating in 1000-row chunks
+    const cols = 'feed_id, supplier_name, product_name, price, currency, url, brand, category, image_url, cached_at'
+    const getAllRows = async (feedId: string) => {
+      const pageSize = 1000
+      let from = 0
+      const out: any[] = []
+      while (true) {
+        const { data, error } = await supabase
+          .from('tyre_products_cache')
+          .select(cols)
+          .eq('tyre_size', tyreSize)
+          .eq('feed_id', feedId)
+          .range(from, from + pageSize - 1)
+        if (error) {
+          console.error(`Cache query error feed=${feedId}:`, error)
+          break
+        }
+        if (!data || data.length === 0) break
+        out.push(...data)
+        if (data.length < pageSize) break
+        from += pageSize
+      }
+      return out
+    }
 
+    const queryCache = async () => {
       let rows: any[] = []
       const t0 = Date.now()
 
       if (advertiserId) {
         const actualId = String(advertiserId).replace('debug_', '')
-        const { data, error } = await supabase
-          .from('tyre_products_cache')
-          .select(cols)
-          .eq('tyre_size', tyreSize)
-          .eq('feed_id', actualId)
-          .range(0, 99999)
-        if (error) console.error('Cache query error:', error)
-        rows = data || []
+        rows = await getAllRows(actualId)
       } else {
         const feedIds = ['12641', '4118', '12715', '66605', '93986_pneumatici', '23179', '93988', '93986', '10499']
         console.log(`Querying ${feedIds.length} hardcoded feed_ids for ${tyreSize}`)
-
-        const results = await Promise.all(
-          feedIds.map((fid) =>
-            supabase
-              .from('tyre_products_cache')
-              .select(cols)
-              .eq('tyre_size', tyreSize)
-              .eq('feed_id', fid)
-              .range(0, 99999)
-          )
-        )
-        for (const { data, error } of results) {
-          if (error) console.error('Cache query error:', error)
-          if (data) rows.push(...data)
-        }
+        const results = await Promise.all(feedIds.map((fid) => getAllRows(fid)))
+        for (const r of results) rows.push(...r)
       }
       console.log(`Cache query took ${Date.now() - t0}ms, rows=${rows.length}`)
       let oldest = Date.now()
