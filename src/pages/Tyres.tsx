@@ -190,6 +190,13 @@ const Tyres = () => {
     </button>
   );
 
+  console.log('pageItems[0]:', pageItems[0]?.name);
+  console.log('pageItems[1]:', pageItems[1]?.name);
+  console.log('pageItems[2]:', pageItems[2]?.name);
+  console.log('displayed.length:', displayed.length);
+  console.log('season:', season);
+  console.log('page:', page);
+
   return (
     <div className="min-h-screen bg-background">
       <SEOHead title="Tyre Search | GoPartara" description="Compare tyre prices across major suppliers." />
