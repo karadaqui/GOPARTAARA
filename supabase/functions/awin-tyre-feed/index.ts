@@ -29,6 +29,8 @@ serve(async (req) => {
     }
 
     const { width, profile, rim, advertiserId } = body
+    const page = Math.max(1, parseInt(body.page) || 1)
+    const PAGE_SIZE = 500
 
     const rimNum = String(rim || '').replace(/^R/i, '')
     const tyreSize = `${width}/${profile} R${rimNum}`
