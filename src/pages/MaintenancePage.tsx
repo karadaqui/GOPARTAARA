@@ -35,16 +35,17 @@ const MaintenancePage = () => {
   );
 };
 
-const PREVIEW_KEY = "preview=gp#9x2k";
+const hasPreview = () => {
+  if (typeof window === "undefined") return false;
+  const raw = window.location.search;
+  let decoded = raw;
+  try { decoded = decodeURIComponent(raw); } catch {}
+  return raw.includes("preview=gp%239x2k") || decoded.includes("preview=gp#9x2k");
+};
 
 export const withMaintenance = (Component: React.ComponentType) => {
   const Wrapped = () => {
-    if (
-      typeof window !== "undefined" &&
-      window.location.search.includes(PREVIEW_KEY)
-    ) {
-      return <Component />;
-    }
+    if (hasPreview()) return <Component />;
     return <MaintenancePage />;
   };
   return Wrapped;
