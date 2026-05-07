@@ -408,79 +408,112 @@ const Tyres = () => {
               </div>
             </div>
 
-            {/* RIGHT: tyre photo with educational overlay */}
+            {/* RIGHT: technical tyre cross-section diagram */}
             <div
-              className="relative rounded-3xl overflow-hidden aspect-[4/5] sm:aspect-[5/6] lg:aspect-auto lg:min-h-[600px]"
+              className="relative rounded-3xl overflow-hidden flex flex-col p-6 sm:p-8"
               style={{
+                background: 'linear-gradient(180deg, #0f0f11 0%, #050507 100%)',
                 border: `1px solid ${BORDER_2}`,
                 boxShadow: '0 30px 80px -30px rgba(0,0,0,0.9)',
               }}
             >
-              <img
-                src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=900&q=80"
-                alt="Close-up of a tyre sidewall showing size markings"
-                className="absolute inset-0 w-full h-full object-cover"
-                loading="lazy"
-              />
-              {/* Dark gradient overlay */}
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 50%, rgba(0,0,0,0.92) 100%)',
-                }}
-              />
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-zinc-400 font-bold mb-2">
+                <span>📐</span> How to read your tyre size
+              </div>
+              <div className="font-mono text-2xl sm:text-3xl font-black tracking-wider text-white mb-4">
+                {width} <span className="text-zinc-600">/</span> {profile}{' '}
+                <span className="text-zinc-600">R</span>{rim}
+              </div>
 
-              {/* Glass card pinned bottom */}
-              <div className="absolute inset-x-5 bottom-5 sm:inset-x-7 sm:bottom-7">
-                <div
-                  className="rounded-2xl p-6 backdrop-blur-2xl"
-                  style={{
-                    background: 'linear-gradient(180deg, rgba(20,20,22,0.7), rgba(10,10,12,0.85))',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    boxShadow: '0 20px 60px -20px rgba(0,0,0,0.9)',
-                  }}
+              <div className="flex-1 flex items-center justify-center">
+                <svg
+                  viewBox="0 0 400 350"
+                  className="w-full max-w-md h-auto"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-label="Tyre cross-section diagram with measurement arrows"
                 >
-                  <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-zinc-400 font-bold mb-4">
-                    <span>📐</span> How to read your tyre size
-                  </div>
+                  <defs>
+                    <linearGradient id="treadGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#2a2a2d" />
+                      <stop offset="100%" stopColor="#0e0e10" />
+                    </linearGradient>
+                    <linearGradient id="sidewallGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#1a1a1d" />
+                      <stop offset="100%" stopColor="#0a0a0c" />
+                    </linearGradient>
+                    <linearGradient id="rimGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#3f3f46" />
+                      <stop offset="50%" stopColor="#71717a" />
+                      <stop offset="100%" stopColor="#3f3f46" />
+                    </linearGradient>
+                    <marker id="arrEnd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                      <path d="M0,0 L10,5 L0,10 z" fill="#dc2626" />
+                    </marker>
+                    <marker id="arrStart" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                      <path d="M10,0 L0,5 L10,10 z" fill="#dc2626" />
+                    </marker>
+                  </defs>
 
-                  {/* Size string */}
-                  <div className="font-mono text-3xl sm:text-4xl font-black tracking-wider text-white text-center">
-                    <span>205</span>
-                    <span className="text-zinc-500"> / </span>
-                    <span>55</span>
-                    <span className="text-zinc-500"> </span>
-                    <span>R16</span>
-                  </div>
+                  {/* Tyre body — full outer rectangle */}
+                  <path
+                    d="M 60 240 L 60 100 Q 60 40 120 40 L 280 40 Q 340 40 340 100 L 340 240 Z"
+                    fill="url(#sidewallGrad)"
+                    stroke="#3f3f46"
+                    strokeWidth="1.5"
+                  />
+                  {/* Tread block on top */}
+                  <path
+                    d="M 60 100 Q 60 40 120 40 L 280 40 Q 340 40 340 100 L 340 130 L 60 130 Z"
+                    fill="url(#treadGrad)"
+                    stroke="#3f3f46"
+                    strokeWidth="1"
+                  />
+                  {/* Tread grooves */}
+                  {[100, 140, 180, 200, 220, 260, 300].map((x) => (
+                    <line key={x} x1={x} y1="42" x2={x} y2="128" stroke="#000" strokeWidth="3" opacity="0.7" />
+                  ))}
+                  {/* Tread surface texture lines */}
+                  {[55, 75, 95, 115].map((y) => (
+                    <line key={y} x1="62" y1={y} x2="338" y2={y} stroke="#0a0a0a" strokeWidth="0.5" opacity="0.6" />
+                  ))}
 
-                  {/* Arrows */}
-                  <div className="grid grid-cols-3 mt-3 mb-1 text-center" style={{ color: RED }}>
-                    <div className="text-xl font-black">↑</div>
-                    <div className="text-xl font-black">↑</div>
-                    <div className="text-xl font-black">↑</div>
-                  </div>
+                  {/* Rim opening (cut-out at bottom) */}
+                  <rect x="110" y="190" width="180" height="50" fill="#050507" />
+                  {/* Rim metal band */}
+                  <rect x="110" y="195" width="180" height="40" fill="url(#rimGrad)" stroke="#52525b" strokeWidth="1" rx="2" />
+                  {/* Rim bolt detail */}
+                  <circle cx="200" cy="215" r="4" fill="#18181b" stroke="#71717a" strokeWidth="1" />
 
-                  {/* Labels */}
-                  <div className="grid grid-cols-3 text-center">
-                    <div>
-                      <div className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 font-bold">Width</div>
-                      <div className="text-sm font-bold text-white mt-1">205 mm</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 font-bold">Profile</div>
-                      <div className="text-sm font-bold text-white mt-1">55%</div>
-                    </div>
-                    <div>
-                      <div className="text-[10px] uppercase tracking-[0.2em] text-zinc-400 font-bold">Rim</div>
-                      <div className="text-sm font-bold text-white mt-1">16"</div>
-                    </div>
-                  </div>
+                  {/* Inner sidewall edges (where tyre meets rim) */}
+                  <line x1="110" y1="195" x2="110" y2="240" stroke="#27272a" strokeWidth="1" />
+                  <line x1="290" y1="195" x2="290" y2="240" stroke="#27272a" strokeWidth="1" />
 
-                  <div className="mt-5 pt-4 border-t text-center text-xs text-zinc-400" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
-                    Found on your tyre sidewall — usually printed in large numbers
-                  </div>
-                </div>
+                  {/* PROFILE arrow — vertical, left sidewall */}
+                  <line x1="38" y1="130" x2="38" y2="195" stroke="#dc2626" strokeWidth="1.8" markerStart="url(#arrStart)" markerEnd="url(#arrEnd)" />
+                  <line x1="34" y1="130" x2="60" y2="130" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="2 2" />
+                  <line x1="34" y1="195" x2="110" y2="195" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="2 2" />
+                  <text x="14" y="158" fill="#fff" fontSize="10" fontWeight="800" letterSpacing="1.5">{profile}%</text>
+                  <text x="6" y="172" fill="#a1a1aa" fontSize="7.5" fontWeight="700" letterSpacing="1">PROFILE</text>
+                  <text x="6" y="182" fill="#a1a1aa" fontSize="7.5" fontWeight="700" letterSpacing="1">(HEIGHT)</text>
+
+                  {/* RIM arrow — horizontal, across rim opening */}
+                  <line x1="110" y1="265" x2="290" y2="265" stroke="#dc2626" strokeWidth="1.8" markerStart="url(#arrStart)" markerEnd="url(#arrEnd)" />
+                  <line x1="110" y1="240" x2="110" y2="270" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="2 2" />
+                  <line x1="290" y1="240" x2="290" y2="270" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="2 2" />
+                  <text x="200" y="282" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="800" letterSpacing="2">R{rim}</text>
+                  <text x="200" y="294" textAnchor="middle" fill="#a1a1aa" fontSize="8" fontWeight="700" letterSpacing="1.5">RIM DIAMETER</text>
+
+                  {/* WIDTH arrow — horizontal, across full tyre */}
+                  <line x1="60" y1="320" x2="340" y2="320" stroke="#dc2626" strokeWidth="1.8" markerStart="url(#arrStart)" markerEnd="url(#arrEnd)" />
+                  <line x1="60" y1="240" x2="60" y2="325" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="2 2" />
+                  <line x1="340" y1="240" x2="340" y2="325" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="2 2" />
+                  <text x="200" y="338" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="800" letterSpacing="2">{width}mm</text>
+                  <text x="200" y="349" textAnchor="middle" fill="#a1a1aa" fontSize="8" fontWeight="700" letterSpacing="1.5">WIDTH</text>
+                </svg>
+              </div>
+
+              <div className="mt-4 pt-4 border-t text-center text-xs text-zinc-400" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+                Found on your tyre sidewall — usually printed in large numbers
               </div>
             </div>
           </div>
