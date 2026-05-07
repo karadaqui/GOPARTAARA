@@ -62,6 +62,7 @@ const Tyres = () => {
   const [allResults, setAllResults] = useState<Tyre[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
   const [season, setSeason] = useState<'all' | 'summer' | 'winter' | 'allseason'>('all');
   const [supplier, setSupplier] = useState<string>('all');
@@ -76,16 +77,31 @@ const Tyres = () => {
   const handleSearch = async () => {
     setLoading(true);
     setSearched(true);
+    setSearchError(null);
     setPage(1);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
     try {
-      const { data, error } = await supabase.functions.invoke('awin-tyre-feed', {
-        body: { width, profile, rim },
+      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/awin-tyre-feed`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ width, profile, rim }),
+        signal: controller.signal,
       });
-      if (error) throw error;
+      clearTimeout(timeout);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
       setAllResults((data?.products || []) as Tyre[]);
-    } catch (e) {
+    } catch (e: any) {
+      clearTimeout(timeout);
       console.error(e);
       setAllResults([]);
+      setSearchError(e?.name === 'AbortError' ? 'Search timed out — please try again' : 'Search failed — please try again');
     } finally {
       setLoading(false);
     }
@@ -243,7 +259,11 @@ const Tyres = () => {
           </div>
         )}
 
-        {!loading && searched && allResults.length === 0 && (
+        {!loading && searchError && (
+          <div className="text-center py-20 text-destructive">{searchError}</div>
+        )}
+
+        {!loading && !searchError && searched && allResults.length === 0 && (
           <div className="text-center py-20 text-muted-foreground">No tyres found for {width}/{profile} R{rim}.</div>
         )}
 
