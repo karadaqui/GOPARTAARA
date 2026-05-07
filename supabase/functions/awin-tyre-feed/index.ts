@@ -50,7 +50,6 @@ serve(async (req) => {
     }
 
     // Helper: query cache and shape response (optionally filter by advertiserId/feed_id)
-    const SUPPLIER_FEED_IDS = ['12641', '4118', '12715', '66605', '93986_pneumatici', '23179', '93988']
     const queryCache = async () => {
       const cols = 'feed_id, supplier_name, product_name, price, currency, url, brand, category, image_url, cached_at'
 
@@ -64,18 +63,25 @@ serve(async (req) => {
           .select(cols)
           .eq('tyre_size', tyreSize)
           .eq('feed_id', actualId)
-          .limit(300)
         if (error) console.error('Cache query error:', error)
         rows = data || []
       } else {
+        // Discover all feed_ids that have products for this tyre size
+        const feedsResult = await supabase
+          .from('tyre_products_cache')
+          .select('feed_id')
+          .eq('tyre_size', tyreSize)
+        if (feedsResult.error) console.error('Feed discovery error:', feedsResult.error)
+        const feedIds = [...new Set((feedsResult.data || []).map((r: any) => r.feed_id))]
+        console.log(`Discovered ${feedIds.length} feed_ids for ${tyreSize}`)
+
         const results = await Promise.all(
-          SUPPLIER_FEED_IDS.map((fid) =>
+          feedIds.map((fid) =>
             supabase
               .from('tyre_products_cache')
               .select(cols)
               .eq('tyre_size', tyreSize)
               .eq('feed_id', fid)
-              .limit(300)
           )
         )
         for (const { data, error } of results) {
