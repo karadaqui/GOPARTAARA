@@ -116,7 +116,7 @@ const App = () => {
                 <Route path="/blog/:slug" element={<BlogPostPage />} />
                 <Route path="/list-your-parts" element={<ListYourParts />} />
                 <Route path="/my-market" element={<ProtectedRoute><MyMarket /></ProtectedRoute>} />
-                <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/marketplace" element={<MarketplaceMaintained />} />
                 <Route path="/listing/:id" element={<ListingDetail />} />
                 <Route path="/marketplace/:id" element={<ListingDetail />} />
                 <Route path="/seller/:id" element={<SellerProfile />} />
@@ -131,7 +131,7 @@ const App = () => {
                 <Route path="/admin/sales" element={<ProtectedRoute><AdminSales /></ProtectedRoute>} />
                 <Route path="/confirm-shop-delete/:token" element={<ConfirmShopDelete />} />
                 <Route path="/recent" element={<RecentParts />} />
-                <Route path="/tyres" element={<Tyres />} />
+                <Route path="/tyres" element={<TyresMaintained />} />
                 <Route path="/deals" element={<Deals />} />
                 <Route path="/affiliate-disclosure" element={<AffiliateDisclosure />} />
                 <Route path="/business" element={<Business />} />
@@ -139,7 +139,7 @@ const App = () => {
                 <Route path="/help" element={<Help />} />
                 <Route path="/help/:slug" element={<HelpCategoryRoute />} />
                 <Route path="/cookies" element={<Cookies />} />
-                <Route path="/ev-charging" element={<EvCharging />} />
+                <Route path="/ev-charging" element={<EvChargingMaintained />} />
                 <Route path="/status" element={<Status />} />
                 <Route path="/sitemap" element={<Sitemap />} />
                 <Route path="*" element={<PartSearchRedirect />} />
