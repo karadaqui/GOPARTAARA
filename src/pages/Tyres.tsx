@@ -134,7 +134,11 @@ const Tyres = () => {
     }).catch(() => {});
   }, []);
 
-  const handleSearch = async () => {
+  const [serverPage, setServerPage] = useState(1);
+  const [serverTotalPages, setServerTotalPages] = useState(1);
+  const [serverTotal, setServerTotal] = useState(0);
+
+  const fetchPage = async (pageNum: number) => {
     setLoading(true);
     setSearched(true);
     setSearchError(null);
@@ -148,11 +152,14 @@ const Tyres = () => {
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ width, profile, rim }),
+        body: JSON.stringify({ width, profile, rim, page: pageNum }),
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       setAllResults((data?.products || []) as Tyre[]);
+      setServerPage(data?.page || 1);
+      setServerTotalPages(data?.totalPages || 1);
+      setServerTotal(data?.total || 0);
     } catch (e: any) {
       console.error(e);
       setAllResults([]);
@@ -160,6 +167,17 @@ const Tyres = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearch = async () => {
+    setServerPage(1);
+    await fetchPage(1);
+  };
+
+  const goToServerPage = async (n: number) => {
+    if (n < 1 || n > serverTotalPages) return;
+    await fetchPage(n);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const uniqueSuppliers = useMemo(() => {
