@@ -29,6 +29,8 @@ serve(async (req) => {
     }
 
     const { width, profile, rim, advertiserId } = body
+    const page = Math.max(1, parseInt(body.page) || 1)
+    const PAGE_SIZE = 500
 
     const rimNum = String(rim || '').replace(/^R/i, '')
     const tyreSize = `${width}/${profile} R${rimNum}`
@@ -63,6 +65,7 @@ serve(async (req) => {
           .select(cols)
           .eq('tyre_size', tyreSize)
           .eq('feed_id', actualId)
+          .range(0, 99999)
         if (error) console.error('Cache query error:', error)
         rows = data || []
       } else {
@@ -76,6 +79,7 @@ serve(async (req) => {
               .select(cols)
               .eq('tyre_size', tyreSize)
               .eq('feed_id', fid)
+              .range(0, 99999)
           )
         )
         for (const { data, error } of results) {
@@ -142,8 +146,22 @@ serve(async (req) => {
 
     const suppliers = Array.from(new Set(products.map((p) => p.supplier_name)))
 
+    const total = products.length
+    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+    const currentPage = Math.min(page, totalPages)
+    const start = (currentPage - 1) * PAGE_SIZE
+    const pageProducts = products.slice(start, start + PAGE_SIZE)
+
     return new Response(
-      JSON.stringify({ products, suppliers, total: products.length, cached: true }),
+      JSON.stringify({
+        products: pageProducts,
+        suppliers,
+        total,
+        page: currentPage,
+        totalPages,
+        pageSize: PAGE_SIZE,
+        cached: true,
+      }),
       { headers: { ...cors, 'Content-Type': 'application/json' } }
     )
   } catch (e: any) {

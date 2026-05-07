@@ -134,7 +134,11 @@ const Tyres = () => {
     }).catch(() => {});
   }, []);
 
-  const handleSearch = async () => {
+  const [serverPage, setServerPage] = useState(1);
+  const [serverTotalPages, setServerTotalPages] = useState(1);
+  const [serverTotal, setServerTotal] = useState(0);
+
+  const fetchPage = async (pageNum: number) => {
     setLoading(true);
     setSearched(true);
     setSearchError(null);
@@ -148,11 +152,14 @@ const Tyres = () => {
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ width, profile, rim }),
+        body: JSON.stringify({ width, profile, rim, page: pageNum }),
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
       setAllResults((data?.products || []) as Tyre[]);
+      setServerPage(data?.page || 1);
+      setServerTotalPages(data?.totalPages || 1);
+      setServerTotal(data?.total || 0);
     } catch (e: any) {
       console.error(e);
       setAllResults([]);
@@ -160,6 +167,17 @@ const Tyres = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSearch = async () => {
+    setServerPage(1);
+    await fetchPage(1);
+  };
+
+  const goToServerPage = async (n: number) => {
+    if (n < 1 || n > serverTotalPages) return;
+    await fetchPage(n);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const uniqueSuppliers = useMemo(() => {
@@ -790,6 +808,32 @@ const Tyres = () => {
                   Page <span className="text-white font-bold">{safePage}</span> of{' '}
                   <span className="text-white font-bold">{totalPages}</span>
                 </span>
+              </div>
+            )}
+
+            {serverTotalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-6 flex-wrap">
+                <button
+                  onClick={() => goToServerPage(serverPage - 1)}
+                  disabled={serverPage === 1 || loading}
+                  className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-30"
+                  style={{ background: CARD, border: `1px solid ${BORDER}` }}
+                >
+                  <ChevronLeft className="h-4 w-4" /> Prev batch
+                </button>
+                <span className="text-xs text-zinc-400">
+                  Batch <span className="text-white font-bold">{serverPage}</span> of{' '}
+                  <span className="text-white font-bold">{serverTotalPages}</span>
+                  {' '}({serverTotal.toLocaleString()} total)
+                </span>
+                <button
+                  onClick={() => goToServerPage(serverPage + 1)}
+                  disabled={serverPage === serverTotalPages || loading}
+                  className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-30"
+                  style={{ background: CARD, border: `1px solid ${BORDER}` }}
+                >
+                  Next batch <ChevronRight className="h-4 w-4" />
+                </button>
               </div>
             )}
           </>
