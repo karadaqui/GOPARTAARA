@@ -42,39 +42,39 @@ serve(async (req) => {
 
     // Helper: query cache and shape response (optionally filter by advertiserId/feed_id)
     const SUPPLIER_FEED_IDS = ['4118', '12715', '10499', '12716', '93986', '66605']
-    const QUERY_TIMEOUT_MS = 5000
     const queryCache = async () => {
       const cols = 'feed_id, supplier_name, product_name, price, currency, url, brand, category, image_url, cached_at'
 
       let rows: any[] = []
       const t0 = Date.now()
 
-      // Build single OR query across all suppliers
-      const orFilter = SUPPLIER_FEED_IDS.map((fid) => `feed_id.eq.${fid}`).join(',')
-
-      const targetId = advertiserId ? String(advertiserId).replace('debug_', '') : null
-      const builder = supabase
-        .from('tyre_products_cache')
-        .select(cols)
-        .eq('tyre_size', tyreSize)
-        .limit(200)
-
-      const queryPromise = targetId
-        ? builder.eq('feed_id', targetId)
-        : builder.or(orFilter)
-
-      const timeoutPromise = new Promise<{ data: any[]; error: any }>((resolve) =>
-        setTimeout(() => resolve({ data: [], error: { message: 'query_timeout' } }), QUERY_TIMEOUT_MS)
-      )
-
-      const { data, error } = (await Promise.race([queryPromise, timeoutPromise])) as any
-      const elapsed = Date.now() - t0
-      console.log(`Cache query took ${elapsed}ms, rows=${data?.length ?? 0}`)
-      if (error) {
-        console.error('Cache query error:', error)
-        if (error.message !== 'query_timeout') return { rows: [] as any[], oldest: 0 }
+      if (advertiserId) {
+        const actualId = String(advertiserId).replace('debug_', '')
+        const { data, error } = await supabase
+          .from('tyre_products_cache')
+          .select(cols)
+          .eq('tyre_size', tyreSize)
+          .eq('feed_id', actualId)
+          .limit(200)
+        if (error) console.error('Cache query error:', error)
+        rows = data || []
+      } else {
+        const results = await Promise.all(
+          SUPPLIER_FEED_IDS.map((fid) =>
+            supabase
+              .from('tyre_products_cache')
+              .select(cols)
+              .eq('tyre_size', tyreSize)
+              .eq('feed_id', fid)
+              .limit(40)
+          )
+        )
+        for (const { data, error } of results) {
+          if (error) console.error('Cache query error:', error)
+          if (data) rows.push(...data)
+        }
       }
-      rows = data || []
+      console.log(`Cache query took ${Date.now() - t0}ms, rows=${rows.length}`)
       let oldest = Date.now()
       for (const r of rows) {
         const t = new Date(r.cached_at).getTime()
