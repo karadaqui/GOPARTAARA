@@ -121,7 +121,14 @@ const Tyres = () => {
 
   const SeasonBtn = ({ value, label }: { value: typeof season; label: string }) => (
     <button
-      onClick={() => { setSeason(value); resetPage(); }}
+      onClick={() => {
+        setSeason(value);
+        setPage(1);
+        if (value === 'summer') console.log('SET SUMMER');
+        else if (value === 'winter') console.log('SET WINTER');
+        else if (value === 'allseason') console.log('SET ALLSEASON');
+        else console.log('SET ALL');
+      }}
       className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
         season === value ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground border border-border hover:bg-muted'
       }`}
