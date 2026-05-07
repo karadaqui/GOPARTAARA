@@ -76,7 +76,6 @@ serve(async (req) => {
               .select(cols)
               .eq('tyre_size', tyreSize)
               .eq('feed_id', fid)
-              .limit(500)
           )
         )
         for (const { data, error } of results) {
