@@ -305,100 +305,191 @@ const Tyres = () => {
           }}
         />
 
-        <div className="relative max-w-6xl mx-auto px-4 pt-16 pb-10 text-center">
-          <span
-            className="inline-block px-4 py-1 rounded-full text-xs font-bold tracking-[0.2em] uppercase mb-6"
-            style={{ background: RED, color: '#fff', boxShadow: `0 8px 30px -10px ${RED}` }}
-          >
-            Tyres
-          </span>
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.05] mb-5 text-white">
-            Find Your <span style={{ color: RED }}>Perfect Tyres</span>
-          </h1>
-          <p className="text-base sm:text-lg text-zinc-300 max-w-2xl mx-auto mb-2">
-            Compare prices from UK & European tyre specialists. Rim not included — tyres only.
-          </p>
-          <p className="text-xs sm:text-sm text-zinc-500 mb-8">
-            Compare prices from 5 tyre suppliers · Updated daily
-          </p>
+        <div className="relative max-w-7xl mx-auto px-4 pt-20 pb-14">
+          <div className="text-center mb-12">
+            <span
+              className="inline-block px-4 py-1 rounded-full text-xs font-bold tracking-[0.2em] uppercase mb-6"
+              style={{ background: RED, color: '#fff', boxShadow: `0 8px 30px -10px ${RED}` }}
+            >
+              Tyres
+            </span>
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.02] mb-6 text-white">
+              Find Your <span style={{ color: RED }}>Perfect Tyres</span>
+            </h1>
+            <p className="text-lg sm:text-xl text-zinc-300 max-w-2xl mx-auto mb-2">
+              Compare prices from UK & European tyre specialists. Rim not included — tyres only.
+            </p>
+            <p className="text-xs sm:text-sm text-zinc-500">
+              Compare prices from 5 tyre suppliers · Updated daily
+            </p>
+          </div>
 
-          {/* Glass search card */}
-          <div
-            className="mx-auto max-w-3xl rounded-3xl p-5 sm:p-7 backdrop-blur-xl"
-            style={{
-              background: 'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))',
-              border: `1px solid ${BORDER_2}`,
-              boxShadow: '0 30px 80px -30px rgba(0,0,0,0.8)',
-            }}
-          >
-            <div className="flex items-end justify-center gap-2 sm:gap-3">
-              <div className="flex-1">
-                <label className="block text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-2 font-bold">Width</label>
-                <select
-                  value={width}
-                  onChange={(e) => setWidth(e.target.value)}
-                  className="w-full rounded-xl px-3 py-3 text-white text-base sm:text-lg font-bold text-center focus:outline-none focus:ring-2 focus:ring-red-600"
-                  style={{ background: BG, border: `1px solid ${BORDER}` }}
-                >
-                  {WIDTHS.map((w) => <option key={w} value={w}>{w}</option>)}
-                </select>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+            {/* LEFT: search card */}
+            <div
+              className="rounded-3xl p-6 sm:p-8 backdrop-blur-xl flex flex-col"
+              style={{
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))',
+                border: `1px solid ${BORDER_2}`,
+                boxShadow: '0 30px 80px -30px rgba(0,0,0,0.8)',
+              }}
+            >
+              <div className="text-[10px] uppercase tracking-[0.25em] text-zinc-500 font-bold mb-4">
+                Enter your tyre size
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-zinc-600 pb-3">/</div>
-              <div className="flex-1">
-                <label className="block text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-2 font-bold">Profile</label>
-                <select
-                  value={profile}
-                  onChange={(e) => setProfile(e.target.value)}
-                  className="w-full rounded-xl px-3 py-3 text-white text-base sm:text-lg font-bold text-center focus:outline-none focus:ring-2 focus:ring-red-600"
-                  style={{ background: BG, border: `1px solid ${BORDER}` }}
-                >
-                  {PROFILES.map((p) => <option key={p} value={p}>{p}</option>)}
-                </select>
+              <div className="flex items-end gap-2 sm:gap-3">
+                <div className="flex-1">
+                  <label className="block text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-2 font-bold">Width</label>
+                  <select
+                    value={width}
+                    onChange={(e) => setWidth(e.target.value)}
+                    className="w-full rounded-xl px-3 py-3 text-white text-base sm:text-lg font-bold text-center focus:outline-none focus:ring-2 focus:ring-red-600"
+                    style={{ background: BG, border: `1px solid ${BORDER}` }}
+                  >
+                    {WIDTHS.map((w) => <option key={w} value={w}>{w}</option>)}
+                  </select>
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-zinc-600 pb-3">/</div>
+                <div className="flex-1">
+                  <label className="block text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-2 font-bold">Profile</label>
+                  <select
+                    value={profile}
+                    onChange={(e) => setProfile(e.target.value)}
+                    className="w-full rounded-xl px-3 py-3 text-white text-base sm:text-lg font-bold text-center focus:outline-none focus:ring-2 focus:ring-red-600"
+                    style={{ background: BG, border: `1px solid ${BORDER}` }}
+                  >
+                    {PROFILES.map((p) => <option key={p} value={p}>{p}</option>)}
+                  </select>
+                </div>
+                <div className="text-2xl sm:text-3xl font-black text-zinc-600 pb-3">R</div>
+                <div className="flex-1">
+                  <label className="block text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-2 font-bold">Rim</label>
+                  <select
+                    value={rim}
+                    onChange={(e) => setRim(e.target.value)}
+                    className="w-full rounded-xl px-3 py-3 text-white text-base sm:text-lg font-bold text-center focus:outline-none focus:ring-2 focus:ring-red-600"
+                    style={{ background: BG, border: `1px solid ${BORDER}` }}
+                  >
+                    {RIMS.map((r) => <option key={r} value={r}>{r}</option>)}
+                  </select>
+                </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-zinc-600 pb-3">R</div>
-              <div className="flex-1">
-                <label className="block text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-2 font-bold">Rim</label>
-                <select
-                  value={rim}
-                  onChange={(e) => setRim(e.target.value)}
-                  className="w-full rounded-xl px-3 py-3 text-white text-base sm:text-lg font-bold text-center focus:outline-none focus:ring-2 focus:ring-red-600"
-                  style={{ background: BG, border: `1px solid ${BORDER}` }}
-                >
-                  {RIMS.map((r) => <option key={r} value={r}>{r}</option>)}
-                </select>
+
+              <button
+                onClick={handleSearch}
+                disabled={loading}
+                className="mt-5 w-full rounded-xl px-6 py-4 font-bold text-white text-sm uppercase tracking-[0.2em] transition-all hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
+                style={{ background: RED, boxShadow: `0 12px 30px -10px ${RED}` }}
+              >
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <SearchIcon className="h-4 w-4" />}
+                {loading ? 'Searching...' : 'Search Tyres'}
+              </button>
+
+              <div className="mt-6 flex flex-wrap items-center gap-2">
+                <span className="text-[11px] uppercase tracking-wider text-zinc-500 mr-1">Popular:</span>
+                {POPULAR_SIZES.map((s) => {
+                  const label = `${s.w}/${s.p} R${s.r}`;
+                  const active = s.w === width && s.p === profile && s.r === rim;
+                  return (
+                    <button
+                      key={label}
+                      onClick={() => applyPopular(s)}
+                      className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
+                      style={{
+                        background: active ? RED : 'transparent',
+                        color: active ? '#fff' : '#d4d4d8',
+                        border: `1px solid ${active ? RED : BORDER_2}`,
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            <button
-              onClick={handleSearch}
-              disabled={loading}
-              className="mt-5 w-full rounded-xl px-6 py-4 font-bold text-white text-sm uppercase tracking-[0.2em] transition-all hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
-              style={{ background: RED, boxShadow: `0 12px 30px -10px ${RED}` }}
+            {/* RIGHT: tyre diagram */}
+            <div
+              className="rounded-3xl p-6 sm:p-8 flex flex-col"
+              style={{
+                background: 'linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))',
+                border: `1px solid ${BORDER_2}`,
+                boxShadow: '0 30px 80px -30px rgba(0,0,0,0.8)',
+              }}
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <SearchIcon className="h-4 w-4" />}
-              {loading ? 'Searching...' : 'Search Tyres'}
-            </button>
+              <div className="text-[10px] uppercase tracking-[0.25em] text-zinc-500 font-bold mb-4">
+                How to read your tyre
+              </div>
+              <div className="flex-1 flex items-center justify-center">
+                <svg viewBox="0 0 420 320" className="w-full max-w-md h-auto" xmlns="http://www.w3.org/2000/svg" aria-label="Tyre sidewall diagram">
+                  <defs>
+                    <radialGradient id="tyreRubber" cx="50%" cy="50%" r="50%">
+                      <stop offset="0%" stopColor="#1f1f22" />
+                      <stop offset="60%" stopColor="#161618" />
+                      <stop offset="100%" stopColor="#050505" />
+                    </radialGradient>
+                    <radialGradient id="rimMetal" cx="50%" cy="40%" r="55%">
+                      <stop offset="0%" stopColor="#9ca3af" />
+                      <stop offset="60%" stopColor="#52525b" />
+                      <stop offset="100%" stopColor="#27272a" />
+                    </radialGradient>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                      <path d="M0,0 L10,5 L0,10 z" fill={RED} />
+                    </marker>
+                  </defs>
 
-            <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-              <span className="text-[11px] uppercase tracking-wider text-zinc-500 mr-1">Popular:</span>
-              {POPULAR_SIZES.map((s) => {
-                const label = `${s.w}/${s.p} R${s.r}`;
-                const active = s.w === width && s.p === profile && s.r === rim;
-                return (
-                  <button
-                    key={label}
-                    onClick={() => applyPopular(s)}
-                    className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
-                    style={{
-                      background: active ? RED : 'transparent',
-                      color: active ? '#fff' : '#d4d4d8',
-                      border: `1px solid ${active ? RED : BORDER_2}`,
-                    }}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
+                  {/* Outer tyre */}
+                  <circle cx="210" cy="160" r="135" fill="url(#tyreRubber)" stroke="#27272a" strokeWidth="2" />
+                  {/* Tread pattern (dashes around outer edge) */}
+                  <circle cx="210" cy="160" r="128" fill="none" stroke="#0a0a0a" strokeWidth="14" strokeDasharray="6 4" />
+                  {/* Sidewall ring */}
+                  <circle cx="210" cy="160" r="108" fill="none" stroke="#2a2a2d" strokeWidth="1" />
+                  {/* Rim */}
+                  <circle cx="210" cy="160" r="78" fill="url(#rimMetal)" stroke="#3f3f46" strokeWidth="2" />
+                  {/* Rim spokes */}
+                  {[0, 72, 144, 216, 288].map((deg) => (
+                    <line
+                      key={deg}
+                      x1="210"
+                      y1="160"
+                      x2={210 + 70 * Math.cos((deg * Math.PI) / 180)}
+                      y2={160 + 70 * Math.sin((deg * Math.PI) / 180)}
+                      stroke="#3f3f46"
+                      strokeWidth="6"
+                      strokeLinecap="round"
+                    />
+                  ))}
+                  <circle cx="210" cy="160" r="14" fill="#18181b" stroke="#52525b" strokeWidth="2" />
+
+                  {/* WIDTH arrow — across top */}
+                  <line x1="75" y1="40" x2="345" y2="40" stroke={RED} strokeWidth="1.5" markerStart="url(#arrow)" markerEnd="url(#arrow)" />
+                  <line x1="75" y1="36" x2="75" y2="60" stroke={RED} strokeWidth="1" />
+                  <line x1="345" y1="36" x2="345" y2="60" stroke={RED} strokeWidth="1" />
+                  <text x="210" y="28" textAnchor="middle" fill="#fff" fontSize="13" fontWeight="800" letterSpacing="2">WIDTH</text>
+                  <text x="210" y="55" textAnchor="middle" fill={RED} fontSize="11" fontWeight="700">205 mm</text>
+
+                  {/* PROFILE arrow — right side, between rim and outer */}
+                  <line x1="370" y1="82" x2="370" y2="160" stroke={RED} strokeWidth="1.5" markerStart="url(#arrow)" markerEnd="url(#arrow)" />
+                  <line x1="345" y1="82" x2="375" y2="82" stroke={RED} strokeWidth="1" strokeDasharray="2 2" />
+                  <line x1="288" y1="160" x2="375" y2="160" stroke={RED} strokeWidth="1" strokeDasharray="2 2" />
+                  <text x="385" y="118" fill="#fff" fontSize="13" fontWeight="800" letterSpacing="2">PROFILE</text>
+                  <text x="385" y="134" fill={RED} fontSize="11" fontWeight="700">55%</text>
+
+                  {/* RIM arrow — bottom, across center */}
+                  <line x1="132" y1="280" x2="288" y2="280" stroke={RED} strokeWidth="1.5" markerStart="url(#arrow)" markerEnd="url(#arrow)" />
+                  <line x1="132" y1="240" x2="132" y2="284" stroke={RED} strokeWidth="1" strokeDasharray="2 2" />
+                  <line x1="288" y1="240" x2="288" y2="284" stroke={RED} strokeWidth="1" strokeDasharray="2 2" />
+                  <text x="210" y="304" textAnchor="middle" fill="#fff" fontSize="13" fontWeight="800" letterSpacing="2">RIM</text>
+                  <text x="210" y="318" textAnchor="middle" fill={RED} fontSize="11" fontWeight="700">R16 (16")</text>
+                </svg>
+              </div>
+              <p className="mt-4 text-sm text-zinc-300 text-center leading-relaxed">
+                <span className="font-bold text-white">Reading your tyre:</span>{' '}
+                <span className="font-mono" style={{ color: RED }}>205/55 R16</span> means{' '}
+                <span className="text-white font-semibold">205 mm wide</span>, sidewall is{' '}
+                <span className="text-white font-semibold">55% of width</span>, fits a{' '}
+                <span className="text-white font-semibold">16" rim</span>.
+              </p>
             </div>
           </div>
         </div>
