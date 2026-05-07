@@ -1,16 +1,33 @@
-// Tyres v3 - premium dark redesign
+// Tyres v4 - elite automotive redesign
 import { useState, useMemo, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import SafeImage from "@/components/SafeImage";
-import { supabase } from "@/integrations/supabase/client";
-import { Loader2, ChevronLeft, ChevronRight, Truck } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+  Truck,
+  Heart,
+  Scale,
+  ChevronDown,
+  Search as SearchIcon,
+  Globe,
+} from "lucide-react";
 
 const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305','315','325','335','345','355'];
 const PROFILES = ['30','35','40','45','50','55','60','65','70','75','80'];
 const RIMS = ['13','14','15','16','17','18','19','20','21','22'];
 const ITEMS_PER_PAGE = 24;
+
+const POPULAR_SIZES: { w: string; p: string; r: string }[] = [
+  { w: '205', p: '55', r: '16' },
+  { w: '195', p: '65', r: '15' },
+  { w: '225', p: '45', r: '17' },
+  { w: '235', p: '35', r: '19' },
+];
 
 const FLAG_MAP: Record<string, string> = {
   '4118': '1f1ec-1f1e7',
@@ -23,6 +40,31 @@ const FLAG_MAP: Record<string, string> = {
   '93986': '1f1ee-1f1f9',
   '10747': '1f1ea-1f1ea',
   '66605': '1f1ea-1f1ea',
+};
+
+const BRAND_GRADIENTS: Record<string, string> = {
+  michelin: 'linear-gradient(90deg,#0033a0,#1e88e5)',
+  continental: 'linear-gradient(90deg,#000,#1a1a1a)',
+  goodyear: 'linear-gradient(90deg,#fdd835,#fbc02d)',
+  bridgestone: 'linear-gradient(90deg,#e30613,#b71c1c)',
+  pirelli: 'linear-gradient(90deg,#ffc107,#ff8f00)',
+  dunlop: 'linear-gradient(90deg,#ffd600,#ffab00)',
+  hankook: 'linear-gradient(90deg,#ff6f00,#e65100)',
+  kumho: 'linear-gradient(90deg,#1565c0,#0d47a1)',
+  yokohama: 'linear-gradient(90deg,#c62828,#8e0000)',
+  nokian: 'linear-gradient(90deg,#00897b,#004d40)',
+  toyo: 'linear-gradient(90deg,#ef5350,#c62828)',
+  falken: 'linear-gradient(90deg,#1e88e5,#0d47a1)',
+  vredestein: 'linear-gradient(90deg,#ff7043,#bf360c)',
+  uniroyal: 'linear-gradient(90deg,#1976d2,#0d47a1)',
+  firestone: 'linear-gradient(90deg,#d32f2f,#7f0000)',
+  bfgoodrich: 'linear-gradient(90deg,#212121,#424242)',
+  general: 'linear-gradient(90deg,#37474f,#263238)',
+  avon: 'linear-gradient(90deg,#1e88e5,#1565c0)',
+};
+const brandGradient = (brand?: string) => {
+  const k = (brand || '').toLowerCase().split(/\s+/)[0];
+  return BRAND_GRADIENTS[k] || 'linear-gradient(90deg,#dc2626,#7f1d1d)';
 };
 
 const Flag = ({ id, size = 16 }: { id: string; size?: number }) => {
@@ -50,6 +92,13 @@ interface Tyre {
   image_url?: string;
 }
 
+const RED = '#dc2626';
+const BG = '#0a0a0a';
+const CARD = '#141414';
+const CARD_2 = '#1a1a1a';
+const BORDER = '#262626';
+const BORDER_2 = '#2f2f2f';
+
 const Tyres = () => {
   const [width, setWidth] = useState('205');
   const [profile, setProfile] = useState('55');
@@ -67,6 +116,9 @@ const Tyres = () => {
   const [maxPrice, setMaxPrice] = useState('');
   const [sort, setSort] = useState<'none' | 'asc' | 'desc'>('none');
   const [page, setPage] = useState(1);
+
+  const [wishlist, setWishlist] = useState<Set<string>>(new Set());
+  const [compare, setCompare] = useState<Set<string>>(new Set());
 
   const resetPage = () => setPage(1);
 
@@ -178,83 +230,299 @@ const Tyres = () => {
   const pageItems = displayed.slice((safePage - 1) * ITEMS_PER_PAGE, safePage * ITEMS_PER_PAGE);
 
   const SEASONS: { value: typeof season; label: string; icon: string }[] = [
-    { value: 'all', label: 'All Seasons', icon: '🌐' },
+    { value: 'all', label: 'All', icon: '🌐' },
     { value: 'summer', label: 'Summer', icon: '☀️' },
     { value: 'winter', label: 'Winter', icon: '❄️' },
     { value: 'allseason', label: '4 Season', icon: '🌤️' },
   ];
 
-  const RED = '#dc2626';
-  const BG = '#0a0a0a';
-  const CARD = '#141414';
-  const BORDER = '#262626';
+  const toggleSet = (set: Set<string>, key: string, setter: (s: Set<string>) => void) => {
+    const next = new Set(set);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    setter(next);
+  };
+
+  const initials = (name?: string) =>
+    (name || '?').split(/\s+/).map((s) => s[0]).slice(0, 2).join('').toUpperCase();
+
+  const applyTier = (lo: string, hi: string) => {
+    setMinPrice(lo);
+    setMaxPrice(hi);
+    resetPage();
+    if (searched) {
+      requestAnimationFrame(() => window.scrollTo({ top: 600, behavior: 'smooth' }));
+    } else {
+      handleSearch();
+    }
+  };
+
+  const applyPopular = (s: { w: string; p: string; r: string }) => {
+    setWidth(s.w);
+    setProfile(s.p);
+    setRim(s.r);
+  };
+
+  const pageNumbers = useMemo(() => {
+    const out: number[] = [];
+    const start = Math.max(1, safePage - 2);
+    const end = Math.min(totalPages, start + 4);
+    for (let i = start; i <= end; i++) out.push(i);
+    return out;
+  }, [safePage, totalPages]);
 
   return (
     <div className="min-h-screen" style={{ background: BG, color: '#fff' }}>
       <SEOHead title="Tyre Search | GoPartara" description="Compare tyre prices from 5 trusted suppliers across UK & Europe." />
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 py-12">
-        {/* Hero */}
-        <div className="text-center mb-10">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4 text-white">
-            Find Your <span style={{ color: RED }}>Perfect Tyre</span>
-          </h1>
-          <p className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto">
-            Compare prices from 5 trusted suppliers across UK & Europe
-          </p>
-        </div>
-
-        {/* Search card */}
+      {/* HERO */}
+      <section className="relative overflow-hidden">
         <div
-          className="rounded-2xl p-6 mb-10 shadow-2xl"
-          style={{ background: CARD, border: `1px solid ${BORDER}` }}
-        >
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 items-end">
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-zinc-500 mb-2 font-medium">Width</label>
-              <select
-                value={width}
-                onChange={(e) => setWidth(e.target.value)}
-                className="w-full rounded-lg px-3 py-3 text-white text-sm focus:outline-none focus:ring-2"
-                style={{ background: BG, border: `1px solid ${BORDER}` }}
-              >
-                {WIDTHS.map((w) => <option key={w} value={w}>{w}</option>)}
-              </select>
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(60% 50% at 50% 0%, rgba(220,38,38,0.25) 0%, rgba(220,38,38,0.08) 35%, rgba(0,0,0,0) 70%)',
+          }}
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none opacity-[0.04]"
+          style={{
+            backgroundImage:
+              'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+          }}
+        />
+
+        <div className="relative max-w-6xl mx-auto px-4 pt-16 pb-10 text-center">
+          <span
+            className="inline-block px-4 py-1 rounded-full text-xs font-bold tracking-[0.2em] uppercase mb-6"
+            style={{ background: RED, color: '#fff', boxShadow: `0 8px 30px -10px ${RED}` }}
+          >
+            Tyres
+          </span>
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight leading-[1.05] mb-5 text-white">
+            Find Your <span style={{ color: RED }}>Perfect Tyres</span>
+          </h1>
+          <p className="text-base sm:text-lg text-zinc-300 max-w-2xl mx-auto mb-2">
+            Compare prices from UK & European tyre specialists. Rim not included — tyres only.
+          </p>
+          <p className="text-xs sm:text-sm text-zinc-500 mb-8">
+            Compare prices from 5 tyre suppliers · Updated daily
+          </p>
+
+          {/* Glass search card */}
+          <div
+            className="mx-auto max-w-3xl rounded-3xl p-5 sm:p-7 backdrop-blur-xl"
+            style={{
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))',
+              border: `1px solid ${BORDER_2}`,
+              boxShadow: '0 30px 80px -30px rgba(0,0,0,0.8)',
+            }}
+          >
+            <div className="flex items-end justify-center gap-2 sm:gap-3">
+              <div className="flex-1">
+                <label className="block text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-2 font-bold">Width</label>
+                <select
+                  value={width}
+                  onChange={(e) => setWidth(e.target.value)}
+                  className="w-full rounded-xl px-3 py-3 text-white text-base sm:text-lg font-bold text-center focus:outline-none focus:ring-2 focus:ring-red-600"
+                  style={{ background: BG, border: `1px solid ${BORDER}` }}
+                >
+                  {WIDTHS.map((w) => <option key={w} value={w}>{w}</option>)}
+                </select>
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-zinc-600 pb-3">/</div>
+              <div className="flex-1">
+                <label className="block text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-2 font-bold">Profile</label>
+                <select
+                  value={profile}
+                  onChange={(e) => setProfile(e.target.value)}
+                  className="w-full rounded-xl px-3 py-3 text-white text-base sm:text-lg font-bold text-center focus:outline-none focus:ring-2 focus:ring-red-600"
+                  style={{ background: BG, border: `1px solid ${BORDER}` }}
+                >
+                  {PROFILES.map((p) => <option key={p} value={p}>{p}</option>)}
+                </select>
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-zinc-600 pb-3">R</div>
+              <div className="flex-1">
+                <label className="block text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-2 font-bold">Rim</label>
+                <select
+                  value={rim}
+                  onChange={(e) => setRim(e.target.value)}
+                  className="w-full rounded-xl px-3 py-3 text-white text-base sm:text-lg font-bold text-center focus:outline-none focus:ring-2 focus:ring-red-600"
+                  style={{ background: BG, border: `1px solid ${BORDER}` }}
+                >
+                  {RIMS.map((r) => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
             </div>
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-zinc-500 mb-2 font-medium">Profile</label>
-              <select
-                value={profile}
-                onChange={(e) => setProfile(e.target.value)}
-                className="w-full rounded-lg px-3 py-3 text-white text-sm focus:outline-none"
-                style={{ background: BG, border: `1px solid ${BORDER}` }}
-              >
-                {PROFILES.map((p) => <option key={p} value={p}>{p}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-zinc-500 mb-2 font-medium">Rim</label>
-              <select
-                value={rim}
-                onChange={(e) => setRim(e.target.value)}
-                className="w-full rounded-lg px-3 py-3 text-white text-sm focus:outline-none"
-                style={{ background: BG, border: `1px solid ${BORDER}` }}
-              >
-                {RIMS.map((r) => <option key={r} value={r}>R{r}</option>)}
-              </select>
-            </div>
+
             <button
               onClick={handleSearch}
               disabled={loading}
-              className="w-full rounded-lg px-6 py-3 font-semibold text-white text-sm uppercase tracking-wider transition-all hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg"
-              style={{ background: RED, boxShadow: `0 8px 24px -8px ${RED}` }}
+              className="mt-5 w-full rounded-xl px-6 py-4 font-bold text-white text-sm uppercase tracking-[0.2em] transition-all hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
+              style={{ background: RED, boxShadow: `0 12px 30px -10px ${RED}` }}
             >
-              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <SearchIcon className="h-4 w-4" />}
               {loading ? 'Searching...' : 'Search Tyres'}
             </button>
+
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+              <span className="text-[11px] uppercase tracking-wider text-zinc-500 mr-1">Popular:</span>
+              {POPULAR_SIZES.map((s) => {
+                const label = `${s.w}/${s.p} R${s.r}`;
+                const active = s.w === width && s.p === profile && s.r === rim;
+                return (
+                  <button
+                    key={label}
+                    onClick={() => applyPopular(s)}
+                    className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
+                    style={{
+                      background: active ? RED : 'transparent',
+                      color: active ? '#fff' : '#d4d4d8',
+                      border: `1px solid ${active ? RED : BORDER_2}`,
+                    }}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
+      </section>
+
+      <main className="max-w-7xl mx-auto px-4 pb-20">
+        {/* HOW TO READ TYRE SIZE */}
+        <Collapsible className="mb-10">
+          <div
+            className="rounded-2xl overflow-hidden"
+            style={{ background: CARD, border: `1px solid ${BORDER}` }}
+          >
+            <CollapsibleTrigger className="w-full flex items-center justify-between px-5 py-4 text-left group">
+              <span className="font-semibold text-white flex items-center gap-2">
+                <span>📖</span> How to read your tyre size & EU label
+              </span>
+              <ChevronDown className="h-5 w-5 text-zinc-400 transition-transform group-data-[state=open]:rotate-180" />
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="px-5 pb-6 pt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Diagram */}
+                <div className="rounded-xl p-5" style={{ background: CARD_2, border: `1px solid ${BORDER}` }}>
+                  <div className="text-xs uppercase tracking-wider text-zinc-500 mb-3">Tyre sidewall</div>
+                  <div className="flex items-center justify-center py-4">
+                    <div
+                      className="relative rounded-full flex items-center justify-center"
+                      style={{
+                        width: 200,
+                        height: 200,
+                        background: 'radial-gradient(circle, #1a1a1a 35%, #2a2a2a 36%, #0a0a0a 75%)',
+                        border: '6px solid #2a2a2a',
+                      }}
+                    >
+                      <div
+                        className="absolute rounded-full"
+                        style={{ width: 100, height: 100, background: '#444', border: '4px solid #666' }}
+                      />
+                      <div className="absolute -top-2 right-0 text-[10px] font-bold text-red-500 bg-black/70 px-2 py-0.5 rounded">
+                        205 →
+                      </div>
+                      <div className="absolute -left-12 top-1/2 -translate-y-1/2 text-[10px] font-bold text-yellow-400 bg-black/70 px-2 py-0.5 rounded">
+                        55%
+                      </div>
+                      <div className="absolute -bottom-2 left-0 text-[10px] font-bold text-blue-400 bg-black/70 px-2 py-0.5 rounded">
+                        R16
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-sm text-zinc-300 mt-2 text-center">
+                    <span className="text-red-500 font-bold">205</span>/
+                    <span className="text-yellow-400 font-bold">55</span>{' '}
+                    <span className="text-blue-400 font-bold">R16</span>
+                  </div>
+                  <p className="text-xs text-zinc-500 text-center mt-2">
+                    205mm wide · sidewall is 55% of width · fits a 16″ rim
+                  </p>
+                </div>
+
+                {/* Explanations */}
+                <div className="space-y-3 text-sm">
+                  <div className="rounded-xl p-4" style={{ background: CARD_2, border: `1px solid ${BORDER}` }}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="w-2 h-2 rounded-full bg-red-500" />
+                      <span className="font-bold text-white">Width (205)</span>
+                    </div>
+                    <p className="text-zinc-400">Section width in millimetres, measured sidewall to sidewall.</p>
+                  </div>
+                  <div className="rounded-xl p-4" style={{ background: CARD_2, border: `1px solid ${BORDER}` }}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="w-2 h-2 rounded-full bg-yellow-400" />
+                      <span className="font-bold text-white">Profile (55)</span>
+                    </div>
+                    <p className="text-zinc-400">Aspect ratio — sidewall height as a % of width. Lower = sportier.</p>
+                  </div>
+                  <div className="rounded-xl p-4" style={{ background: CARD_2, border: `1px solid ${BORDER}` }}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="w-2 h-2 rounded-full bg-blue-400" />
+                      <span className="font-bold text-white">Rim (R16)</span>
+                    </div>
+                    <p className="text-zinc-400">Wheel diameter in inches that the tyre fits.</p>
+                  </div>
+
+                  <div className="rounded-xl p-4" style={{ background: CARD_2, border: `1px solid ${BORDER}` }}>
+                    <div className="font-bold text-white mb-2">EU Tyre Label</div>
+                    <ul className="text-zinc-400 space-y-1">
+                      <li>⛽ <span className="text-white font-semibold">Fuel efficiency</span> — A (best) to G</li>
+                      <li>💧 <span className="text-white font-semibold">Wet grip</span> — A (best) to G</li>
+                      <li>🔊 <span className="text-white font-semibold">Noise level</span> — measured in dB</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
+
+        {/* PRICE TIERS */}
+        {!searched && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+            {[
+              { lo: '', hi: '50', name: 'Budget', range: 'Under £50', desc: 'Reliable everyday tyres at the lowest price.', color: '#16a34a' },
+              { lo: '50', hi: '100', name: 'Mid-Range', range: '£50 – £100', desc: 'Balanced performance, comfort and value.', color: '#eab308' },
+              { lo: '100', hi: '', name: 'Premium', range: '£100+', desc: 'Top-tier brands with elite performance.', color: '#ec4899' },
+            ].map((t) => (
+              <button
+                key={t.name}
+                onClick={() => applyTier(t.lo, t.hi)}
+                className="text-left rounded-2xl p-6 transition-all hover:-translate-y-1 group"
+                style={{
+                  background: CARD,
+                  border: `1px solid ${BORDER}`,
+                  boxShadow: `inset 0 1px 0 ${t.color}22`,
+                }}
+              >
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
+                  style={{ background: `${t.color}22`, color: t.color }}
+                >
+                  <Heart className="h-5 w-5" />
+                </div>
+                <div className="text-xs uppercase tracking-wider text-zinc-500 mb-1">{t.name}</div>
+                <div className="text-2xl font-black text-white mb-2">{t.range}</div>
+                <p className="text-sm text-zinc-400 mb-4">{t.desc}</p>
+                <span
+                  className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider"
+                  style={{ color: t.color }}
+                >
+                  Search this tier →
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
 
         {loading && (
           <div className="flex flex-col items-center justify-center py-24 gap-3">
@@ -273,191 +541,265 @@ const Tyres = () => {
 
         {!loading && allResults.length > 0 && (
           <>
-            {/* Supplier LIVE strip */}
+            {/* Supplier strip */}
             {uniqueSuppliers.length > 0 && (
-              <div
-                className="rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-3"
-                style={{ background: CARD, border: `1px solid ${BORDER}` }}
-              >
-                {uniqueSuppliers.map((s) => (
-                  <div key={s.id} className="flex items-center gap-2 text-sm">
-                    <Flag id={s.id} size={18} />
-                    <span className="text-zinc-300 font-medium">{s.name}</span>
-                    <span className="flex items-center gap-1 text-xs text-green-400 font-semibold">
-                      <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              <div className="mb-8">
+                <div className="text-[10px] uppercase tracking-[0.25em] text-zinc-500 mb-3 text-center font-bold">
+                  Prices from these trusted suppliers
+                </div>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  {uniqueSuppliers.map((s) => (
+                    <div
+                      key={s.id}
+                      className="flex items-center gap-2 px-4 py-2 rounded-full"
+                      style={{ background: CARD, border: `1px solid ${BORDER}` }}
+                    >
+                      <Flag id={s.id} size={16} />
+                      <span className="text-sm text-zinc-200 font-medium">{s.name}</span>
+                      <span className="flex items-center gap-1 text-[10px] text-green-400 font-bold uppercase tracking-wider">
+                        <span className="relative flex h-1.5 w-1.5">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500" />
+                        </span>
+                        Live
                       </span>
-                      LIVE
-                    </span>
-                  </div>
-                ))}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
-            {/* Season filter pills */}
-            <div className="flex flex-wrap gap-2 mb-4">
-              {SEASONS.map(({ value, label, icon }) => {
-                const active = season === value;
-                return (
-                  <button
-                    key={value}
-                    onClick={() => { setSeason(value); resetPage(); }}
-                    className="px-5 py-2.5 rounded-full text-sm font-semibold transition-all flex items-center gap-2"
-                    style={{
-                      background: active ? RED : 'transparent',
-                      color: active ? '#fff' : '#d4d4d8',
-                      border: `1px solid ${active ? RED : BORDER}`,
-                    }}
-                  >
-                    <span>{icon}</span> {label}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Supplier filter pills */}
-            {uniqueSuppliers.length > 1 && (
-              <div className="flex flex-wrap gap-2 mb-6">
-                <button
-                  onClick={() => { setSupplier('all'); resetPage(); }}
-                  className="px-4 py-2 rounded-full text-xs font-semibold transition-all"
-                  style={{
-                    background: supplier === 'all' ? RED : 'transparent',
-                    color: supplier === 'all' ? '#fff' : '#d4d4d8',
-                    border: `1px solid ${supplier === 'all' ? RED : BORDER}`,
-                  }}
-                >
-                  All Suppliers
-                </button>
-                {uniqueSuppliers.map((s) => {
-                  const active = supplier === s.id;
+            {/* Sticky filter bar */}
+            <div
+              className="sticky top-16 z-30 -mx-4 px-4 py-3 mb-6 backdrop-blur-xl"
+              style={{
+                background: 'rgba(10,10,10,0.85)',
+                borderTop: `1px solid ${BORDER}`,
+                borderBottom: `1px solid ${BORDER}`,
+              }}
+            >
+              <div className="flex flex-wrap items-center gap-2">
+                {SEASONS.map(({ value, label, icon }) => {
+                  const active = season === value;
                   return (
                     <button
-                      key={s.id}
-                      onClick={() => { setSupplier(s.id); resetPage(); }}
-                      className="px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all"
+                      key={value}
+                      onClick={() => { setSeason(value); resetPage(); }}
+                      className="px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5"
                       style={{
                         background: active ? RED : 'transparent',
                         color: active ? '#fff' : '#d4d4d8',
-                        border: `1px solid ${active ? RED : BORDER}`,
+                        border: `1px solid ${active ? RED : BORDER_2}`,
                       }}
                     >
-                      <Flag id={s.id} /> {s.name}
+                      <span>{icon}</span> {label}
                     </button>
                   );
                 })}
+
+                <div className="w-px h-6 bg-zinc-800 mx-1" />
+
+                {uniqueSuppliers.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => { setSupplier('all'); resetPage(); }}
+                      className="px-3 py-2 rounded-full text-xs font-bold transition-all"
+                      style={{
+                        background: supplier === 'all' ? RED : 'transparent',
+                        color: supplier === 'all' ? '#fff' : '#d4d4d8',
+                        border: `1px solid ${supplier === 'all' ? RED : BORDER_2}`,
+                      }}
+                    >
+                      All
+                    </button>
+                    {uniqueSuppliers.map((s) => {
+                      const active = supplier === s.id;
+                      return (
+                        <button
+                          key={s.id}
+                          onClick={() => { setSupplier(s.id); resetPage(); }}
+                          className="px-3 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all"
+                          style={{
+                            background: active ? RED : 'transparent',
+                            color: active ? '#fff' : '#d4d4d8',
+                            border: `1px solid ${active ? RED : BORDER_2}`,
+                          }}
+                        >
+                          <Flag id={s.id} /> {s.name}
+                        </button>
+                      );
+                    })}
+                    <div className="w-px h-6 bg-zinc-800 mx-1" />
+                  </>
+                )}
+
+                <select
+                  value={brand}
+                  onChange={(e) => { setBrand(e.target.value); resetPage(); }}
+                  className="rounded-full px-3 py-2 text-xs font-semibold text-white"
+                  style={{ background: 'transparent', border: `1px solid ${BORDER_2}` }}
+                >
+                  <option value="all">All Brands</option>
+                  {uniqueBrands.map((b) => <option key={b} value={b}>{b}</option>)}
+                </select>
+
+                <button
+                  onClick={() => { setSort(sort === 'asc' ? 'none' : 'asc'); resetPage(); }}
+                  className="px-3 py-2 rounded-full text-xs font-bold transition-all"
+                  style={{
+                    background: sort === 'asc' ? RED : 'transparent',
+                    color: sort === 'asc' ? '#fff' : '#d4d4d8',
+                    border: `1px solid ${sort === 'asc' ? RED : BORDER_2}`,
+                  }}
+                >
+                  Price ↑
+                </button>
+                <button
+                  onClick={() => { setSort(sort === 'desc' ? 'none' : 'desc'); resetPage(); }}
+                  className="px-3 py-2 rounded-full text-xs font-bold transition-all"
+                  style={{
+                    background: sort === 'desc' ? RED : 'transparent',
+                    color: sort === 'desc' ? '#fff' : '#d4d4d8',
+                    border: `1px solid ${sort === 'desc' ? RED : BORDER_2}`,
+                  }}
+                >
+                  Price ↓
+                </button>
+
+                <input
+                  type="number"
+                  placeholder="£ Min"
+                  value={minPrice}
+                  onChange={(e) => { setMinPrice(e.target.value); resetPage(); }}
+                  className="w-20 rounded-full px-3 py-2 text-xs text-white placeholder-zinc-600"
+                  style={{ background: 'transparent', border: `1px solid ${BORDER_2}` }}
+                />
+                <span className="text-zinc-600 text-xs">—</span>
+                <input
+                  type="number"
+                  placeholder="£ Max"
+                  value={maxPrice}
+                  onChange={(e) => { setMaxPrice(e.target.value); resetPage(); }}
+                  className="w-20 rounded-full px-3 py-2 text-xs text-white placeholder-zinc-600"
+                  style={{ background: 'transparent', border: `1px solid ${BORDER_2}` }}
+                />
+
+                <div className="ml-auto text-xs text-zinc-400">
+                  Showing <span className="text-white font-bold">{displayed.length}</span> results
+                </div>
               </div>
-            )}
-
-            {/* Results header row */}
-            <div
-              className="rounded-2xl p-4 mb-6 flex flex-wrap gap-3 items-center"
-              style={{ background: CARD, border: `1px solid ${BORDER}` }}
-            >
-              <div className="text-sm text-zinc-300 font-medium mr-auto">
-                Showing <span className="text-white font-bold">{pageItems.length}</span> of{' '}
-                <span className="text-white font-bold">{displayed.length}</span> results
-              </div>
-
-              <select
-                value={brand}
-                onChange={(e) => { setBrand(e.target.value); resetPage(); }}
-                className="rounded-lg px-3 py-2 text-sm text-white"
-                style={{ background: BG, border: `1px solid ${BORDER}` }}
-              >
-                <option value="all">All Brands</option>
-                {uniqueBrands.map((b) => <option key={b} value={b}>{b}</option>)}
-              </select>
-
-              <input
-                type="number"
-                placeholder="Min £"
-                value={minPrice}
-                onChange={(e) => { setMinPrice(e.target.value); resetPage(); }}
-                className="w-24 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600"
-                style={{ background: BG, border: `1px solid ${BORDER}` }}
-              />
-              <input
-                type="number"
-                placeholder="Max £"
-                value={maxPrice}
-                onChange={(e) => { setMaxPrice(e.target.value); resetPage(); }}
-                className="w-24 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600"
-                style={{ background: BG, border: `1px solid ${BORDER}` }}
-              />
-
-              <button
-                onClick={() => { setSort(sort === 'asc' ? 'none' : 'asc'); resetPage(); }}
-                className="px-3 py-2 rounded-lg text-xs font-semibold transition-all"
-                style={{
-                  background: sort === 'asc' ? RED : 'transparent',
-                  color: sort === 'asc' ? '#fff' : '#d4d4d8',
-                  border: `1px solid ${sort === 'asc' ? RED : BORDER}`,
-                }}
-              >
-                Price ↑
-              </button>
-              <button
-                onClick={() => { setSort(sort === 'desc' ? 'none' : 'desc'); resetPage(); }}
-                className="px-3 py-2 rounded-lg text-xs font-semibold transition-all"
-                style={{
-                  background: sort === 'desc' ? RED : 'transparent',
-                  color: sort === 'desc' ? '#fff' : '#d4d4d8',
-                  border: `1px solid ${sort === 'desc' ? RED : BORDER}`,
-                }}
-              >
-                Price ↓
-              </button>
             </div>
 
             {/* Tyre grid */}
             <div
               key={`${season}-${supplier}-${brand}-${page}`}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+              className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"
             >
               {pageItems.map((t) => {
                 const priceVal = parseFloat((t.price || '0').replace(/[^0-9.]/g, ''));
                 const freeDelivery = priceVal >= 50;
+                const cardKey = `${t.name}-${t.supplier}-${t.price}`;
+                const isWish = wishlist.has(cardKey);
+                const isCmp = compare.has(cardKey);
                 return (
                   <div
-                    key={`${t.name}-${t.supplier}-${t.price}`}
-                    className="rounded-2xl overflow-hidden flex flex-col group transition-all hover:-translate-y-1"
+                    key={cardKey}
+                    className="group rounded-2xl overflow-hidden flex flex-col transition-all hover:-translate-y-1"
                     style={{
                       background: CARD,
                       border: `1px solid ${BORDER}`,
                     }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLDivElement).style.borderColor = RED;
+                      (e.currentTarget as HTMLDivElement).style.boxShadow = `0 20px 50px -20px ${RED}`;
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLDivElement).style.borderColor = BORDER;
+                      (e.currentTarget as HTMLDivElement).style.boxShadow = 'none';
+                    }}
                   >
-                    <div className="aspect-square flex items-center justify-center p-6" style={{ background: '#1a1a1a' }}>
+                    {/* Brand gradient bar */}
+                    <div className="h-1.5 w-full" style={{ background: brandGradient(t.brand) }} />
+
+                    <div className="relative aspect-square flex items-center justify-center p-6" style={{ background: CARD_2 }}>
                       {t.image_url ? (
                         <SafeImage src={t.image_url} alt={t.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
                       ) : (
                         <div className="text-zinc-700 text-xs">No image</div>
                       )}
+                      <div className="absolute bottom-2 right-3 text-[9px] uppercase tracking-wider text-zinc-600 font-bold">
+                        {t.supplier}
+                      </div>
                     </div>
-                    <div className="p-5 flex-1 flex flex-col gap-2">
+
+                    <div className="p-4 flex-1 flex flex-col gap-2">
                       <h3 className="text-sm font-bold text-white line-clamp-2 leading-snug min-h-[2.5rem]">{t.name}</h3>
-                      {t.brand && <div className="text-xs text-zinc-500 uppercase tracking-wide">{t.brand}</div>}
-                      <div className="text-2xl font-bold mt-1" style={{ color: RED }}>{t.price}</div>
-                      <div className="flex items-center justify-between text-xs text-zinc-400 pt-1">
+
+                      {t.brand && (
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black text-white"
+                            style={{ background: brandGradient(t.brand) }}
+                          >
+                            {initials(t.brand)}
+                          </div>
+                          <span className="text-xs text-zinc-400 uppercase tracking-wide font-semibold">{t.brand}</span>
+                        </div>
+                      )}
+
+                      <div className="text-2xl font-black mt-1" style={{ color: RED }}>{t.price}</div>
+                      <div className="text-[10px] text-zinc-500 uppercase tracking-wider">Tyre only · Rim not included</div>
+
+                      <div className="flex items-center justify-between text-xs text-zinc-400 pt-2 border-t border-zinc-800/60">
                         <div className="flex items-center gap-1.5">
                           <Flag id={String(t.advertiserId)} /> {t.supplier}
                         </div>
                         {freeDelivery && (
                           <span className="flex items-center gap-1 text-green-400 font-semibold">
-                            <Truck className="h-3 w-3" /> Free delivery
+                            <Truck className="h-3 w-3" /> Free
                           </span>
                         )}
                       </div>
-                      <a
-                        href={t.url}
-                        target="_blank"
-                        rel="noopener noreferrer sponsored"
-                        className="mt-3 inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-sm font-bold text-white transition-all hover:opacity-90"
-                        style={{ background: RED, boxShadow: `0 4px 14px -4px ${RED}` }}
-                      >
-                        Buy Now →
-                      </a>
+
+                      <div className="flex items-center gap-1 text-[10px] text-zinc-500">
+                        <Globe className="h-3 w-3" /> Ships to UK + 35 countries
+                      </div>
+
+                      <div className="flex items-center gap-2 mt-2">
+                        <button
+                          onClick={() => toggleSet(compare, cardKey, setCompare)}
+                          aria-label="Compare"
+                          className="p-2 rounded-lg transition-all"
+                          style={{
+                            background: isCmp ? RED : 'transparent',
+                            color: isCmp ? '#fff' : '#a1a1aa',
+                            border: `1px solid ${isCmp ? RED : BORDER_2}`,
+                          }}
+                        >
+                          <Scale className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => toggleSet(wishlist, cardKey, setWishlist)}
+                          aria-label="Wishlist"
+                          className="p-2 rounded-lg transition-all"
+                          style={{
+                            background: isWish ? RED : 'transparent',
+                            color: isWish ? '#fff' : '#a1a1aa',
+                            border: `1px solid ${isWish ? RED : BORDER_2}`,
+                          }}
+                        >
+                          <Heart className="h-4 w-4" fill={isWish ? '#fff' : 'none'} />
+                        </button>
+                        <a
+                          href={t.url}
+                          target="_blank"
+                          rel="noopener noreferrer sponsored"
+                          className="flex-1 inline-flex items-center justify-center px-3 py-2 rounded-lg text-xs font-bold text-white transition-all hover:opacity-90"
+                          style={{ background: RED, boxShadow: `0 6px 16px -6px ${RED}` }}
+                        >
+                          Buy →
+                        </a>
+                      </div>
                     </div>
                   </div>
                 );
@@ -465,26 +807,47 @@ const Tyres = () => {
             </div>
 
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-3 mt-10">
+              <div className="flex items-center justify-center gap-2 mt-12 flex-wrap">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={safePage === 1}
-                  className="flex items-center gap-1 px-5 py-2.5 rounded-lg text-sm font-semibold text-white disabled:opacity-30 transition-opacity"
+                  className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-30 transition-opacity"
                   style={{ background: CARD, border: `1px solid ${BORDER}` }}
                 >
                   <ChevronLeft className="h-4 w-4" /> Previous
                 </button>
-                <span className="text-sm text-zinc-400 px-4">
-                  Page <span className="text-white font-bold">{safePage}</span> of <span className="text-white font-bold">{totalPages}</span>
-                </span>
+
+                {pageNumbers.map((n) => {
+                  const active = n === safePage;
+                  return (
+                    <button
+                      key={n}
+                      onClick={() => setPage(n)}
+                      className="w-9 h-9 rounded-lg text-xs font-bold transition-all"
+                      style={{
+                        background: active ? RED : CARD,
+                        color: '#fff',
+                        border: `1px solid ${active ? RED : BORDER}`,
+                      }}
+                    >
+                      {n}
+                    </button>
+                  );
+                })}
+
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={safePage === totalPages}
-                  className="flex items-center gap-1 px-5 py-2.5 rounded-lg text-sm font-semibold text-white disabled:opacity-30 transition-opacity"
+                  className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-30 transition-opacity"
                   style={{ background: CARD, border: `1px solid ${BORDER}` }}
                 >
                   Next <ChevronRight className="h-4 w-4" />
                 </button>
+
+                <span className="w-full sm:w-auto text-center text-xs text-zinc-500 sm:ml-3">
+                  Page <span className="text-white font-bold">{safePage}</span> of{' '}
+                  <span className="text-white font-bold">{totalPages}</span>
+                </span>
               </div>
             )}
           </>
