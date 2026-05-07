@@ -41,23 +41,43 @@ serve(async (req) => {
     }
 
     // Helper: query cache and shape response (optionally filter by advertiserId/feed_id)
+    const SUPPLIER_FEED_IDS = ['4118', '12715', '10499', '12716', '10747']
     const queryCache = async () => {
-      let q = supabase
-        .from('tyre_products_cache')
-        .select('feed_id, supplier_name, product_name, price, currency, url, brand, category, image_url, cached_at')
-        .eq('tyre_size', tyreSize)
+      const cols = 'feed_id, supplier_name, product_name, price, currency, url, brand, category, image_url, cached_at'
 
+      let rows: any[] = []
       if (advertiserId) {
         const actualId = String(advertiserId).replace('debug_', '')
-        q = q.eq('feed_id', actualId)
+        const { data, error } = await supabase
+          .from('tyre_products_cache')
+          .select(cols)
+          .eq('tyre_size', tyreSize)
+          .eq('feed_id', actualId)
+          .limit(200)
+        if (error) {
+          console.error('Cache query error:', error)
+          return { rows: [] as any[], oldest: 0 }
+        }
+        rows = data || []
+      } else {
+        const results = await Promise.all(
+          SUPPLIER_FEED_IDS.map((fid) =>
+            supabase
+              .from('tyre_products_cache')
+              .select(cols)
+              .eq('tyre_size', tyreSize)
+              .eq('feed_id', fid)
+              .limit(40)
+          )
+        )
+        for (const { data, error } of results) {
+          if (error) {
+            console.error('Cache query error:', error)
+            continue
+          }
+          if (data) rows.push(...data)
+        }
       }
-
-      const { data, error } = await q.limit(200)
-      if (error) {
-        console.error('Cache query error:', error)
-        return { rows: [] as any[], oldest: 0 }
-      }
-      const rows = data || []
       let oldest = Date.now()
       for (const r of rows) {
         const t = new Date(r.cached_at).getTime()
