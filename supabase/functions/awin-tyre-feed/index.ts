@@ -103,7 +103,7 @@ serve(async (req) => {
     }
 
     // 1) Check cache
-    let { rows, oldest } = await queryCache()
+    let { rows, oldest, totalCount } = await queryCache()
 
     // 2) If empty, check if whole cache is empty -> warming response, trigger background refresh
     if (rows.length === 0) {
@@ -152,18 +152,15 @@ serve(async (req) => {
 
     const suppliers = Array.from(new Set(products.map((p) => p.supplier_name)))
 
-    const total = products.length
+    const total = totalCount
     const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
-    const currentPage = Math.min(page, totalPages)
-    const start = (currentPage - 1) * PAGE_SIZE
-    const pageProducts = products.slice(start, start + PAGE_SIZE)
 
     return new Response(
       JSON.stringify({
-        products: pageProducts,
+        products,
         suppliers,
         total,
-        page: currentPage,
+        page: 1,
         totalPages,
         pageSize: PAGE_SIZE,
         cached: true,
