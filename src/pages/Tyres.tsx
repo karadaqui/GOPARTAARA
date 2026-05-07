@@ -259,7 +259,11 @@ const Tyres = () => {
           </div>
         )}
 
-        {!loading && searched && allResults.length === 0 && (
+        {!loading && searchError && (
+          <div className="text-center py-20 text-destructive">{searchError}</div>
+        )}
+
+        {!loading && !searchError && searched && allResults.length === 0 && (
           <div className="text-center py-20 text-muted-foreground">No tyres found for {width}/{profile} R{rim}.</div>
         )}
 
