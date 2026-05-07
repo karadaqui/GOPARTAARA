@@ -87,15 +87,15 @@ async function fetchFeedList(): Promise<Record<string, FeedMeta>> {
       if (!list.includes('merchant_category')) list.push('merchant_category')
       return `/columns/${list.join(',')}/`
     })
-    // Tyres UK feeds put the model name in `name` and the size in `desc`.
+    // Feeds where `name` contains the model and `desc` contains size or marketing blurb.
     // For these, use `name` as product_name (useDesc=false).
-    const TYRES_UK_FEEDS = new Set(['12715', '93988'])
+    const NAME_AS_PRODUCT_FEEDS = new Set(['12715', '93988', '93986', '23179', '10499', '66605'])
     out[feedId] = {
       feedId,
       cur: detectCurrency(region, language),
       supplier: advName,
       url,
-      useDesc: !TYRES_UK_FEEDS.has(feedId),
+      useDesc: !NAME_AS_PRODUCT_FEEDS.has(feedId),
     }
   }
   console.log(`Matched ${Object.keys(out).length} tyre feeds:`, Object.values(out).map(f => `${f.feedId}=${f.supplier}`).join(', '))
