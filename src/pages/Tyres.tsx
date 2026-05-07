@@ -531,114 +531,103 @@ const Tyres = () => {
                 borderBottom: `1px solid ${BORDER}`,
               }}
             >
-              <div className="flex flex-wrap items-center gap-2">
-                {SEASONS.map(({ value, label, icon }) => {
-                  const active = season === value;
-                  return (
-                    <button
-                      key={value}
-                      onClick={() => { setSeason(value); resetPage(); }}
-                      className="px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5"
-                      style={{
-                        background: active ? RED : 'transparent',
-                        color: active ? '#fff' : '#d4d4d8',
-                        border: `1px solid ${active ? RED : BORDER_2}`,
-                      }}
-                    >
-                      <span>{icon}</span> {label}
-                    </button>
-                  );
-                })}
+              <div
+                className="flex items-center gap-2 flex-nowrap overflow-x-auto rounded-xl px-3 py-2"
+                style={{ background: CARD, border: `1px solid ${BORDER}` }}
+              >
+                <div className="flex items-center gap-1 shrink-0">
+                  {SEASONS.map(({ value, label, icon }) => {
+                    const active = season === value;
+                    return (
+                      <button
+                        key={value}
+                        onClick={() => { setSeason(value); resetPage(); }}
+                        className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1"
+                        style={{
+                          background: active ? RED : 'transparent',
+                          color: active ? '#fff' : '#d4d4d8',
+                          border: `1px solid ${active ? RED : 'transparent'}`,
+                        }}
+                      >
+                        {value !== 'all' && <span>{icon}</span>} {label}
+                      </button>
+                    );
+                  })}
+                </div>
 
-                <div className="w-px h-6 bg-zinc-800 mx-1" />
+                <div className="w-px h-6 bg-zinc-800 shrink-0" />
 
-                {uniqueSuppliers.length > 1 && (
-                  <>
-                    <button
-                      onClick={() => { setSupplier('all'); resetPage(); }}
-                      className="px-3 py-2 rounded-full text-xs font-bold transition-all"
-                      style={{
-                        background: supplier === 'all' ? RED : 'transparent',
-                        color: supplier === 'all' ? '#fff' : '#d4d4d8',
-                        border: `1px solid ${supplier === 'all' ? RED : BORDER_2}`,
-                      }}
-                    >
-                      All
-                    </button>
-                    {uniqueSuppliers.map((s) => {
-                      const active = supplier === s.id;
-                      return (
-                        <button
-                          key={s.id}
-                          onClick={() => { setSupplier(s.id); resetPage(); }}
-                          className="px-3 py-2 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all"
-                          style={{
-                            background: active ? RED : 'transparent',
-                            color: active ? '#fff' : '#d4d4d8',
-                            border: `1px solid ${active ? RED : BORDER_2}`,
-                          }}
-                        >
-                          <Flag id={s.id} /> {s.name}
-                        </button>
-                      );
-                    })}
-                    <div className="w-px h-6 bg-zinc-800 mx-1" />
-                  </>
-                )}
+                <select
+                  value={supplier}
+                  onChange={(e) => { setSupplier(e.target.value); resetPage(); }}
+                  className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white shrink-0 cursor-pointer"
+                  style={{ background: 'transparent', border: `1px solid ${BORDER_2}` }}
+                >
+                  <option value="all">All Suppliers</option>
+                  {uniqueSuppliers.map((s) => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </select>
 
                 <select
                   value={brand}
                   onChange={(e) => { setBrand(e.target.value); resetPage(); }}
-                  className="rounded-full px-3 py-2 text-xs font-semibold text-white"
+                  className="rounded-lg px-3 py-1.5 text-xs font-semibold text-white shrink-0 cursor-pointer max-w-[140px]"
                   style={{ background: 'transparent', border: `1px solid ${BORDER_2}` }}
                 >
                   <option value="all">All Brands</option>
                   {uniqueBrands.map((b) => <option key={b} value={b}>{b}</option>)}
                 </select>
 
-                <button
-                  onClick={() => { setSort(sort === 'asc' ? 'none' : 'asc'); resetPage(); }}
-                  className="px-3 py-2 rounded-full text-xs font-bold transition-all"
-                  style={{
-                    background: sort === 'asc' ? RED : 'transparent',
-                    color: sort === 'asc' ? '#fff' : '#d4d4d8',
-                    border: `1px solid ${sort === 'asc' ? RED : BORDER_2}`,
-                  }}
-                >
-                  Price ↑
-                </button>
-                <button
-                  onClick={() => { setSort(sort === 'desc' ? 'none' : 'desc'); resetPage(); }}
-                  className="px-3 py-2 rounded-full text-xs font-bold transition-all"
-                  style={{
-                    background: sort === 'desc' ? RED : 'transparent',
-                    color: sort === 'desc' ? '#fff' : '#d4d4d8',
-                    border: `1px solid ${sort === 'desc' ? RED : BORDER_2}`,
-                  }}
-                >
-                  Price ↓
-                </button>
+                <div className="flex items-center gap-1 shrink-0">
+                  <input
+                    type="number"
+                    placeholder="£ Min"
+                    value={minPrice}
+                    onChange={(e) => { setMinPrice(e.target.value); resetPage(); }}
+                    className="w-16 rounded-lg px-2 py-1.5 text-xs text-white placeholder-zinc-600"
+                    style={{ background: 'transparent', border: `1px solid ${BORDER_2}` }}
+                  />
+                  <span className="text-zinc-600 text-xs">—</span>
+                  <input
+                    type="number"
+                    placeholder="£ Max"
+                    value={maxPrice}
+                    onChange={(e) => { setMaxPrice(e.target.value); resetPage(); }}
+                    className="w-16 rounded-lg px-2 py-1.5 text-xs text-white placeholder-zinc-600"
+                    style={{ background: 'transparent', border: `1px solid ${BORDER_2}` }}
+                  />
+                </div>
 
-                <input
-                  type="number"
-                  placeholder="£ Min"
-                  value={minPrice}
-                  onChange={(e) => { setMinPrice(e.target.value); resetPage(); }}
-                  className="w-20 rounded-full px-3 py-2 text-xs text-white placeholder-zinc-600"
-                  style={{ background: 'transparent', border: `1px solid ${BORDER_2}` }}
-                />
-                <span className="text-zinc-600 text-xs">—</span>
-                <input
-                  type="number"
-                  placeholder="£ Max"
-                  value={maxPrice}
-                  onChange={(e) => { setMaxPrice(e.target.value); resetPage(); }}
-                  className="w-20 rounded-full px-3 py-2 text-xs text-white placeholder-zinc-600"
-                  style={{ background: 'transparent', border: `1px solid ${BORDER_2}` }}
-                />
+                <div className="w-px h-6 bg-zinc-800 shrink-0" />
 
-                <div className="ml-auto text-xs text-zinc-400">
-                  Showing <span className="text-white font-bold">{displayed.length}</span> results
+                <div className="flex items-center gap-1 shrink-0">
+                  <button
+                    onClick={() => { setSort(sort === 'asc' ? 'none' : 'asc'); resetPage(); }}
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                    style={{
+                      background: sort === 'asc' ? RED : 'transparent',
+                      color: sort === 'asc' ? '#fff' : '#d4d4d8',
+                      border: `1px solid ${sort === 'asc' ? RED : BORDER_2}`,
+                    }}
+                  >
+                    ↑ Price
+                  </button>
+                  <button
+                    onClick={() => { setSort(sort === 'desc' ? 'none' : 'desc'); resetPage(); }}
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                    style={{
+                      background: sort === 'desc' ? RED : 'transparent',
+                      color: sort === 'desc' ? '#fff' : '#d4d4d8',
+                      border: `1px solid ${sort === 'desc' ? RED : BORDER_2}`,
+                    }}
+                  >
+                    ↓ Price
+                  </button>
+                </div>
+
+                <div className="ml-auto text-xs text-zinc-500 shrink-0 whitespace-nowrap pr-1">
+                  Showing <span className="text-zinc-300 font-semibold">{displayed.length}</span> results
                 </div>
               </div>
             </div>
