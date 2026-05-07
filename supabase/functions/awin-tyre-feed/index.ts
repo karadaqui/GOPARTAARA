@@ -41,7 +41,7 @@ serve(async (req) => {
     }
 
     // Helper: query cache and shape response (optionally filter by advertiserId/feed_id)
-    const SUPPLIER_FEED_IDS = ['4118', '12715', '10499', '12716', '10747']
+    const SUPPLIER_FEED_IDS = ['4118', '12715', '10499', '12716', '93986', '66605']
     const queryCache = async () => {
       const cols = 'feed_id, supplier_name, product_name, price, currency, url, brand, category, image_url, cached_at'
 
