@@ -19,6 +19,15 @@ serve(async (req) => {
 
   try {
     const body = await req.json().catch(() => ({}))
+
+    // Warmup ping — return immediately to keep function hot
+    if (body && body.warmup === true) {
+      return new Response(
+        JSON.stringify({ products: [], warmup: true }),
+        { headers: { ...cors, 'Content-Type': 'application/json' } }
+      )
+    }
+
     const { width, profile, rim, advertiserId } = body
 
     const rimNum = String(rim || '').replace(/^R/i, '')

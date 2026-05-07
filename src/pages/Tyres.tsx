@@ -1,5 +1,5 @@
 // Tyres v2.1 - filter fix - cache bust
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -73,6 +73,19 @@ const Tyres = () => {
   const [page, setPage] = useState(1);
 
   const resetPage = () => setPage(1);
+
+  // Warm up the edge function on page load to avoid cold-start delay on first search
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/awin-tyre-feed`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      },
+      body: JSON.stringify({ warmup: true }),
+    }).catch(() => {});
+  }, []);
 
   const handleSearch = async () => {
     setLoading(true);
