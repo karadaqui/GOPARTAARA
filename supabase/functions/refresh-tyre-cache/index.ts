@@ -218,7 +218,7 @@ serve(async (req) => {
 
             if (!linkUrl || !linkUrl.startsWith('http') || price <= 0) continue
 
-            const size = extractSize(name) || (feed.useDesc ? extractSize(desc) : null)
+            const size = extractSize(name) || extractSize(desc)
             if (!size) continue
 
             const displayName = feed.useDesc && desc ? desc : name
