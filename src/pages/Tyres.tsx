@@ -339,7 +339,7 @@ const Tyres = () => {
               console.log('WINTER TEST on first item:', /winter|wintrac|wintercontact|ultragr|nordic|ice/i.test(displayed[0]?.name || ''));
               return null;
             })()}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div key={`${season}-${supplier}-${brand}-${page}`} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {pageItems.map((t) => (
                 <div key={`${t.name}-${t.supplier}-${t.price}`} className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col">
                   <div className="aspect-square bg-muted flex items-center justify-center">
