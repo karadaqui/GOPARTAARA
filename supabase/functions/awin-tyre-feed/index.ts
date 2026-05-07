@@ -76,7 +76,6 @@ serve(async (req) => {
               .select(cols)
               .eq('tyre_size', tyreSize)
               .eq('feed_id', fid)
-              .limit(500)
           )
         )
         for (const { data, error } of results) {
@@ -117,7 +116,7 @@ serve(async (req) => {
     }
 
     // Map to expected response shape
-    const products = rows.map((r) => ({
+    const mapped = rows.map((r) => ({
       id: `${r.feed_id}-${r.product_name?.slice(0, 24)}`,
       name: r.product_name,
       title: r.product_name,
@@ -132,10 +131,19 @@ serve(async (req) => {
       image_url: r.image_url || r.image || '',
     }))
 
+    // Deduplicate by URL
+    const seen = new Set<string>()
+    const products = mapped.filter((p) => {
+      if (!p.url) return true
+      if (seen.has(p.url)) return false
+      seen.add(p.url)
+      return true
+    })
+
     const suppliers = Array.from(new Set(products.map((p) => p.supplier_name)))
 
     return new Response(
-      JSON.stringify({ products, suppliers, cached: true }),
+      JSON.stringify({ products, suppliers, total: products.length, cached: true }),
       { headers: { ...cors, 'Content-Type': 'application/json' } }
     )
   } catch (e: any) {
