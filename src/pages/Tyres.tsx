@@ -810,6 +810,32 @@ const Tyres = () => {
                 </span>
               </div>
             )}
+
+            {serverTotalPages > 1 && (
+              <div className="flex items-center justify-center gap-2 mt-6 flex-wrap">
+                <button
+                  onClick={() => goToServerPage(serverPage - 1)}
+                  disabled={serverPage === 1 || loading}
+                  className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-30"
+                  style={{ background: CARD, border: `1px solid ${BORDER}` }}
+                >
+                  <ChevronLeft className="h-4 w-4" /> Prev batch
+                </button>
+                <span className="text-xs text-zinc-400">
+                  Batch <span className="text-white font-bold">{serverPage}</span> of{' '}
+                  <span className="text-white font-bold">{serverTotalPages}</span>
+                  {' '}({serverTotal.toLocaleString()} total)
+                </span>
+                <button
+                  onClick={() => goToServerPage(serverPage + 1)}
+                  disabled={serverPage === serverTotalPages || loading}
+                  className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-30"
+                  style={{ background: CARD, border: `1px solid ${BORDER}` }}
+                >
+                  Next batch <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
           </>
         )}
       </main>
