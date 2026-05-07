@@ -86,7 +86,7 @@ interface Tyre {
   name: string;
   price: string;
   brand?: string;
-  supplier: string;
+  supplier_name: string;
   advertiserId: string | number;
   url: string;
   image_url?: string;
@@ -166,7 +166,7 @@ const Tyres = () => {
     const map = new Map<string, string>();
     allResults.forEach((t) => {
       const id = String(t.advertiserId);
-      if (!map.has(id)) map.set(id, t.supplier);
+      if (!map.has(id)) map.set(id, t.supplier_name);
     });
     return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
   }, [allResults]);
@@ -640,7 +640,7 @@ const Tyres = () => {
               {pageItems.map((t) => {
                 const priceVal = parseFloat((t.price || '0').replace(/[^0-9.]/g, ''));
                 const freeDelivery = priceVal >= 50;
-                const cardKey = `${t.name}-${t.supplier}-${t.price}`;
+                const cardKey = `${t.name}-${t.supplier_name}-${t.price}`;
                 const isWish = wishlist.has(cardKey);
                 const isCmp = compare.has(cardKey);
                 const winter = isWinterTyre(t.name || '');
@@ -697,7 +697,7 @@ const Tyres = () => {
                       <div className="flex items-center justify-between text-[10px] text-zinc-400 pt-1.5 border-t border-zinc-800/60">
                         <div className="flex items-center gap-1">
                           <Flag id={String(t.advertiserId)} />
-                          <span className="truncate max-w-[60px]">{t.supplier}</span>
+                          <span className="truncate max-w-[60px]">{t.supplier_name}</span>
                         </div>
                         {freeDelivery && (
                           <span className="flex items-center gap-0.5 text-green-400 font-semibold">
