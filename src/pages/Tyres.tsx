@@ -486,43 +486,6 @@ const Tyres = () => {
           </div>
         </Collapsible>
 
-        {/* PRICE TIERS */}
-        {!searched && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-            {[
-              { lo: '', hi: '50', name: 'Budget', range: 'Under £50', desc: 'Reliable everyday tyres at the lowest price.', color: '#16a34a' },
-              { lo: '50', hi: '100', name: 'Mid-Range', range: '£50 – £100', desc: 'Balanced performance, comfort and value.', color: '#eab308' },
-              { lo: '100', hi: '', name: 'Premium', range: '£100+', desc: 'Top-tier brands with elite performance.', color: '#ec4899' },
-            ].map((t) => (
-              <button
-                key={t.name}
-                onClick={() => applyTier(t.lo, t.hi)}
-                className="text-left rounded-2xl p-6 transition-all hover:-translate-y-1 group"
-                style={{
-                  background: CARD,
-                  border: `1px solid ${BORDER}`,
-                  boxShadow: `inset 0 1px 0 ${t.color}22`,
-                }}
-              >
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
-                  style={{ background: `${t.color}22`, color: t.color }}
-                >
-                  <Heart className="h-5 w-5" />
-                </div>
-                <div className="text-xs uppercase tracking-wider text-zinc-500 mb-1">{t.name}</div>
-                <div className="text-2xl font-black text-white mb-2">{t.range}</div>
-                <p className="text-sm text-zinc-400 mb-4">{t.desc}</p>
-                <span
-                  className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider"
-                  style={{ color: t.color }}
-                >
-                  Search this tier →
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
 
         {loading && (
           <div className="flex flex-col items-center justify-center py-24 gap-3">
