@@ -1,11 +1,11 @@
-// Tyres v2.1 - filter fix - cache bust
+// Tyres v3 - premium dark redesign
 import { useState, useMemo, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import SafeImage from "@/components/SafeImage";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight, Truck } from "lucide-react";
 
 const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305','315','325','335','345','355'];
 const PROFILES = ['30','35','40','45','50','55','60','65','70','75','80'];
@@ -25,14 +25,14 @@ const FLAG_MAP: Record<string, string> = {
   '66605': '1f1ea-1f1ea',
 };
 
-const Flag = ({ id }: { id: string }) => {
+const Flag = ({ id, size = 16 }: { id: string; size?: number }) => {
   const code = FLAG_MAP[id] || '1f30d';
   return (
     <img
       src={`https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${code}.png`}
       alt=""
-      width={16}
-      height={16}
+      width={size}
+      height={size}
       className="inline-block"
       loading="lazy"
     />
@@ -49,10 +49,6 @@ interface Tyre {
   url: string;
   image_url?: string;
 }
-
-const isWinter = (t: Tyre) => /winter|wintrac|wintercontact|ultragr|nordic|ice/i.test(t.name);
-const isAllSeason = (t: Tyre) => /all.?season|4s |quadraxer|solus vier/i.test(t.name);
-const priceNum = (p: string) => parseFloat((p || '0').replace(/[^0-9.]/g, '')) || 0;
 
 const Tyres = () => {
   const [width, setWidth] = useState('205');
@@ -74,7 +70,6 @@ const Tyres = () => {
 
   const resetPage = () => setPage(1);
 
-  // Warm up the edge function on page load to avoid cold-start delay on first search
   useEffect(() => {
     fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/awin-tyre-feed`, {
       method: 'POST',
@@ -166,249 +161,327 @@ const Tyres = () => {
 
   if (sort === 'none') {
     if (season === 'winter') {
-      displayed = [...displayed].sort((a, b) => {
-        const aM = isWinterTyre(a.name || '');
-        const bM = isWinterTyre(b.name || '');
-        if (aM && !bM) return -1;
-        if (!aM && bM) return 1;
-        return 0;
-      });
+      displayed = [...displayed].sort((a, b) => Number(isWinterTyre(b.name || '')) - Number(isWinterTyre(a.name || '')));
     } else if (season === 'summer') {
       displayed = [...displayed].sort((a, b) => {
         const aM = !isWinterTyre(a.name || '') && !isAllSeasonTyre(a.name || '');
         const bM = !isWinterTyre(b.name || '') && !isAllSeasonTyre(b.name || '');
-        if (aM && !bM) return -1;
-        if (!aM && bM) return 1;
-        return 0;
+        return Number(bM) - Number(aM);
       });
     } else if (season === 'allseason') {
-      displayed = [...displayed].sort((a, b) => {
-        const aM = isAllSeasonTyre(a.name || '');
-        const bM = isAllSeasonTyre(b.name || '');
-        if (aM && !bM) return -1;
-        if (!aM && bM) return 1;
-        return 0;
-      });
+      displayed = [...displayed].sort((a, b) => Number(isAllSeasonTyre(b.name || '')) - Number(isAllSeasonTyre(a.name || '')));
     }
   }
 
-  const totalPages = Math.max(1, Math.ceil(displayed.length / 24));
+  const totalPages = Math.max(1, Math.ceil(displayed.length / ITEMS_PER_PAGE));
   const safePage = Math.min(page, totalPages);
-  const pageItems = displayed.slice((safePage - 1) * 24, safePage * 24);
+  const pageItems = displayed.slice((safePage - 1) * ITEMS_PER_PAGE, safePage * ITEMS_PER_PAGE);
 
-  const SeasonBtn = ({ value, label }: { value: typeof season; label: string }) => (
-    <button
-      onClick={() => {
-        setSeason(value);
-        setPage(1);
-        if (value === 'summer') console.log('SET SUMMER');
-        else if (value === 'winter') console.log('SET WINTER');
-        else if (value === 'allseason') console.log('SET ALLSEASON');
-        else console.log('SET ALL');
-      }}
-      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-        season === value ? 'bg-primary text-primary-foreground' : 'bg-card text-foreground border border-border hover:bg-muted'
-      }`}
-    >
-      {label}
-    </button>
-  );
+  const SEASONS: { value: typeof season; label: string; icon: string }[] = [
+    { value: 'all', label: 'All Seasons', icon: '🌐' },
+    { value: 'summer', label: 'Summer', icon: '☀️' },
+    { value: 'winter', label: 'Winter', icon: '❄️' },
+    { value: 'allseason', label: '4 Season', icon: '🌤️' },
+  ];
 
-  console.log('pageItems[0]:', pageItems[0]?.name);
-  console.log('pageItems[1]:', pageItems[1]?.name);
-  console.log('pageItems[2]:', pageItems[2]?.name);
-  console.log('displayed.length:', displayed.length);
-  console.log('season:', season);
-  console.log('page:', page);
+  const RED = '#dc2626';
+  const BG = '#0a0a0a';
+  const CARD = '#141414';
+  const BORDER = '#262626';
 
   return (
-    <div className="min-h-screen bg-background">
-      <SEOHead title="Tyre Search | GoPartara" description="Compare tyre prices across major suppliers." />
+    <div className="min-h-screen" style={{ background: BG, color: '#fff' }}>
+      <SEOHead title="Tyre Search | GoPartara" description="Compare tyre prices from 5 trusted suppliers across UK & Europe." />
       <Navbar />
 
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6 text-foreground">Find Tyres</h1>
+      <main className="max-w-7xl mx-auto px-4 py-12">
+        {/* Hero */}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mb-4 text-white">
+            Find Your <span style={{ color: RED }}>Perfect Tyre</span>
+          </h1>
+          <p className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto">
+            Compare prices from 5 trusted suppliers across UK & Europe
+          </p>
+        </div>
 
-        {/* Search */}
-        <div className="bg-card border border-border rounded-2xl p-4 mb-6">
-          <div className="flex flex-wrap gap-3 items-end">
+        {/* Search card */}
+        <div
+          className="rounded-2xl p-6 mb-10 shadow-2xl"
+          style={{ background: CARD, border: `1px solid ${BORDER}` }}
+        >
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 items-end">
             <div>
-              <label className="block text-xs text-muted-foreground mb-1">Width</label>
-              <select value={width} onChange={(e) => setWidth(e.target.value)} className="bg-background border border-border rounded-lg px-3 py-2 text-foreground">
+              <label className="block text-xs uppercase tracking-wider text-zinc-500 mb-2 font-medium">Width</label>
+              <select
+                value={width}
+                onChange={(e) => setWidth(e.target.value)}
+                className="w-full rounded-lg px-3 py-3 text-white text-sm focus:outline-none focus:ring-2"
+                style={{ background: BG, border: `1px solid ${BORDER}` }}
+              >
                 {WIDTHS.map((w) => <option key={w} value={w}>{w}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs text-muted-foreground mb-1">Profile</label>
-              <select value={profile} onChange={(e) => setProfile(e.target.value)} className="bg-background border border-border rounded-lg px-3 py-2 text-foreground">
+              <label className="block text-xs uppercase tracking-wider text-zinc-500 mb-2 font-medium">Profile</label>
+              <select
+                value={profile}
+                onChange={(e) => setProfile(e.target.value)}
+                className="w-full rounded-lg px-3 py-3 text-white text-sm focus:outline-none"
+                style={{ background: BG, border: `1px solid ${BORDER}` }}
+              >
                 {PROFILES.map((p) => <option key={p} value={p}>{p}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs text-muted-foreground mb-1">Rim</label>
-              <select value={rim} onChange={(e) => setRim(e.target.value)} className="bg-background border border-border rounded-lg px-3 py-2 text-foreground">
+              <label className="block text-xs uppercase tracking-wider text-zinc-500 mb-2 font-medium">Rim</label>
+              <select
+                value={rim}
+                onChange={(e) => setRim(e.target.value)}
+                className="w-full rounded-lg px-3 py-3 text-white text-sm focus:outline-none"
+                style={{ background: BG, border: `1px solid ${BORDER}` }}
+              >
                 {RIMS.map((r) => <option key={r} value={r}>R{r}</option>)}
               </select>
             </div>
             <button
               onClick={handleSearch}
               disabled={loading}
-              className="bg-primary text-primary-foreground px-6 py-2 rounded-lg font-medium hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
+              className="w-full rounded-lg px-6 py-3 font-semibold text-white text-sm uppercase tracking-wider transition-all hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg"
+              style={{ background: RED, boxShadow: `0 8px 24px -8px ${RED}` }}
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-              {loading ? 'Searching...' : 'Search'}
+              {loading ? 'Searching...' : 'Search Tyres'}
             </button>
           </div>
         </div>
 
         {loading && (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div className="flex flex-col items-center justify-center py-24 gap-3">
+            <Loader2 className="h-10 w-10 animate-spin" style={{ color: RED }} />
+            <p className="text-zinc-500 text-sm">Searching across all suppliers...</p>
           </div>
         )}
 
         {!loading && searchError && (
-          <div className="text-center py-20 text-destructive">{searchError}</div>
+          <div className="text-center py-20" style={{ color: RED }}>{searchError}</div>
         )}
 
         {!loading && !searchError && searched && allResults.length === 0 && (
-          <div className="text-center py-20 text-muted-foreground">No tyres found for {width}/{profile} R{rim}.</div>
+          <div className="text-center py-20 text-zinc-500">No tyres found for {width}/{profile} R{rim}.</div>
         )}
 
         {!loading && allResults.length > 0 && (
           <>
-            {/* Filters */}
-            <div className="bg-card border border-border rounded-2xl p-4 mb-6 space-y-4">
-              <div className="flex flex-wrap gap-2">
-                <SeasonBtn value="all" label="All Seasons" />
-                <SeasonBtn value="summer" label="Summer" />
-                <SeasonBtn value="winter" label="Winter" />
-                <SeasonBtn value="allseason" label="4 Season" />
+            {/* Supplier LIVE strip */}
+            {uniqueSuppliers.length > 0 && (
+              <div
+                className="rounded-2xl p-4 mb-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-3"
+                style={{ background: CARD, border: `1px solid ${BORDER}` }}
+              >
+                {uniqueSuppliers.map((s) => (
+                  <div key={s.id} className="flex items-center gap-2 text-sm">
+                    <Flag id={s.id} size={18} />
+                    <span className="text-zinc-300 font-medium">{s.name}</span>
+                    <span className="flex items-center gap-1 text-xs text-green-400 font-semibold">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                      </span>
+                      LIVE
+                    </span>
+                  </div>
+                ))}
               </div>
+            )}
 
-              {uniqueSuppliers.length > 1 && (
-                <div className="flex flex-wrap gap-2">
+            {/* Season filter pills */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              {SEASONS.map(({ value, label, icon }) => {
+                const active = season === value;
+                return (
                   <button
-                    onClick={() => { setSupplier('all'); resetPage(); }}
-                    className={`px-3 py-1.5 rounded-full text-xs font-medium border ${
-                      supplier === 'all' ? 'bg-primary text-primary-foreground border-primary' : 'bg-background text-foreground border-border hover:bg-muted'
-                    }`}
+                    key={value}
+                    onClick={() => { setSeason(value); resetPage(); }}
+                    className="px-5 py-2.5 rounded-full text-sm font-semibold transition-all flex items-center gap-2"
+                    style={{
+                      background: active ? RED : 'transparent',
+                      color: active ? '#fff' : '#d4d4d8',
+                      border: `1px solid ${active ? RED : BORDER}`,
+                    }}
                   >
-                    All Suppliers
+                    <span>{icon}</span> {label}
                   </button>
-                  {uniqueSuppliers.map((s) => (
+                );
+              })}
+            </div>
+
+            {/* Supplier filter pills */}
+            {uniqueSuppliers.length > 1 && (
+              <div className="flex flex-wrap gap-2 mb-6">
+                <button
+                  onClick={() => { setSupplier('all'); resetPage(); }}
+                  className="px-4 py-2 rounded-full text-xs font-semibold transition-all"
+                  style={{
+                    background: supplier === 'all' ? RED : 'transparent',
+                    color: supplier === 'all' ? '#fff' : '#d4d4d8',
+                    border: `1px solid ${supplier === 'all' ? RED : BORDER}`,
+                  }}
+                >
+                  All Suppliers
+                </button>
+                {uniqueSuppliers.map((s) => {
+                  const active = supplier === s.id;
+                  return (
                     <button
                       key={s.id}
                       onClick={() => { setSupplier(s.id); resetPage(); }}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium border flex items-center gap-1.5 ${
-                        supplier === s.id ? 'bg-primary text-primary-foreground border-primary' : 'bg-background text-foreground border-border hover:bg-muted'
-                      }`}
+                      className="px-4 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all"
+                      style={{
+                        background: active ? RED : 'transparent',
+                        color: active ? '#fff' : '#d4d4d8',
+                        border: `1px solid ${active ? RED : BORDER}`,
+                      }}
                     >
                       <Flag id={s.id} /> {s.name}
                     </button>
-                  ))}
-                </div>
-              )}
-
-              <div className="flex flex-wrap gap-3 items-center">
-                <select
-                  value={brand}
-                  onChange={(e) => { setBrand(e.target.value); resetPage(); }}
-                  className="bg-background border border-border rounded-lg px-3 py-2 text-sm text-foreground"
-                >
-                  <option value="all">All Brands</option>
-                  {uniqueBrands.map((b) => <option key={b} value={b}>{b}</option>)}
-                </select>
-
-                <input
-                  type="number"
-                  placeholder="£ Min"
-                  value={minPrice}
-                  onChange={(e) => { setMinPrice(e.target.value); resetPage(); }}
-                  className="w-24 bg-background border border-border rounded-lg px-3 py-2 text-sm text-foreground"
-                />
-                <span className="text-muted-foreground">—</span>
-                <input
-                  type="number"
-                  placeholder="£ Max"
-                  value={maxPrice}
-                  onChange={(e) => { setMaxPrice(e.target.value); resetPage(); }}
-                  className="w-24 bg-background border border-border rounded-lg px-3 py-2 text-sm text-foreground"
-                />
-
-                <div className="flex gap-2 ml-auto">
-                  <button
-                    onClick={() => { setSort('asc'); resetPage(); }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${
-                      sort === 'asc' ? 'bg-primary text-primary-foreground border-primary' : 'bg-background text-foreground border-border hover:bg-muted'
-                    }`}
-                  >
-                    Price ↑
-                  </button>
-                  <button
-                    onClick={() => { setSort('desc'); resetPage(); }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border ${
-                      sort === 'desc' ? 'bg-primary text-primary-foreground border-primary' : 'bg-background text-foreground border-border hover:bg-muted'
-                    }`}
-                  >
-                    Price ↓
-                  </button>
-                </div>
+                  );
+                })}
               </div>
+            )}
+
+            {/* Results header row */}
+            <div
+              className="rounded-2xl p-4 mb-6 flex flex-wrap gap-3 items-center"
+              style={{ background: CARD, border: `1px solid ${BORDER}` }}
+            >
+              <div className="text-sm text-zinc-300 font-medium mr-auto">
+                Showing <span className="text-white font-bold">{pageItems.length}</span> of{' '}
+                <span className="text-white font-bold">{displayed.length}</span> results
+              </div>
+
+              <select
+                value={brand}
+                onChange={(e) => { setBrand(e.target.value); resetPage(); }}
+                className="rounded-lg px-3 py-2 text-sm text-white"
+                style={{ background: BG, border: `1px solid ${BORDER}` }}
+              >
+                <option value="all">All Brands</option>
+                {uniqueBrands.map((b) => <option key={b} value={b}>{b}</option>)}
+              </select>
+
+              <input
+                type="number"
+                placeholder="Min £"
+                value={minPrice}
+                onChange={(e) => { setMinPrice(e.target.value); resetPage(); }}
+                className="w-24 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600"
+                style={{ background: BG, border: `1px solid ${BORDER}` }}
+              />
+              <input
+                type="number"
+                placeholder="Max £"
+                value={maxPrice}
+                onChange={(e) => { setMaxPrice(e.target.value); resetPage(); }}
+                className="w-24 rounded-lg px-3 py-2 text-sm text-white placeholder-zinc-600"
+                style={{ background: BG, border: `1px solid ${BORDER}` }}
+              />
+
+              <button
+                onClick={() => { setSort(sort === 'asc' ? 'none' : 'asc'); resetPage(); }}
+                className="px-3 py-2 rounded-lg text-xs font-semibold transition-all"
+                style={{
+                  background: sort === 'asc' ? RED : 'transparent',
+                  color: sort === 'asc' ? '#fff' : '#d4d4d8',
+                  border: `1px solid ${sort === 'asc' ? RED : BORDER}`,
+                }}
+              >
+                Price ↑
+              </button>
+              <button
+                onClick={() => { setSort(sort === 'desc' ? 'none' : 'desc'); resetPage(); }}
+                className="px-3 py-2 rounded-lg text-xs font-semibold transition-all"
+                style={{
+                  background: sort === 'desc' ? RED : 'transparent',
+                  color: sort === 'desc' ? '#fff' : '#d4d4d8',
+                  border: `1px solid ${sort === 'desc' ? RED : BORDER}`,
+                }}
+              >
+                Price ↓
+              </button>
             </div>
 
-            <div className="text-sm text-muted-foreground mb-4">
-              Showing {pageItems.length} of {displayed.length} results
-            </div>
-
-            {(() => {
-              console.log('FIRST 3 DISPLAYED:', displayed.slice(0,3).map(t => t.name).join(' | '));
-              console.log('SEASON STATE:', season);
-              console.log('WINTER TEST on first item:', /winter|wintrac|wintercontact|ultragr|nordic|ice/i.test(displayed[0]?.name || ''));
-              return null;
-            })()}
-            <div key={`${season}-${supplier}-${brand}-${page}`} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {pageItems.map((t) => (
-                <div key={`${t.name}-${t.supplier}-${t.price}`} className="bg-card border border-border rounded-2xl overflow-hidden flex flex-col">
-                  <div className="aspect-square bg-muted flex items-center justify-center">
-                    {t.image_url ? (
-                      <SafeImage src={t.image_url} alt={t.name} className="w-full h-full object-contain" />
-                    ) : null}
-                  </div>
-                  <div className="p-4 flex-1 flex flex-col gap-2">
-                    <h3 className="text-sm font-medium text-foreground line-clamp-2">{t.name}</h3>
-                    <div className="text-lg font-bold text-foreground">{t.price}</div>
-                    {t.brand && <div className="text-xs text-muted-foreground">{t.brand}</div>}
-                    <div className="text-xs text-muted-foreground flex items-center gap-1.5">
-                      <Flag id={String(t.advertiserId)} /> {t.supplier}
+            {/* Tyre grid */}
+            <div
+              key={`${season}-${supplier}-${brand}-${page}`}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+            >
+              {pageItems.map((t) => {
+                const priceVal = parseFloat((t.price || '0').replace(/[^0-9.]/g, ''));
+                const freeDelivery = priceVal >= 50;
+                return (
+                  <div
+                    key={`${t.name}-${t.supplier}-${t.price}`}
+                    className="rounded-2xl overflow-hidden flex flex-col group transition-all hover:-translate-y-1"
+                    style={{
+                      background: CARD,
+                      border: `1px solid ${BORDER}`,
+                    }}
+                  >
+                    <div className="aspect-square flex items-center justify-center p-6" style={{ background: '#1a1a1a' }}>
+                      {t.image_url ? (
+                        <SafeImage src={t.image_url} alt={t.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
+                      ) : (
+                        <div className="text-zinc-700 text-xs">No image</div>
+                      )}
                     </div>
-                    <a
-                      href={t.url}
-                      target="_blank"
-                      rel="noopener noreferrer sponsored"
-                      className="mt-auto inline-flex items-center justify-center bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90"
-                    >
-                      Buy →
-                    </a>
+                    <div className="p-5 flex-1 flex flex-col gap-2">
+                      <h3 className="text-sm font-bold text-white line-clamp-2 leading-snug min-h-[2.5rem]">{t.name}</h3>
+                      {t.brand && <div className="text-xs text-zinc-500 uppercase tracking-wide">{t.brand}</div>}
+                      <div className="text-2xl font-bold mt-1" style={{ color: RED }}>{t.price}</div>
+                      <div className="flex items-center justify-between text-xs text-zinc-400 pt-1">
+                        <div className="flex items-center gap-1.5">
+                          <Flag id={String(t.advertiserId)} /> {t.supplier}
+                        </div>
+                        {freeDelivery && (
+                          <span className="flex items-center gap-1 text-green-400 font-semibold">
+                            <Truck className="h-3 w-3" /> Free delivery
+                          </span>
+                        )}
+                      </div>
+                      <a
+                        href={t.url}
+                        target="_blank"
+                        rel="noopener noreferrer sponsored"
+                        className="mt-3 inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-sm font-bold text-white transition-all hover:opacity-90"
+                        style={{ background: RED, boxShadow: `0 4px 14px -4px ${RED}` }}
+                      >
+                        Buy Now →
+                      </a>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-3 mt-8">
+              <div className="flex items-center justify-center gap-3 mt-10">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={safePage === 1}
-                  className="flex items-center gap-1 px-4 py-2 rounded-lg border border-border bg-card text-foreground disabled:opacity-40"
+                  className="flex items-center gap-1 px-5 py-2.5 rounded-lg text-sm font-semibold text-white disabled:opacity-30 transition-opacity"
+                  style={{ background: CARD, border: `1px solid ${BORDER}` }}
                 >
                   <ChevronLeft className="h-4 w-4" /> Previous
                 </button>
-                <span className="text-sm text-muted-foreground">Page {safePage} of {totalPages}</span>
+                <span className="text-sm text-zinc-400 px-4">
+                  Page <span className="text-white font-bold">{safePage}</span> of <span className="text-white font-bold">{totalPages}</span>
+                </span>
                 <button
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                   disabled={safePage === totalPages}
-                  className="flex items-center gap-1 px-4 py-2 rounded-lg border border-border bg-card text-foreground disabled:opacity-40"
+                  className="flex items-center gap-1 px-5 py-2.5 rounded-lg text-sm font-semibold text-white disabled:opacity-30 transition-opacity"
+                  style={{ background: CARD, border: `1px solid ${BORDER}` }}
                 >
                   Next <ChevronRight className="h-4 w-4" />
                 </button>
