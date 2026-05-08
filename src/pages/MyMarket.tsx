@@ -713,6 +713,34 @@ const MyMarket = () => {
                 <Input value={profileForm.website_url} onChange={e => setProfileForm(f => ({ ...f, website_url: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="https://..." />
               </div>
 
+              {/* Shipping section */}
+              <div className="border border-border rounded-xl p-4">
+                <h3 className="text-sm font-medium mb-1">Shipping</h3>
+                <p className="text-xs text-muted-foreground mb-3">Where do you ship to?</p>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-sm cursor-not-allowed opacity-80">
+                    <input type="checkbox" checked readOnly className="accent-primary" />
+                    <span>🇬🇧 United Kingdom <span className="text-muted-foreground">(default)</span></span>
+                  </label>
+                  {(["EU", "Worldwide"] as const).map(region => (
+                    <label key={region} className="flex items-center gap-2 text-sm cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={profileForm.ships_to.includes(region)}
+                        onChange={e => setProfileForm(f => ({
+                          ...f,
+                          ships_to: e.target.checked
+                            ? Array.from(new Set([...f.ships_to, region]))
+                            : f.ships_to.filter(r => r !== region),
+                        }))}
+                        className="accent-primary"
+                      />
+                      <span>{region === "EU" ? "🇪🇺 Europe (EU countries)" : "🌍 Worldwide"}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
               {/* Payment Details Section */}
               <div className="border border-border rounded-xl p-4 mt-2">
                 <div className="flex items-center gap-2 mb-1">
