@@ -1306,6 +1306,25 @@ const MyMarket = () => {
                 </select>
               </div>
             </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1">Condition *</label>
+                <select
+                  value={listingForm.condition}
+                  onChange={e => setListingForm(f => ({ ...f, condition: e.target.value }))}
+                  className="w-full h-10 px-3 rounded-xl bg-secondary border border-border text-foreground text-sm"
+                >
+                  <option value="">Select...</option>
+                  <option value="New">New</option>
+                  <option value="Used - Good">Used - Good</option>
+                  <option value="Used - Fair">Used - Fair</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1">Location <span className="text-muted-foreground/50">(postcode or city)</span></label>
+                <Input value={listingForm.location} onChange={e => setListingForm(f => ({ ...f, location: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="e.g. SW1A 1AA or London" />
+              </div>
+            </div>
             <VehicleSelector
               vehicles={listingForm.compatible_vehicles}
               onChange={v => setListingForm(f => ({ ...f, compatible_vehicles: v }))}
