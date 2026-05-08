@@ -454,78 +454,21 @@ const Tyres = () => {
               <ChevronDown className="h-5 w-5 text-zinc-400 transition-transform group-data-[state=open]:rotate-180" />
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="px-5 pb-6 pt-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Diagram */}
-                <div className="rounded-xl p-5" style={{ background: CARD_2, border: `1px solid ${BORDER}` }}>
-                  <div className="text-xs uppercase tracking-wider text-zinc-500 mb-3">Tyre sidewall</div>
-                  <div className="flex items-center justify-center py-4">
-                    <div
-                      className="relative rounded-full flex items-center justify-center"
-                      style={{
-                        width: 200,
-                        height: 200,
-                        background: 'radial-gradient(circle, #1a1a1a 35%, #2a2a2a 36%, #0a0a0a 75%)',
-                        border: '6px solid #2a2a2a',
-                      }}
-                    >
-                      <div
-                        className="absolute rounded-full"
-                        style={{ width: 100, height: 100, background: '#444', border: '4px solid #666' }}
-                      />
-                      <div className="absolute -top-2 right-0 text-[10px] font-bold text-red-500 bg-black/70 px-2 py-0.5 rounded">
-                        205 →
-                      </div>
-                      <div className="absolute -left-12 top-1/2 -translate-y-1/2 text-[10px] font-bold text-yellow-400 bg-black/70 px-2 py-0.5 rounded">
-                        55%
-                      </div>
-                      <div className="absolute -bottom-2 left-0 text-[10px] font-bold text-blue-400 bg-black/70 px-2 py-0.5 rounded">
-                        R16
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-sm text-zinc-300 mt-2 text-center">
-                    <span className="text-red-500 font-bold">205</span>/
-                    <span className="text-yellow-400 font-bold">55</span>{' '}
-                    <span className="text-blue-400 font-bold">R16</span>
-                  </div>
-                  <p className="text-xs text-zinc-500 text-center mt-2">
-                    205mm wide · sidewall is 55% of width · fits a 16″ rim
-                  </p>
+              <div style={{ textAlign: 'center', padding: '24px', color: 'white', fontFamily: 'sans-serif' }}>
+                <div style={{ fontSize: '13px', color: '#888', letterSpacing: '2px', marginBottom: '8px' }}>HOW TO READ YOUR TYRE SIZE</div>
+                <div style={{ fontSize: '64px', fontWeight: 900, letterSpacing: '-2px' }}>
+                  <span style={{ color: 'white' }}>{width}</span>
+                  <span style={{ color: '#555' }}>/</span>
+                  <span style={{ color: 'white' }}>{profile}</span>
+                  <span style={{ color: '#555', fontSize: '48px' }}> R</span>
+                  <span style={{ color: 'white' }}>{rim}</span>
                 </div>
-
-                {/* Explanations */}
-                <div className="space-y-3 text-sm">
-                  <div className="rounded-xl p-4" style={{ background: CARD_2, border: `1px solid ${BORDER}` }}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="w-2 h-2 rounded-full bg-red-500" />
-                      <span className="font-bold text-white">Width (205)</span>
-                    </div>
-                    <p className="text-zinc-400">Section width in millimetres, measured sidewall to sidewall.</p>
-                  </div>
-                  <div className="rounded-xl p-4" style={{ background: CARD_2, border: `1px solid ${BORDER}` }}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="w-2 h-2 rounded-full bg-yellow-400" />
-                      <span className="font-bold text-white">Profile (55)</span>
-                    </div>
-                    <p className="text-zinc-400">Aspect ratio — sidewall height as a % of width. Lower = sportier.</p>
-                  </div>
-                  <div className="rounded-xl p-4" style={{ background: CARD_2, border: `1px solid ${BORDER}` }}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="w-2 h-2 rounded-full bg-blue-400" />
-                      <span className="font-bold text-white">Rim (R16)</span>
-                    </div>
-                    <p className="text-zinc-400">Wheel diameter in inches that the tyre fits.</p>
-                  </div>
-
-                  <div className="rounded-xl p-4" style={{ background: CARD_2, border: `1px solid ${BORDER}` }}>
-                    <div className="font-bold text-white mb-2">EU Tyre Label</div>
-                    <ul className="text-zinc-400 space-y-1">
-                      <li>⛽ <span className="text-white font-semibold">Fuel efficiency</span> — A (best) to G</li>
-                      <li>💧 <span className="text-white font-semibold">Wet grip</span> — A (best) to G</li>
-                      <li>🔊 <span className="text-white font-semibold">Noise level</span> — measured in dB</li>
-                    </ul>
-                  </div>
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '60px', marginTop: '8px' }}>
+                  <span style={{ color: '#dc2626', fontSize: '11px', letterSpacing: '2px' }}>WIDTH</span>
+                  <span style={{ color: '#dc2626', fontSize: '11px', letterSpacing: '2px' }}>PROFILE</span>
+                  <span style={{ color: '#dc2626', fontSize: '11px', letterSpacing: '2px' }}>RIM</span>
                 </div>
+                <div style={{ marginTop: '12px', color: '#555', fontSize: '12px' }}>Found on your tyre sidewall</div>
               </div>
             </CollapsibleContent>
           </div>
