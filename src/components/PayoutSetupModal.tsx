@@ -180,7 +180,7 @@ export default function PayoutSetupModal({
         )}
 
         <div className="flex flex-col-reverse sm:flex-row gap-2 mt-2">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={saving} className="sm:flex-1">
+          <Button variant="ghost" onClick={() => { onOpenChange(false); onSkip?.(); }} disabled={saving} className="sm:flex-1">
             Not now
           </Button>
           <Button onClick={handleSave} disabled={saving || loading} className="sm:flex-1">
