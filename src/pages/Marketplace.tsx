@@ -192,7 +192,7 @@ const Marketplace = () => {
     try {
       const { data } = await supabase
         .from("seller_listings")
-        .select("*, seller_profiles(id, business_name, logo_url, seller_tier, approved)")
+        .select("*, seller_profiles(id, business_name, logo_url, seller_tier, approved, ships_to)")
         .eq("active", true).eq("approval_status", "approved")
         .order("created_at", { ascending: false });
       const filtered = ((data as any[]) || []).filter((l: any) => l.seller_profiles?.approved);
