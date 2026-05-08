@@ -271,6 +271,7 @@ const Marketplace = () => {
   const renderCard = (listing: ListingWithSeller, isFeatured: boolean, index: number) => {
     const isComparing = compareParts.some((p) => p.id === listing.id);
     const condition = conditionFromTags(listing.tags);
+    const ship = shippingBadge(listing.seller_profiles?.ships_to);
 
     return (
       <ScrollReveal key={listing.id} delay={index * 50}>
