@@ -145,8 +145,8 @@ const AdminSales = () => {
 
   const paidRows = rows.filter(r => r.status === "paid");
   const totalReceived = paidRows.reduce((s, r) => s + Number(r.amount), 0);
-  const yourEarnings = totalReceived * COMMISSION_RATE;
-  const totalToPayOut = paidRows.filter(r => !r.payout_sent).reduce((s, r) => s + Number(r.amount) * (1 - COMMISSION_RATE), 0);
+  const yourEarnings = paidRows.reduce((s, r) => s + Number(r.amount) * getCommissionRate(r.seller_plan), 0);
+  const totalToPayOut = paidRows.filter(r => !r.payout_sent).reduce((s, r) => s + Number(r.amount) * (1 - getCommissionRate(r.seller_plan)), 0);
   const totalSales = paidRows.length;
   const avgSale = totalSales > 0 ? totalReceived / totalSales : 0;
 
