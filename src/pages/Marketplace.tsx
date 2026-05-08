@@ -431,17 +431,16 @@ const Marketplace = () => {
             {buyerOffers.length > 0 && (
               <div className="mb-8 space-y-3">
                 <h2 className="font-display text-lg font-bold text-foreground">Your offers</h2>
-                {buyerOffers.map(o => (
-                  <div key={o.id} className="bg-card border border-border rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-4">
-                    {(() => {
-                      const rawPhoto = o.seller_listings?.photos?.[0] || null;
-                      const photoUrl = rawPhoto
-                        ? rawPhoto.startsWith("http")
-                          ? rawPhoto
-                          : `https://bkwieknlxvkrzluongif.supabase.co/storage/v1/object/public/listing-photos/${rawPhoto}`
-                        : null;
+                {buyerOffers.map(o => {
+                  const rawPhoto = o.seller_listings?.photos?.[0] || null;
+                  const photoUrl = rawPhoto
+                    ? rawPhoto.startsWith("http")
+                      ? rawPhoto
+                      : `https://bkwieknlxvkrzluongif.supabase.co/storage/v1/object/public/listing-photos/${rawPhoto}`
+                    : null;
 
-                      return (
+                  return (
+                  <div key={o.id} className="bg-card border border-border rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-4">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       {photoUrl ? (
                         <img src={photoUrl} alt="Part" className="w-16 h-16 rounded-lg object-cover flex-shrink-0" loading="lazy" decoding="async" />
@@ -455,8 +454,6 @@ const Marketplace = () => {
                         <p className="text-xs text-muted-foreground">Your offer: £{Number(o.amount).toFixed(2)}</p>
                       </div>
                     </div>
-                      );
-                    })()}
                     {o.status === "paid" ? (
                       <Badge className="bg-green-500/20 text-green-400 border-green-500/30">✓ Paid</Badge>
                     ) : (
@@ -472,7 +469,8 @@ const Marketplace = () => {
                       </div>
                     )}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 
