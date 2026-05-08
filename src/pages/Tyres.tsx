@@ -426,60 +426,41 @@ const Tyres = () => {
               </div>
 
               <div className="flex-1 flex items-center justify-center">
-                <svg
-                  viewBox="0 0 500 400"
-                  className="w-full max-w-md h-auto"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-label="Tyre cross-section diagram with width, profile and rim measurements"
-                >
-                  <defs>
-                    <linearGradient id="tyreCS" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#27272a" />
-                      <stop offset="50%" stopColor="#1c1c1f" />
-                      <stop offset="100%" stopColor="#0a0a0c" />
-                    </linearGradient>
-                    <linearGradient id="rimCS" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#a1a1aa" />
-                      <stop offset="100%" stopColor="#52525b" />
-                    </linearGradient>
-                    <marker id="arrCS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
-                      <path d="M0,0 L10,5 L0,10 z" fill="#dc2626" />
-                    </marker>
-                    <marker id="arrCSStart" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto">
-                      <path d="M10,0 L0,5 L10,10 z" fill="#dc2626" />
-                    </marker>
-                  </defs>
+                <div className="relative w-full max-w-md aspect-[4/3] rounded-xl overflow-hidden border border-white/10 bg-black">
+                  <SafeImage
+                    src="https://images.unsplash.com/photo-1605152276897-4f618f831968?auto=format&fit=crop&w=900&q=80"
+                    alt="Tyre sidewall showing size markings"
+                    className="absolute inset-0 w-full h-full object-cover opacity-90"
+                  />
+                  {/* Simulated sidewall marking */}
+                  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-mono text-white text-2xl sm:text-3xl font-black tracking-widest drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
+                    {width}/{profile} R{rim}
+                  </div>
 
-                  {/* Tyre cross-section body */}
-                  <rect x="80" y="110" width="340" height="210" rx="22" fill="url(#tyreCS)" stroke="#3f3f46" strokeWidth="1.5" />
-                  {/* Tread grooves on top */}
-                  {[128, 142, 156].map((y) => (
-                    <line key={y} x1="100" y1={y} x2="400" y2={y} stroke="#000" strokeWidth="3" opacity="0.7" />
-                  ))}
-                  {/* Inner rim opening (cut-out) */}
-                  <ellipse cx="250" cy="305" rx="135" ry="22" fill="#0a0a0c" stroke="#1f1f22" strokeWidth="1" />
-                  {/* Rim metal band */}
-                  <rect x="115" y="288" width="270" height="14" rx="3" fill="url(#rimCS)" stroke="#71717a" strokeWidth="0.8" />
+                  {/* Badge: WIDTH → 205 */}
+                  <div className="absolute top-[18%] left-[8%] flex items-center gap-2">
+                    <span className="px-2.5 py-1 rounded-full bg-[#dc2626] text-white text-[10px] font-black uppercase tracking-wider shadow-lg">
+                      Width · {width}
+                    </span>
+                    <span className="h-px w-10 bg-[#dc2626]" />
+                  </div>
 
-                  {/* WIDTH — horizontal arrow above the tyre */}
-                  <line x1="80" y1="80" x2="420" y2="80" stroke="#dc2626" strokeWidth="2" markerStart="url(#arrCSStart)" markerEnd="url(#arrCS)" />
-                  <line x1="80" y1="86" x2="80" y2="108" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
-                  <line x1="420" y1="86" x2="420" y2="108" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
-                  <rect x="195" y="62" width="110" height="26" rx="4" fill="#dc2626" />
-                  <text x="250" y="80" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="900" fontFamily="ui-monospace,monospace">WIDTH · {width}mm</text>
+                  {/* Badge: PROFILE → 55 */}
+                  <div className="absolute top-[68%] right-[8%] flex items-center gap-2">
+                    <span className="h-px w-10 bg-[#dc2626]" />
+                    <span className="px-2.5 py-1 rounded-full bg-[#dc2626] text-white text-[10px] font-black uppercase tracking-wider shadow-lg">
+                      Profile · {profile}
+                    </span>
+                  </div>
 
-                  {/* PROFILE — vertical arrow on right side (sidewall height) */}
-                  <line x1="450" y1="112" x2="450" y2="300" stroke="#dc2626" strokeWidth="2" markerStart="url(#arrCSStart)" markerEnd="url(#arrCS)" />
-                  <line x1="422" y1="112" x2="455" y2="112" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
-                  <line x1="388" y1="300" x2="455" y2="300" stroke="#dc2626" strokeWidth="0.8" strokeDasharray="3 3" />
-                  <rect x="395" y="195" width="105" height="26" rx="4" fill="#dc2626" />
-                  <text x="447" y="213" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="900" fontFamily="ui-monospace,monospace">PROFILE · {profile}%</text>
-
-                  {/* RIM — arrow pointing to inner rim opening */}
-                  <line x1="60" y1="370" x2="225" y2="305" stroke="#dc2626" strokeWidth="2" markerEnd="url(#arrCS)" />
-                  <rect x="20" y="358" width="100" height="26" rx="4" fill="#dc2626" />
-                  <text x="70" y="376" textAnchor="middle" fill="#fff" fontSize="12" fontWeight="900" fontFamily="ui-monospace,monospace">RIM · R{rim}</text>
-                </svg>
+                  {/* Badge: RIM → R16 */}
+                  <div className="absolute bottom-[8%] left-[8%] flex items-center gap-2">
+                    <span className="px-2.5 py-1 rounded-full bg-[#dc2626] text-white text-[10px] font-black uppercase tracking-wider shadow-lg">
+                      Rim · R{rim}
+                    </span>
+                    <span className="h-px w-10 bg-[#dc2626]" />
+                  </div>
+                </div>
               </div>
 
               <div className="mt-4 pt-4 border-t text-center text-xs text-zinc-400" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
