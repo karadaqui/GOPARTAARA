@@ -85,7 +85,7 @@ const AdminSales = () => {
 
       const [{ data: listings }, { data: profiles }, { data: payouts }] = await Promise.all([
         supabase.from("seller_listings").select("id, title").in("id", listingIds),
-        supabase.from("profiles").select("user_id, email, display_name").in("user_id", userIds),
+        supabase.from("profiles").select("user_id, email, display_name, subscription_plan").in("user_id", userIds),
         supabase.from("seller_payout_info" as any).select("*").in("user_id", userIds),
       ]);
 
@@ -99,6 +99,7 @@ const AdminSales = () => {
         buyer_email: (profileMap.get(o.buyer_id) as any)?.email || "—",
         seller_email: (profileMap.get(o.seller_id) as any)?.email || "—",
         seller_display_name: (profileMap.get(o.seller_id) as any)?.display_name || null,
+        seller_plan: (profileMap.get(o.seller_id) as any)?.subscription_plan || "free",
         payout: payoutMap.get(o.seller_id) || null,
       }));
 
