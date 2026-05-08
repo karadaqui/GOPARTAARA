@@ -567,6 +567,9 @@ const ListingDetail = () => {
               >
                 View Shop →
               </button>
+              <div className="mt-3 pt-3 border-t border-border text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">Ships to:</span> {shippingLongLabel(listing.seller_profiles.ships_to)}
+              </div>
             </div>
 
             {/* Safety notice */}
