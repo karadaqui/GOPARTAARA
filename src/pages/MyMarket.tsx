@@ -904,7 +904,7 @@ const MyMarket = () => {
 
         {/* Commission notice */}
         <div className="mb-6 p-3 rounded-xl bg-secondary/40 border border-border text-xs text-muted-foreground">
-          <span className="font-semibold text-foreground">GOPARTARA charges a {getCommissionPercent(userPlan)}% platform fee on all sales.</span>{" "}
+          <span className="font-semibold text-foreground">{getCommissionBlurb(userPlan)}</span>{" "}
           You receive {getSellerReceivePercent(userPlan)}% of the sale price.
         </div>
 
