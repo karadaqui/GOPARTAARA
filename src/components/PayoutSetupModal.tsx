@@ -122,7 +122,7 @@ export default function PayoutSetupModal({
         </DialogHeader>
 
         <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300">
-          💡 <span className="font-semibold">GOPARTARA takes a 5% commission on each sale.</span> For a £40 sale, you receive £38.
+          💡 <span className="font-semibold">{getCommissionBlurb(plan)}</span> For a £40 sale, you receive £{calculatePayout(40, plan).toFixed(2)}.
         </div>
 
         {loading ? (
