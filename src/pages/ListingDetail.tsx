@@ -156,7 +156,7 @@ const ListingDetail = () => {
     try {
       const { data } = await supabase
         .from("seller_listings")
-        .select("*, seller_profiles!inner(id, user_id, business_name, description, logo_url, contact_email, seller_tier, website_url, created_at)")
+        .select("*, seller_profiles!inner(id, user_id, business_name, description, logo_url, contact_email, seller_tier, website_url, created_at, ships_to)")
         .eq("id", id!)
         .single();
 
