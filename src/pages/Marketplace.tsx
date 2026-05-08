@@ -566,7 +566,7 @@ const Marketplace = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
                   { emoji: "🆓", title: "Free to list", desc: "Up to 5 listings on the Free plan. Unlimited on Pro & Elite." },
-                  { emoji: "🛡️", title: "UK sellers only", desc: "All listings are from registered GOPARTARA members in the UK." },
+                  { emoji: "🛡️", title: "Verified UK Sellers", desc: "All sellers are registered GOPARTARA members. Many ship across Europe & worldwide." },
                   { emoji: "⚡", title: "Live immediately", desc: "Your listing goes live as soon as you publish it." },
                 ].map(({ emoji, title, desc }) => (
                   <div
