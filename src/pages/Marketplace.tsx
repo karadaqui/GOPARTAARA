@@ -228,6 +228,9 @@ const Marketplace = () => {
         const c = conditionFromTags(l.tags);
         if (c !== conditionFilter) return false;
       }
+      if (shipsToMe && buyerLocation !== "any") {
+        if (!shipsToBuyer(l.seller_profiles?.ships_to, buyerLocation)) return false;
+      }
       return true;
     });
     if (sortBy === "price_asc") {
