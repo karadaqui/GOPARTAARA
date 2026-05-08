@@ -46,7 +46,6 @@ interface Listing {
   compatible_vehicles: string[];
   tags: string[];
   photos: string[];
-  external_link: string | null;
   active: boolean;
   approval_status: string;
   view_count: number;
