@@ -359,6 +359,7 @@ const MyMarket = () => {
         contact_email: profileForm.contact_email || null,
         contact_phone: profileForm.contact_phone || null,
         website_url: profileForm.website_url || null,
+        ships_to: profileForm.ships_to.length > 0 ? profileForm.ships_to : ["UK"],
       } as any)
       .eq("id", profile.id);
 
