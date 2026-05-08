@@ -169,6 +169,7 @@ const MyMarket = () => {
   const [profileForm, setProfileForm] = useState({
     business_name: "", description: "", contact_email: "", contact_phone: "", website_url: "",
     bank_account_name: "", bank_sort_code: "", bank_account_number: "", bank_paypal_email: "",
+    ships_to: ["UK"] as string[],
   });
 
   const [listingForm, setListingForm] = useState({
