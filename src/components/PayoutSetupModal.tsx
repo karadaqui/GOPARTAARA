@@ -37,6 +37,7 @@ export default function PayoutSetupModal({
   onSaved,
   continueLabel = "Save & Continue to Listing →",
 }: Props) {
+  const { plan } = useUserPlan();
   const [tab, setTab] = useState<"bank" | "paypal">("bank");
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
