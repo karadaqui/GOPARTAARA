@@ -1640,7 +1640,7 @@ const MyMarket = () => {
             if (payoutGateContinue) {
               setPayoutGateContinue(false);
               setEditingListing(null);
-              setListingForm({ title: "", description: "", price: "", category: "", condition: "", location: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
+              setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [] });
               setListingDialog(true);
             }
           }}
