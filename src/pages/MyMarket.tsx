@@ -420,21 +420,29 @@ const MyMarket = () => {
     }
     if (listing) {
       setEditingListing(listing);
-      // Recover condition / location stored as tags (Condition: X, Location: Y)
+      // Recover meta stored as tags (Condition: X, Country: Y, Ships: a,b,c, OtherDesc: ...)
       const conditionTag = (listing.tags || []).find(t => t.startsWith("Condition: "));
-      const locationTag = (listing.tags || []).find(t => t.startsWith("Location: "));
-      const cleanTags = (listing.tags || []).filter(t => !t.startsWith("Condition: ") && !t.startsWith("Location: "));
+      const countryTag = (listing.tags || []).find(t => t.startsWith("Country: "));
+      const shipsTag = (listing.tags || []).find(t => t.startsWith("Ships: "));
+      const otherDescTag = (listing.tags || []).find(t => t.startsWith("OtherDesc: "));
+      const cleanTags = (listing.tags || []).filter(t =>
+        !t.startsWith("Condition: ") &&
+        !t.startsWith("Location: ") &&
+        !t.startsWith("Country: ") &&
+        !t.startsWith("Ships: ") &&
+        !t.startsWith("OtherDesc: ")
+      );
       setListingForm({
         title: listing.title,
         description: listing.description,
         price: listing.price?.toString() || "",
         category: listing.category || "",
         condition: conditionTag ? conditionTag.replace("Condition: ", "") : "",
-        location: locationTag ? locationTag.replace("Location: ", "") : "",
+        country: countryTag ? countryTag.replace("Country: ", "") : (profileForm.country || DEFAULT_COUNTRY),
+        other_description: otherDescTag ? otherDescTag.replace("OtherDesc: ", "") : "",
+        ships_to: shipsTag ? shipsTag.replace("Ships: ", "").split(",").map(s => s.trim()).filter(Boolean) : (profileForm.ships_to.length ? profileForm.ships_to : ["UK"]),
         compatible_vehicles: listing.compatible_vehicles,
-        compatible_vehicles_text: "",
         tags: cleanTags,
-        external_link: listing.external_link || "",
         photos: listing.photos,
       });
     } else {
@@ -447,7 +455,7 @@ const MyMarket = () => {
         return;
       }
       setEditingListing(null);
-      setListingForm({ title: "", description: "", price: "", category: "", condition: "", location: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
+      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [] });
     }
     setListingDialog(true);
   };
