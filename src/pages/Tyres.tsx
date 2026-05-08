@@ -428,7 +428,7 @@ const Tyres = () => {
               <div className="flex-1 flex items-center justify-center">
                 <div className="relative w-full max-w-md aspect-[4/3] rounded-xl overflow-hidden border border-white/10 bg-black">
                   <SafeImage
-                    src="https://images.unsplash.com/photo-1605152276897-4f618f831968?auto=format&fit=crop&w=900&q=80"
+                    src="https://www.goodyear.eu/content/dam/tires/consumer/eu/en-GB/how-to-read-a-tyre/tyre-reading-main.jpg"
                     alt="Tyre sidewall showing size markings"
                     className="absolute inset-0 w-full h-full object-cover opacity-90"
                   />
