@@ -431,10 +431,10 @@ const Marketplace = () => {
                   <div key={o.id} className="bg-card border border-border rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-4">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       {o.listing_photo ? (
-                        <SafeImage src={o.listing_photo} alt={o.listing_title} className="w-14 h-14 rounded-lg object-cover shrink-0" />
+                        <SafeImage src={o.listing_photo} alt={o.listing_title} className="w-16 h-16 rounded-lg object-cover shrink-0" />
                       ) : (
-                        <div className="w-14 h-14 rounded-lg bg-secondary flex items-center justify-center shrink-0">
-                          <Package size={20} className="text-muted-foreground" />
+                        <div className="w-16 h-16 rounded-lg bg-secondary flex items-center justify-center shrink-0">
+                          <Wrench size={22} className="text-muted-foreground" />
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
