@@ -229,9 +229,9 @@ const AdminSales = () => {
                   </td>
                   <td className="p-3 whitespace-nowrap min-w-[160px]">
                     <div className="text-foreground">Paid: £{amt.toFixed(2)}</div>
-                    <div className="text-[12px]" style={{ color: '#22c55e' }}>Your 5%: £{(amt * COMMISSION_RATE).toFixed(2)}</div>
+                    <div className="text-[12px]" style={{ color: '#22c55e' }}>Your {getCommissionPercent(r.seller_plan)}%: £{(amt * getCommissionRate(r.seller_plan)).toFixed(2)}</div>
                     <div style={{ color: '#cc1111', fontWeight: 700, fontSize: '16px' }}>
-                      → Send: £{(amt * (1 - COMMISSION_RATE)).toFixed(2)}
+                      → Send: £{(amt * (1 - getCommissionRate(r.seller_plan))).toFixed(2)}
                     </div>
                   </td>
                   <td className="p-3">
