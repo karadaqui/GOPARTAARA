@@ -221,6 +221,7 @@ const MyMarket = () => {
         bank_sort_code: bankDetails.sort_code || "",
         bank_account_number: bankDetails.account_number || "",
         bank_paypal_email: bankDetails.paypal_email || "",
+        ships_to: ((sp as any).ships_to && (sp as any).ships_to.length > 0) ? (sp as any).ships_to : ["UK"],
       });
 
       const { data: ls } = await supabase
