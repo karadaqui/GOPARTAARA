@@ -51,6 +51,7 @@ interface ListingFull {
     seller_tier: string;
     website_url: string | null;
     created_at: string;
+    ships_to: string[] | null;
   };
 }
 
