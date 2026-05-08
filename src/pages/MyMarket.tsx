@@ -14,7 +14,8 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
-import { getCommissionPercent, getSellerReceivePercent } from "@/lib/commission";
+import { getCommissionPercent, getSellerReceivePercent, getCommissionBlurb } from "@/lib/commission";
+import { COUNTRIES, DEFAULT_COUNTRY } from "@/lib/countries";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import VehicleSelector from "@/components/VehicleSelector";
@@ -45,7 +46,6 @@ interface Listing {
   compatible_vehicles: string[];
   tags: string[];
   photos: string[];
-  external_link: string | null;
   active: boolean;
   approval_status: string;
   view_count: number;
@@ -170,12 +170,16 @@ const MyMarket = () => {
     business_name: "", description: "", contact_email: "", contact_phone: "", website_url: "",
     bank_account_name: "", bank_sort_code: "", bank_account_number: "", bank_paypal_email: "",
     ships_to: ["UK"] as string[],
+    country: DEFAULT_COUNTRY,
   });
 
   const [listingForm, setListingForm] = useState({
-    title: "", description: "", price: "", category: "", condition: "", location: "",
-    compatible_vehicles: [] as string[], compatible_vehicles_text: "",
-    tags: [] as string[], external_link: "", photos: [] as string[]
+    title: "", description: "", price: "", category: "", condition: "",
+    country: DEFAULT_COUNTRY,
+    other_description: "",
+    ships_to: ["UK"] as string[],
+    compatible_vehicles: [] as string[],
+    tags: [] as string[], photos: [] as string[]
   });
 
   useEffect(() => {
@@ -222,6 +226,7 @@ const MyMarket = () => {
         bank_account_number: bankDetails.account_number || "",
         bank_paypal_email: bankDetails.paypal_email || "",
         ships_to: ((sp as any).ships_to && (sp as any).ships_to.length > 0) ? (sp as any).ships_to : ["UK"],
+        country: ((sp as any).description?.match(/^Country: ([^\n]+)/)?.[1]) || DEFAULT_COUNTRY,
       });
 
       const { data: ls } = await supabase
@@ -348,7 +353,7 @@ const MyMarket = () => {
       // Issue 3: proceed straight into the listing form so the new seller
       // can publish their first part without an extra click.
       setEditingListing(null);
-      setListingForm({ title: "", description: "", price: "", category: "", condition: "", location: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
+      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [] });
       setListingDialog(true);
     }
     setSaving(false);
@@ -415,21 +420,29 @@ const MyMarket = () => {
     }
     if (listing) {
       setEditingListing(listing);
-      // Recover condition / location stored as tags (Condition: X, Location: Y)
+      // Recover meta stored as tags (Condition: X, Country: Y, Ships: a,b,c, OtherDesc: ...)
       const conditionTag = (listing.tags || []).find(t => t.startsWith("Condition: "));
-      const locationTag = (listing.tags || []).find(t => t.startsWith("Location: "));
-      const cleanTags = (listing.tags || []).filter(t => !t.startsWith("Condition: ") && !t.startsWith("Location: "));
+      const countryTag = (listing.tags || []).find(t => t.startsWith("Country: "));
+      const shipsTag = (listing.tags || []).find(t => t.startsWith("Ships: "));
+      const otherDescTag = (listing.tags || []).find(t => t.startsWith("OtherDesc: "));
+      const cleanTags = (listing.tags || []).filter(t =>
+        !t.startsWith("Condition: ") &&
+        !t.startsWith("Location: ") &&
+        !t.startsWith("Country: ") &&
+        !t.startsWith("Ships: ") &&
+        !t.startsWith("OtherDesc: ")
+      );
       setListingForm({
         title: listing.title,
         description: listing.description,
         price: listing.price?.toString() || "",
         category: listing.category || "",
         condition: conditionTag ? conditionTag.replace("Condition: ", "") : "",
-        location: locationTag ? locationTag.replace("Location: ", "") : "",
+        country: countryTag ? countryTag.replace("Country: ", "") : (profileForm.country || DEFAULT_COUNTRY),
+        other_description: otherDescTag ? otherDescTag.replace("OtherDesc: ", "") : "",
+        ships_to: shipsTag ? shipsTag.replace("Ships: ", "").split(",").map(s => s.trim()).filter(Boolean) : (profileForm.ships_to.length ? profileForm.ships_to : ["UK"]),
         compatible_vehicles: listing.compatible_vehicles,
-        compatible_vehicles_text: "",
         tags: cleanTags,
-        external_link: listing.external_link || "",
         photos: listing.photos,
       });
     } else {
@@ -442,7 +455,7 @@ const MyMarket = () => {
         return;
       }
       setEditingListing(null);
-      setListingForm({ title: "", description: "", price: "", category: "", condition: "", location: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
+      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [] });
     }
     setListingDialog(true);
   };
@@ -485,6 +498,10 @@ const MyMarket = () => {
       toast({ title: "Condition is required", variant: "destructive" });
       return;
     }
+    if (listingForm.category === "Other" && !listingForm.other_description.trim()) {
+      toast({ title: "Please describe the part", variant: "destructive" });
+      return;
+    }
     if (!listingForm.description.trim()) {
       toast({ title: "Description is required", variant: "destructive" });
       return;
@@ -494,23 +511,27 @@ const MyMarket = () => {
       return;
     }
     setSaving(true);
-    const extraVehicles = listingForm.compatible_vehicles_text
-      .split(",").map(s => s.trim()).filter(Boolean);
-    const allVehicles = [...listingForm.compatible_vehicles, ...extraVehicles];
     const payload = {
       seller_id: profile.id,
       title: listingForm.title,
       description: listingForm.description,
       price: listingForm.price ? parseFloat(listingForm.price) : null,
       category: listingForm.category || null,
-      compatible_vehicles: allVehicles,
+      compatible_vehicles: listingForm.compatible_vehicles,
       tags: [
-        ...listingForm.tags.filter(t => !t.startsWith("Condition: ") && !t.startsWith("Location: ")),
+        ...listingForm.tags.filter(t =>
+          !t.startsWith("Condition: ") &&
+          !t.startsWith("Location: ") &&
+          !t.startsWith("Country: ") &&
+          !t.startsWith("Ships: ") &&
+          !t.startsWith("OtherDesc: ")
+        ),
         ...(listingForm.condition ? [`Condition: ${listingForm.condition}`] : []),
-        ...(listingForm.location.trim() ? [`Location: ${listingForm.location.trim()}`] : []),
+        ...(listingForm.country ? [`Country: ${listingForm.country}`] : []),
+        ...(listingForm.ships_to.length ? [`Ships: ${listingForm.ships_to.join(",")}`] : []),
+        ...(listingForm.category === "Other" && listingForm.other_description.trim() ? [`OtherDesc: ${listingForm.other_description.trim()}`] : []),
       ],
       photos: listingForm.photos,
-      external_link: listingForm.external_link || null,
     };
 
     let error;
@@ -734,7 +755,17 @@ const MyMarket = () => {
 
               {/* Shipping section */}
               <div className="border border-border rounded-xl p-4">
-                <h3 className="text-sm font-medium mb-1">Shipping</h3>
+                <h3 className="text-sm font-medium mb-1">Location & Shipping</h3>
+                <div className="mb-3">
+                  <label className="text-xs text-muted-foreground block mb-1">Your country</label>
+                  <select
+                    value={profileForm.country}
+                    onChange={e => setProfileForm(f => ({ ...f, country: e.target.value }))}
+                    className="w-full h-10 px-3 rounded-xl bg-secondary border border-border text-foreground text-sm"
+                  >
+                    {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
                 <p className="text-xs text-muted-foreground mb-3">Where do you ship to?</p>
                 <div className="space-y-2">
                   <label className="flex items-center gap-2 text-sm cursor-not-allowed opacity-80">
@@ -883,7 +914,7 @@ const MyMarket = () => {
 
         {/* Commission notice */}
         <div className="mb-6 p-3 rounded-xl bg-secondary/40 border border-border text-xs text-muted-foreground">
-          <span className="font-semibold text-foreground">GOPARTARA charges a {getCommissionPercent(userPlan)}% platform fee on all sales.</span>{" "}
+          <span className="font-semibold text-foreground">{getCommissionBlurb(userPlan)}</span>{" "}
           You receive {getSellerReceivePercent(userPlan)}% of the sale price.
         </div>
 
@@ -1219,7 +1250,17 @@ const MyMarket = () => {
 
             {/* Shipping section */}
             <div className="border border-border rounded-xl p-4">
-              <h3 className="text-sm font-medium mb-1">Shipping</h3>
+              <h3 className="text-sm font-medium mb-1">Location & Shipping</h3>
+              <div className="mb-3">
+                <label className="text-xs text-muted-foreground block mb-1">Your country</label>
+                <select
+                  value={profileForm.country}
+                  onChange={e => setProfileForm(f => ({ ...f, country: e.target.value }))}
+                  className="w-full h-10 px-3 rounded-xl bg-secondary border border-border text-foreground text-sm"
+                >
+                  {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
               <p className="text-xs text-muted-foreground mb-3">Where do you ship to?</p>
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm cursor-not-allowed opacity-80">
@@ -1291,7 +1332,7 @@ const MyMarket = () => {
             <DialogTitle className="font-display">{editingListing ? "Edit Listing" : "New Listing"}</DialogTitle>
           </DialogHeader>
           <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300">
-            <span className="font-semibold">GOPARTARA charges a {getCommissionPercent(userPlan)}% platform fee on all sales.</span> You receive {getSellerReceivePercent(userPlan)}% of the sale price.
+            <span className="font-semibold">{getCommissionBlurb(userPlan)}</span> You receive {getSellerReceivePercent(userPlan)}% of the sale price.
           </div>
           <div className="space-y-4">
             <div>
@@ -1319,6 +1360,17 @@ const MyMarket = () => {
                 </select>
               </div>
             </div>
+            {listingForm.category === "Other" && (
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1">Describe the part *</label>
+                <Input
+                  value={listingForm.other_description}
+                  onChange={e => setListingForm(f => ({ ...f, other_description: e.target.value }))}
+                  className="bg-secondary border-border rounded-xl"
+                  placeholder="e.g. Sunroof motor, boot hinge, dashboard trim..."
+                />
+              </div>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm text-muted-foreground block mb-1">Condition *</label>
@@ -1331,25 +1383,46 @@ const MyMarket = () => {
                   <option value="New">New</option>
                   <option value="Used - Good">Used - Good</option>
                   <option value="Used - Fair">Used - Fair</option>
+                  <option value="Refurbished">Refurbished</option>
                 </select>
               </div>
               <div>
-                <label className="text-sm text-muted-foreground block mb-1">Location <span className="text-muted-foreground/50">(postcode or city)</span></label>
-                <Input value={listingForm.location} onChange={e => setListingForm(f => ({ ...f, location: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="e.g. SW1A 1AA or London" />
+                <label className="text-sm text-muted-foreground block mb-1">Country</label>
+                <select
+                  value={listingForm.country}
+                  onChange={e => setListingForm(f => ({ ...f, country: e.target.value }))}
+                  className="w-full h-10 px-3 rounded-xl bg-secondary border border-border text-foreground text-sm"
+                >
+                  {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
               </div>
+            </div>
+            <div className="border border-border rounded-xl p-3">
+              <label className="text-sm text-muted-foreground block mb-2">Ships to</label>
+              <div className="flex flex-wrap gap-3">
+                {(["UK", "EU", "Worldwide"] as const).map(region => (
+                  <label key={region} className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={listingForm.ships_to.includes(region)}
+                      onChange={e => setListingForm(f => ({
+                        ...f,
+                        ships_to: e.target.checked
+                          ? Array.from(new Set([...f.ships_to, region]))
+                          : f.ships_to.filter(r => r !== region),
+                      }))}
+                      className="accent-primary"
+                    />
+                    <span>{region === "UK" ? "🇬🇧 United Kingdom" : region === "EU" ? "🇪🇺 Europe (EU)" : "🌍 Worldwide"}</span>
+                  </label>
+                ))}
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-2">Overrides your seller profile default for this listing.</p>
             </div>
             <VehicleSelector
               vehicles={listingForm.compatible_vehicles}
               onChange={v => setListingForm(f => ({ ...f, compatible_vehicles: v }))}
             />
-            <div>
-              <label className="text-sm text-muted-foreground block mb-1">Additional Compatible Vehicles <span className="text-muted-foreground/50">(optional)</span></label>
-              <Input value={listingForm.compatible_vehicles_text} onChange={e => setListingForm(f => ({ ...f, compatible_vehicles_text: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="BMW 3 Series 2015-2020, BMW 4 Series" />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground block mb-1">External Link <span className="text-muted-foreground/50">(optional)</span></label>
-              <Input value={listingForm.external_link} onChange={e => setListingForm(f => ({ ...f, external_link: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="https://yourshop.com/part" />
-            </div>
             <div>
               <label className="text-sm text-muted-foreground block mb-1">Photos * <span className="text-muted-foreground/50">(at least 1)</span></label>
               <div className="flex flex-wrap gap-2 mb-2">
@@ -1578,7 +1651,7 @@ const MyMarket = () => {
               setPayoutGateContinue(false);
               // Open listing form now that payout exists
               setEditingListing(null);
-              setListingForm({ title: "", description: "", price: "", category: "", condition: "", location: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
+              setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [] });
               setListingDialog(true);
             }
           }}
@@ -1587,7 +1660,7 @@ const MyMarket = () => {
             if (payoutGateContinue) {
               setPayoutGateContinue(false);
               setEditingListing(null);
-              setListingForm({ title: "", description: "", price: "", category: "", condition: "", location: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
+              setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [] });
               setListingDialog(true);
             }
           }}

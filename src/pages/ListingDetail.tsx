@@ -497,13 +497,7 @@ const ListingDetail = () => {
                   <MessageCircle size={16} /> Message Seller
                 </Button>
               )}
-              {listing.external_link && (
-                <Button asChild variant="outline" className="w-full rounded-xl gap-2 h-11">
-                  <a href={listing.external_link} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink size={16} /> Buy Now (External)
-                  </a>
-                </Button>
-              )}
+              {/* External link removed */}
 
               <div className="flex gap-2">
                 <Button variant="outline" onClick={handleSave} className="flex-1 rounded-xl gap-2 h-10">

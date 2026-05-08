@@ -1,23 +1,21 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { Plus, X } from "lucide-react";
 
-const VEHICLE_MAKES: Record<string, string[]> = {
-  "BMW": ["1 Series", "2 Series", "3 Series", "4 Series", "5 Series", "6 Series", "7 Series", "8 Series", "X1", "X2", "X3", "X4", "X5", "X6", "X7", "M3", "M4", "M5", "E46", "E90", "E92", "F30", "F10"],
-  "Mercedes": ["A Class", "B Class", "C Class", "E Class", "S Class", "GLA", "GLB", "GLC", "GLE", "GLS", "CLA", "CLS", "AMG"],
-  "Audi": ["A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "Q2", "Q3", "Q5", "Q7", "Q8", "TT", "R8", "RS3", "RS4", "RS6"],
-  "Ford": ["Fiesta", "Focus", "Mondeo", "Kuga", "Puma", "EcoSport", "Galaxy", "S-Max", "Mustang", "Transit"],
-  "Vauxhall": ["Corsa", "Astra", "Insignia", "Mokka", "Grandland", "Crossland", "Zafira", "Vectra"],
-  "Toyota": ["Yaris", "Corolla", "Camry", "RAV4", "C-HR", "Aygo", "Hilux", "Land Cruiser", "Prius"],
-  "Volkswagen": ["Polo", "Golf", "Passat", "Tiguan", "T-Roc", "T-Cross", "Touareg", "Arteon", "ID.3", "ID.4"],
-  "Honda": ["Civic", "Jazz", "CR-V", "HR-V", "Accord", "FR-V"],
-  "Nissan": ["Micra", "Juke", "Qashqai", "X-Trail", "Leaf", "370Z", "GT-R"],
-  "Volvo": ["S60", "S90", "V40", "V60", "V90", "XC40", "XC60", "XC90"],
-};
+const VEHICLE_MAKES = [
+  "Abarth", "Alfa Romeo", "Aston Martin", "Audi", "Bentley", "BMW", "Bugatti",
+  "Cadillac", "Chevrolet", "Chrysler", "Citroën", "Cupra", "Dacia", "Ferrari",
+  "Fiat", "Ford", "Honda", "Hyundai", "Infiniti", "Jaguar", "Jeep", "Kia",
+  "Lamborghini", "Land Rover", "Lexus", "Maserati", "Mazda", "McLaren",
+  "Mercedes-Benz", "MINI", "Mitsubishi", "Nissan", "Opel/Vauxhall", "Peugeot",
+  "Porsche", "Renault", "Rolls-Royce", "SEAT", "Skoda", "Smart", "Subaru",
+  "Suzuki", "Tesla", "Toyota", "Volkswagen", "Volvo", "Other",
+];
 
-const currentYear = new Date().getFullYear();
-const YEARS = Array.from({ length: 30 }, (_, i) => currentYear - i);
+const currentYear = new Date().getFullYear() + 1;
+const YEARS = Array.from({ length: currentYear - 1980 + 1 }, (_, i) => currentYear - i);
 
 interface Props {
   vehicles: string[];
@@ -27,26 +25,22 @@ interface Props {
 const VehicleSelector = ({ vehicles, onChange }: Props) => {
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
-  const [year, setYear] = useState("");
-
-  const models = make && make !== "All Makes" ? VEHICLE_MAKES[make] || [] : [];
+  const [yearFrom, setYearFrom] = useState("");
+  const [yearTo, setYearTo] = useState("");
 
   const addVehicle = () => {
-    let tag = "";
-    if (make === "All Makes") {
-      tag = "All Makes";
-    } else if (make && model && year) {
-      tag = `${make} ${model} ${year}`;
-    } else if (make && model) {
-      tag = `${make} ${model}`;
-    } else if (make) {
-      tag = make;
-    }
-    if (!tag || vehicles.includes(tag)) return;
+    if (!make) return;
+    let tag = make;
+    if (model.trim()) tag += ` ${model.trim()}`;
+    if (yearFrom && yearTo) tag += ` ${yearFrom}-${yearTo}`;
+    else if (yearFrom) tag += ` ${yearFrom}`;
+    else if (yearTo) tag += ` ${yearTo}`;
+    if (vehicles.includes(tag)) return;
     onChange([...vehicles, tag]);
     setMake("");
     setModel("");
-    setYear("");
+    setYearFrom("");
+    setYearTo("");
   };
 
   const removeVehicle = (idx: number) => {
@@ -55,7 +49,7 @@ const VehicleSelector = ({ vehicles, onChange }: Props) => {
 
   return (
     <div className="space-y-3">
-      <label className="text-sm text-muted-foreground block mb-1">Compatible Vehicles</label>
+      <label className="text-sm text-muted-foreground block">Compatible Vehicles</label>
       <div className="flex flex-wrap gap-1.5 min-h-[32px]">
         {vehicles.map((v, i) => (
           <Badge key={i} variant="secondary" className="gap-1 pr-1">
@@ -66,40 +60,47 @@ const VehicleSelector = ({ vehicles, onChange }: Props) => {
           </Badge>
         ))}
       </div>
-      <div className="flex gap-2 flex-wrap">
+      <div className="grid grid-cols-2 gap-2">
         <select
           value={make}
-          onChange={e => { setMake(e.target.value); setModel(""); setYear(""); }}
-          className="h-9 px-3 rounded-lg bg-secondary border border-border text-foreground text-sm flex-1 min-w-[120px]"
+          onChange={e => setMake(e.target.value)}
+          className="h-9 px-3 rounded-lg bg-secondary border border-border text-foreground text-sm"
         >
           <option value="">Make...</option>
-          <option value="All Makes">All Makes</option>
-          {Object.keys(VEHICLE_MAKES).map(m => <option key={m} value={m}>{m}</option>)}
+          {VEHICLE_MAKES.map(m => <option key={m} value={m}>{m}</option>)}
         </select>
-        {make && make !== "All Makes" && (
+        <Input
+          value={model}
+          onChange={e => setModel(e.target.value)}
+          placeholder="Model (e.g. 3 Series)"
+          disabled={!make}
+          className="h-9 bg-secondary border-border rounded-lg text-sm"
+        />
+      </div>
+      {make && (
+        <div className="flex gap-2 items-center">
           <select
-            value={model}
-            onChange={e => setModel(e.target.value)}
-            className="h-9 px-3 rounded-lg bg-secondary border border-border text-foreground text-sm flex-1 min-w-[120px]"
+            value={yearFrom}
+            onChange={e => setYearFrom(e.target.value)}
+            className="h-9 px-3 rounded-lg bg-secondary border border-border text-foreground text-sm flex-1"
           >
-            <option value="">Model...</option>
-            {models.map(m => <option key={m} value={m}>{m}</option>)}
-          </select>
-        )}
-        {make && make !== "All Makes" && (
-          <select
-            value={year}
-            onChange={e => setYear(e.target.value)}
-            className="h-9 px-3 rounded-lg bg-secondary border border-border text-foreground text-sm flex-1 min-w-[80px]"
-          >
-            <option value="">Year...</option>
+            <option value="">From...</option>
             {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
           </select>
-        )}
-        <Button type="button" size="sm" variant="outline" onClick={addVehicle} disabled={!make} className="rounded-lg gap-1 h-9">
-          <Plus size={14} /> Add
-        </Button>
-      </div>
+          <span className="text-muted-foreground text-sm">–</span>
+          <select
+            value={yearTo}
+            onChange={e => setYearTo(e.target.value)}
+            className="h-9 px-3 rounded-lg bg-secondary border border-border text-foreground text-sm flex-1"
+          >
+            <option value="">To...</option>
+            {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+          </select>
+          <Button type="button" size="sm" variant="outline" onClick={addVehicle} className="rounded-lg gap-1 h-9">
+            <Plus size={14} /> Add
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
