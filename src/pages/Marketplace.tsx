@@ -15,6 +15,7 @@ import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsCo
 import { usePersistentCompare } from "@/hooks/usePersistentCompare";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { shippingBadge, shipsToBuyer, type BuyerLocation } from "@/lib/shipping";
 
 import ScrollReveal from "@/components/ScrollReveal";
 import { toast } from "sonner";
