@@ -306,7 +306,7 @@ const Tyres = () => {
         />
 
         <div className="relative max-w-7xl mx-auto px-4 pt-16 pb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          <div className="grid grid-cols-1 gap-10 items-center">
             {/* LEFT: heading + search */}
             <div className="flex flex-col">
               <span
@@ -408,65 +408,6 @@ const Tyres = () => {
               </div>
             </div>
 
-            {/* RIGHT: technical tyre cross-section diagram */}
-            <div
-              className="relative rounded-3xl overflow-hidden flex flex-col p-6 sm:p-8"
-              style={{
-                background: 'linear-gradient(180deg, #0f0f11 0%, #050507 100%)',
-                border: `1px solid ${BORDER_2}`,
-                boxShadow: '0 30px 80px -30px rgba(0,0,0,0.9)',
-              }}
-            >
-              <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.25em] text-zinc-400 font-bold mb-2">
-                <span>📐</span> How to read your tyre size
-              </div>
-              <div className="font-mono text-2xl sm:text-3xl font-black tracking-wider text-white mb-4">
-                {width} <span className="text-zinc-600">/</span> {profile}{' '}
-                <span className="text-zinc-600">R</span>{rim}
-              </div>
-
-              <div className="flex-1 flex items-center justify-center">
-                <div className="relative w-full max-w-md aspect-[4/3] rounded-xl overflow-hidden border border-white/10 bg-black">
-                  <SafeImage
-                    src="https://images.unsplash.com/photo-1600291409848-a9a5d4273f6e?w=600&q=90"
-                    alt="Tyre sidewall showing size markings"
-                    className="absolute inset-0 w-full h-full object-cover opacity-90"
-                  />
-                  {/* Simulated sidewall marking */}
-                  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-mono text-white text-2xl sm:text-3xl font-black tracking-widest drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
-                    {width}/{profile} R{rim}
-                  </div>
-
-                  {/* Badge: WIDTH → 205 */}
-                  <div className="absolute top-[18%] left-[8%] flex items-center gap-2">
-                    <span className="px-2.5 py-1 rounded-full bg-[#dc2626] text-white text-[10px] font-black uppercase tracking-wider shadow-lg">
-                      Width · {width}
-                    </span>
-                    <span className="h-px w-10 bg-[#dc2626]" />
-                  </div>
-
-                  {/* Badge: PROFILE → 55 */}
-                  <div className="absolute top-[68%] right-[8%] flex items-center gap-2">
-                    <span className="h-px w-10 bg-[#dc2626]" />
-                    <span className="px-2.5 py-1 rounded-full bg-[#dc2626] text-white text-[10px] font-black uppercase tracking-wider shadow-lg">
-                      Profile · {profile}
-                    </span>
-                  </div>
-
-                  {/* Badge: RIM → R16 */}
-                  <div className="absolute bottom-[8%] left-[8%] flex items-center gap-2">
-                    <span className="px-2.5 py-1 rounded-full bg-[#dc2626] text-white text-[10px] font-black uppercase tracking-wider shadow-lg">
-                      Rim · R{rim}
-                    </span>
-                    <span className="h-px w-10 bg-[#dc2626]" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-4 pt-4 border-t text-center text-xs text-zinc-400" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
-                These numbers are printed on your tyre sidewall
-              </div>
-            </div>
           </div>
         </div>
       </section>
