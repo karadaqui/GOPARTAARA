@@ -171,7 +171,7 @@ const AdminSales = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          <StatCard label="Your Earnings (5%)" value={`£${yourEarnings.toFixed(2)}`} valueColor="#22c55e" />
+          <StatCard label="Your Earnings" value={`£${yourEarnings.toFixed(2)}`} valueColor="#22c55e" subtitle="tiered 3–5%" />
           <StatCard label="Total To Send" value={`£${totalToPayOut.toFixed(2)}`} valueColor="#f59e0b" subtitle="unpaid payouts" />
           <StatCard label="Total Received" value={`£${totalReceived.toFixed(2)}`} subtitle="gross sales" />
           <StatCard label="Avg Sale Value" value={`£${avgSale.toFixed(2)}`} />
