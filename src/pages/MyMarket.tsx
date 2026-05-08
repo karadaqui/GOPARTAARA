@@ -173,7 +173,7 @@ const MyMarket = () => {
   });
 
   const [listingForm, setListingForm] = useState({
-    title: "", description: "", price: "", category: "",
+    title: "", description: "", price: "", category: "", condition: "", location: "",
     compatible_vehicles: [] as string[], compatible_vehicles_text: "",
     tags: [] as string[], external_link: "", photos: [] as string[]
   });
