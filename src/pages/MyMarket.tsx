@@ -495,7 +495,11 @@ const MyMarket = () => {
       price: listingForm.price ? parseFloat(listingForm.price) : null,
       category: listingForm.category || null,
       compatible_vehicles: allVehicles,
-      tags: listingForm.tags,
+      tags: [
+        ...listingForm.tags.filter(t => !t.startsWith("Condition: ") && !t.startsWith("Location: ")),
+        ...(listingForm.condition ? [`Condition: ${listingForm.condition}`] : []),
+        ...(listingForm.location.trim() ? [`Location: ${listingForm.location.trim()}`] : []),
+      ],
       photos: listingForm.photos,
       external_link: listingForm.external_link || null,
     };
