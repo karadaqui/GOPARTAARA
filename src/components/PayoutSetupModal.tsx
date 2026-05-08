@@ -37,6 +37,7 @@ export default function PayoutSetupModal({
   onOpenChange,
   userId,
   onSaved,
+  onSkip,
   continueLabel = "Save & Continue to Listing →",
 }: Props) {
   const { plan } = useUserPlan();
