@@ -1364,7 +1364,7 @@ const MyMarket = () => {
             </div>
             <Button onClick={handleSaveListing} disabled={saving} className="w-full rounded-xl gap-2">
               {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-              {editingListing ? "Update Listing" : "Create Listing"}
+              {editingListing ? "Update Listing" : "Publish Listing →"}
             </Button>
           </div>
         </DialogContent>
