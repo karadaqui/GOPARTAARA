@@ -1312,7 +1312,7 @@ const MyMarket = () => {
             <DialogTitle className="font-display">{editingListing ? "Edit Listing" : "New Listing"}</DialogTitle>
           </DialogHeader>
           <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300">
-            <span className="font-semibold">GOPARTARA charges a {getCommissionPercent(userPlan)}% platform fee on all sales.</span> You receive {getSellerReceivePercent(userPlan)}% of the sale price.
+            <span className="font-semibold">{getCommissionBlurb(userPlan)}</span> You receive {getSellerReceivePercent(userPlan)}% of the sale price.
           </div>
           <div className="space-y-4">
             <div>
@@ -1340,6 +1340,17 @@ const MyMarket = () => {
                 </select>
               </div>
             </div>
+            {listingForm.category === "Other" && (
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1">Describe the part *</label>
+                <Input
+                  value={listingForm.other_description}
+                  onChange={e => setListingForm(f => ({ ...f, other_description: e.target.value }))}
+                  className="bg-secondary border-border rounded-xl"
+                  placeholder="e.g. Sunroof motor, boot hinge, dashboard trim..."
+                />
+              </div>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm text-muted-foreground block mb-1">Condition *</label>
@@ -1352,25 +1363,46 @@ const MyMarket = () => {
                   <option value="New">New</option>
                   <option value="Used - Good">Used - Good</option>
                   <option value="Used - Fair">Used - Fair</option>
+                  <option value="Refurbished">Refurbished</option>
                 </select>
               </div>
               <div>
-                <label className="text-sm text-muted-foreground block mb-1">Location <span className="text-muted-foreground/50">(postcode or city)</span></label>
-                <Input value={listingForm.location} onChange={e => setListingForm(f => ({ ...f, location: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="e.g. SW1A 1AA or London" />
+                <label className="text-sm text-muted-foreground block mb-1">Country</label>
+                <select
+                  value={listingForm.country}
+                  onChange={e => setListingForm(f => ({ ...f, country: e.target.value }))}
+                  className="w-full h-10 px-3 rounded-xl bg-secondary border border-border text-foreground text-sm"
+                >
+                  {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
               </div>
+            </div>
+            <div className="border border-border rounded-xl p-3">
+              <label className="text-sm text-muted-foreground block mb-2">Ships to</label>
+              <div className="flex flex-wrap gap-3">
+                {(["UK", "EU", "Worldwide"] as const).map(region => (
+                  <label key={region} className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={listingForm.ships_to.includes(region)}
+                      onChange={e => setListingForm(f => ({
+                        ...f,
+                        ships_to: e.target.checked
+                          ? Array.from(new Set([...f.ships_to, region]))
+                          : f.ships_to.filter(r => r !== region),
+                      }))}
+                      className="accent-primary"
+                    />
+                    <span>{region === "UK" ? "🇬🇧 United Kingdom" : region === "EU" ? "🇪🇺 Europe (EU)" : "🌍 Worldwide"}</span>
+                  </label>
+                ))}
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-2">Overrides your seller profile default for this listing.</p>
             </div>
             <VehicleSelector
               vehicles={listingForm.compatible_vehicles}
               onChange={v => setListingForm(f => ({ ...f, compatible_vehicles: v }))}
             />
-            <div>
-              <label className="text-sm text-muted-foreground block mb-1">Additional Compatible Vehicles <span className="text-muted-foreground/50">(optional)</span></label>
-              <Input value={listingForm.compatible_vehicles_text} onChange={e => setListingForm(f => ({ ...f, compatible_vehicles_text: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="BMW 3 Series 2015-2020, BMW 4 Series" />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground block mb-1">External Link <span className="text-muted-foreground/50">(optional)</span></label>
-              <Input value={listingForm.external_link} onChange={e => setListingForm(f => ({ ...f, external_link: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="https://yourshop.com/part" />
-            </div>
             <div>
               <label className="text-sm text-muted-foreground block mb-1">Photos * <span className="text-muted-foreground/50">(at least 1)</span></label>
               <div className="flex flex-wrap gap-2 mb-2">
