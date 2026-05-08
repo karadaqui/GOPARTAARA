@@ -27,8 +27,10 @@ interface BuyerOffer {
   listing_id: string;
   seller_id: string;
   buyer_id: string;
-  listing_title: string;
-  listing_photo: string | null;
+  seller_listings?: {
+    title: string;
+    photos: string[];
+  } | null;
 }
 
 interface ListingWithSeller {
@@ -152,20 +154,22 @@ const Marketplace = () => {
     try {
       const { data } = await supabase
         .from("offers")
-        .select("id, amount, status, listing_id, seller_id, buyer_id")
+        .select(`
+          id,
+          amount,
+          status,
+          listing_id,
+          seller_id,
+          buyer_id,
+          seller_listings!listing_id (
+            title,
+            photos
+          )
+        `)
         .eq("buyer_id", user.id)
         .in("status", ["accepted", "pending_payment", "paid"])
         .order("created_at", { ascending: false });
-      if (!data || data.length === 0) { setBuyerOffers([]); return; }
-      const listingIds = [...new Set(data.map((o: any) => o.listing_id))];
-      const { data: listings } = await supabase
-        .from("seller_listings").select("id, title, photos").in("id", listingIds);
-      const map = new Map((listings || []).map((l: any) => [l.id, l]));
-      setBuyerOffers(data.map((o: any) => ({
-        ...o,
-        listing_title: map.get(o.listing_id)?.title || "Unknown part",
-        listing_photo: map.get(o.listing_id)?.photos?.[0] || null,
-      })));
+      setBuyerOffers((data || []) as BuyerOffer[]);
     } catch {}
   };
 
@@ -429,19 +433,30 @@ const Marketplace = () => {
                 <h2 className="font-display text-lg font-bold text-foreground">Your offers</h2>
                 {buyerOffers.map(o => (
                   <div key={o.id} className="bg-card border border-border rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center gap-4">
+                    {(() => {
+                      const rawPhoto = o.seller_listings?.photos?.[0] || null;
+                      const photoUrl = rawPhoto
+                        ? rawPhoto.startsWith("http")
+                          ? rawPhoto
+                          : `https://bkwieknlxvkrzluongif.supabase.co/storage/v1/object/public/listing-photos/${rawPhoto}`
+                        : null;
+
+                      return (
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      {o.listing_photo ? (
-                        <SafeImage src={o.listing_photo} alt={o.listing_title} className="w-16 h-16 rounded-lg object-cover shrink-0" />
+                      {photoUrl ? (
+                        <img src={photoUrl} alt="Part" className="w-16 h-16 rounded-lg object-cover flex-shrink-0" loading="lazy" decoding="async" />
                       ) : (
-                        <div className="w-16 h-16 rounded-lg bg-secondary flex items-center justify-center shrink-0">
-                          <Wrench size={22} className="text-muted-foreground" />
+                        <div className="w-16 h-16 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
+                          <span className="text-2xl">🔧</span>
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-sm truncate text-foreground">{o.listing_title}</p>
+                        <p className="font-semibold text-sm truncate text-foreground">{o.seller_listings?.title || "Unknown part"}</p>
                         <p className="text-xs text-muted-foreground">Your offer: £{Number(o.amount).toFixed(2)}</p>
                       </div>
                     </div>
+                      );
+                    })()}
                     {o.status === "paid" ? (
                       <Badge className="bg-green-500/20 text-green-400 border-green-500/30">✓ Paid</Badge>
                     ) : (
