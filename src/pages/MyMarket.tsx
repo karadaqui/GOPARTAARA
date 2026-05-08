@@ -755,7 +755,17 @@ const MyMarket = () => {
 
               {/* Shipping section */}
               <div className="border border-border rounded-xl p-4">
-                <h3 className="text-sm font-medium mb-1">Shipping</h3>
+                <h3 className="text-sm font-medium mb-1">Location & Shipping</h3>
+                <div className="mb-3">
+                  <label className="text-xs text-muted-foreground block mb-1">Your country</label>
+                  <select
+                    value={profileForm.country}
+                    onChange={e => setProfileForm(f => ({ ...f, country: e.target.value }))}
+                    className="w-full h-10 px-3 rounded-xl bg-secondary border border-border text-foreground text-sm"
+                  >
+                    {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
                 <p className="text-xs text-muted-foreground mb-3">Where do you ship to?</p>
                 <div className="space-y-2">
                   <label className="flex items-center gap-2 text-sm cursor-not-allowed opacity-80">
