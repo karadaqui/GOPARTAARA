@@ -102,7 +102,7 @@ const comparisonRows: { feature: string; free: string; pro: string; elite: strin
   { feature: "Vehicle notes", free: "✗", pro: "✗", elite: "✓" },
   { feature: "Analytics dashboard", free: "✗", pro: "✗", elite: "✓" },
   { feature: "Priority email support", free: "✗", pro: "✗", elite: "✓" },
-  { feature: "Marketplace commission", free: "5%", pro: "4%", elite: "3%" },
+  { feature: "Marketplace commission", free: "8%", pro: "5%", elite: "3%" },
 ];
 
 /* ── FAQ data ───────────────────────────────────────────── */
