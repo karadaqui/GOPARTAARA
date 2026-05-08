@@ -1214,6 +1214,7 @@ export type Database = {
           id: string
           logo_url: string | null
           seller_tier: string
+          ships_to: string[]
           updated_at: string
           user_id: string
           website_url: string | null
@@ -1228,6 +1229,7 @@ export type Database = {
           id?: string
           logo_url?: string | null
           seller_tier?: string
+          ships_to?: string[]
           updated_at?: string
           user_id: string
           website_url?: string | null
@@ -1242,6 +1244,7 @@ export type Database = {
           id?: string
           logo_url?: string | null
           seller_tier?: string
+          ships_to?: string[]
           updated_at?: string
           user_id?: string
           website_url?: string | null
