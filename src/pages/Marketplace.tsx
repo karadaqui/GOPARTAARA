@@ -321,6 +321,12 @@ const Marketplace = () => {
                 )}
               </div>
 
+              <div className="mb-3">
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground border border-border">
+                  <span aria-hidden>{ship.icon}</span> {ship.label}
+                </span>
+              </div>
+
               {/* Seller + stats */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 min-w-0">
