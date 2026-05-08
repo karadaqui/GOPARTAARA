@@ -14,8 +14,9 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+import { getCommissionRate, getCommissionPercent } from "@/lib/commission";
+
 const ADMIN_EMAIL = "info@gopartara.com";
-const COMMISSION_RATE = 0.05;
 
 interface SaleRow {
   id: string;
