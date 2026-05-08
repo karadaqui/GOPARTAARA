@@ -170,12 +170,16 @@ const MyMarket = () => {
     business_name: "", description: "", contact_email: "", contact_phone: "", website_url: "",
     bank_account_name: "", bank_sort_code: "", bank_account_number: "", bank_paypal_email: "",
     ships_to: ["UK"] as string[],
+    country: DEFAULT_COUNTRY,
   });
 
   const [listingForm, setListingForm] = useState({
-    title: "", description: "", price: "", category: "", condition: "", location: "",
-    compatible_vehicles: [] as string[], compatible_vehicles_text: "",
-    tags: [] as string[], external_link: "", photos: [] as string[]
+    title: "", description: "", price: "", category: "", condition: "",
+    country: DEFAULT_COUNTRY,
+    other_description: "",
+    ships_to: ["UK"] as string[],
+    compatible_vehicles: [] as string[],
+    tags: [] as string[], photos: [] as string[]
   });
 
   useEffect(() => {
