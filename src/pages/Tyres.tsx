@@ -441,40 +441,6 @@ const Tyres = () => {
       </section>
 
       <main className="max-w-7xl mx-auto px-4 pb-20">
-        {/* HOW TO READ TYRE SIZE */}
-        <Collapsible className="mb-10">
-          <div
-            className="rounded-2xl overflow-hidden"
-            style={{ background: CARD, border: `1px solid ${BORDER}` }}
-          >
-            <CollapsibleTrigger className="w-full flex items-center justify-between px-5 py-4 text-left group">
-              <span className="font-semibold text-white flex items-center gap-2">
-                <span>📖</span> How to read your tyre size & EU label
-              </span>
-              <ChevronDown className="h-5 w-5 text-zinc-400 transition-transform group-data-[state=open]:rotate-180" />
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div style={{ textAlign: 'center', padding: '24px', color: 'white', fontFamily: 'sans-serif' }}>
-                <div style={{ fontSize: '13px', color: '#888', letterSpacing: '2px', marginBottom: '8px' }}>HOW TO READ YOUR TYRE SIZE</div>
-                <div style={{ fontSize: '64px', fontWeight: 900, letterSpacing: '-2px' }}>
-                  <span style={{ color: 'white' }}>{width}</span>
-                  <span style={{ color: '#555' }}>/</span>
-                  <span style={{ color: 'white' }}>{profile}</span>
-                  <span style={{ color: '#555', fontSize: '48px' }}> R</span>
-                  <span style={{ color: 'white' }}>{rim}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '60px', marginTop: '8px' }}>
-                  <span style={{ color: '#dc2626', fontSize: '11px', letterSpacing: '2px' }}>WIDTH</span>
-                  <span style={{ color: '#dc2626', fontSize: '11px', letterSpacing: '2px' }}>PROFILE</span>
-                  <span style={{ color: '#dc2626', fontSize: '11px', letterSpacing: '2px' }}>RIM</span>
-                </div>
-                <div style={{ marginTop: '12px', color: '#555', fontSize: '12px' }}>Found on your tyre sidewall</div>
-              </div>
-            </CollapsibleContent>
-          </div>
-        </Collapsible>
-
-
         {loading && (
           <div className="flex flex-col items-center justify-center py-24 gap-3">
             <Loader2 className="h-10 w-10 animate-spin" style={{ color: RED }} />
