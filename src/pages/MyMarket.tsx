@@ -173,7 +173,7 @@ const MyMarket = () => {
   });
 
   const [listingForm, setListingForm] = useState({
-    title: "", description: "", price: "", category: "",
+    title: "", description: "", price: "", category: "", condition: "", location: "",
     compatible_vehicles: [] as string[], compatible_vehicles_text: "",
     tags: [] as string[], external_link: "", photos: [] as string[]
   });
@@ -345,6 +345,11 @@ const MyMarket = () => {
       toast({ title: "Profile created!" });
       setEditingProfile(false);
       await loadData();
+      // Issue 3: proceed straight into the listing form so the new seller
+      // can publish their first part without an extra click.
+      setEditingListing(null);
+      setListingForm({ title: "", description: "", price: "", category: "", condition: "", location: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
+      setListingDialog(true);
     }
     setSaving(false);
   };
@@ -410,14 +415,20 @@ const MyMarket = () => {
     }
     if (listing) {
       setEditingListing(listing);
+      // Recover condition / location stored as tags (Condition: X, Location: Y)
+      const conditionTag = (listing.tags || []).find(t => t.startsWith("Condition: "));
+      const locationTag = (listing.tags || []).find(t => t.startsWith("Location: "));
+      const cleanTags = (listing.tags || []).filter(t => !t.startsWith("Condition: ") && !t.startsWith("Location: "));
       setListingForm({
         title: listing.title,
         description: listing.description,
         price: listing.price?.toString() || "",
         category: listing.category || "",
+        condition: conditionTag ? conditionTag.replace("Condition: ", "") : "",
+        location: locationTag ? locationTag.replace("Location: ", "") : "",
         compatible_vehicles: listing.compatible_vehicles,
         compatible_vehicles_text: "",
-        tags: listing.tags,
+        tags: cleanTags,
         external_link: listing.external_link || "",
         photos: listing.photos,
       });
@@ -431,7 +442,7 @@ const MyMarket = () => {
         return;
       }
       setEditingListing(null);
-      setListingForm({ title: "", description: "", price: "", category: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
+      setListingForm({ title: "", description: "", price: "", category: "", condition: "", location: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
     }
     setListingDialog(true);
   };
@@ -470,6 +481,10 @@ const MyMarket = () => {
       toast({ title: "Category is required", variant: "destructive" });
       return;
     }
+    if (!listingForm.condition) {
+      toast({ title: "Condition is required", variant: "destructive" });
+      return;
+    }
     if (!listingForm.description.trim()) {
       toast({ title: "Description is required", variant: "destructive" });
       return;
@@ -489,7 +504,11 @@ const MyMarket = () => {
       price: listingForm.price ? parseFloat(listingForm.price) : null,
       category: listingForm.category || null,
       compatible_vehicles: allVehicles,
-      tags: listingForm.tags,
+      tags: [
+        ...listingForm.tags.filter(t => !t.startsWith("Condition: ") && !t.startsWith("Location: ")),
+        ...(listingForm.condition ? [`Condition: ${listingForm.condition}`] : []),
+        ...(listingForm.location.trim() ? [`Location: ${listingForm.location.trim()}`] : []),
+      ],
       photos: listingForm.photos,
       external_link: listingForm.external_link || null,
     };
@@ -1300,6 +1319,25 @@ const MyMarket = () => {
                 </select>
               </div>
             </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1">Condition *</label>
+                <select
+                  value={listingForm.condition}
+                  onChange={e => setListingForm(f => ({ ...f, condition: e.target.value }))}
+                  className="w-full h-10 px-3 rounded-xl bg-secondary border border-border text-foreground text-sm"
+                >
+                  <option value="">Select...</option>
+                  <option value="New">New</option>
+                  <option value="Used - Good">Used - Good</option>
+                  <option value="Used - Fair">Used - Fair</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm text-muted-foreground block mb-1">Location <span className="text-muted-foreground/50">(postcode or city)</span></label>
+                <Input value={listingForm.location} onChange={e => setListingForm(f => ({ ...f, location: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="e.g. SW1A 1AA or London" />
+              </div>
+            </div>
             <VehicleSelector
               vehicles={listingForm.compatible_vehicles}
               onChange={v => setListingForm(f => ({ ...f, compatible_vehicles: v }))}
@@ -1331,7 +1369,7 @@ const MyMarket = () => {
             </div>
             <Button onClick={handleSaveListing} disabled={saving} className="w-full rounded-xl gap-2">
               {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-              {editingListing ? "Update Listing" : "Create Listing"}
+              {editingListing ? "Update Listing" : "Publish Listing →"}
             </Button>
           </div>
         </DialogContent>
@@ -1540,7 +1578,16 @@ const MyMarket = () => {
               setPayoutGateContinue(false);
               // Open listing form now that payout exists
               setEditingListing(null);
-              setListingForm({ title: "", description: "", price: "", category: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
+              setListingForm({ title: "", description: "", price: "", category: "", condition: "", location: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
+              setListingDialog(true);
+            }
+          }}
+          onSkip={() => {
+            // User chose "Not now" — open the listing form anyway
+            if (payoutGateContinue) {
+              setPayoutGateContinue(false);
+              setEditingListing(null);
+              setListingForm({ title: "", description: "", price: "", category: "", condition: "", location: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
               setListingDialog(true);
             }
           }}

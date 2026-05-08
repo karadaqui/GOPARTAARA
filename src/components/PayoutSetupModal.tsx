@@ -22,6 +22,8 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   userId: string;
   onSaved?: () => void;
+  /** Called when user clicks "Not now" / skips. Use to continue the flow without payout. */
+  onSkip?: () => void;
   /** If provided, called after a successful save (e.g. open listing form). */
   continueLabel?: string;
 }
@@ -35,6 +37,7 @@ export default function PayoutSetupModal({
   onOpenChange,
   userId,
   onSaved,
+  onSkip,
   continueLabel = "Save & Continue to Listing →",
 }: Props) {
   const { plan } = useUserPlan();
@@ -177,7 +180,7 @@ export default function PayoutSetupModal({
         )}
 
         <div className="flex flex-col-reverse sm:flex-row gap-2 mt-2">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={saving} className="sm:flex-1">
+          <Button variant="ghost" onClick={() => { onOpenChange(false); onSkip?.(); }} disabled={saving} className="sm:flex-1">
             Not now
           </Button>
           <Button onClick={handleSave} disabled={saving || loading} className="sm:flex-1">
