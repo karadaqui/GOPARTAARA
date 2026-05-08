@@ -240,7 +240,7 @@ const Marketplace = () => {
     }
     // "newest" — listings already arrive ordered by created_at desc
     return result;
-  }, [listings, category, search, vehicleFilter, minPrice, maxPrice, conditionFilter, sortBy]);
+  }, [listings, category, search, vehicleFilter, minPrice, maxPrice, conditionFilter, sortBy, shipsToMe, buyerLocation]);
 
   const isBoosted = (l: any) => l.featured && l.featured_until && new Date(l.featured_until) > new Date();
   const featured = useMemo(() => filtered
