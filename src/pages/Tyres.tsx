@@ -408,6 +408,34 @@ const Tyres = () => {
               </div>
             </div>
 
+            {/* RIGHT: tyre SVG */}
+            <div className="hidden lg:block w-[400px]">
+              <svg viewBox="0 0 400 400" width="100%" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="200" cy="200" r="185" fill="#111"/>
+                <circle cx="200" cy="200" r="178" fill="#0d0d0d"/>
+                <circle cx="200" cy="200" r="172" fill="#151515"/>
+                <circle cx="200" cy="200" r="165" fill="#0a0a0a"/>
+                <circle cx="200" cy="200" r="110" fill="#2a2a2a"/>
+                <circle cx="200" cy="200" r="105" fill="#333"/>
+                <line x1="200" y1="98" x2="200" y2="302" stroke="#3a3a3a" strokeWidth="18" strokeLinecap="round"/>
+                <line x1="111" y1="152" x2="289" y2="248" stroke="#3a3a3a" strokeWidth="18" strokeLinecap="round"/>
+                <line x1="111" y1="248" x2="289" y2="152" stroke="#3a3a3a" strokeWidth="18" strokeLinecap="round"/>
+                <circle cx="200" cy="200" r="28" fill="#1a1a1a" stroke="#444" strokeWidth="2"/>
+
+                <text x="88" y="172" textAnchor="middle" fill="#888" fontSize="9" fontFamily="sans-serif" fontWeight="600" letterSpacing="1">WIDTH</text>
+                <text x="88" y="188" textAnchor="middle" fill="white" fontSize="22" fontFamily="sans-serif" fontWeight="900">{width}</text>
+
+                <text x="148" y="188" textAnchor="middle" fill="#555" fontSize="22" fontFamily="sans-serif" fontWeight="300">/</text>
+
+                <text x="200" y="172" textAnchor="middle" fill="#888" fontSize="9" fontFamily="sans-serif" fontWeight="600" letterSpacing="1">PROFILE</text>
+                <text x="200" y="188" textAnchor="middle" fill="white" fontSize="22" fontFamily="sans-serif" fontWeight="900">{profile}</text>
+
+                <text x="250" y="188" textAnchor="middle" fill="#555" fontSize="22" fontFamily="sans-serif" fontWeight="300">R</text>
+
+                <text x="310" y="172" textAnchor="middle" fill="#888" fontSize="9" fontFamily="sans-serif" fontWeight="600" letterSpacing="1">RIM</text>
+                <text x="310" y="188" textAnchor="middle" fill="white" fontSize="22" fontFamily="sans-serif" fontWeight="900">{rim}</text>
+              </svg>
+            </div>
           </div>
         </div>
       </section>
