@@ -306,7 +306,7 @@ const Tyres = () => {
         />
 
         <div className="relative max-w-7xl mx-auto px-4 pt-16 pb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+          <div className="grid grid-cols-1 gap-10 items-center">
             {/* LEFT: heading + search */}
             <div className="flex flex-col">
               <span
