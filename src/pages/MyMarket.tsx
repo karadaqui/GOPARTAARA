@@ -1211,7 +1211,7 @@ const MyMarket = () => {
             <DialogTitle className="font-display">{editingListing ? "Edit Listing" : "New Listing"}</DialogTitle>
           </DialogHeader>
           <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300">
-            <span className="font-semibold">GOPARTARA charges a 5% platform fee on all sales.</span> You receive 95% of the sale price.
+            <span className="font-semibold">GOPARTARA charges a {getCommissionPercent(userPlan)}% platform fee on all sales.</span> You receive {getSellerReceivePercent(userPlan)}% of the sale price.
           </div>
           <div className="space-y-4">
             <div>
