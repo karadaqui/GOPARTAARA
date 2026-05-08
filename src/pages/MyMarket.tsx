@@ -33,6 +33,7 @@ interface SellerProfile {
   website_url: string | null;
   seller_tier: string;
   approved: boolean;
+  ships_to: string[] | null;
 }
 
 interface Listing {
