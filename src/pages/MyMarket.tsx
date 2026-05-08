@@ -437,7 +437,7 @@ const MyMarket = () => {
         return;
       }
       setEditingListing(null);
-      setListingForm({ title: "", description: "", price: "", category: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
+      setListingForm({ title: "", description: "", price: "", category: "", condition: "", location: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
     }
     setListingDialog(true);
   };
