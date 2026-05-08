@@ -410,14 +410,20 @@ const MyMarket = () => {
     }
     if (listing) {
       setEditingListing(listing);
+      // Recover condition / location stored as tags (Condition: X, Location: Y)
+      const conditionTag = (listing.tags || []).find(t => t.startsWith("Condition: "));
+      const locationTag = (listing.tags || []).find(t => t.startsWith("Location: "));
+      const cleanTags = (listing.tags || []).filter(t => !t.startsWith("Condition: ") && !t.startsWith("Location: "));
       setListingForm({
         title: listing.title,
         description: listing.description,
         price: listing.price?.toString() || "",
         category: listing.category || "",
+        condition: conditionTag ? conditionTag.replace("Condition: ", "") : "",
+        location: locationTag ? locationTag.replace("Location: ", "") : "",
         compatible_vehicles: listing.compatible_vehicles,
         compatible_vehicles_text: "",
-        tags: listing.tags,
+        tags: cleanTags,
         external_link: listing.external_link || "",
         photos: listing.photos,
       });
