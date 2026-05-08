@@ -498,6 +498,10 @@ const MyMarket = () => {
       toast({ title: "Condition is required", variant: "destructive" });
       return;
     }
+    if (listingForm.category === "Other" && !listingForm.other_description.trim()) {
+      toast({ title: "Please describe the part", variant: "destructive" });
+      return;
+    }
     if (!listingForm.description.trim()) {
       toast({ title: "Description is required", variant: "destructive" });
       return;
@@ -507,23 +511,27 @@ const MyMarket = () => {
       return;
     }
     setSaving(true);
-    const extraVehicles = listingForm.compatible_vehicles_text
-      .split(",").map(s => s.trim()).filter(Boolean);
-    const allVehicles = [...listingForm.compatible_vehicles, ...extraVehicles];
     const payload = {
       seller_id: profile.id,
       title: listingForm.title,
       description: listingForm.description,
       price: listingForm.price ? parseFloat(listingForm.price) : null,
       category: listingForm.category || null,
-      compatible_vehicles: allVehicles,
+      compatible_vehicles: listingForm.compatible_vehicles,
       tags: [
-        ...listingForm.tags.filter(t => !t.startsWith("Condition: ") && !t.startsWith("Location: ")),
+        ...listingForm.tags.filter(t =>
+          !t.startsWith("Condition: ") &&
+          !t.startsWith("Location: ") &&
+          !t.startsWith("Country: ") &&
+          !t.startsWith("Ships: ") &&
+          !t.startsWith("OtherDesc: ")
+        ),
         ...(listingForm.condition ? [`Condition: ${listingForm.condition}`] : []),
-        ...(listingForm.location.trim() ? [`Location: ${listingForm.location.trim()}`] : []),
+        ...(listingForm.country ? [`Country: ${listingForm.country}`] : []),
+        ...(listingForm.ships_to.length ? [`Ships: ${listingForm.ships_to.join(",")}`] : []),
+        ...(listingForm.category === "Other" && listingForm.other_description.trim() ? [`OtherDesc: ${listingForm.other_description.trim()}`] : []),
       ],
       photos: listingForm.photos,
-      external_link: listingForm.external_link || null,
     };
 
     let error;
