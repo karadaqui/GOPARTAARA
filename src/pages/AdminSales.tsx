@@ -14,8 +14,9 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+import { getCommissionRate, getCommissionPercent } from "@/lib/commission";
+
 const ADMIN_EMAIL = "info@gopartara.com";
-const COMMISSION_RATE = 0.05;
 
 interface SaleRow {
   id: string;
@@ -32,6 +33,7 @@ interface SaleRow {
   buyer_email?: string;
   seller_email?: string;
   seller_display_name?: string;
+  seller_plan?: string | null;
   payout?: {
     full_name?: string | null;
     sort_code?: string | null;
@@ -83,7 +85,7 @@ const AdminSales = () => {
 
       const [{ data: listings }, { data: profiles }, { data: payouts }] = await Promise.all([
         supabase.from("seller_listings").select("id, title").in("id", listingIds),
-        supabase.from("profiles").select("user_id, email, display_name").in("user_id", userIds),
+        supabase.from("profiles").select("user_id, email, display_name, subscription_plan").in("user_id", userIds),
         supabase.from("seller_payout_info" as any).select("*").in("user_id", userIds),
       ]);
 
@@ -97,6 +99,7 @@ const AdminSales = () => {
         buyer_email: (profileMap.get(o.buyer_id) as any)?.email || "—",
         seller_email: (profileMap.get(o.seller_id) as any)?.email || "—",
         seller_display_name: (profileMap.get(o.seller_id) as any)?.display_name || null,
+        seller_plan: (profileMap.get(o.seller_id) as any)?.subscription_plan || "free",
         payout: payoutMap.get(o.seller_id) || null,
       }));
 
@@ -142,8 +145,8 @@ const AdminSales = () => {
 
   const paidRows = rows.filter(r => r.status === "paid");
   const totalReceived = paidRows.reduce((s, r) => s + Number(r.amount), 0);
-  const yourEarnings = totalReceived * COMMISSION_RATE;
-  const totalToPayOut = paidRows.filter(r => !r.payout_sent).reduce((s, r) => s + Number(r.amount) * (1 - COMMISSION_RATE), 0);
+  const yourEarnings = paidRows.reduce((s, r) => s + Number(r.amount) * getCommissionRate(r.seller_plan), 0);
+  const totalToPayOut = paidRows.filter(r => !r.payout_sent).reduce((s, r) => s + Number(r.amount) * (1 - getCommissionRate(r.seller_plan)), 0);
   const totalSales = paidRows.length;
   const avgSale = totalSales > 0 ? totalReceived / totalSales : 0;
 
@@ -168,7 +171,7 @@ const AdminSales = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          <StatCard label="Your Earnings (5%)" value={`£${yourEarnings.toFixed(2)}`} valueColor="#22c55e" />
+          <StatCard label="Your Earnings" value={`£${yourEarnings.toFixed(2)}`} valueColor="#22c55e" subtitle="tiered 3–5%" />
           <StatCard label="Total To Send" value={`£${totalToPayOut.toFixed(2)}`} valueColor="#f59e0b" subtitle="unpaid payouts" />
           <StatCard label="Total Received" value={`£${totalReceived.toFixed(2)}`} subtitle="gross sales" />
           <StatCard label="Avg Sale Value" value={`£${avgSale.toFixed(2)}`} />
@@ -226,9 +229,9 @@ const AdminSales = () => {
                   </td>
                   <td className="p-3 whitespace-nowrap min-w-[160px]">
                     <div className="text-foreground">Paid: £{amt.toFixed(2)}</div>
-                    <div className="text-[12px]" style={{ color: '#22c55e' }}>Your 5%: £{(amt * COMMISSION_RATE).toFixed(2)}</div>
+                    <div className="text-[12px]" style={{ color: '#22c55e' }}>Your {getCommissionPercent(r.seller_plan)}%: £{(amt * getCommissionRate(r.seller_plan)).toFixed(2)}</div>
                     <div style={{ color: '#cc1111', fontWeight: 700, fontSize: '16px' }}>
-                      → Send: £{(amt * (1 - COMMISSION_RATE)).toFixed(2)}
+                      → Send: £{(amt * (1 - getCommissionRate(r.seller_plan))).toFixed(2)}
                     </div>
                   </td>
                   <td className="p-3">
