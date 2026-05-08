@@ -33,6 +33,7 @@ interface SellerProfile {
   website_url: string | null;
   seller_tier: string;
   approved: boolean;
+  ships_to: string[] | null;
 }
 
 interface Listing {
@@ -168,6 +169,7 @@ const MyMarket = () => {
   const [profileForm, setProfileForm] = useState({
     business_name: "", description: "", contact_email: "", contact_phone: "", website_url: "",
     bank_account_name: "", bank_sort_code: "", bank_account_number: "", bank_paypal_email: "",
+    ships_to: ["UK"] as string[],
   });
 
   const [listingForm, setListingForm] = useState({
@@ -219,6 +221,7 @@ const MyMarket = () => {
         bank_sort_code: bankDetails.sort_code || "",
         bank_account_number: bankDetails.account_number || "",
         bank_paypal_email: bankDetails.paypal_email || "",
+        ships_to: ((sp as any).ships_to && (sp as any).ships_to.length > 0) ? (sp as any).ships_to : ["UK"],
       });
 
       const { data: ls } = await supabase
@@ -320,6 +323,7 @@ const MyMarket = () => {
       contact_email: profileForm.contact_email || null,
       contact_phone: profileForm.contact_phone || null,
       website_url: profileForm.website_url || null,
+      ships_to: profileForm.ships_to.length > 0 ? profileForm.ships_to : ["UK"],
       approved: true,
     } as any);
 
@@ -355,6 +359,7 @@ const MyMarket = () => {
         contact_email: profileForm.contact_email || null,
         contact_phone: profileForm.contact_phone || null,
         website_url: profileForm.website_url || null,
+        ships_to: profileForm.ships_to.length > 0 ? profileForm.ships_to : ["UK"],
       } as any)
       .eq("id", profile.id);
 
@@ -706,6 +711,34 @@ const MyMarket = () => {
               <div>
                 <label className="text-sm text-muted-foreground block mb-1">Website <span className="text-muted-foreground/50">(optional)</span></label>
                 <Input value={profileForm.website_url} onChange={e => setProfileForm(f => ({ ...f, website_url: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="https://..." />
+              </div>
+
+              {/* Shipping section */}
+              <div className="border border-border rounded-xl p-4">
+                <h3 className="text-sm font-medium mb-1">Shipping</h3>
+                <p className="text-xs text-muted-foreground mb-3">Where do you ship to?</p>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-sm cursor-not-allowed opacity-80">
+                    <input type="checkbox" checked readOnly className="accent-primary" />
+                    <span>🇬🇧 United Kingdom <span className="text-muted-foreground">(default)</span></span>
+                  </label>
+                  {(["EU", "Worldwide"] as const).map(region => (
+                    <label key={region} className="flex items-center gap-2 text-sm cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={profileForm.ships_to.includes(region)}
+                        onChange={e => setProfileForm(f => ({
+                          ...f,
+                          ships_to: e.target.checked
+                            ? Array.from(new Set([...f.ships_to, region]))
+                            : f.ships_to.filter(r => r !== region),
+                        }))}
+                        className="accent-primary"
+                      />
+                      <span>{region === "EU" ? "🇪🇺 Europe (EU countries)" : "🌍 Worldwide"}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
 
               {/* Payment Details Section */}
@@ -1163,6 +1196,34 @@ const MyMarket = () => {
             <div>
               <label className="text-sm text-muted-foreground block mb-1">Website <span className="text-muted-foreground/50">(optional)</span></label>
               <Input value={profileForm.website_url} onChange={e => setProfileForm(f => ({ ...f, website_url: e.target.value }))} className="bg-secondary border-border rounded-xl" />
+            </div>
+
+            {/* Shipping section */}
+            <div className="border border-border rounded-xl p-4">
+              <h3 className="text-sm font-medium mb-1">Shipping</h3>
+              <p className="text-xs text-muted-foreground mb-3">Where do you ship to?</p>
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm cursor-not-allowed opacity-80">
+                  <input type="checkbox" checked readOnly className="accent-primary" />
+                  <span>🇬🇧 United Kingdom <span className="text-muted-foreground">(default)</span></span>
+                </label>
+                {(["EU", "Worldwide"] as const).map(region => (
+                  <label key={region} className="flex items-center gap-2 text-sm cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={profileForm.ships_to.includes(region)}
+                      onChange={e => setProfileForm(f => ({
+                        ...f,
+                        ships_to: e.target.checked
+                          ? Array.from(new Set([...f.ships_to, region]))
+                          : f.ships_to.filter(r => r !== region),
+                      }))}
+                      className="accent-primary"
+                    />
+                    <span>{region === "EU" ? "🇪🇺 Europe (EU countries)" : "🌍 Worldwide"}</span>
+                  </label>
+                ))}
+              </div>
             </div>
 
             {/* Payment Details Section */}

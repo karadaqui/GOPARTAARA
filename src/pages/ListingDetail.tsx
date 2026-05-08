@@ -20,6 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useToast } from "@/hooks/use-toast";
+import { shippingLongLabel } from "@/lib/shipping";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle
 } from "@/components/ui/dialog";
@@ -51,6 +52,7 @@ interface ListingFull {
     seller_tier: string;
     website_url: string | null;
     created_at: string;
+    ships_to: string[] | null;
   };
 }
 
@@ -155,7 +157,7 @@ const ListingDetail = () => {
     try {
       const { data } = await supabase
         .from("seller_listings")
-        .select("*, seller_profiles!inner(id, user_id, business_name, description, logo_url, contact_email, seller_tier, website_url, created_at)")
+        .select("*, seller_profiles!inner(id, user_id, business_name, description, logo_url, contact_email, seller_tier, website_url, created_at, ships_to)")
         .eq("id", id!)
         .single();
 
@@ -565,6 +567,9 @@ const ListingDetail = () => {
               >
                 View Shop →
               </button>
+              <div className="mt-3 pt-3 border-t border-border text-xs text-muted-foreground">
+                <span className="font-medium text-foreground">Ships to:</span> {shippingLongLabel(listing.seller_profiles.ships_to)}
+              </div>
             </div>
 
             {/* Safety notice */}

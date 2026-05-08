@@ -15,6 +15,7 @@ import { CompareBar, CompareModal, type CompareItem } from "@/components/PartsCo
 import { usePersistentCompare } from "@/hooks/usePersistentCompare";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { shippingBadge, shipsToBuyer, type BuyerLocation } from "@/lib/shipping";
 
 import ScrollReveal from "@/components/ScrollReveal";
 import { toast } from "sonner";
@@ -47,6 +48,7 @@ interface ListingWithSeller {
     business_name: string;
     logo_url: string | null;
     seller_tier: string;
+    ships_to: string[] | null;
   };
 }
 
@@ -100,8 +102,8 @@ const Marketplace = () => {
   const [maxPrice, setMaxPrice] = useState<string>("");
   const [sortBy, setSortBy] = useState<"newest" | "price_asc" | "price_desc">("newest");
   const [conditionFilter, setConditionFilter] = useState<"All" | "New" | "Used - Good" | "Used - Fair">("All");
-  const [locationFilter, setLocationFilter] = useState<"any" | "10mi" | "25mi" | "50mi" | "uk" | "europe">("any");
-  const [postcode, setPostcode] = useState<string>("");
+  const [buyerLocation, setBuyerLocation] = useState<BuyerLocation>("any");
+  const [shipsToMe, setShipsToMe] = useState<boolean>(false);
 
   const [compareParts, setCompareParts] = usePersistentCompare();
   const [showCompare, setShowCompare] = useState(false);
@@ -190,7 +192,7 @@ const Marketplace = () => {
     try {
       const { data } = await supabase
         .from("seller_listings")
-        .select("*, seller_profiles(id, business_name, logo_url, seller_tier, approved)")
+        .select("*, seller_profiles(id, business_name, logo_url, seller_tier, approved, ships_to)")
         .eq("active", true).eq("approval_status", "approved")
         .order("created_at", { ascending: false });
       const filtered = ((data as any[]) || []).filter((l: any) => l.seller_profiles?.approved);
@@ -226,6 +228,9 @@ const Marketplace = () => {
         const c = conditionFromTags(l.tags);
         if (c !== conditionFilter) return false;
       }
+      if (shipsToMe && buyerLocation !== "any") {
+        if (!shipsToBuyer(l.seller_profiles?.ships_to, buyerLocation)) return false;
+      }
       return true;
     });
     if (sortBy === "price_asc") {
@@ -235,7 +240,7 @@ const Marketplace = () => {
     }
     // "newest" — listings already arrive ordered by created_at desc
     return result;
-  }, [listings, category, search, vehicleFilter, minPrice, maxPrice, conditionFilter, sortBy]);
+  }, [listings, category, search, vehicleFilter, minPrice, maxPrice, conditionFilter, sortBy, shipsToMe, buyerLocation]);
 
   const isBoosted = (l: any) => l.featured && l.featured_until && new Date(l.featured_until) > new Date();
   const featured = useMemo(() => filtered
@@ -266,6 +271,7 @@ const Marketplace = () => {
   const renderCard = (listing: ListingWithSeller, isFeatured: boolean, index: number) => {
     const isComparing = compareParts.some((p) => p.id === listing.id);
     const condition = conditionFromTags(listing.tags);
+    const ship = shippingBadge(listing.seller_profiles?.ships_to);
 
     return (
       <ScrollReveal key={listing.id} delay={index * 50}>
@@ -313,6 +319,12 @@ const Marketplace = () => {
                 {listing.category && (
                   <Badge variant="outline" className="text-[10px] shrink-0">{listing.category}</Badge>
                 )}
+              </div>
+
+              <div className="mb-3">
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground border border-border">
+                  <span aria-hidden>{ship.icon}</span> {ship.label}
+                </span>
               </div>
 
               {/* Seller + stats */}
@@ -527,35 +539,34 @@ const Marketplace = () => {
                 </select>
 
                 <select
-                  value={locationFilter}
-                  onChange={e => setLocationFilter(e.target.value as any)}
+                  value={buyerLocation}
+                  onChange={e => setBuyerLocation(e.target.value as BuyerLocation)}
                   className="bg-secondary border border-border rounded-xl text-sm h-9 px-3 text-foreground"
-                  aria-label="Location"
+                  aria-label="Your location"
                 >
-                  <option value="any">📍 Any location</option>
-                  <option value="10mi">📍 Within 10 miles</option>
-                  <option value="25mi">📍 Within 25 miles</option>
-                  <option value="50mi">📍 Within 50 miles</option>
-                  <option value="uk">📍 UK only</option>
-                  <option value="europe">📍 Europe</option>
+                  <option value="any">🌍 Any country</option>
+                  <option value="uk">🇬🇧 United Kingdom</option>
+                  <option value="eu">🇪🇺 Europe</option>
+                  <option value="other">🌐 Other</option>
                 </select>
 
-                {(locationFilter === "10mi" || locationFilter === "25mi" || locationFilter === "50mi") && (
-                  <Input
-                    value={postcode}
-                    onChange={e => setPostcode(e.target.value.toUpperCase())}
-                    placeholder="Enter postcode"
-                    className="bg-secondary border-border rounded-xl text-sm h-9 w-36"
-                    aria-label="Postcode"
+                <label className="inline-flex items-center gap-2 text-sm text-foreground bg-secondary border border-border rounded-xl h-9 px-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={shipsToMe}
+                    onChange={e => setShipsToMe(e.target.checked)}
+                    className="accent-primary"
+                    disabled={buyerLocation === "any"}
                   />
-                )}
+                  <span className={buyerLocation === "any" ? "text-muted-foreground" : ""}>Ships to me</span>
+                </label>
               </div>
             </div>
             <div className="mb-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[
                   { emoji: "🆓", title: "Free to list", desc: "Up to 5 listings on the Free plan. Unlimited on Pro & Elite." },
-                  { emoji: "🛡️", title: "UK sellers only", desc: "All listings are from registered GOPARTARA members in the UK." },
+                  { emoji: "🛡️", title: "Verified UK Sellers", desc: "All sellers are registered GOPARTARA members. Many ship across Europe & worldwide." },
                   { emoji: "⚡", title: "Live immediately", desc: "Your listing goes live as soon as you publish it." },
                 ].map(({ emoji, title, desc }) => (
                   <div
