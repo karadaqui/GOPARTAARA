@@ -353,7 +353,7 @@ const MyMarket = () => {
       // Issue 3: proceed straight into the listing form so the new seller
       // can publish their first part without an extra click.
       setEditingListing(null);
-      setListingForm({ title: "", description: "", price: "", category: "", condition: "", location: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
+      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [] });
       setListingDialog(true);
     }
     setSaving(false);
