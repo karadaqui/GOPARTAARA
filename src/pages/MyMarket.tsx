@@ -345,6 +345,11 @@ const MyMarket = () => {
       toast({ title: "Profile created!" });
       setEditingProfile(false);
       await loadData();
+      // Issue 3: proceed straight into the listing form so the new seller
+      // can publish their first part without an extra click.
+      setEditingListing(null);
+      setListingForm({ title: "", description: "", price: "", category: "", condition: "", location: "", compatible_vehicles: [], compatible_vehicles_text: "", tags: [], external_link: "", photos: [] });
+      setListingDialog(true);
     }
     setSaving(false);
   };
