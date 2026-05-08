@@ -48,6 +48,7 @@ interface ListingWithSeller {
     business_name: string;
     logo_url: string | null;
     seller_tier: string;
+    ships_to: string[] | null;
   };
 }
 
