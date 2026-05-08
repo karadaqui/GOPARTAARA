@@ -476,6 +476,10 @@ const MyMarket = () => {
       toast({ title: "Category is required", variant: "destructive" });
       return;
     }
+    if (!listingForm.condition) {
+      toast({ title: "Condition is required", variant: "destructive" });
+      return;
+    }
     if (!listingForm.description.trim()) {
       toast({ title: "Description is required", variant: "destructive" });
       return;
