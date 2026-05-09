@@ -564,8 +564,25 @@ const ListingDetail = () => {
               >
                 View Shop →
               </button>
-              <div className="mt-3 pt-3 border-t border-border text-xs text-muted-foreground">
-                <span className="font-medium text-foreground">Ships to:</span> {shippingLongLabel(listing.seller_profiles.ships_to)}
+              <div className="mt-3 pt-3 border-t border-border space-y-1.5 text-xs">
+                <div className="text-muted-foreground">
+                  <span className="font-medium text-foreground">Ships to:</span> {shippingLongLabel(listing.seller_profiles.ships_to)}
+                </div>
+                <div className="text-muted-foreground">
+                  <span className="font-medium text-foreground">Shipping:</span>{" "}
+                  {listing.free_shipping ? (
+                    <span className="text-emerald-500 font-semibold">Free shipping</span>
+                  ) : listing.shipping_fee != null ? (
+                    <>£{Number(listing.shipping_fee).toFixed(2)}</>
+                  ) : (
+                    <>Contact seller</>
+                  )}
+                </div>
+                {listing.dispatch_time && (
+                  <div className="text-muted-foreground">
+                    <span className="font-medium text-foreground">Dispatch:</span> {listing.dispatch_time}
+                  </div>
+                )}
               </div>
             </div>
 
