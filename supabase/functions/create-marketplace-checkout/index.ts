@@ -10,7 +10,9 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    console.log("[checkout] Step 1: request received", { method: req.method });
     const authHeader = req.headers.get("Authorization");
+    console.log("[checkout] Step 2: auth header present:", !!authHeader);
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "Missing authorization" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -31,6 +33,7 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
     const { offerId, listingId, buyNow, address_payload } = body;
+    console.log("[checkout] Step 3: body parsed", { offerId, listingId, buyNow, hasAddress: !!address_payload, userId: user.id });
 
     // Service-role client for trusted reads/writes
     const supabaseAdmin = createClient(
@@ -38,12 +41,20 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    console.log("[checkout] Step 4: STRIPE_SECRET_KEY present:", !!stripeKey, "prefix:", stripeKey?.slice(0, 7));
+    if (!stripeKey) {
+      return new Response(JSON.stringify({ error: "Server missing STRIPE_SECRET_KEY" }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const stripe = new Stripe(stripeKey, {
       apiVersion: "2025-08-27.basil",
     });
 
     // ============= BUY NOW FLOW =============
     if (buyNow === true) {
+      console.log("[checkout] Step 5: BUY NOW flow", { listingId });
       if (!listingId || typeof listingId !== "string") {
         return new Response(JSON.stringify({ error: "Missing listingId" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -56,6 +67,7 @@ Deno.serve(async (req) => {
         .eq("id", listingId)
         .maybeSingle();
 
+      console.log("[checkout] Step 6: listing fetched", { found: !!listing, err: listingErr?.message, active: listing?.active, approval: listing?.approval_status, price: listing?.price });
       if (listingErr || !listing) {
         return new Response(JSON.stringify({ error: "Listing not found" }), {
           status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -95,6 +107,7 @@ Deno.serve(async (req) => {
       }
 
       const amount = Number(listing.price);
+      console.log("[checkout] Step 7: creating Stripe session", { amount, sellerUserId });
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
