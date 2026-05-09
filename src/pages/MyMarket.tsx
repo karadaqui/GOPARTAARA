@@ -167,6 +167,9 @@ const MyMarket = () => {
   const [payoutInfo, setPayoutInfo] = useState<{ full_name: string | null; sort_code: string | null; account_number: string | null; paypal_email: string | null; preferred_method: string | null } | null>(null);
   const [payoutModalOpen, setPayoutModalOpen] = useState(false);
   const [payoutGateContinue, setPayoutGateContinue] = useState(false);
+  const [orders, setOrders] = useState<OrderRow[]>([]);
+  const [shippingOrder, setShippingOrder] = useState<ShippingOrder | null>(null);
+  const [shippingModalOpen, setShippingModalOpen] = useState(false);
 
   const hasValidPayout = !!payoutInfo && (
     (payoutInfo.preferred_method === "bank" && !!payoutInfo.sort_code && !!payoutInfo.account_number) ||
