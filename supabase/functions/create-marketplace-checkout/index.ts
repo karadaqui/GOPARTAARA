@@ -205,8 +205,15 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err: any) {
-    console.error("[create-marketplace-checkout]", err);
-    return new Response(JSON.stringify({ error: err.message || "Checkout failed" }), {
+    console.error("[create-marketplace-checkout] FAILED", {
+      message: err?.message,
+      type: err?.type,
+      code: err?.code,
+      statusCode: err?.statusCode,
+      raw: err?.raw?.message,
+      stack: err?.stack,
+    });
+    return new Response(JSON.stringify({ error: err?.message || "Checkout failed" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
