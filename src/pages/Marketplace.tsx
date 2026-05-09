@@ -482,13 +482,22 @@ const Marketplace = () => {
                       <Badge className="bg-green-500/20 text-green-400 border-green-500/30">✓ Paid</Badge>
                     ) : (
                       <div className="flex flex-col items-stretch sm:items-end gap-1.5">
-                        <Button
-                          onClick={() => handlePayNow(o)}
-                          disabled={payingOfferId === o.id}
-                          className="rounded-xl h-11 bg-primary hover:bg-primary/90 font-semibold"
-                        >
-                          {payingOfferId === o.id ? "Redirecting…" : `Pay £${Number(o.amount).toFixed(2)} Securely →`}
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            onClick={() => setChatOffer(o)}
+                            className="rounded-xl h-11"
+                          >
+                            💬 Message Seller
+                          </Button>
+                          <Button
+                            onClick={() => handlePayNow(o)}
+                            disabled={payingOfferId === o.id}
+                            className="rounded-xl h-11 bg-primary hover:bg-primary/90 font-semibold"
+                          >
+                            {payingOfferId === o.id ? "Redirecting…" : `Pay £${Number(o.amount).toFixed(2)} Securely →`}
+                          </Button>
+                        </div>
                         <p className="text-[11px] text-muted-foreground text-center sm:text-right">🔒 Secured by Stripe — card payments only</p>
                       </div>
                     )}
