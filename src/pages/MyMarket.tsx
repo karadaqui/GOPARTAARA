@@ -2252,6 +2252,26 @@ const MyMarket = () => {
         />
       )}
 
+      {counterOffer && (
+        <CounterOfferModal
+          open={!!counterOffer}
+          onClose={() => setCounterOffer(null)}
+          initiator="seller"
+          originalOffer={{
+            id: counterOffer.id,
+            listing_id: counterOffer.listing_id,
+            buyer_id: counterOffer.buyer_id,
+            seller_id: counterOffer.seller_id,
+            amount: counterOffer.amount,
+            counter_count: counterOffer.counter_count || 0,
+            listing_title: counterOffer.listing_title,
+            listing_photo: counterOffer.listing_photo,
+            buyer_email: counterOffer.buyer_email,
+            buyer_name: counterOffer.buyer_name,
+          }}
+          onSuccess={() => loadData()}
+        />
+
       <Footer />
     </div>
   );
