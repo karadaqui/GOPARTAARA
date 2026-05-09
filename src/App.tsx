@@ -69,6 +69,7 @@ const EvCharging = lazy(() => import("./pages/EvCharging.tsx"));
 const Status = lazy(() => import("./pages/Status.tsx"));
 const PartSearchRedirect = lazy(() => import("./components/PartSearchRedirect.tsx"));
 const Sitemap = lazy(() => import("./pages/Sitemap.tsx"));
+const OrderConfirmation = lazy(() => import("./pages/OrderConfirmation.tsx"));
 
 const queryClient = new QueryClient();
 
