@@ -67,6 +67,7 @@ Deno.serve(async (req) => {
         .eq("id", listingId)
         .maybeSingle();
 
+      console.log("[checkout] Step 6: listing fetched", { found: !!listing, err: listingErr?.message, active: listing?.active, approval: listing?.approval_status, price: listing?.price });
       if (listingErr || !listing) {
         return new Response(JSON.stringify({ error: "Listing not found" }), {
           status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
