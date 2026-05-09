@@ -735,6 +735,26 @@ const Marketplace = () => {
         onSubmit={handleAddressSubmitted}
       />
 
+      {chatOffer && (
+        <OfferChatModal
+          open={!!chatOffer}
+          onClose={() => setChatOffer(null)}
+          offer={{
+            id: chatOffer.id,
+            listing_id: chatOffer.listing_id,
+            buyer_id: chatOffer.buyer_id,
+            seller_id: chatOffer.seller_id,
+            amount: chatOffer.amount,
+            listing_title: chatOffer.seller_listings?.title ?? null,
+            photo: (() => {
+              const p = chatOffer.seller_listings?.photos?.[0];
+              if (!p) return null;
+              return p.startsWith("http") ? p : `https://bkwieknlxvkrzluongif.supabase.co/storage/v1/object/public/listing-photos/${p}`;
+            })(),
+          }}
+        />
+      )}
+
       <Footer />
       <BackToTop />
     </div>
