@@ -1644,7 +1644,21 @@ const MyMarket = () => {
               </div>
             </div>
             <div className="border border-border rounded-xl p-3">
-              <label className="text-sm text-muted-foreground block mb-2">Ships to</label>
+              <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
+                <label className="text-sm text-muted-foreground">Ships to</label>
+                <label className="flex items-center gap-2 text-xs cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={["UK", "EU", "Worldwide"].every(r => listingForm.ships_to.includes(r))}
+                    onChange={e => setListingForm(f => ({
+                      ...f,
+                      ships_to: e.target.checked ? ["UK", "EU", "Worldwide"] : f.ships_to,
+                    }))}
+                    className="accent-primary"
+                  />
+                  <span className="font-medium">🌐 Ships Worldwide (select all)</span>
+                </label>
+              </div>
               <div className="flex flex-wrap gap-3">
                 {(["UK", "EU", "Worldwide"] as const).map(region => (
                   <label key={region} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -1663,7 +1677,7 @@ const MyMarket = () => {
                   </label>
                 ))}
               </div>
-              <p className="text-[10px] text-muted-foreground mt-2">Overrides your seller profile default for this listing.</p>
+              <p className="text-[10px] text-muted-foreground mt-2">Independent of country selection. Tick the regions you'll ship this item to.</p>
             </div>
             {/* Shipping fee + dispatch */}
             <div className="border border-border rounded-xl p-3 space-y-3">
