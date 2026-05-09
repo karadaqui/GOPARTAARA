@@ -136,12 +136,22 @@ const ListingDetail = () => {
     if (!listing) return;
     setBuyingNow(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      if (!token) {
+        toast({ title: "Please sign in", description: "You need to be signed in to buy.", variant: "destructive" });
+        setBuyingNow(false);
+        setBuyNowOpen(false);
+        navigate("/auth?redirect=" + window.location.pathname);
+        return;
+      }
       const { data: res, error } = await supabase.functions.invoke("create-marketplace-checkout", {
         body: {
           listingId: listing.id,
           buyNow: true,
           address_payload: data,
         },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (error) {
         // Try to surface the real error from the edge function response
