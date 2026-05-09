@@ -364,6 +364,16 @@ const Marketplace = () => {
                 )}
               </div>
 
+              <div className="mb-2 text-[11px] text-muted-foreground">
+                {listing.free_shipping ? (
+                  <span className="text-emerald-500 font-semibold">🚚 Free shipping</span>
+                ) : listing.shipping_fee != null ? (
+                  <span>🚚 +£{Number(listing.shipping_fee).toFixed(2)} shipping</span>
+                ) : (
+                  <span>🚚 Shipping: contact seller</span>
+                )}
+              </div>
+
               <div className="mb-3">
                 <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-muted-foreground border border-border">
                   <span aria-hidden>{ship.icon}</span> {ship.label}
