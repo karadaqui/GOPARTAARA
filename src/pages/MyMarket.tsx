@@ -28,6 +28,7 @@ import AddressForm, { EMPTY_ADDRESS, type AddressFormValue } from "@/components/
 import type { ShippoAddress } from "@/lib/shippo";
 import OfferChatModal from "@/components/OfferChatModal";
 import CounterOfferModal from "@/components/CounterOfferModal";
+import EditShopProfileDrawer from "@/components/EditShopProfileDrawer";
 import { CreditCard, AlertTriangle, CheckCircle2, Truck } from "lucide-react";
 
 interface SellerProfile {
