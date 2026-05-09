@@ -60,7 +60,10 @@ export async function shippoCreateOrder(payload: {
   shipping_address: ShippoAddress;
   buyer_name: string;
   buyer_email: string;
-}): Promise<{ order_id: string; duplicate?: boolean }> {
+  billing_address?: ShippoAddress;
+  fulfillment_method?: "delivery" | "collection";
+  delivery_instructions?: string;
+}): Promise<{ order_id: string; order_number?: string; duplicate?: boolean }> {
   const { data, error } = await supabase.functions.invoke("create-shippo-label", {
     body: { action: "create_order", ...payload },
   });
