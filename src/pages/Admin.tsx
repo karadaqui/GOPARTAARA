@@ -119,7 +119,7 @@ const Admin = () => {
   const [reviews, setReviews] = useState<ReviewRow[]>([]);
 
   // Filters
-  const [listingFilter, setListingFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
+  const [listingFilter, setListingFilter] = useState<"all" | "pending" | "approved" | "rejected" | "paused">("pending");
 
   // Dispute resolution
   const [resolveId, setResolveId] = useState<string | null>(null);
