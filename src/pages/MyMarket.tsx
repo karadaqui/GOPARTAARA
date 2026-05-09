@@ -1228,54 +1228,105 @@ const MyMarket = () => {
                         {new Date(offer.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                       </p>
                     </div>
-                    {offer.status === "pending" && (
-                      <div className="flex gap-2 shrink-0">
-                        <Button size="sm" onClick={async () => {
-                          await supabase.from("offers").update({ status: "accepted" }).eq("id", offer.id);
-                          // Notify buyer
-                          await supabase.from("notifications").insert({
-                            user_id: offer.buyer_id,
-                            type: "offer_accepted",
-                            title: "Offer accepted! 🎉",
-                            message: `Your offer of £${Number(offer.amount).toFixed(2)} on "${offer.listing_title}" was accepted!`,
-                            link: `/listing/${offer.listing_id}`,
-                          });
-                          // Create conversation
-                          const { data: existingConv } = await supabase
-                            .from("conversations")
-                            .select("id")
-                            .eq("listing_id", offer.listing_id)
-                            .eq("buyer_id", offer.buyer_id)
-                            .eq("seller_id", user!.id)
-                            .maybeSingle();
-                          if (!existingConv) {
-                            await supabase.from("conversations").insert({
-                              listing_id: offer.listing_id,
-                              buyer_id: offer.buyer_id,
-                              seller_id: user!.id,
+                    <div className="flex flex-col items-end gap-2 shrink-0">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setChatOffer(offer)}
+                        className="rounded-xl gap-1 text-xs h-8 relative"
+                      >
+                        <MessageSquare size={14} /> Chat
+                        {(offer.unread_chat || 0) > 0 && (
+                          <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold px-1">
+                            {offer.unread_chat}
+                          </span>
+                        )}
+                      </Button>
+                      {offer.status === "pending" && (
+                        <div className="flex gap-2">
+                          <Button size="sm" onClick={async () => {
+                            await supabase.from("offers").update({ status: "accepted" }).eq("id", offer.id);
+                            // Notify buyer (in-app)
+                            await supabase.from("notifications").insert({
+                              user_id: offer.buyer_id,
+                              type: "offer_accepted",
+                              title: "Offer accepted! 🎉",
+                              message: `Your offer of £${Number(offer.amount).toFixed(2)} was accepted! Complete your purchase now.`,
+                              link: "/marketplace",
                             });
-                          }
-                          toast({ title: "Offer accepted!" });
-                          await loadData();
-                        }} className="rounded-xl gap-1 text-xs h-8">
-                          <Check size={14} /> Accept
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={async () => {
-                          await supabase.from("offers").update({ status: "declined" }).eq("id", offer.id);
-                          await supabase.from("notifications").insert({
-                            user_id: offer.buyer_id,
-                            type: "offer_declined",
-                            title: "Offer declined",
-                            message: `Your offer of £${Number(offer.amount).toFixed(2)} on "${offer.listing_title}" was declined.`,
-                            link: `/listing/${offer.listing_id}`,
-                          });
-                          toast({ title: "Offer declined" });
-                          await loadData();
-                        }} className="rounded-xl gap-1 text-xs h-8">
-                          <XCircle size={14} /> Decline
-                        </Button>
-                      </div>
-                    )}
+                            // Ensure conversation + system message
+                            try {
+                              const { ensureOfferConversation, insertSystemMessage } = await import("@/components/OfferChatModal");
+                              const cid = await ensureOfferConversation({
+                                id: offer.id, listing_id: offer.listing_id, buyer_id: offer.buyer_id, seller_id: user!.id,
+                              });
+                              if (cid) await insertSystemMessage(cid, user!.id, `✅ Offer accepted! Buyer can now pay.`);
+                            } catch {}
+                            // Email buyer
+                            if (offer.buyer_email) {
+                              try {
+                                await supabase.functions.invoke("send-transactional-email", {
+                                  body: {
+                                    templateName: "contact-notification",
+                                    recipientEmail: offer.buyer_email,
+                                    idempotencyKey: `offer-accepted-${offer.id}`,
+                                    templateData: {
+                                      name: offer.buyer_name || "there",
+                                      email: offer.buyer_email,
+                                      message: `🎉 Your offer of £${Number(offer.amount).toFixed(2)} on "${offer.listing_title}" was accepted! Complete your purchase: ${window.location.origin}/marketplace`,
+                                    },
+                                  },
+                                });
+                              } catch {}
+                            }
+                            toast({ title: "Offer accepted!" });
+                            await loadData();
+                          }} className="rounded-xl gap-1 text-xs h-8">
+                            <Check size={14} /> Accept
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={async () => {
+                            await supabase.from("offers").update({ status: "declined" }).eq("id", offer.id);
+                            await supabase.from("notifications").insert({
+                              user_id: offer.buyer_id,
+                              type: "offer_declined",
+                              title: "Offer declined",
+                              message: `Your offer of £${Number(offer.amount).toFixed(2)} was declined by the seller.`,
+                              link: `/listing/${offer.listing_id}`,
+                            });
+                            try {
+                              const { ensureOfferConversation, insertSystemMessage } = await import("@/components/OfferChatModal");
+                              const cid = await ensureOfferConversation({
+                                id: offer.id, listing_id: offer.listing_id, buyer_id: offer.buyer_id, seller_id: user!.id,
+                              });
+                              if (cid) await insertSystemMessage(cid, user!.id, `❌ Offer was declined.`);
+                            } catch {}
+                            if (offer.buyer_email) {
+                              try {
+                                await supabase.functions.invoke("send-transactional-email", {
+                                  body: {
+                                    templateName: "contact-notification",
+                                    recipientEmail: offer.buyer_email,
+                                    idempotencyKey: `offer-declined-${offer.id}`,
+                                    templateData: {
+                                      name: offer.buyer_name || "there",
+                                      email: offer.buyer_email,
+                                      message: `Your offer of £${Number(offer.amount).toFixed(2)} on "${offer.listing_title}" was declined by the seller.`,
+                                    },
+                                  },
+                                });
+                              } catch {}
+                            }
+                            toast({ title: "Offer declined" });
+                            await loadData();
+                          }} className="rounded-xl gap-1 text-xs h-8">
+                            <XCircle size={14} /> Decline
+                          </Button>
+                        </div>
+                      )}
+                      {offer.status === "declined" && (
+                        <Badge variant="destructive" className="text-xs">Declined</Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
