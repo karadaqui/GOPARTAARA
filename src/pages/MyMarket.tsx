@@ -491,6 +491,9 @@ const MyMarket = () => {
         compatible_vehicles: listing.compatible_vehicles,
         tags: cleanTags,
         photos: listing.photos,
+        shipping_fee: listing.shipping_fee != null ? String(listing.shipping_fee) : "",
+        free_shipping: !!listing.free_shipping,
+        dispatch_time: listing.dispatch_time || "1-2 days",
       });
     } else {
       // Check listing limit based on user subscription plan
