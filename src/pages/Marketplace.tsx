@@ -490,11 +490,87 @@ const Marketplace = () => {
                       )}
                       <div className="min-w-0 flex-1">
                         <p className="font-semibold text-sm truncate text-foreground">{o.seller_listings?.title || "Unknown part"}</p>
-                        <p className="text-xs text-muted-foreground">Your offer: £{Number(o.amount).toFixed(2)}</p>
+                        {o.status === "pending" && o.initiated_by === "seller" ? (
+                          <p className="text-xs font-semibold text-amber-600 dark:text-amber-400">
+                            Seller countered: £{Number(o.amount).toFixed(2)}
+                          </p>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">Your offer: £{Number(o.amount).toFixed(2)}</p>
+                        )}
                       </div>
                     </div>
                     {o.status === "paid" ? (
                       <Badge className="bg-green-500/20 text-green-400 border-green-500/30">✓ Paid</Badge>
+                    ) : o.status === "pending" && o.initiated_by === "seller" ? (
+                      <div className="flex flex-col items-stretch sm:items-end gap-1.5">
+                        <div className="flex gap-2 flex-wrap">
+                          <Button
+                            variant="outline"
+                            onClick={() => setChatOffer(o)}
+                            className="rounded-xl h-10"
+                          >
+                            💬 Chat
+                          </Button>
+                          <Button
+                            onClick={async () => {
+                              await (supabase as any).from("offers").update({ status: "accepted" }).eq("id", o.id);
+                              try {
+                                const cid = await ensureOfferConversation({
+                                  id: o.id, listing_id: o.listing_id, buyer_id: o.buyer_id, seller_id: o.seller_id,
+                                });
+                                if (cid) await insertSystemMessage(cid, user!.id, `✅ Buyer accepted counter offer of £${Number(o.amount).toFixed(2)}`);
+                              } catch {}
+                              await (supabase as any).from("notifications").insert({
+                                user_id: o.seller_id,
+                                type: "offer_accepted",
+                                title: "Counter accepted! 🎉",
+                                message: `Buyer accepted your counter of £${Number(o.amount).toFixed(2)} on "${o.seller_listings?.title || "your listing"}".`,
+                                link: "/my-market",
+                              });
+                              await loadBuyerOffers();
+                              handlePayNow(o);
+                            }}
+                            className="rounded-xl h-10 bg-primary hover:bg-primary/90 font-semibold"
+                          >
+                            ✅ Accept £{Number(o.amount).toFixed(2)}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={async () => {
+                              await (supabase as any).from("offers").update({ status: "declined" }).eq("id", o.id);
+                              try {
+                                const cid = await ensureOfferConversation({
+                                  id: o.id, listing_id: o.listing_id, buyer_id: o.buyer_id, seller_id: o.seller_id,
+                                });
+                                if (cid) await insertSystemMessage(cid, user!.id, `❌ Buyer declined the counter offer`);
+                              } catch {}
+                              await (supabase as any).from("notifications").insert({
+                                user_id: o.seller_id,
+                                type: "offer_declined",
+                                title: "Counter declined",
+                                message: `Buyer declined your counter offer on "${o.seller_listings?.title || "your listing"}".`,
+                                link: "/my-market",
+                              });
+                              toast.success("Counter declined");
+                              await loadBuyerOffers();
+                            }}
+                            className="rounded-xl h-10"
+                          >
+                            ❌ Decline
+                          </Button>
+                          {(o.counter_count || 0) < 5 ? (
+                            <Button
+                              variant="outline"
+                              onClick={() => setCounterOffer(o)}
+                              className="rounded-xl h-10"
+                            >
+                              💬 Counter Back
+                            </Button>
+                          ) : (
+                            <span className="text-[11px] text-muted-foreground self-center">Max rounds reached</span>
+                          )}
+                        </div>
+                      </div>
                     ) : (
                       <div className="flex flex-col items-stretch sm:items-end gap-1.5">
                         <div className="flex gap-2">
