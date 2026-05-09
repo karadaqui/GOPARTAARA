@@ -205,6 +205,9 @@ const Marketplace = () => {
     setPayingOfferId(offer.id);
     try {
       const { data: { session } } = await supabase.auth.getSession();
+      console.log('[PayOffer] Session exists:', !!session);
+      console.log('[PayOffer] Access token exists:', !!session?.access_token);
+      console.log('[PayOffer] User ID:', session?.user?.id);
       const token = session?.access_token;
       if (!token) {
         toast.error("Please sign in to continue.");

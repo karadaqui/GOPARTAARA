@@ -12,21 +12,29 @@ Deno.serve(async (req) => {
   try {
     console.log("[checkout] Step 1: request received", { method: req.method });
     const authHeader = req.headers.get("Authorization");
-    console.log("[checkout] Step 2: auth header present:", !!authHeader);
+    console.log("[checkout] Auth header received:", !!authHeader);
+    console.log("[checkout] Auth header value prefix:", authHeader?.substring(0, 20));
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Missing authorization" }), {
+      return new Response(JSON.stringify({ error: "Missing authorization header" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const supabaseUser = createClient(
+    // Use SERVICE ROLE key to validate the JWT — anon key requires the token to match
+    // its own audience and can fail intermittently. Service role can decode any valid JWT.
+    const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } }
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+      { auth: { persistSession: false } }
     );
-    const { data: { user } } = await supabaseUser.auth.getUser(authHeader.replace("Bearer ", ""));
-    if (!user?.email) {
-      return new Response(JSON.stringify({ error: "Not authenticated" }), {
+
+    const token = authHeader.replace("Bearer ", "");
+    console.log("[checkout] Token length:", token.length, "prefix:", token.substring(0, 10));
+    const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(token);
+    console.log("[checkout] getUser result:", { hasUser: !!userData?.user, email: userData?.user?.email, err: userErr?.message });
+    const user = userData?.user;
+    if (userErr || !user?.email) {
+      return new Response(JSON.stringify({ error: `Not authenticated: ${userErr?.message || "no user"}` }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
@@ -35,11 +43,7 @@ Deno.serve(async (req) => {
     const { offerId, listingId, buyNow, address_payload } = body;
     console.log("[checkout] Step 3: body parsed", { offerId, listingId, buyNow, hasAddress: !!address_payload, userId: user.id });
 
-    // Service-role client for trusted reads/writes
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+    // supabaseAdmin already created above for auth validation; reuse it
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     console.log("[checkout] Step 4: STRIPE_SECRET_KEY present:", !!stripeKey, "prefix:", stripeKey?.slice(0, 7));
