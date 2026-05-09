@@ -602,19 +602,28 @@ const Admin = () => {
           {/* ═══ LISTINGS TAB ═══ */}
           <TabsContent value="listings">
             <div className="flex gap-2 mb-6 flex-wrap">
-              {(["pending", "approved", "rejected", "all"] as const).map(f => (
-                <Button key={f} size="sm" variant={listingFilter === f ? "default" : "outline"}
-                  onClick={() => setListingFilter(f)} className="rounded-full capitalize">
-                  {f}
-                  {f !== "all" && <span className="ml-1.5 text-xs">({listings.filter(l => l.approval_status === f).length})</span>}
+              {([
+                { key: "all", label: "All" },
+                { key: "pending", label: "Pending Review" },
+                { key: "approved", label: "Approved" },
+                { key: "rejected", label: "Rejected by AI" },
+                { key: "paused", label: "Paused" },
+              ] as const).map(({ key, label }) => (
+                <Button key={key} size="sm" variant={listingFilter === key ? "default" : "outline"}
+                  onClick={() => setListingFilter(key)} className="rounded-full">
+                  {label}
+                  <span className="ml-1.5 text-xs opacity-80">({countFor(key)})</span>
                 </Button>
               ))}
             </div>
             {loading ? <LoadingSpinner /> : filteredListings.length === 0 ? (
-              <EmptyState icon={Package} text={`No ${listingFilter} listings`} />
+              <EmptyState icon={Package} text={`No listings in this view`} />
             ) : (
               <div className="space-y-4">
-                {filteredListings.map(listing => (
+                {filteredListings.map(listing => {
+                  const isPaused = listing.active === false && listing.approval_status !== "rejected";
+                  const isAdminApproved = listing.approval_status === "approved" && listing.active !== false;
+                  return (
                   <div key={listing.id} className="glass rounded-xl p-4 flex gap-4">
                     {listing.photos[0] ? (
                       <img src={listing.photos[0]} alt="" loading="lazy" decoding="async" className="w-24 h-24 rounded-lg object-cover shrink-0" />
@@ -634,26 +643,38 @@ const Admin = () => {
                             </span>
                           </div>
                         </div>
-                        <Badge variant={listing.approval_status === "approved" ? "default" : listing.approval_status === "rejected" ? "destructive" : "secondary"} className="capitalize shrink-0">
-                          {listing.approval_status}
-                        </Badge>
+                        {isPaused ? (
+                          <Badge variant="secondary" className="shrink-0">Paused</Badge>
+                        ) : isAdminApproved ? (
+                          <Badge className="shrink-0 bg-green-600 hover:bg-green-600 text-white">Admin Approved</Badge>
+                        ) : (
+                          <Badge variant={listing.approval_status === "rejected" ? "destructive" : "secondary"} className="capitalize shrink-0">
+                            {listing.approval_status === "rejected" ? "Rejected by AI" : listing.approval_status}
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{listing.description}</p>
                       <div className="flex items-center gap-2 mt-2">
-                        {listing.price && <span className="text-primary font-bold text-sm">£{listing.price.toFixed(2)}</span>}
+                        {listing.price != null && <span className="text-primary font-bold text-sm">£{Number(listing.price).toFixed(2)}</span>}
                         {listing.category && <Badge variant="outline" className="text-xs">{listing.category}</Badge>}
                         <span className="text-xs text-muted-foreground ml-auto">{new Date(listing.created_at).toLocaleDateString()}</span>
                       </div>
                       <div className="flex gap-2 mt-3 flex-wrap">
+                        {(listing.approval_status === "pending" || listing.approval_status === "rejected" || isPaused) && (
+                          <Button size="sm" onClick={() => handleApproveListing(listing.id)} disabled={processing === listing.id} className="rounded-xl gap-1.5 bg-green-600 hover:bg-green-700 text-white">
+                            {processing === listing.id ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle size={14} />}
+                            {listing.approval_status === "rejected" ? "Admin Approve →" : isPaused ? "Reactivate" : "Approve"}
+                          </Button>
+                        )}
+                        {isAdminApproved && (
+                          <Button size="sm" variant="destructive" onClick={() => handleRejectListing(listing.id)} disabled={processing === listing.id} className="rounded-xl gap-1.5">
+                            <XCircle size={14} /> Admin Reject
+                          </Button>
+                        )}
                         {listing.approval_status === "pending" && (
-                          <>
-                            <Button size="sm" onClick={() => handleApproveListing(listing.id)} disabled={processing === listing.id} className="rounded-xl gap-1.5">
-                              {processing === listing.id ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle size={14} />} Approve
-                            </Button>
-                            <Button size="sm" variant="destructive" onClick={() => handleRejectListing(listing.id)} disabled={processing === listing.id} className="rounded-xl gap-1.5">
-                              <XCircle size={14} /> Reject
-                            </Button>
-                          </>
+                          <Button size="sm" variant="destructive" onClick={() => handleRejectListing(listing.id)} disabled={processing === listing.id} className="rounded-xl gap-1.5">
+                            <XCircle size={14} /> Reject
+                          </Button>
                         )}
                         <Button size="sm" variant="outline" onClick={() => navigate(`/listing/${listing.id}`)} className="rounded-xl gap-1.5">
                           <Eye size={14} /> Preview
@@ -665,7 +686,8 @@ const Admin = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </TabsContent>
