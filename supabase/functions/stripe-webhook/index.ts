@@ -140,11 +140,37 @@ async function handleMarketplaceCheckout(adminClient: any, offerId: string) {
 }
 
 Deno.serve(async (req) => {
+  console.log("[STRIPE-WEBHOOK] Request received:", req.method, new URL(req.url).pathname, "search:", new URL(req.url).search);
+
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2025-08-27.basil" });
+  const adminClient = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
+
+  // Manual replay endpoint for debugging — GET ?replay_session=cs_xxx
+  const url = new URL(req.url);
+  const replaySession = url.searchParams.get("replay_session");
+  if (replaySession) {
+    console.log("[STRIPE-WEBHOOK] MANUAL REPLAY for session:", replaySession);
+    try {
+      const session = await stripe.checkout.sessions.retrieve(replaySession);
+      console.log("[STRIPE-WEBHOOK] replay payment_status:", session.payment_status, "metadata:", JSON.stringify(session.metadata));
+      const metadata = session.metadata || {};
+      if (metadata.offerId) {
+        await handleMarketplaceCheckout(adminClient, metadata.offerId);
+        return new Response(JSON.stringify({ replayed: true, offerId: metadata.offerId, payment_status: session.payment_status }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      return new Response(JSON.stringify({ replayed: false, reason: "no offerId in metadata", metadata }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error("[STRIPE-WEBHOOK] replay error", msg);
+      return new Response(JSON.stringify({ error: msg }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+  }
+
   const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
   const signature = req.headers.get("stripe-signature");
+  console.log("[STRIPE-WEBHOOK] signature present:", !!signature, "secret configured:", !!webhookSecret);
   const body = await req.text();
 
   let event: Stripe.Event;
@@ -160,7 +186,6 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify({ error: "Invalid signature" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
   }
 
-  const adminClient = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
 
   try {
     if (event.type === "checkout.session.completed") {
