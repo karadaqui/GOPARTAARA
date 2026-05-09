@@ -31,6 +31,7 @@ import { template as welcomeSignup } from './welcome-signup.tsx'
 import { template as orderConfirmationBuyer } from './order-confirmation-buyer.tsx'
 import { template as orderReceivedSeller } from './order-received-seller.tsx'
 import { template as orderCollectionReminder } from './order-collection-reminder.tsx'
+import { template as orderCollectedBuyer } from './order-collected-buyer.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'contact-notification': contactNotification,
