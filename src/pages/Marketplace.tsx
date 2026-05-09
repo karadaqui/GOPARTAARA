@@ -30,6 +30,9 @@ interface BuyerOffer {
   listing_id: string;
   seller_id: string;
   buyer_id: string;
+  parent_offer_id?: string | null;
+  initiated_by?: string | null;
+  counter_count?: number | null;
   seller_listings?: {
     title: string;
     photos: string[];
