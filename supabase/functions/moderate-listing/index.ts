@@ -88,28 +88,36 @@ Deno.serve(async (req) => {
       });
     }
 
-    const moderationPrompt = `You are a content moderator for PARTARA, a UK car parts marketplace. Evaluate this listing and decide if it should be auto-approved or flagged for manual review.
+    // Hard validation: only reject obviously invalid prices.
+    const priceNum = listing.price != null ? Number(listing.price) : null;
+    if (priceNum !== null && (priceNum <= 0 || priceNum > 99999)) {
+      const reason = "Price must be between £0.01 and £99,999";
+      await supabase.from("seller_listings").update({ approval_status: "rejected" }).eq("id", listing_id);
+      return new Response(JSON.stringify({ status: "rejected", reason }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const moderationPrompt = `You are a content moderator for PARTARA, a car parts marketplace. Evaluate this listing.
 
 LISTING:
 - Title: ${listing.title}
 - Description: ${listing.description}
-- Price: ${listing.price ? `£${listing.price}` : "Not set"}
 - Category: ${listing.category || "Not set"}
-- Compatible Vehicles: ${listing.compatible_vehicles?.join(", ") || "None"}
-- Tags: ${listing.tags?.join(", ") || "None"}
-- Has Photos: ${listing.photos?.length > 0 ? "Yes" : "No"}
+- Has Photos: ${listing.photos?.length > 0 ? `Yes (${listing.photos.length})` : "No"}
 
-RULES FOR APPROVAL:
-1. Must be a legitimate car/vehicle part or accessory
-2. No spam, offensive content, or misleading descriptions
-3. Price should be reasonable (not suspiciously low like £0.01 or absurdly high for common parts)
-4. Title and description should match and be coherent
-5. No prohibited items (weapons, stolen goods indicators, counterfeit claims)
-6. No contact information or external links in the description meant to circumvent the platform
+EVALUATE ONLY THESE FOUR THINGS:
+1. TITLE: Must be descriptive of a car/vehicle part. Reject if gibberish, spam, or unrelated to vehicle parts.
+2. DESCRIPTION: Must be coherent and relate to the part. Reject if gibberish, empty-feeling, spam, offensive, or contains contact info / external links to bypass the platform.
+3. PHOTOS: Must have at least 1 photo. Reject if Has Photos = No.
+4. CATEGORY: Should plausibly match what the title/description describes.
+
+DO NOT consider price, shipping fee, or shipping destination — those are NOT your concern. Any price is acceptable.
+DO NOT reject for being "low value" or "meaningless price".
 
 RESPOND WITH EXACTLY ONE OF:
-APPROVED - if the listing passes all checks
-FLAGGED: [reason] - if the listing needs manual review, with a brief reason`;
+APPROVED - if the listing passes all four checks
+FLAGGED: [reason] - if it fails one of the four checks above, with a brief reason`;
 
     log("Calling moderation gateway");
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {

@@ -441,7 +441,7 @@ const MyMarket = () => {
       // Issue 3: proceed straight into the listing form so the new seller
       // can publish their first part without an extra click.
       setEditingListing(null);
-      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
+      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
       setListingDialog(true);
     }
     setSaving(false);
@@ -555,7 +555,7 @@ const MyMarket = () => {
         return;
       }
       setEditingListing(null);
-      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
+      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
     }
     setListingDialog(true);
   };
@@ -1577,7 +1577,22 @@ const MyMarket = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm text-muted-foreground block mb-1">Price (£) *</label>
-                <Input type="number" step="0.01" value={listingForm.price} onChange={e => setListingForm(f => ({ ...f, price: e.target.value }))} className="bg-secondary border-border rounded-xl" />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm pointer-events-none">£</span>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={listingForm.price}
+                    onChange={e => setListingForm(f => ({ ...f, price: e.target.value }))}
+                    onBlur={e => {
+                      const n = parseFloat(e.target.value);
+                      if (!isNaN(n) && n > 0) setListingForm(f => ({ ...f, price: n.toFixed(2) }));
+                    }}
+                    className="bg-secondary border-border rounded-xl pl-7"
+                    placeholder="0.00"
+                  />
+                </div>
               </div>
               <div>
                 <label className="text-sm text-muted-foreground block mb-1">Category *</label>
@@ -1629,7 +1644,21 @@ const MyMarket = () => {
               </div>
             </div>
             <div className="border border-border rounded-xl p-3">
-              <label className="text-sm text-muted-foreground block mb-2">Ships to</label>
+              <div className="flex items-center justify-between mb-2 gap-2 flex-wrap">
+                <label className="text-sm text-muted-foreground">Ships to</label>
+                <label className="flex items-center gap-2 text-xs cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={["UK", "EU", "Worldwide"].every(r => listingForm.ships_to.includes(r))}
+                    onChange={e => setListingForm(f => ({
+                      ...f,
+                      ships_to: e.target.checked ? ["UK", "EU", "Worldwide"] : f.ships_to,
+                    }))}
+                    className="accent-primary"
+                  />
+                  <span className="font-medium">🌐 Ships Worldwide (select all)</span>
+                </label>
+              </div>
               <div className="flex flex-wrap gap-3">
                 {(["UK", "EU", "Worldwide"] as const).map(region => (
                   <label key={region} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -1648,7 +1677,7 @@ const MyMarket = () => {
                   </label>
                 ))}
               </div>
-              <p className="text-[10px] text-muted-foreground mt-2">Overrides your seller profile default for this listing.</p>
+              <p className="text-[10px] text-muted-foreground mt-2">Independent of country selection. Tick the regions you'll ship this item to.</p>
             </div>
             {/* Shipping fee + dispatch */}
             <div className="border border-border rounded-xl p-3 space-y-3">
@@ -1913,7 +1942,7 @@ const MyMarket = () => {
               setPayoutGateContinue(false);
               // Open listing form now that payout exists
               setEditingListing(null);
-              setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
+              setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
               setListingDialog(true);
             }
           }}
@@ -1922,7 +1951,7 @@ const MyMarket = () => {
             if (payoutGateContinue) {
               setPayoutGateContinue(false);
               setEditingListing(null);
-              setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
+              setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
               setListingDialog(true);
             }
           }}

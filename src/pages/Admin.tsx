@@ -31,6 +31,7 @@ interface PendingListing {
   price: number | null;
   category: string | null;
   photos: string[];
+  active: boolean;
   created_at: string;
   approval_status: string;
   seller_profiles: {
@@ -118,7 +119,7 @@ const Admin = () => {
   const [reviews, setReviews] = useState<ReviewRow[]>([]);
 
   // Filters
-  const [listingFilter, setListingFilter] = useState<"pending" | "approved" | "rejected" | "all">("pending");
+  const [listingFilter, setListingFilter] = useState<"all" | "pending" | "approved" | "rejected" | "paused">("pending");
 
   // Dispute resolution
   const [resolveId, setResolveId] = useState<string | null>(null);
@@ -274,20 +275,23 @@ const Admin = () => {
   const handleApproveListing = async (id: string) => {
     setProcessing(id);
     const listing = listings.find(l => l.id === id);
-    const { error } = await supabase.from("seller_listings").update({ approval_status: "approved" } as any).eq("id", id);
+    const { error } = await supabase
+      .from("seller_listings")
+      .update({ approval_status: "approved", active: true } as any)
+      .eq("id", id);
     if (!error && listing?.seller_profiles?.id) {
       await supabase.from("seller_profiles").update({ approved: true } as any).eq("id", listing.seller_profiles.id);
     }
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: "Listing approved!" }); await loadListings(); }
+    else { toast({ title: "Listing approved" }); await loadListings(); }
     setProcessing(null);
   };
 
   const handleRejectListing = async (id: string) => {
     setProcessing(id);
-    const { error } = await supabase.from("seller_listings").update({ approval_status: "rejected" } as any).eq("id", id);
+    const { error } = await supabase.from("seller_listings").update({ approval_status: "rejected", active: false } as any).eq("id", id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: "Listing rejected" }); await loadListings(); }
+    else { toast({ title: "Listing taken down" }); await loadListings(); }
     setProcessing(null);
   };
 
@@ -539,7 +543,19 @@ const Admin = () => {
     setDisputes(prev => prev.map(d => d.id === resolveId ? { ...d, status: newStatus, admin_response: adminNote, resolved_at: new Date().toISOString() } : d));
   };
 
-  const filteredListings = listings.filter(l => listingFilter === "all" || l.approval_status === listingFilter);
+  const matchesFilter = (l: PendingListing) => {
+    if (listingFilter === "all") return true;
+    if (listingFilter === "paused") return l.active === false && l.approval_status !== "rejected";
+    if (listingFilter === "approved") return l.approval_status === "approved" && l.active !== false;
+    return l.approval_status === listingFilter;
+  };
+  const filteredListings = listings.filter(matchesFilter);
+  const countFor = (f: typeof listingFilter) => listings.filter(l => {
+    if (f === "all") return true;
+    if (f === "paused") return l.active === false && l.approval_status !== "rejected";
+    if (f === "approved") return l.approval_status === "approved" && l.active !== false;
+    return l.approval_status === f;
+  }).length;
   const pendingDisputeCount = disputes.filter(d => d.status === "pending").length;
   const unresolvedContactCount = contacts.filter(c => !c.resolved).length;
 
@@ -586,19 +602,28 @@ const Admin = () => {
           {/* ═══ LISTINGS TAB ═══ */}
           <TabsContent value="listings">
             <div className="flex gap-2 mb-6 flex-wrap">
-              {(["pending", "approved", "rejected", "all"] as const).map(f => (
-                <Button key={f} size="sm" variant={listingFilter === f ? "default" : "outline"}
-                  onClick={() => setListingFilter(f)} className="rounded-full capitalize">
-                  {f}
-                  {f !== "all" && <span className="ml-1.5 text-xs">({listings.filter(l => l.approval_status === f).length})</span>}
+              {([
+                { key: "all", label: "All" },
+                { key: "pending", label: "Pending Review" },
+                { key: "approved", label: "Approved" },
+                { key: "rejected", label: "Rejected by AI" },
+                { key: "paused", label: "Paused" },
+              ] as const).map(({ key, label }) => (
+                <Button key={key} size="sm" variant={listingFilter === key ? "default" : "outline"}
+                  onClick={() => setListingFilter(key)} className="rounded-full">
+                  {label}
+                  <span className="ml-1.5 text-xs opacity-80">({countFor(key)})</span>
                 </Button>
               ))}
             </div>
             {loading ? <LoadingSpinner /> : filteredListings.length === 0 ? (
-              <EmptyState icon={Package} text={`No ${listingFilter} listings`} />
+              <EmptyState icon={Package} text={`No listings in this view`} />
             ) : (
               <div className="space-y-4">
-                {filteredListings.map(listing => (
+                {filteredListings.map(listing => {
+                  const isPaused = listing.active === false && listing.approval_status !== "rejected";
+                  const isAdminApproved = listing.approval_status === "approved" && listing.active !== false;
+                  return (
                   <div key={listing.id} className="glass rounded-xl p-4 flex gap-4">
                     {listing.photos[0] ? (
                       <img src={listing.photos[0]} alt="" loading="lazy" decoding="async" className="w-24 h-24 rounded-lg object-cover shrink-0" />
@@ -618,26 +643,38 @@ const Admin = () => {
                             </span>
                           </div>
                         </div>
-                        <Badge variant={listing.approval_status === "approved" ? "default" : listing.approval_status === "rejected" ? "destructive" : "secondary"} className="capitalize shrink-0">
-                          {listing.approval_status}
-                        </Badge>
+                        {isPaused ? (
+                          <Badge variant="secondary" className="shrink-0">Paused</Badge>
+                        ) : isAdminApproved ? (
+                          <Badge className="shrink-0 bg-green-600 hover:bg-green-600 text-white">Admin Approved</Badge>
+                        ) : (
+                          <Badge variant={listing.approval_status === "rejected" ? "destructive" : "secondary"} className="capitalize shrink-0">
+                            {listing.approval_status === "rejected" ? "Rejected by AI" : listing.approval_status}
+                          </Badge>
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{listing.description}</p>
                       <div className="flex items-center gap-2 mt-2">
-                        {listing.price && <span className="text-primary font-bold text-sm">£{listing.price.toFixed(2)}</span>}
+                        {listing.price != null && <span className="text-primary font-bold text-sm">£{Number(listing.price).toFixed(2)}</span>}
                         {listing.category && <Badge variant="outline" className="text-xs">{listing.category}</Badge>}
                         <span className="text-xs text-muted-foreground ml-auto">{new Date(listing.created_at).toLocaleDateString()}</span>
                       </div>
                       <div className="flex gap-2 mt-3 flex-wrap">
+                        {(listing.approval_status === "pending" || listing.approval_status === "rejected" || isPaused) && (
+                          <Button size="sm" onClick={() => handleApproveListing(listing.id)} disabled={processing === listing.id} className="rounded-xl gap-1.5 bg-green-600 hover:bg-green-700 text-white">
+                            {processing === listing.id ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle size={14} />}
+                            {listing.approval_status === "rejected" ? "Admin Approve →" : isPaused ? "Reactivate" : "Approve"}
+                          </Button>
+                        )}
+                        {isAdminApproved && (
+                          <Button size="sm" variant="destructive" onClick={() => handleRejectListing(listing.id)} disabled={processing === listing.id} className="rounded-xl gap-1.5">
+                            <XCircle size={14} /> Admin Reject
+                          </Button>
+                        )}
                         {listing.approval_status === "pending" && (
-                          <>
-                            <Button size="sm" onClick={() => handleApproveListing(listing.id)} disabled={processing === listing.id} className="rounded-xl gap-1.5">
-                              {processing === listing.id ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle size={14} />} Approve
-                            </Button>
-                            <Button size="sm" variant="destructive" onClick={() => handleRejectListing(listing.id)} disabled={processing === listing.id} className="rounded-xl gap-1.5">
-                              <XCircle size={14} /> Reject
-                            </Button>
-                          </>
+                          <Button size="sm" variant="destructive" onClick={() => handleRejectListing(listing.id)} disabled={processing === listing.id} className="rounded-xl gap-1.5">
+                            <XCircle size={14} /> Reject
+                          </Button>
                         )}
                         <Button size="sm" variant="outline" onClick={() => navigate(`/listing/${listing.id}`)} className="rounded-xl gap-1.5">
                           <Eye size={14} /> Preview
@@ -649,7 +686,8 @@ const Admin = () => {
                       </div>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </TabsContent>
