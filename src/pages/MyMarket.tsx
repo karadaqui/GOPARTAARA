@@ -1328,6 +1328,18 @@ const MyMarket = () => {
                           }} className="rounded-xl gap-1 text-xs h-8">
                             <XCircle size={14} /> Decline
                           </Button>
+                          {(offer.counter_count || 0) < 5 ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setCounterOffer(offer)}
+                              className="rounded-xl gap-1 text-xs h-8"
+                            >
+                              <MessageSquare size={14} /> Counter
+                            </Button>
+                          ) : (
+                            <span className="text-[11px] text-muted-foreground self-center">Max rounds reached</span>
+                          )}
                         </div>
                       )}
                       {offer.status === "declined" && (
