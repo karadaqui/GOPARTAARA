@@ -35,6 +35,15 @@ interface SellerProfile {
   seller_tier: string;
   approved: boolean;
   ships_to: string[] | null;
+  sender_name?: string | null;
+  sender_company?: string | null;
+  sender_street1?: string | null;
+  sender_street2?: string | null;
+  sender_city?: string | null;
+  sender_state?: string | null;
+  sender_zip?: string | null;
+  sender_country?: string | null;
+  sender_phone?: string | null;
 }
 
 interface Listing {
@@ -54,6 +63,30 @@ interface Listing {
   featured?: boolean;
   featured_until?: string | null;
   boost_package?: string | null;
+  shipping_fee?: number | null;
+  free_shipping?: boolean | null;
+  dispatch_time?: string | null;
+}
+
+interface OrderRow {
+  id: string;
+  listing_id: string;
+  buyer_id: string;
+  seller_id: string;
+  amount: number;
+  shipping_fee: number;
+  total_amount: number;
+  status: string;
+  buyer_name: string | null;
+  buyer_email: string | null;
+  shipping_address: any;
+  tracking_number: string | null;
+  carrier: string | null;
+  label_url: string | null;
+  created_at: string;
+  listing_title?: string;
+  listing_photo?: string | null;
+  listing_category?: string | null;
 }
 
 const BOOST_PACKAGES = [
