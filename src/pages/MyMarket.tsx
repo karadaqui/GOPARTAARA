@@ -1920,6 +1920,29 @@ const MyMarket = () => {
         />
       )}
 
+      <CreateShippingLabelModal
+        open={shippingModalOpen}
+        onOpenChange={setShippingModalOpen}
+        order={shippingOrder}
+        sender={profile && profile.sender_street1 ? {
+          name: profile.sender_name || profile.business_name || "Seller",
+          company: profile.sender_company || undefined,
+          street1: profile.sender_street1 || "",
+          street2: profile.sender_street2 || undefined,
+          city: profile.sender_city || "",
+          state: profile.sender_state || undefined,
+          zip: profile.sender_zip || "",
+          country: profile.sender_country || "GB",
+          phone: profile.sender_phone || undefined,
+          email: profile.contact_email || undefined,
+        } as ShippoAddress : null}
+        onPurchased={({ order_id, label_url, tracking_number, carrier }) => {
+          setOrders(prev => prev.map(o => o.id === order_id
+            ? { ...o, status: "shipped", tracking_number, carrier, label_url }
+            : o));
+        }}
+      />
+
       <Footer />
     </div>
   );
