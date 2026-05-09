@@ -23,6 +23,7 @@ import CategoryTagSelector from "@/components/CategoryTagSelector";
 import EmptyState from "@/components/EmptyState";
 import PayoutSetupModal from "@/components/PayoutSetupModal";
 import CreateShippingLabelModal, { type ShippingOrder } from "@/components/CreateShippingLabelModal";
+import SenderAddressFields from "@/components/SenderAddressFields";
 import type { ShippoAddress } from "@/lib/shippo";
 import { CreditCard, AlertTriangle, CheckCircle2, Truck } from "lucide-react";
 
@@ -166,6 +167,9 @@ const MyMarket = () => {
   const [payoutInfo, setPayoutInfo] = useState<{ full_name: string | null; sort_code: string | null; account_number: string | null; paypal_email: string | null; preferred_method: string | null } | null>(null);
   const [payoutModalOpen, setPayoutModalOpen] = useState(false);
   const [payoutGateContinue, setPayoutGateContinue] = useState(false);
+  const [orders, setOrders] = useState<OrderRow[]>([]);
+  const [shippingOrder, setShippingOrder] = useState<ShippingOrder | null>(null);
+  const [shippingModalOpen, setShippingModalOpen] = useState(false);
 
   const hasValidPayout = !!payoutInfo && (
     (payoutInfo.preferred_method === "bank" && !!payoutInfo.sort_code && !!payoutInfo.account_number) ||
@@ -341,6 +345,34 @@ const MyMarket = () => {
         })));
       } else {
         setOffers([]);
+      }
+
+      // Load orders for this seller
+      try {
+        const { data: ordersData } = await supabase
+          .from("orders" as any)
+          .select("*")
+          .eq("seller_id", user!.id)
+          .order("created_at", { ascending: false });
+        if (ordersData && ordersData.length > 0) {
+          const orderListingIds = [...new Set((ordersData as any[]).map(o => o.listing_id))];
+          const { data: orderListings } = await supabase
+            .from("seller_listings")
+            .select("id, title, photos, category")
+            .in("id", orderListingIds);
+          const olMap = new Map((orderListings || []).map((l: any) => [l.id, l]));
+          setOrders((ordersData as any[]).map(o => ({
+            ...o,
+            listing_title: olMap.get(o.listing_id)?.title || "Listing",
+            listing_photo: olMap.get(o.listing_id)?.photos?.[0] || null,
+            listing_category: olMap.get(o.listing_id)?.category || null,
+          })) as OrderRow[]);
+        } else {
+          setOrders([]);
+        }
+      } catch (e) {
+        console.error("orders load failed", e);
+        setOrders([]);
       }
     }
     setLoading(false);
@@ -862,6 +894,12 @@ const MyMarket = () => {
                 </div>
               </div>
 
+              {/* Sender Address Section */}
+              <SenderAddressFields
+                value={profileForm}
+                onChange={(patch) => setProfileForm(f => ({ ...f, ...patch }))}
+              />
+
               {/* Payment Details Section */}
               <div className="border border-border rounded-xl p-4 mt-2">
                 <div className="flex items-center gap-2 mb-1">
@@ -1183,6 +1221,113 @@ const MyMarket = () => {
           </div>
         )}
 
+        {/* Orders section */}
+        {orders.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-display text-xl font-bold flex items-center gap-2">
+                <Truck size={18} className="text-primary" /> Orders
+                <span className="text-xs font-normal text-muted-foreground">({orders.length})</span>
+              </h2>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {orders.map(o => {
+                const addr = o.shipping_address || {};
+                const statusLabel =
+                  o.status === "shipped" ? "Shipped" :
+                  o.status === "delivered" ? "Delivered" :
+                  "Awaiting Shipment";
+                const statusClass =
+                  o.status === "shipped" ? "bg-blue-500/15 text-blue-300 border-blue-500/30" :
+                  o.status === "delivered" ? "bg-green-500/15 text-green-300 border-green-500/30" :
+                  "bg-amber-500/15 text-amber-300 border-amber-500/30";
+                const senderMissing = !profile?.sender_street1 || !profile?.sender_city || !profile?.sender_zip;
+                return (
+                  <div key={o.id} className="glass rounded-xl overflow-hidden border border-border">
+                    <div className="flex gap-3 p-4">
+                      {o.listing_photo ? (
+                        <img src={o.listing_photo} alt={o.listing_title} loading="lazy" className="w-20 h-20 rounded-lg object-cover shrink-0" />
+                      ) : (
+                        <div className="w-20 h-20 rounded-lg bg-secondary flex items-center justify-center shrink-0">
+                          <Package size={24} className="text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <h3 className="font-display font-bold text-sm line-clamp-1">{o.listing_title}</h3>
+                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap ${statusClass}`}>{statusLabel}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          <span className="font-medium text-foreground">{o.buyer_name || addr.name || "Buyer"}</span>
+                          {o.buyer_email ? <span> · {o.buyer_email}</span> : null}
+                        </p>
+                        {(addr.street1 || addr.city) && (
+                          <p className="text-xs text-muted-foreground line-clamp-2">
+                            {[addr.street1, addr.street2, addr.city, addr.zip, addr.country].filter(Boolean).join(", ")}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="px-4 pb-3 flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">
+                        Total <span className="font-semibold text-foreground">£{Number(o.total_amount || 0).toFixed(2)}</span>
+                        {Number(o.shipping_fee) > 0 ? <span className="text-muted-foreground/70"> (incl. £{Number(o.shipping_fee).toFixed(2)} shipping)</span> : null}
+                      </span>
+                      <span className="text-muted-foreground">{new Date(o.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>
+                    </div>
+                    <div className="px-4 pb-4">
+                      {o.status === "awaiting_shipment" ? (
+                        <Button
+                          size="sm"
+                          className="w-full rounded-xl gap-1.5"
+                          disabled={senderMissing}
+                          onClick={() => {
+                            if (senderMissing) {
+                              toast({ title: "Sender address required", description: "Add your sender address in Edit Profile first.", variant: "destructive" });
+                              return;
+                            }
+                            setShippingOrder({
+                              id: o.id,
+                              listing_id: o.listing_id,
+                              category: o.listing_category,
+                              amount: Number(o.total_amount),
+                              buyer_address: {
+                                name: addr.name || o.buyer_name || "Buyer",
+                                street1: addr.street1 || "",
+                                street2: addr.street2 || undefined,
+                                city: addr.city || "",
+                                state: addr.state || undefined,
+                                zip: addr.zip || "",
+                                country: addr.country || "GB",
+                                phone: addr.phone || undefined,
+                                email: o.buyer_email || undefined,
+                              },
+                            });
+                            setShippingModalOpen(true);
+                          }}
+                        >
+                          <Truck size={14} /> Create Shipping Label →
+                        </Button>
+                      ) : o.tracking_number ? (
+                        <div className="text-xs text-muted-foreground flex items-center justify-between">
+                          <span>Tracking: <span className="font-mono text-foreground">{o.tracking_number}</span></span>
+                          {o.label_url && (
+                            <a href={o.label_url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
+                              <ExternalLink size={12} /> Label
+                            </a>
+                          )}
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground">Order {statusLabel.toLowerCase()}.</p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <div className="flex justify-between items-center mb-6">
           <h2 className="font-display text-xl font-bold">My Listings</h2>
           <Button onClick={() => openListingForm()} className="rounded-xl gap-1.5">
@@ -1356,6 +1501,12 @@ const MyMarket = () => {
                 ))}
               </div>
             </div>
+
+            {/* Sender Address Section */}
+            <SenderAddressFields
+              value={profileForm}
+              onChange={(patch) => setProfileForm(f => ({ ...f, ...patch }))}
+            />
 
             {/* Payment Details Section */}
             <div className="border border-border rounded-xl p-4">
@@ -1768,6 +1919,29 @@ const MyMarket = () => {
           }}
         />
       )}
+
+      <CreateShippingLabelModal
+        open={shippingModalOpen}
+        onOpenChange={setShippingModalOpen}
+        order={shippingOrder}
+        sender={profile && profile.sender_street1 ? {
+          name: profile.sender_name || profile.business_name || "Seller",
+          company: profile.sender_company || undefined,
+          street1: profile.sender_street1 || "",
+          street2: profile.sender_street2 || undefined,
+          city: profile.sender_city || "",
+          state: profile.sender_state || undefined,
+          zip: profile.sender_zip || "",
+          country: profile.sender_country || "GB",
+          phone: profile.sender_phone || undefined,
+          email: profile.contact_email || undefined,
+        } as ShippoAddress : null}
+        onPurchased={({ order_id, label_url, tracking_number, carrier }) => {
+          setOrders(prev => prev.map(o => o.id === order_id
+            ? { ...o, status: "shipped", tracking_number, carrier, label_url }
+            : o));
+        }}
+      />
 
       <Footer />
     </div>
