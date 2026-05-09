@@ -1395,6 +1395,12 @@ const MyMarket = () => {
               </div>
             </div>
 
+            {/* Sender Address Section */}
+            <SenderAddressFields
+              value={profileForm}
+              onChange={(patch) => setProfileForm(f => ({ ...f, ...patch }))}
+            />
+
             {/* Payment Details Section */}
             <div className="border border-border rounded-xl p-4">
               <div className="flex items-center gap-2 mb-1">
