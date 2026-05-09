@@ -22,7 +22,9 @@ import VehicleSelector from "@/components/VehicleSelector";
 import CategoryTagSelector from "@/components/CategoryTagSelector";
 import EmptyState from "@/components/EmptyState";
 import PayoutSetupModal from "@/components/PayoutSetupModal";
-import { CreditCard, AlertTriangle, CheckCircle2 } from "lucide-react";
+import CreateShippingLabelModal, { type ShippingOrder } from "@/components/CreateShippingLabelModal";
+import type { ShippoAddress } from "@/lib/shippo";
+import { CreditCard, AlertTriangle, CheckCircle2, Truck } from "lucide-react";
 
 interface SellerProfile {
   id: string;
@@ -35,6 +37,15 @@ interface SellerProfile {
   seller_tier: string;
   approved: boolean;
   ships_to: string[] | null;
+  sender_name?: string | null;
+  sender_company?: string | null;
+  sender_street1?: string | null;
+  sender_street2?: string | null;
+  sender_city?: string | null;
+  sender_state?: string | null;
+  sender_zip?: string | null;
+  sender_country?: string | null;
+  sender_phone?: string | null;
 }
 
 interface Listing {
@@ -54,6 +65,30 @@ interface Listing {
   featured?: boolean;
   featured_until?: string | null;
   boost_package?: string | null;
+  shipping_fee?: number | null;
+  free_shipping?: boolean | null;
+  dispatch_time?: string | null;
+}
+
+interface OrderRow {
+  id: string;
+  listing_id: string;
+  buyer_id: string;
+  seller_id: string;
+  amount: number;
+  shipping_fee: number;
+  total_amount: number;
+  status: string;
+  buyer_name: string | null;
+  buyer_email: string | null;
+  shipping_address: any;
+  tracking_number: string | null;
+  carrier: string | null;
+  label_url: string | null;
+  created_at: string;
+  listing_title?: string;
+  listing_photo?: string | null;
+  listing_category?: string | null;
 }
 
 const BOOST_PACKAGES = [
@@ -171,6 +206,8 @@ const MyMarket = () => {
     bank_account_name: "", bank_sort_code: "", bank_account_number: "", bank_paypal_email: "",
     ships_to: ["UK"] as string[],
     country: DEFAULT_COUNTRY,
+    sender_name: "", sender_company: "", sender_street1: "", sender_street2: "",
+    sender_city: "", sender_state: "", sender_zip: "", sender_country: "GB", sender_phone: "",
   });
 
   const [listingForm, setListingForm] = useState({
@@ -179,7 +216,8 @@ const MyMarket = () => {
     other_description: "",
     ships_to: ["UK"] as string[],
     compatible_vehicles: [] as string[],
-    tags: [] as string[], photos: [] as string[]
+    tags: [] as string[], photos: [] as string[],
+    shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days",
   });
 
   useEffect(() => {
@@ -227,6 +265,15 @@ const MyMarket = () => {
         bank_paypal_email: bankDetails.paypal_email || "",
         ships_to: ((sp as any).ships_to && (sp as any).ships_to.length > 0) ? (sp as any).ships_to : ["UK"],
         country: ((sp as any).description?.match(/^Country: ([^\n]+)/)?.[1]) || DEFAULT_COUNTRY,
+        sender_name: (sp as any).sender_name || "",
+        sender_company: (sp as any).sender_company || "",
+        sender_street1: (sp as any).sender_street1 || "",
+        sender_street2: (sp as any).sender_street2 || "",
+        sender_city: (sp as any).sender_city || "",
+        sender_state: (sp as any).sender_state || "",
+        sender_zip: (sp as any).sender_zip || "",
+        sender_country: (sp as any).sender_country || "GB",
+        sender_phone: (sp as any).sender_phone || "",
       });
 
       const { data: ls } = await supabase
@@ -353,7 +400,7 @@ const MyMarket = () => {
       // Issue 3: proceed straight into the listing form so the new seller
       // can publish their first part without an extra click.
       setEditingListing(null);
-      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [] });
+      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
       setListingDialog(true);
     }
     setSaving(false);
@@ -444,6 +491,9 @@ const MyMarket = () => {
         compatible_vehicles: listing.compatible_vehicles,
         tags: cleanTags,
         photos: listing.photos,
+        shipping_fee: listing.shipping_fee != null ? String(listing.shipping_fee) : "",
+        free_shipping: !!listing.free_shipping,
+        dispatch_time: listing.dispatch_time || "1-2 days",
       });
     } else {
       // Check listing limit based on user subscription plan
@@ -455,7 +505,7 @@ const MyMarket = () => {
         return;
       }
       setEditingListing(null);
-      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [] });
+      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
     }
     setListingDialog(true);
   };
@@ -532,6 +582,9 @@ const MyMarket = () => {
         ...(listingForm.category === "Other" && listingForm.other_description.trim() ? [`OtherDesc: ${listingForm.other_description.trim()}`] : []),
       ],
       photos: listingForm.photos,
+      shipping_fee: listingForm.free_shipping ? 0 : (listingForm.shipping_fee ? parseFloat(listingForm.shipping_fee) : null),
+      free_shipping: !!listingForm.free_shipping,
+      dispatch_time: listingForm.dispatch_time || null,
     };
 
     let error;
@@ -1651,7 +1704,7 @@ const MyMarket = () => {
               setPayoutGateContinue(false);
               // Open listing form now that payout exists
               setEditingListing(null);
-              setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [] });
+              setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
               setListingDialog(true);
             }
           }}
@@ -1660,7 +1713,7 @@ const MyMarket = () => {
             if (payoutGateContinue) {
               setPayoutGateContinue(false);
               setEditingListing(null);
-              setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [] });
+              setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
               setListingDialog(true);
             }
           }}
