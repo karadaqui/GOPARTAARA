@@ -42,6 +42,9 @@ interface ListingFull {
   view_count: number;
   save_count: number;
   created_at: string;
+  shipping_fee: number | null;
+  free_shipping: boolean | null;
+  dispatch_time: string | null;
   seller_profiles: {
     id: string;
     user_id: string;
