@@ -28,6 +28,7 @@ import AddressForm, { EMPTY_ADDRESS, type AddressFormValue } from "@/components/
 import type { ShippoAddress } from "@/lib/shippo";
 import OfferChatModal from "@/components/OfferChatModal";
 import CounterOfferModal from "@/components/CounterOfferModal";
+import EditShopProfileDrawer from "@/components/EditShopProfileDrawer";
 import { CreditCard, AlertTriangle, CheckCircle2, Truck } from "lucide-react";
 
 interface SellerProfile {
@@ -1644,172 +1645,15 @@ const MyMarket = () => {
         )}
       </div>
 
-      {/* Edit profile dialog */}
-      <Dialog open={editingProfile} onOpenChange={setEditingProfile}>
-        <DialogContent className="bg-card border-border">
-          <DialogHeader>
-            <DialogTitle className="font-display">Edit Seller Profile</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm text-muted-foreground block mb-1">Business Name</label>
-              <Input value={profileForm.business_name} onChange={e => setProfileForm(f => ({ ...f, business_name: e.target.value }))} className="bg-secondary border-border rounded-xl" />
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground block mb-1">Description</label>
-              <Textarea value={profileForm.description} onChange={e => setProfileForm(f => ({ ...f, description: e.target.value }))} className="bg-secondary border-border rounded-xl" />
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm text-muted-foreground block mb-1">Email</label>
-                <Input value={profileForm.contact_email} onChange={e => setProfileForm(f => ({ ...f, contact_email: e.target.value }))} className="bg-secondary border-border rounded-xl" />
-              </div>
-              <div>
-                <label className="text-sm text-muted-foreground block mb-1">Phone <span className="text-muted-foreground/50">(optional)</span></label>
-                <Input value={profileForm.contact_phone} onChange={e => setProfileForm(f => ({ ...f, contact_phone: e.target.value }))} className="bg-secondary border-border rounded-xl" />
-              </div>
-            </div>
-            <div>
-              <label className="text-sm text-muted-foreground block mb-1">Website <span className="text-muted-foreground/50">(optional)</span></label>
-              <Input value={profileForm.website_url} onChange={e => setProfileForm(f => ({ ...f, website_url: e.target.value }))} className="bg-secondary border-border rounded-xl" />
-            </div>
-
-            {/* Shipping section */}
-            <div className="border border-border rounded-xl p-4">
-              <h3 className="text-sm font-medium mb-1">Location & Shipping</h3>
-              <div className="mb-3">
-                <label className="text-xs text-muted-foreground block mb-1">Your country</label>
-                <select
-                  value={profileForm.country}
-                  onChange={e => setProfileForm(f => ({ ...f, country: e.target.value }))}
-                  className="w-full h-10 px-3 rounded-xl bg-secondary border border-border text-foreground text-sm"
-                >
-                  {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
-              <p className="text-xs text-muted-foreground mb-3">Where do you ship to?</p>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm cursor-not-allowed opacity-80">
-                  <input type="checkbox" checked readOnly className="accent-primary" />
-                  <span>🇬🇧 United Kingdom <span className="text-muted-foreground">(default)</span></span>
-                </label>
-                {(["EU", "Worldwide"] as const).map(region => (
-                  <label key={region} className="flex items-center gap-2 text-sm cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={profileForm.ships_to.includes(region)}
-                      onChange={e => setProfileForm(f => ({
-                        ...f,
-                        ships_to: e.target.checked
-                          ? Array.from(new Set([...f.ships_to, region]))
-                          : f.ships_to.filter(r => r !== region),
-                      }))}
-                      className="accent-primary"
-                    />
-                    <span>{region === "EU" ? "🇪🇺 Europe (EU countries)" : "🌍 Worldwide"}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Sender Address Section */}
-            <SenderAddressFields
-              value={profileForm}
-              onChange={(patch) => setProfileForm(f => ({ ...f, ...patch }))}
-            />
-
-            {/* Collection at Store Section */}
-            <div className="border border-border rounded-xl p-4">
-              <div className="flex items-center justify-between mb-1">
-                <h3 className="text-sm font-medium flex items-center gap-2">
-                  <Store size={14} className="text-primary" /> Collection at store
-                </h3>
-                <label className="inline-flex items-center gap-2 text-xs cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={profileForm.offers_collection}
-                    onChange={e => setProfileForm(f => ({ ...f, offers_collection: e.target.checked }))}
-                    className="accent-primary h-4 w-4"
-                  />
-                  <span>Offer collection at store</span>
-                </label>
-              </div>
-              <p className="text-xs text-muted-foreground mb-3">Let buyers pick up their order from your premises and waive the shipping fee.</p>
-              {profileForm.offers_collection && (
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-xs font-medium mb-1">Collection address</p>
-                    <AddressForm
-                      value={profileForm.collection_address}
-                      onChange={(v) => setProfileForm(f => ({ ...f, collection_address: v }))}
-                      showInstructions={false}
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-muted-foreground block mb-1">Collection instructions</label>
-                    <Textarea
-                      value={profileForm.collection_instructions}
-                      onChange={e => setProfileForm(f => ({ ...f, collection_instructions: e.target.value }))}
-                      placeholder="e.g. Mon-Fri 9am-5pm, ask for John at reception"
-                      rows={2}
-                      className="bg-secondary border-border rounded-xl"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-muted-foreground block mb-1">Collection window</label>
-                    <select
-                      value={profileForm.collection_window}
-                      onChange={e => setProfileForm(f => ({ ...f, collection_window: e.target.value }))}
-                      className="w-full h-10 px-3 rounded-xl bg-secondary border border-border text-foreground text-sm"
-                    >
-                      <option value="Same day">Same day</option>
-                      <option value="Next day">Next day</option>
-                      <option value="2-3 days">2-3 days</option>
-                      <option value="By appointment">By appointment</option>
-                    </select>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Payment Details Section */}
-            <div className="border border-border rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Lock size={14} className="text-muted-foreground" />
-                <h3 className="text-sm font-medium">Payment Details <span className="text-muted-foreground/50">(optional)</span></h3>
-              </div>
-              <p className="text-xs text-muted-foreground mb-4">Add your bank details so buyers can pay you directly.</p>
-              <div className="space-y-3">
-                <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Account Holder Name</label>
-                  <Input value={profileForm.bank_account_name} onChange={e => setProfileForm(f => ({ ...f, bank_account_name: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="John Smith" />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs text-muted-foreground block mb-1">Sort Code</label>
-                    <Input value={profileForm.bank_sort_code} onChange={e => setProfileForm(f => ({ ...f, bank_sort_code: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="XX-XX-XX" maxLength={8} />
-                  </div>
-                  <div>
-                    <label className="text-xs text-muted-foreground block mb-1">Account Number</label>
-                    <Input value={profileForm.bank_account_number} onChange={e => setProfileForm(f => ({ ...f, bank_account_number: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="12345678" maxLength={8} />
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground block mb-1">PayPal Email <span className="text-muted-foreground/50">(alternative)</span></label>
-                  <Input type="email" value={profileForm.bank_paypal_email} onChange={e => setProfileForm(f => ({ ...f, bank_paypal_email: e.target.value }))} className="bg-secondary border-border rounded-xl" placeholder="you@email.com" />
-                </div>
-              </div>
-              <p className="text-[10px] text-muted-foreground mt-3 flex items-center gap-1">🔒 Your bank details are stored securely.</p>
-              <p className="text-[10px] text-muted-foreground/60 mt-1">Full payment processing coming soon via Stripe Connect.</p>
-            </div>
-
-            <Button onClick={handleUpdateProfile} disabled={saving} className="w-full rounded-xl gap-2">
-              {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-              Save Changes
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Edit profile drawer (multi-step) */}
+      <EditShopProfileDrawer
+        open={editingProfile}
+        onOpenChange={setEditingProfile}
+        value={profileForm}
+        onChange={(patch) => setProfileForm(f => ({ ...f, ...patch }))}
+        onSave={handleUpdateProfile}
+        saving={saving}
+      />
 
       {/* Listing form dialog */}
       <Dialog open={listingDialog} onOpenChange={setListingDialog}>
