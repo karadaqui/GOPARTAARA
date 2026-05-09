@@ -142,6 +142,7 @@ const App = () => {
                 <Route path="/ev-charging" element={<EvChargingMaintained />} />
                 <Route path="/status" element={<Status />} />
                 <Route path="/sitemap" element={<Sitemap />} />
+                <Route path="/order-confirmation" element={<OrderConfirmation />} />
                 <Route path="*" element={<PartSearchRedirect />} />
               </Routes>
               </div>
