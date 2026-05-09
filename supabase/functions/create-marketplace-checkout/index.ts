@@ -263,7 +263,7 @@ Deno.serve(async (req) => {
         quantity: 1,
       }],
       mode: "payment",
-      success_url: `https://gopartara.com/marketplace?payment=success&offer=${offerId}`,
+      success_url: `https://gopartara.com/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `https://gopartara.com/marketplace?payment=cancelled&offer=${offerId}`,
       metadata: {
         offerId,
