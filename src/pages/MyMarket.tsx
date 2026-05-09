@@ -1542,6 +1542,60 @@ const MyMarket = () => {
               onChange={(patch) => setProfileForm(f => ({ ...f, ...patch }))}
             />
 
+            {/* Collection at Store Section */}
+            <div className="border border-border rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="text-sm font-medium flex items-center gap-2">
+                  <Store size={14} className="text-primary" /> Collection at store
+                </h3>
+                <label className="inline-flex items-center gap-2 text-xs cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={profileForm.offers_collection}
+                    onChange={e => setProfileForm(f => ({ ...f, offers_collection: e.target.checked }))}
+                    className="accent-primary h-4 w-4"
+                  />
+                  <span>Offer collection at store</span>
+                </label>
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">Let buyers pick up their order from your premises and waive the shipping fee.</p>
+              {profileForm.offers_collection && (
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs font-medium mb-1">Collection address</p>
+                    <AddressForm
+                      value={profileForm.collection_address}
+                      onChange={(v) => setProfileForm(f => ({ ...f, collection_address: v }))}
+                      showInstructions={false}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground block mb-1">Collection instructions</label>
+                    <Textarea
+                      value={profileForm.collection_instructions}
+                      onChange={e => setProfileForm(f => ({ ...f, collection_instructions: e.target.value }))}
+                      placeholder="e.g. Mon-Fri 9am-5pm, ask for John at reception"
+                      rows={2}
+                      className="bg-secondary border-border rounded-xl"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground block mb-1">Collection window</label>
+                    <select
+                      value={profileForm.collection_window}
+                      onChange={e => setProfileForm(f => ({ ...f, collection_window: e.target.value }))}
+                      className="w-full h-10 px-3 rounded-xl bg-secondary border border-border text-foreground text-sm"
+                    >
+                      <option value="Same day">Same day</option>
+                      <option value="Next day">Next day</option>
+                      <option value="2-3 days">2-3 days</option>
+                      <option value="By appointment">By appointment</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Payment Details Section */}
             <div className="border border-border rounded-xl p-4">
               <div className="flex items-center gap-2 mb-1">
