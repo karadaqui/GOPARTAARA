@@ -136,6 +136,9 @@ interface Offer {
   buyer_email?: string | null;
   listing_photo?: string | null;
   unread_chat?: number;
+  counter_count?: number | null;
+  initiated_by?: string | null;
+  parent_offer_id?: string | null;
 }
 
 const CATEGORIES = [
