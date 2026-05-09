@@ -1577,7 +1577,22 @@ const MyMarket = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-sm text-muted-foreground block mb-1">Price (£) *</label>
-                <Input type="number" step="0.01" value={listingForm.price} onChange={e => setListingForm(f => ({ ...f, price: e.target.value }))} className="bg-secondary border-border rounded-xl" />
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm pointer-events-none">£</span>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={listingForm.price}
+                    onChange={e => setListingForm(f => ({ ...f, price: e.target.value }))}
+                    onBlur={e => {
+                      const n = parseFloat(e.target.value);
+                      if (!isNaN(n) && n > 0) setListingForm(f => ({ ...f, price: n.toFixed(2) }));
+                    }}
+                    className="bg-secondary border-border rounded-xl pl-7"
+                    placeholder="0.00"
+                  />
+                </div>
               </div>
               <div>
                 <label className="text-sm text-muted-foreground block mb-1">Category *</label>
