@@ -488,7 +488,7 @@ const ListingDetail = () => {
                       width: '100%',
                     }}
                   >
-                    {buyingNow ? 'Redirecting to checkout...' : `Buy Now — £${listing.price.toFixed(2)}`}
+                    {buyingNow ? 'Redirecting to checkout...' : `Buy Now — £${listing.price.toFixed(2)} →`}
                   </button>
                   <p style={{
                     fontSize: '12px',
@@ -502,35 +502,53 @@ const ListingDetail = () => {
                 </>
               )}
               {!isSeller && (
-                <Button
-                  onClick={() => { if (!user) { navigate("/auth"); return; } setOfferOpen(true); }}
-                  variant="secondary"
-                  className="w-full rounded-xl gap-2 h-12 text-base font-semibold"
-                >
-                  🤝 Make an Offer
-                </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    onClick={() => { if (!user) { navigate("/auth"); return; } setOfferOpen(true); }}
+                    variant="secondary"
+                    className="rounded-xl gap-2 h-12 text-sm font-semibold"
+                  >
+                    💬 Make an Offer
+                  </Button>
+                  <Button variant="outline" onClick={handleSave} className="rounded-xl gap-2 h-12 text-sm font-semibold">
+                    {saved ? <BookmarkCheck size={16} className="text-primary" /> : <Bookmark size={16} />}
+                    {saved ? "Saved" : "💾 Save"}
+                  </Button>
+                </div>
               )}
               {!isSeller && (
                 <Button variant="ghost" onClick={handleMessageSeller} className="w-full rounded-xl gap-2 h-11 border border-border">
                   <MessageCircle size={16} /> Message Seller
                 </Button>
               )}
-              {/* External link removed */}
-
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={handleSave} className="flex-1 rounded-xl gap-2 h-10">
-                  {saved ? <BookmarkCheck size={16} className="text-primary" /> : <Bookmark size={16} />}
-                  {saved ? "Saved" : "Save"}
-                </Button>
+              {!isSeller && (
                 <Button variant="outline" onClick={() => {
                   if (!user) { navigate("/auth"); return; }
                   setAlertEmail(user.email || "");
                   setAlertPrice(listing.price ? (listing.price * 0.9).toFixed(2) : "");
                   setAlertOpen(true);
-                }} className="flex-1 rounded-xl gap-2 h-10">
+                }} className="w-full rounded-xl gap-2 h-10">
                   <Bell size={16} /> Price Alert
                 </Button>
-              </div>
+              )}
+
+              {isSeller && (
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    onClick={() => navigate("/my-market")}
+                    className="rounded-xl gap-2 h-12 text-sm font-semibold"
+                  >
+                    Edit Listing
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate("/my-market")}
+                    className="rounded-xl gap-2 h-12 text-sm font-semibold"
+                  >
+                    Pause / Activate
+                  </Button>
+                </div>
+              )}
             </div>
 
             <div className="border-t border-border" />
