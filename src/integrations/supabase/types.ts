@@ -635,15 +635,21 @@ export type Database = {
       orders: {
         Row: {
           amount: number
+          billing_address: Json | null
           buyer_email: string | null
           buyer_id: string
           buyer_name: string | null
           carrier: string | null
+          collected_at: string | null
           created_at: string
+          delivery_instructions: string | null
+          fulfillment_method: string
           id: string
+          is_new_account: boolean
           label_url: string | null
           listing_id: string
           offer_id: string | null
+          order_number: string | null
           seller_id: string
           shipping_address: Json | null
           shipping_fee: number
@@ -655,15 +661,21 @@ export type Database = {
         }
         Insert: {
           amount?: number
+          billing_address?: Json | null
           buyer_email?: string | null
           buyer_id: string
           buyer_name?: string | null
           carrier?: string | null
+          collected_at?: string | null
           created_at?: string
+          delivery_instructions?: string | null
+          fulfillment_method?: string
           id?: string
+          is_new_account?: boolean
           label_url?: string | null
           listing_id: string
           offer_id?: string | null
+          order_number?: string | null
           seller_id: string
           shipping_address?: Json | null
           shipping_fee?: number
@@ -675,15 +687,21 @@ export type Database = {
         }
         Update: {
           amount?: number
+          billing_address?: Json | null
           buyer_email?: string | null
           buyer_id?: string
           buyer_name?: string | null
           carrier?: string | null
+          collected_at?: string | null
           created_at?: string
+          delivery_instructions?: string | null
+          fulfillment_method?: string
           id?: string
+          is_new_account?: boolean
           label_url?: string | null
           listing_id?: string
           offer_id?: string | null
+          order_number?: string | null
           seller_id?: string
           shipping_address?: Json | null
           shipping_fee?: number
@@ -1279,12 +1297,16 @@ export type Database = {
         Row: {
           approved: boolean
           business_name: string
+          collection_address: Json | null
+          collection_instructions: string | null
+          collection_window: string | null
           contact_email: string | null
           contact_phone: string | null
           created_at: string
           description: string | null
           id: string
           logo_url: string | null
+          offers_collection: boolean
           seller_tier: string
           sender_city: string | null
           sender_company: string | null
@@ -1303,12 +1325,16 @@ export type Database = {
         Insert: {
           approved?: boolean
           business_name: string
+          collection_address?: Json | null
+          collection_instructions?: string | null
+          collection_window?: string | null
           contact_email?: string | null
           contact_phone?: string | null
           created_at?: string
           description?: string | null
           id?: string
           logo_url?: string | null
+          offers_collection?: boolean
           seller_tier?: string
           sender_city?: string | null
           sender_company?: string | null
@@ -1327,12 +1353,16 @@ export type Database = {
         Update: {
           approved?: boolean
           business_name?: string
+          collection_address?: Json | null
+          collection_instructions?: string | null
+          collection_window?: string | null
           contact_email?: string | null
           contact_phone?: string | null
           created_at?: string
           description?: string | null
           id?: string
           logo_url?: string | null
+          offers_collection?: boolean
           seller_tier?: string
           sender_city?: string | null
           sender_company?: string | null
@@ -1428,6 +1458,63 @@ export type Database = {
           tyre_size?: string | null
           url?: string
           width?: string | null
+        }
+        Relationships: []
+      }
+      user_addresses: {
+        Row: {
+          city: string
+          country: string
+          county: string | null
+          created_at: string
+          delivery_instructions: string | null
+          full_name: string
+          id: string
+          is_billing: boolean
+          is_default: boolean
+          label: string
+          phone: string | null
+          postcode: string
+          street1: string
+          street2: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          city: string
+          country?: string
+          county?: string | null
+          created_at?: string
+          delivery_instructions?: string | null
+          full_name: string
+          id?: string
+          is_billing?: boolean
+          is_default?: boolean
+          label?: string
+          phone?: string | null
+          postcode: string
+          street1: string
+          street2?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          city?: string
+          country?: string
+          county?: string | null
+          created_at?: string
+          delivery_instructions?: string | null
+          full_name?: string
+          id?: string
+          is_billing?: boolean
+          is_default?: boolean
+          label?: string
+          phone?: string | null
+          postcode?: string
+          street1?: string
+          street2?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }

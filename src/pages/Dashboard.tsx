@@ -15,6 +15,7 @@ import {
 import type { Tables } from "@/integrations/supabase/types";
 import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
 import PriceAlertsSection from "@/components/dashboard/PriceAlertsSection";
+import AddressBookSection from "@/components/dashboard/AddressBookSection";
 import RecentlyViewedWidget from "@/components/dashboard/RecentlyViewedWidget";
 import MyGarageSection from "@/components/dashboard/MyGarageSection";
 import GarageAnalyticsSection from "@/components/dashboard/GarageAnalyticsSection";
@@ -886,6 +887,13 @@ const Dashboard = () => {
         {user && (
           <div className="mb-6">
             <PriceAlertsSection userId={user.id} />
+          </div>
+        )}
+
+        {/* Address Book */}
+        {user && (
+          <div className="mb-6">
+            <AddressBookSection />
           </div>
         )}
 

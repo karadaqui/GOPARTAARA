@@ -140,9 +140,12 @@ const Marketplace = () => {
                 shipping_address: parsed.address,
                 buyer_name: parsed.buyer_name,
                 buyer_email: parsed.buyer_email,
-              });
+                billing_address: parsed.billing_address,
+                fulfillment_method: parsed.fulfillment_method,
+                delivery_instructions: parsed.delivery_instructions,
+              } as any);
               localStorage.removeItem(`order_address_${offerId}`);
-              toast.success("Order created — the seller will ship your part shortly.");
+              toast.success("Order created — check My Orders for next steps.");
             }
           } catch (e: any) {
             console.error("order creation failed", e);
