@@ -137,6 +137,9 @@ const ListingDetail = () => {
     setBuyingNow(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
+      console.log('[BuyNow] Session exists:', !!session);
+      console.log('[BuyNow] Access token exists:', !!session?.access_token);
+      console.log('[BuyNow] User ID:', session?.user?.id);
       const token = session?.access_token;
       if (!token) {
         toast({ title: "Please sign in", description: "You need to be signed in to buy.", variant: "destructive" });
