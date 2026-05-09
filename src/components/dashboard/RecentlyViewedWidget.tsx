@@ -12,8 +12,8 @@ const RecentlyViewedWidget = () => {
   return (
     <div className="glass rounded-2xl p-6 sm:p-8 mb-6">
       <h2 className="font-display text-lg font-semibold mb-4 flex items-center gap-2">
-        <span aria-hidden="true">🕐</span>
-        Recently Viewed
+        <span aria-hidden="true">🔍</span>
+        Recent Searches
       </h2>
 
       {items.length === 0 ? (
