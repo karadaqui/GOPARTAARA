@@ -26,6 +26,7 @@ import CreateShippingLabelModal, { type ShippingOrder } from "@/components/Creat
 import SenderAddressFields from "@/components/SenderAddressFields";
 import AddressForm, { EMPTY_ADDRESS, type AddressFormValue } from "@/components/AddressForm";
 import type { ShippoAddress } from "@/lib/shippo";
+import OfferChatModal from "@/components/OfferChatModal";
 import { CreditCard, AlertTriangle, CheckCircle2, Truck } from "lucide-react";
 
 interface SellerProfile {
@@ -2217,6 +2218,22 @@ const MyMarket = () => {
             : o));
         }}
       />
+
+      {chatOffer && (
+        <OfferChatModal
+          open={!!chatOffer}
+          onClose={() => { setChatOffer(null); loadData(); }}
+          offer={{
+            id: chatOffer.id,
+            listing_id: chatOffer.listing_id,
+            buyer_id: chatOffer.buyer_id,
+            seller_id: chatOffer.seller_id,
+            amount: chatOffer.amount,
+            listing_title: chatOffer.listing_title,
+            photo: chatOffer.listing_photo,
+          }}
+        />
+      )}
 
       <Footer />
     </div>
