@@ -219,6 +219,72 @@ Deno.serve(async (req) => {
       });
     }
 
+    if (action === "create_order") {
+      const { offer_id, shipping_address, buyer_name, buyer_email } = payload;
+      if (typeof offer_id !== "string" || !offer_id) return jsonResponse({ error: "offer_id required" }, 400);
+      if (!shipping_address || typeof shipping_address !== "object") return jsonResponse({ error: "shipping_address required" }, 400);
+
+      // Look up offer & verify buyer
+      const { data: offer, error: offerErr } = await admin
+        .from("offers")
+        .select("id, listing_id, seller_id, buyer_id, amount")
+        .eq("id", offer_id)
+        .maybeSingle();
+      if (offerErr || !offer) return jsonResponse({ error: "Offer not found" }, 404);
+      if (offer.buyer_id !== userId) return jsonResponse({ error: "Forbidden" }, 403);
+
+      // Avoid duplicate
+      const { data: existing } = await admin.from("orders").select("id").eq("offer_id", offer_id).maybeSingle();
+      if (existing?.id) return jsonResponse({ order_id: existing.id, duplicate: true });
+
+      // Listing for shipping fee + seller mapping
+      const { data: listing } = await admin
+        .from("seller_listings")
+        .select("id, shipping_fee, free_shipping, seller_id")
+        .eq("id", offer.listing_id)
+        .maybeSingle();
+      const shipping_fee = listing?.free_shipping ? 0 : Number(listing?.shipping_fee || 0);
+      const amount = Number(offer.amount || 0);
+      const total_amount = amount + shipping_fee;
+
+      // seller_listings.seller_id is seller_profiles.id; map to user id
+      let sellerUserId = offer.seller_id;
+      if (listing?.seller_id) {
+        const { data: sp } = await admin
+          .from("seller_profiles").select("user_id").eq("id", listing.seller_id).maybeSingle();
+        if (sp?.user_id) sellerUserId = sp.user_id;
+      }
+
+      const { data: inserted, error: insErr } = await admin.from("orders").insert({
+        listing_id: offer.listing_id,
+        seller_id: sellerUserId,
+        buyer_id: userId,
+        offer_id,
+        amount,
+        shipping_fee,
+        total_amount,
+        status: "awaiting_shipment",
+        buyer_name: buyer_name || null,
+        buyer_email: buyer_email || null,
+        shipping_address,
+      }).select("id").single();
+
+      if (insErr) return jsonResponse({ error: insErr.message }, 500);
+
+      // Notify seller
+      try {
+        await admin.from("notifications").insert({
+          user_id: sellerUserId,
+          type: "order_received",
+          title: "New order — ready to ship",
+          message: `You have a new paid order. Total £${total_amount.toFixed(2)}.`,
+          link: "/my-market",
+        });
+      } catch (e) { console.error("[shippo] seller notify failed", e); }
+
+      return jsonResponse({ order_id: inserted.id });
+    }
+
     return jsonResponse({ error: "Unknown action" }, 400);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);

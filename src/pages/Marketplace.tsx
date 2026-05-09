@@ -16,6 +16,8 @@ import { usePersistentCompare } from "@/hooks/usePersistentCompare";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { shippingBadge, shipsToBuyer, type BuyerLocation } from "@/lib/shipping";
+import DeliveryAddressModal, { type DeliveryFormData } from "@/components/DeliveryAddressModal";
+import { shippoCreateOrder } from "@/lib/shippo";
 
 import ScrollReveal from "@/components/ScrollReveal";
 import { toast } from "sonner";
@@ -30,6 +32,8 @@ interface BuyerOffer {
   seller_listings?: {
     title: string;
     photos: string[];
+    shipping_fee?: number | null;
+    free_shipping?: boolean | null;
   } | null;
 }
 
@@ -45,6 +49,9 @@ interface ListingWithSeller {
   view_count: number;
   save_count: number;
   created_at: string;
+  shipping_fee: number | null;
+  free_shipping: boolean | null;
+  dispatch_time: string | null;
   seller_profiles: {
     id: string;
     business_name: string;
@@ -112,6 +119,7 @@ const Marketplace = () => {
   const [buyerOffers, setBuyerOffers] = useState<BuyerOffer[]>([]);
   const [payingOfferId, setPayingOfferId] = useState<string | null>(null);
   const [hasShop, setHasShop] = useState(false);
+  const [addressOffer, setAddressOffer] = useState<BuyerOffer | null>(null);
 
   // Handle return from Stripe checkout
   useEffect(() => {
@@ -119,9 +127,28 @@ const Marketplace = () => {
     const offerId = searchParams.get("offer");
     if (!status) return;
     if (status === "success") {
-      toast.success("Payment successful! The seller has been notified and will ship your part shortly.");
+      toast.success("Payment successful! Creating your order…");
       if (offerId) {
-        supabase.from("offers").update({ status: "paid" }).eq("id", offerId).then(() => {});
+        (async () => {
+          try {
+            await supabase.from("offers").update({ status: "paid" }).eq("id", offerId);
+            const stored = localStorage.getItem(`order_address_${offerId}`);
+            if (stored) {
+              const parsed = JSON.parse(stored) as DeliveryFormData;
+              await shippoCreateOrder({
+                offer_id: offerId,
+                shipping_address: parsed.address,
+                buyer_name: parsed.buyer_name,
+                buyer_email: parsed.buyer_email,
+              });
+              localStorage.removeItem(`order_address_${offerId}`);
+              toast.success("Order created — the seller will ship your part shortly.");
+            }
+          } catch (e: any) {
+            console.error("order creation failed", e);
+            toast.error(e?.message || "Could not create order automatically. Please contact support.");
+          }
+        })();
       }
     } else if (status === "cancelled") {
       toast.warning("Payment was cancelled. You can try again from your offers below.");
@@ -163,7 +190,9 @@ const Marketplace = () => {
           buyer_id,
           seller_listings!listing_id (
             title,
-            photos
+            photos,
+            shipping_fee,
+            free_shipping
           )
         `)
         .eq("buyer_id", user.id)
@@ -173,21 +202,31 @@ const Marketplace = () => {
     } catch {}
   };
 
-  const handlePayNow = async (offer: BuyerOffer) => {
+  // First step: collect delivery address before redirecting to Stripe.
+  const handlePayNow = (offer: BuyerOffer) => {
+    setAddressOffer(offer);
+  };
+
+  const handleAddressSubmitted = async (data: DeliveryFormData) => {
+    if (!addressOffer) return;
+    const offer = addressOffer;
     setPayingOfferId(offer.id);
     try {
-      const { data, error } = await supabase.functions.invoke("create-marketplace-checkout", {
+      // Persist the address so we can create the order on Stripe success redirect
+      localStorage.setItem(`order_address_${offer.id}`, JSON.stringify(data));
+      const { data: res, error } = await supabase.functions.invoke("create-marketplace-checkout", {
         body: { offerId: offer.id },
       });
       if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
+      if (res?.url) {
+        window.location.href = res.url;
       } else {
         throw new Error("No checkout URL returned");
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to start checkout");
       setPayingOfferId(null);
+      setAddressOffer(null);
     }
   };
 
@@ -322,6 +361,16 @@ const Marketplace = () => {
                 )}
                 {listing.category && (
                   <Badge variant="outline" className="text-[10px] shrink-0">{listing.category}</Badge>
+                )}
+              </div>
+
+              <div className="mb-2 text-[11px] text-muted-foreground">
+                {listing.free_shipping ? (
+                  <span className="text-emerald-500 font-semibold">🚚 Free shipping</span>
+                ) : listing.shipping_fee != null ? (
+                  <span>🚚 +£{Number(listing.shipping_fee).toFixed(2)} shipping</span>
+                ) : (
+                  <span>🚚 Shipping: contact seller</span>
                 )}
               </div>
 
@@ -691,6 +740,14 @@ const Marketplace = () => {
       {showCompare && (
         <CompareModal items={compareParts} onRemove={(id) => setCompareParts((prev) => prev.filter((p) => p.id !== id))} onClose={() => setShowCompare(false)} />
       )}
+
+      <DeliveryAddressModal
+        open={!!addressOffer}
+        onOpenChange={(o) => { if (!o) setAddressOffer(null); }}
+        defaultEmail={user?.email || ""}
+        loading={!!payingOfferId}
+        onSubmit={handleAddressSubmitted}
+      />
 
       <Footer />
       <BackToTop />

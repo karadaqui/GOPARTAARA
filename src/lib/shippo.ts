@@ -54,3 +54,16 @@ export async function shippoPurchaseLabel(payload: {
   if (error) throw error;
   return data;
 }
+
+export async function shippoCreateOrder(payload: {
+  offer_id: string;
+  shipping_address: ShippoAddress;
+  buyer_name: string;
+  buyer_email: string;
+}): Promise<{ order_id: string; duplicate?: boolean }> {
+  const { data, error } = await supabase.functions.invoke("create-shippo-label", {
+    body: { action: "create_order", ...payload },
+  });
+  if (error) throw error;
+  return data;
+}

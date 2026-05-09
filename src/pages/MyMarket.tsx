@@ -376,6 +376,15 @@ const MyMarket = () => {
       contact_phone: profileForm.contact_phone || null,
       website_url: profileForm.website_url || null,
       ships_to: profileForm.ships_to.length > 0 ? profileForm.ships_to : ["UK"],
+      sender_name: profileForm.sender_name || null,
+      sender_company: profileForm.sender_company || null,
+      sender_street1: profileForm.sender_street1 || null,
+      sender_street2: profileForm.sender_street2 || null,
+      sender_city: profileForm.sender_city || null,
+      sender_state: profileForm.sender_state || null,
+      sender_zip: profileForm.sender_zip || null,
+      sender_country: profileForm.sender_country || "GB",
+      sender_phone: profileForm.sender_phone || null,
       approved: true,
     } as any);
 
@@ -417,6 +426,15 @@ const MyMarket = () => {
         contact_phone: profileForm.contact_phone || null,
         website_url: profileForm.website_url || null,
         ships_to: profileForm.ships_to.length > 0 ? profileForm.ships_to : ["UK"],
+        sender_name: profileForm.sender_name || null,
+        sender_company: profileForm.sender_company || null,
+        sender_street1: profileForm.sender_street1 || null,
+        sender_street2: profileForm.sender_street2 || null,
+        sender_city: profileForm.sender_city || null,
+        sender_state: profileForm.sender_state || null,
+        sender_zip: profileForm.sender_zip || null,
+        sender_country: profileForm.sender_country || "GB",
+        sender_phone: profileForm.sender_phone || null,
       } as any)
       .eq("id", profile.id);
 
@@ -1471,6 +1489,37 @@ const MyMarket = () => {
                 ))}
               </div>
               <p className="text-[10px] text-muted-foreground mt-2">Overrides your seller profile default for this listing.</p>
+            </div>
+            {/* Shipping fee + dispatch */}
+            <div className="border border-border rounded-xl p-3 space-y-3">
+              <h4 className="text-sm font-medium flex items-center gap-2"><Truck size={14} className="text-primary" /> Shipping</h4>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={listingForm.free_shipping}
+                  onChange={e => setListingForm(f => ({ ...f, free_shipping: e.target.checked }))}
+                  className="accent-primary" />
+                <span>Offer free shipping</span>
+              </label>
+              <div>
+                <label className="text-xs text-muted-foreground block mb-1">Shipping fee (£)</label>
+                <Input type="number" step="0.01"
+                  value={listingForm.free_shipping ? "" : listingForm.shipping_fee}
+                  disabled={listingForm.free_shipping}
+                  onChange={e => setListingForm(f => ({ ...f, shipping_fee: e.target.value }))}
+                  className="bg-secondary border-border rounded-xl"
+                  placeholder={listingForm.free_shipping ? "Free" : "e.g. 5.99"} />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground block mb-1">Dispatch time</label>
+                <select value={listingForm.dispatch_time}
+                  onChange={e => setListingForm(f => ({ ...f, dispatch_time: e.target.value }))}
+                  className="w-full h-10 px-3 rounded-xl bg-secondary border border-border text-foreground text-sm">
+                  <option value="Same day">Same day</option>
+                  <option value="1-2 days">1-2 days</option>
+                  <option value="3-5 days">3-5 days</option>
+                  <option value="1 week">1 week</option>
+                  <option value="2+ weeks">2+ weeks</option>
+                </select>
+              </div>
             </div>
             <VehicleSelector
               vehicles={listingForm.compatible_vehicles}
