@@ -27,6 +27,7 @@ import SenderAddressFields from "@/components/SenderAddressFields";
 import AddressForm, { EMPTY_ADDRESS, type AddressFormValue } from "@/components/AddressForm";
 import type { ShippoAddress } from "@/lib/shippo";
 import OfferChatModal from "@/components/OfferChatModal";
+import CounterOfferModal from "@/components/CounterOfferModal";
 import { CreditCard, AlertTriangle, CheckCircle2, Truck } from "lucide-react";
 
 interface SellerProfile {
@@ -136,6 +137,9 @@ interface Offer {
   buyer_email?: string | null;
   listing_photo?: string | null;
   unread_chat?: number;
+  counter_count?: number | null;
+  initiated_by?: string | null;
+  parent_offer_id?: string | null;
 }
 
 const CATEGORIES = [
@@ -182,6 +186,7 @@ const MyMarket = () => {
   const [payoutGateContinue, setPayoutGateContinue] = useState(false);
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [chatOffer, setChatOffer] = useState<Offer | null>(null);
+  const [counterOffer, setCounterOffer] = useState<Offer | null>(null);
   const [shippingOrder, setShippingOrder] = useState<ShippingOrder | null>(null);
   const [shippingModalOpen, setShippingModalOpen] = useState(false);
 
@@ -1323,6 +1328,18 @@ const MyMarket = () => {
                           }} className="rounded-xl gap-1 text-xs h-8">
                             <XCircle size={14} /> Decline
                           </Button>
+                          {(offer.counter_count || 0) < 5 ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setCounterOffer(offer)}
+                              className="rounded-xl gap-1 text-xs h-8"
+                            >
+                              <MessageSquare size={14} /> Counter
+                            </Button>
+                          ) : (
+                            <span className="text-[11px] text-muted-foreground self-center">Max rounds reached</span>
+                          )}
                         </div>
                       )}
                       {offer.status === "declined" && (
@@ -2232,6 +2249,27 @@ const MyMarket = () => {
             listing_title: chatOffer.listing_title,
             photo: chatOffer.listing_photo,
           }}
+        />
+      )}
+
+      {counterOffer && (
+        <CounterOfferModal
+          open={!!counterOffer}
+          onClose={() => setCounterOffer(null)}
+          initiator="seller"
+          originalOffer={{
+            id: counterOffer.id,
+            listing_id: counterOffer.listing_id,
+            buyer_id: counterOffer.buyer_id,
+            seller_id: counterOffer.seller_id,
+            amount: counterOffer.amount,
+            counter_count: counterOffer.counter_count || 0,
+            listing_title: counterOffer.listing_title,
+            listing_photo: counterOffer.listing_photo,
+            buyer_email: counterOffer.buyer_email,
+            buyer_name: counterOffer.buyer_name,
+          }}
+          onSuccess={() => loadData()}
         />
       )}
 

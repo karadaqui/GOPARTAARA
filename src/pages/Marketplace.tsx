@@ -18,6 +18,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { shippingBadge, shipsToBuyer, type BuyerLocation } from "@/lib/shipping";
 import DeliveryAddressModal, { type DeliveryFormData } from "@/components/DeliveryAddressModal";
 import OfferChatModal from "@/components/OfferChatModal";
+import CounterOfferModal from "@/components/CounterOfferModal";
+import { ensureOfferConversation, insertSystemMessage } from "@/components/OfferChatModal";
 import { shippoCreateOrder } from "@/lib/shippo";
 
 import ScrollReveal from "@/components/ScrollReveal";
@@ -30,6 +32,9 @@ interface BuyerOffer {
   listing_id: string;
   seller_id: string;
   buyer_id: string;
+  parent_offer_id?: string | null;
+  initiated_by?: string | null;
+  counter_count?: number | null;
   seller_listings?: {
     title: string;
     photos: string[];
@@ -122,6 +127,7 @@ const Marketplace = () => {
   const [hasShop, setHasShop] = useState(false);
   const [addressOffer, setAddressOffer] = useState<BuyerOffer | null>(null);
   const [chatOffer, setChatOffer] = useState<BuyerOffer | null>(null);
+  const [counterOffer, setCounterOffer] = useState<BuyerOffer | null>(null);
 
   // Handle return from Stripe checkout — webhook handles order creation, this just shows toast
   useEffect(() => {
@@ -167,6 +173,9 @@ const Marketplace = () => {
           listing_id,
           seller_id,
           buyer_id,
+          parent_offer_id,
+          initiated_by,
+          counter_count,
           seller_listings!listing_id (
             title,
             photos,
@@ -175,9 +184,13 @@ const Marketplace = () => {
           )
         `)
         .eq("buyer_id", user.id)
-        .in("status", ["accepted", "pending_payment", "paid"])
+        .in("status", ["accepted", "pending_payment", "paid", "pending"])
         .order("created_at", { ascending: false });
-      setBuyerOffers((data || []) as BuyerOffer[]);
+      // Only show pending if it's a seller-initiated counter awaiting buyer
+      const filtered = ((data as any[]) || []).filter((o: any) =>
+        o.status !== "pending" || o.initiated_by === "seller"
+      );
+      setBuyerOffers(filtered as BuyerOffer[]);
     } catch {}
   };
 
@@ -477,11 +490,87 @@ const Marketplace = () => {
                       )}
                       <div className="min-w-0 flex-1">
                         <p className="font-semibold text-sm truncate text-foreground">{o.seller_listings?.title || "Unknown part"}</p>
-                        <p className="text-xs text-muted-foreground">Your offer: £{Number(o.amount).toFixed(2)}</p>
+                        {o.status === "pending" && o.initiated_by === "seller" ? (
+                          <p className="text-xs font-semibold text-amber-600 dark:text-amber-400">
+                            Seller countered: £{Number(o.amount).toFixed(2)}
+                          </p>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">Your offer: £{Number(o.amount).toFixed(2)}</p>
+                        )}
                       </div>
                     </div>
                     {o.status === "paid" ? (
                       <Badge className="bg-green-500/20 text-green-400 border-green-500/30">✓ Paid</Badge>
+                    ) : o.status === "pending" && o.initiated_by === "seller" ? (
+                      <div className="flex flex-col items-stretch sm:items-end gap-1.5">
+                        <div className="flex gap-2 flex-wrap">
+                          <Button
+                            variant="outline"
+                            onClick={() => setChatOffer(o)}
+                            className="rounded-xl h-10"
+                          >
+                            💬 Chat
+                          </Button>
+                          <Button
+                            onClick={async () => {
+                              await (supabase as any).from("offers").update({ status: "accepted" }).eq("id", o.id);
+                              try {
+                                const cid = await ensureOfferConversation({
+                                  id: o.id, listing_id: o.listing_id, buyer_id: o.buyer_id, seller_id: o.seller_id,
+                                });
+                                if (cid) await insertSystemMessage(cid, user!.id, `✅ Buyer accepted counter offer of £${Number(o.amount).toFixed(2)}`);
+                              } catch {}
+                              await (supabase as any).from("notifications").insert({
+                                user_id: o.seller_id,
+                                type: "offer_accepted",
+                                title: "Counter accepted! 🎉",
+                                message: `Buyer accepted your counter of £${Number(o.amount).toFixed(2)} on "${o.seller_listings?.title || "your listing"}".`,
+                                link: "/my-market",
+                              });
+                              await loadBuyerOffers();
+                              handlePayNow(o);
+                            }}
+                            className="rounded-xl h-10 bg-primary hover:bg-primary/90 font-semibold"
+                          >
+                            ✅ Accept £{Number(o.amount).toFixed(2)}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={async () => {
+                              await (supabase as any).from("offers").update({ status: "declined" }).eq("id", o.id);
+                              try {
+                                const cid = await ensureOfferConversation({
+                                  id: o.id, listing_id: o.listing_id, buyer_id: o.buyer_id, seller_id: o.seller_id,
+                                });
+                                if (cid) await insertSystemMessage(cid, user!.id, `❌ Buyer declined the counter offer`);
+                              } catch {}
+                              await (supabase as any).from("notifications").insert({
+                                user_id: o.seller_id,
+                                type: "offer_declined",
+                                title: "Counter declined",
+                                message: `Buyer declined your counter offer on "${o.seller_listings?.title || "your listing"}".`,
+                                link: "/my-market",
+                              });
+                              toast.success("Counter declined");
+                              await loadBuyerOffers();
+                            }}
+                            className="rounded-xl h-10"
+                          >
+                            ❌ Decline
+                          </Button>
+                          {(o.counter_count || 0) < 5 ? (
+                            <Button
+                              variant="outline"
+                              onClick={() => setCounterOffer(o)}
+                              className="rounded-xl h-10"
+                            >
+                              💬 Counter Back
+                            </Button>
+                          ) : (
+                            <span className="text-[11px] text-muted-foreground self-center">Max rounds reached</span>
+                          )}
+                        </div>
+                      </div>
                     ) : (
                       <div className="flex flex-col items-stretch sm:items-end gap-1.5">
                         <div className="flex gap-2">
@@ -752,6 +841,26 @@ const Marketplace = () => {
               return p.startsWith("http") ? p : `https://bkwieknlxvkrzluongif.supabase.co/storage/v1/object/public/listing-photos/${p}`;
             })(),
           }}
+        />
+      )}
+
+      {counterOffer && (
+        <CounterOfferModal
+          open={!!counterOffer}
+          onClose={() => setCounterOffer(null)}
+          initiator="buyer"
+          originalOffer={{
+            id: counterOffer.id,
+            listing_id: counterOffer.listing_id,
+            buyer_id: counterOffer.buyer_id,
+            seller_id: counterOffer.seller_id,
+            amount: counterOffer.amount,
+            counter_count: counterOffer.counter_count || 0,
+            listing_title: counterOffer.seller_listings?.title ?? null,
+            listing_photo: counterOffer.seller_listings?.photos?.[0] ?? null,
+            buyer_email: user?.email ?? null,
+          }}
+          onSuccess={() => loadBuyerOffers()}
         />
       )}
 
