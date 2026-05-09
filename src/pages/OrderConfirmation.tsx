@@ -26,6 +26,17 @@ export default function OrderConfirmation() {
     let cancelled = false;
     let attempts = 0;
 
+    // Trigger confirm-order to fulfill the order without depending on the webhook
+    if (sessionId) {
+      supabase.functions
+        .invoke("confirm-order", { body: { session_id: sessionId } })
+        .then(({ data, error }) => {
+          if (error) console.warn("confirm-order failed", error);
+          else console.log("confirm-order result", data);
+        })
+        .catch((e) => console.warn("confirm-order threw", e));
+    }
+
     const poll = async () => {
       if (cancelled || !sessionId) return;
       attempts++;
