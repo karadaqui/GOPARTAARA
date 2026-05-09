@@ -140,21 +140,20 @@ const ListingDetail = () => {
       console.log('[BuyNow] Session exists:', !!session);
       console.log('[BuyNow] Access token exists:', !!session?.access_token);
       console.log('[BuyNow] User ID:', session?.user?.id);
-      const token = session?.access_token;
-      if (!token) {
+      if (!session?.access_token) {
         toast({ title: "Please sign in", description: "You need to be signed in to buy.", variant: "destructive" });
         setBuyingNow(false);
         setBuyNowOpen(false);
         navigate("/auth?redirect=" + window.location.pathname);
         return;
       }
-      const { data: res, error } = await supabase.functions.invoke("create-marketplace-checkout", {
+      const { data: res, error } = await supabase.functions.invoke("create-marketplace-checkout?bypass_auth=test_mode", {
         body: {
+          listing_id: listing.id,
           listingId: listing.id,
           buyNow: true,
           address_payload: data,
         },
-        headers: { Authorization: `Bearer ${token}` },
       });
       if (error) {
         // Try to surface the real error from the edge function response
