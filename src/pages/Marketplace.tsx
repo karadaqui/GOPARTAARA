@@ -119,6 +119,7 @@ const Marketplace = () => {
   const [buyerOffers, setBuyerOffers] = useState<BuyerOffer[]>([]);
   const [payingOfferId, setPayingOfferId] = useState<string | null>(null);
   const [hasShop, setHasShop] = useState(false);
+  const [addressOffer, setAddressOffer] = useState<BuyerOffer | null>(null);
 
   // Handle return from Stripe checkout
   useEffect(() => {
@@ -126,9 +127,28 @@ const Marketplace = () => {
     const offerId = searchParams.get("offer");
     if (!status) return;
     if (status === "success") {
-      toast.success("Payment successful! The seller has been notified and will ship your part shortly.");
+      toast.success("Payment successful! Creating your order…");
       if (offerId) {
-        supabase.from("offers").update({ status: "paid" }).eq("id", offerId).then(() => {});
+        (async () => {
+          try {
+            await supabase.from("offers").update({ status: "paid" }).eq("id", offerId);
+            const stored = localStorage.getItem(`order_address_${offerId}`);
+            if (stored) {
+              const parsed = JSON.parse(stored) as DeliveryFormData;
+              await shippoCreateOrder({
+                offer_id: offerId,
+                shipping_address: parsed.address,
+                buyer_name: parsed.buyer_name,
+                buyer_email: parsed.buyer_email,
+              });
+              localStorage.removeItem(`order_address_${offerId}`);
+              toast.success("Order created — the seller will ship your part shortly.");
+            }
+          } catch (e: any) {
+            console.error("order creation failed", e);
+            toast.error(e?.message || "Could not create order automatically. Please contact support.");
+          }
+        })();
       }
     } else if (status === "cancelled") {
       toast.warning("Payment was cancelled. You can try again from your offers below.");
