@@ -265,6 +265,15 @@ const MyMarket = () => {
         bank_paypal_email: bankDetails.paypal_email || "",
         ships_to: ((sp as any).ships_to && (sp as any).ships_to.length > 0) ? (sp as any).ships_to : ["UK"],
         country: ((sp as any).description?.match(/^Country: ([^\n]+)/)?.[1]) || DEFAULT_COUNTRY,
+        sender_name: (sp as any).sender_name || "",
+        sender_company: (sp as any).sender_company || "",
+        sender_street1: (sp as any).sender_street1 || "",
+        sender_street2: (sp as any).sender_street2 || "",
+        sender_city: (sp as any).sender_city || "",
+        sender_state: (sp as any).sender_state || "",
+        sender_zip: (sp as any).sender_zip || "",
+        sender_country: (sp as any).sender_country || "GB",
+        sender_phone: (sp as any).sender_phone || "",
       });
 
       const { data: ls } = await supabase
