@@ -47,6 +47,10 @@ interface SellerProfile {
   sender_zip?: string | null;
   sender_country?: string | null;
   sender_phone?: string | null;
+  offers_collection?: boolean | null;
+  collection_address?: any;
+  collection_instructions?: string | null;
+  collection_window?: string | null;
 }
 
 interface Listing {
@@ -87,6 +91,10 @@ interface OrderRow {
   carrier: string | null;
   label_url: string | null;
   created_at: string;
+  order_number?: string | null;
+  fulfillment_method?: string | null;
+  is_new_account?: boolean | null;
+  collected_at?: string | null;
   listing_title?: string;
   listing_photo?: string | null;
   listing_category?: string | null;
