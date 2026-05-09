@@ -35,17 +35,38 @@ const MakeOfferModal = ({ open, onClose, listingId, listingTitle, sellerId, curr
     }
     setSending(true);
 
-    const { error } = await supabase.from("offers").insert({
+    const { data: created, error } = await supabase.from("offers").insert({
       listing_id: listingId,
       buyer_id: user.id,
       seller_id: sellerId,
       amount: price,
       message: message.trim() || null,
-    });
+    }).select("id").single();
 
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
+      // Auto-create conversation tied to this offer + post system message
+      try {
+        const { ensureOfferConversation, insertSystemMessage } = await import("@/components/OfferChatModal");
+        const convId = await ensureOfferConversation({
+          id: created!.id,
+          listing_id: listingId,
+          buyer_id: user.id,
+          seller_id: sellerId,
+        });
+        if (convId) {
+          await insertSystemMessage(convId, user.id, `🤝 Offer of £${price.toFixed(2)} sent for "${listingTitle}"`);
+          if (message.trim()) {
+            await supabase.from("chat_messages").insert({
+              conversation_id: convId,
+              sender_id: user.id,
+              content: message.trim(),
+            });
+          }
+        }
+      } catch {}
+
       // Send notification to seller
       await supabase.from("notifications").insert({
         user_id: sellerId,

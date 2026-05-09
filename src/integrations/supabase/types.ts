@@ -231,21 +231,27 @@ export type Database = {
           buyer_id: string
           created_at: string
           id: string
+          last_message_at: string | null
           listing_id: string | null
+          offer_id: string | null
           seller_id: string
         }
         Insert: {
           buyer_id: string
           created_at?: string
           id?: string
+          last_message_at?: string | null
           listing_id?: string | null
+          offer_id?: string | null
           seller_id: string
         }
         Update: {
           buyer_id?: string
           created_at?: string
           id?: string
+          last_message_at?: string | null
           listing_id?: string | null
+          offer_id?: string | null
           seller_id?: string
         }
         Relationships: [
@@ -953,6 +959,27 @@ export type Database = {
         }
         Relationships: []
       }
+      recently_viewed: {
+        Row: {
+          id: string
+          listing_id: string
+          user_id: string
+          viewed_at: string
+        }
+        Insert: {
+          id?: string
+          listing_id: string
+          user_id: string
+          viewed_at?: string
+        }
+        Update: {
+          id?: string
+          listing_id?: string
+          user_id?: string
+          viewed_at?: string
+        }
+        Relationships: []
+      }
       referrals: {
         Row: {
           created_at: string
@@ -1177,6 +1204,7 @@ export type Database = {
       seller_listings: {
         Row: {
           active: boolean
+          admin_approved: boolean
           approval_status: string
           boost_package: string | null
           category: string | null
@@ -1202,6 +1230,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          admin_approved?: boolean
           approval_status?: string
           boost_package?: string | null
           category?: string | null
@@ -1227,6 +1256,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          admin_approved?: boolean
           approval_status?: string
           boost_package?: string | null
           category?: string | null

@@ -26,6 +26,7 @@ import CreateShippingLabelModal, { type ShippingOrder } from "@/components/Creat
 import SenderAddressFields from "@/components/SenderAddressFields";
 import AddressForm, { EMPTY_ADDRESS, type AddressFormValue } from "@/components/AddressForm";
 import type { ShippoAddress } from "@/lib/shippo";
+import OfferChatModal from "@/components/OfferChatModal";
 import { CreditCard, AlertTriangle, CheckCircle2, Truck } from "lucide-react";
 
 interface SellerProfile {
@@ -132,6 +133,9 @@ interface Offer {
   created_at: string;
   listing_title?: string;
   buyer_name?: string;
+  buyer_email?: string | null;
+  listing_photo?: string | null;
+  unread_chat?: number;
 }
 
 const CATEGORIES = [
@@ -177,6 +181,7 @@ const MyMarket = () => {
   const [payoutModalOpen, setPayoutModalOpen] = useState(false);
   const [payoutGateContinue, setPayoutGateContinue] = useState(false);
   const [orders, setOrders] = useState<OrderRow[]>([]);
+  const [chatOffer, setChatOffer] = useState<Offer | null>(null);
   const [shippingOrder, setShippingOrder] = useState<ShippingOrder | null>(null);
   const [shippingModalOpen, setShippingModalOpen] = useState(false);
 
@@ -349,17 +354,51 @@ const MyMarket = () => {
         const buyerIds = [...new Set(offersData.map((o: any) => o.buyer_id))];
         const offerListingIds = [...new Set(offersData.map((o: any) => o.listing_id))];
         const [buyerProfiles, offerListings] = await Promise.all([
-          supabase.from("profiles").select("user_id, display_name").in("user_id", buyerIds),
-          supabase.from("seller_listings").select("id, title").in("id", offerListingIds),
+          supabase.from("profiles").select("user_id, display_name, email").in("user_id", buyerIds),
+          supabase.from("seller_listings").select("id, title, photos").in("id", offerListingIds),
         ]);
-        const buyerMap = new Map((buyerProfiles.data || []).map(p => [p.user_id, p.display_name]));
-        const offerListingMap = new Map((offerListings.data || []).map(l => [l.id, l.title]));
+        const buyerMap = new Map((buyerProfiles.data || []).map(p => [p.user_id, { name: p.display_name, email: p.email }]));
+        const offerListingMap = new Map((offerListings.data || []).map((l: any) => [l.id, { title: l.title, photo: l.photos?.[0] || null }]));
 
-        setOffers(offersData.map((o: any) => ({
-          ...o,
-          buyer_name: buyerMap.get(o.buyer_id) || "Anonymous",
-          listing_title: offerListingMap.get(o.listing_id) || "Unknown",
-        })));
+        // Fetch unread chat counts per offer
+        const offerIds = offersData.map((o: any) => o.id);
+        const sb = supabase as any;
+        const { data: convs } = await sb
+          .from("conversations")
+          .select("id, offer_id")
+          .in("offer_id", offerIds);
+        const convByOffer = new Map<string, string>((convs || []).map((c: any) => [c.offer_id, c.id]));
+        let unreadByConv = new Map<string, number>();
+        if (convs && convs.length) {
+          const { data: msgs } = await supabase
+            .from("chat_messages")
+            .select("conversation_id")
+            .in("conversation_id", convs.map((c: any) => c.id))
+            .eq("read", false)
+            .neq("sender_id", user!.id);
+          (msgs || []).forEach((m: any) => {
+            unreadByConv.set(m.conversation_id, (unreadByConv.get(m.conversation_id) || 0) + 1);
+          });
+        }
+
+        setOffers(offersData.map((o: any) => {
+          const li: any = offerListingMap.get(o.listing_id);
+          const buyer: any = buyerMap.get(o.buyer_id);
+          const cid = convByOffer.get(o.id);
+          const rawPhoto = li?.photo || null;
+          const photo = rawPhoto
+            ? rawPhoto.startsWith("http") ? rawPhoto
+              : `https://bkwieknlxvkrzluongif.supabase.co/storage/v1/object/public/listing-photos/${rawPhoto}`
+            : null;
+          return {
+            ...o,
+            buyer_name: buyer?.name || "Anonymous",
+            buyer_email: buyer?.email || null,
+            listing_title: li?.title || "Unknown",
+            listing_photo: photo,
+            unread_chat: cid ? (unreadByConv.get(cid) || 0) : 0,
+          };
+        }));
       } else {
         setOffers([]);
       }
@@ -1191,54 +1230,105 @@ const MyMarket = () => {
                         {new Date(offer.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                       </p>
                     </div>
-                    {offer.status === "pending" && (
-                      <div className="flex gap-2 shrink-0">
-                        <Button size="sm" onClick={async () => {
-                          await supabase.from("offers").update({ status: "accepted" }).eq("id", offer.id);
-                          // Notify buyer
-                          await supabase.from("notifications").insert({
-                            user_id: offer.buyer_id,
-                            type: "offer_accepted",
-                            title: "Offer accepted! 🎉",
-                            message: `Your offer of £${Number(offer.amount).toFixed(2)} on "${offer.listing_title}" was accepted!`,
-                            link: `/listing/${offer.listing_id}`,
-                          });
-                          // Create conversation
-                          const { data: existingConv } = await supabase
-                            .from("conversations")
-                            .select("id")
-                            .eq("listing_id", offer.listing_id)
-                            .eq("buyer_id", offer.buyer_id)
-                            .eq("seller_id", user!.id)
-                            .maybeSingle();
-                          if (!existingConv) {
-                            await supabase.from("conversations").insert({
-                              listing_id: offer.listing_id,
-                              buyer_id: offer.buyer_id,
-                              seller_id: user!.id,
+                    <div className="flex flex-col items-end gap-2 shrink-0">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setChatOffer(offer)}
+                        className="rounded-xl gap-1 text-xs h-8 relative"
+                      >
+                        <MessageSquare size={14} /> Chat
+                        {(offer.unread_chat || 0) > 0 && (
+                          <span className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] font-bold px-1">
+                            {offer.unread_chat}
+                          </span>
+                        )}
+                      </Button>
+                      {offer.status === "pending" && (
+                        <div className="flex gap-2">
+                          <Button size="sm" onClick={async () => {
+                            await supabase.from("offers").update({ status: "accepted" }).eq("id", offer.id);
+                            // Notify buyer (in-app)
+                            await supabase.from("notifications").insert({
+                              user_id: offer.buyer_id,
+                              type: "offer_accepted",
+                              title: "Offer accepted! 🎉",
+                              message: `Your offer of £${Number(offer.amount).toFixed(2)} was accepted! Complete your purchase now.`,
+                              link: "/marketplace",
                             });
-                          }
-                          toast({ title: "Offer accepted!" });
-                          await loadData();
-                        }} className="rounded-xl gap-1 text-xs h-8">
-                          <Check size={14} /> Accept
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={async () => {
-                          await supabase.from("offers").update({ status: "declined" }).eq("id", offer.id);
-                          await supabase.from("notifications").insert({
-                            user_id: offer.buyer_id,
-                            type: "offer_declined",
-                            title: "Offer declined",
-                            message: `Your offer of £${Number(offer.amount).toFixed(2)} on "${offer.listing_title}" was declined.`,
-                            link: `/listing/${offer.listing_id}`,
-                          });
-                          toast({ title: "Offer declined" });
-                          await loadData();
-                        }} className="rounded-xl gap-1 text-xs h-8">
-                          <XCircle size={14} /> Decline
-                        </Button>
-                      </div>
-                    )}
+                            // Ensure conversation + system message
+                            try {
+                              const { ensureOfferConversation, insertSystemMessage } = await import("@/components/OfferChatModal");
+                              const cid = await ensureOfferConversation({
+                                id: offer.id, listing_id: offer.listing_id, buyer_id: offer.buyer_id, seller_id: user!.id,
+                              });
+                              if (cid) await insertSystemMessage(cid, user!.id, `✅ Offer accepted! Buyer can now pay.`);
+                            } catch {}
+                            // Email buyer
+                            if (offer.buyer_email) {
+                              try {
+                                await supabase.functions.invoke("send-transactional-email", {
+                                  body: {
+                                    templateName: "contact-notification",
+                                    recipientEmail: offer.buyer_email,
+                                    idempotencyKey: `offer-accepted-${offer.id}`,
+                                    templateData: {
+                                      name: offer.buyer_name || "there",
+                                      email: offer.buyer_email,
+                                      message: `🎉 Your offer of £${Number(offer.amount).toFixed(2)} on "${offer.listing_title}" was accepted! Complete your purchase: ${window.location.origin}/marketplace`,
+                                    },
+                                  },
+                                });
+                              } catch {}
+                            }
+                            toast({ title: "Offer accepted!" });
+                            await loadData();
+                          }} className="rounded-xl gap-1 text-xs h-8">
+                            <Check size={14} /> Accept
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={async () => {
+                            await supabase.from("offers").update({ status: "declined" }).eq("id", offer.id);
+                            await supabase.from("notifications").insert({
+                              user_id: offer.buyer_id,
+                              type: "offer_declined",
+                              title: "Offer declined",
+                              message: `Your offer of £${Number(offer.amount).toFixed(2)} was declined by the seller.`,
+                              link: `/listing/${offer.listing_id}`,
+                            });
+                            try {
+                              const { ensureOfferConversation, insertSystemMessage } = await import("@/components/OfferChatModal");
+                              const cid = await ensureOfferConversation({
+                                id: offer.id, listing_id: offer.listing_id, buyer_id: offer.buyer_id, seller_id: user!.id,
+                              });
+                              if (cid) await insertSystemMessage(cid, user!.id, `❌ Offer was declined.`);
+                            } catch {}
+                            if (offer.buyer_email) {
+                              try {
+                                await supabase.functions.invoke("send-transactional-email", {
+                                  body: {
+                                    templateName: "contact-notification",
+                                    recipientEmail: offer.buyer_email,
+                                    idempotencyKey: `offer-declined-${offer.id}`,
+                                    templateData: {
+                                      name: offer.buyer_name || "there",
+                                      email: offer.buyer_email,
+                                      message: `Your offer of £${Number(offer.amount).toFixed(2)} on "${offer.listing_title}" was declined by the seller.`,
+                                    },
+                                  },
+                                });
+                              } catch {}
+                            }
+                            toast({ title: "Offer declined" });
+                            await loadData();
+                          }} className="rounded-xl gap-1 text-xs h-8">
+                            <XCircle size={14} /> Decline
+                          </Button>
+                        </div>
+                      )}
+                      {offer.status === "declined" && (
+                        <Badge variant="destructive" className="text-xs">Declined</Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -2128,6 +2218,22 @@ const MyMarket = () => {
             : o));
         }}
       />
+
+      {chatOffer && (
+        <OfferChatModal
+          open={!!chatOffer}
+          onClose={() => { setChatOffer(null); loadData(); }}
+          offer={{
+            id: chatOffer.id,
+            listing_id: chatOffer.listing_id,
+            buyer_id: chatOffer.buyer_id,
+            seller_id: chatOffer.seller_id,
+            amount: chatOffer.amount,
+            listing_title: chatOffer.listing_title,
+            photo: chatOffer.listing_photo,
+          }}
+        />
+      )}
 
       <Footer />
     </div>

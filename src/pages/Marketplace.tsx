@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { shippingBadge, shipsToBuyer, type BuyerLocation } from "@/lib/shipping";
 import DeliveryAddressModal, { type DeliveryFormData } from "@/components/DeliveryAddressModal";
+import OfferChatModal from "@/components/OfferChatModal";
 import { shippoCreateOrder } from "@/lib/shippo";
 
 import ScrollReveal from "@/components/ScrollReveal";
@@ -120,6 +121,7 @@ const Marketplace = () => {
   const [payingOfferId, setPayingOfferId] = useState<string | null>(null);
   const [hasShop, setHasShop] = useState(false);
   const [addressOffer, setAddressOffer] = useState<BuyerOffer | null>(null);
+  const [chatOffer, setChatOffer] = useState<BuyerOffer | null>(null);
 
   // Handle return from Stripe checkout — webhook handles order creation, this just shows toast
   useEffect(() => {
@@ -482,13 +484,22 @@ const Marketplace = () => {
                       <Badge className="bg-green-500/20 text-green-400 border-green-500/30">✓ Paid</Badge>
                     ) : (
                       <div className="flex flex-col items-stretch sm:items-end gap-1.5">
-                        <Button
-                          onClick={() => handlePayNow(o)}
-                          disabled={payingOfferId === o.id}
-                          className="rounded-xl h-11 bg-primary hover:bg-primary/90 font-semibold"
-                        >
-                          {payingOfferId === o.id ? "Redirecting…" : `Pay £${Number(o.amount).toFixed(2)} Securely →`}
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            onClick={() => setChatOffer(o)}
+                            className="rounded-xl h-11"
+                          >
+                            💬 Message Seller
+                          </Button>
+                          <Button
+                            onClick={() => handlePayNow(o)}
+                            disabled={payingOfferId === o.id}
+                            className="rounded-xl h-11 bg-primary hover:bg-primary/90 font-semibold"
+                          >
+                            {payingOfferId === o.id ? "Redirecting…" : `Pay £${Number(o.amount).toFixed(2)} Securely →`}
+                          </Button>
+                        </div>
                         <p className="text-[11px] text-muted-foreground text-center sm:text-right">🔒 Secured by Stripe — card payments only</p>
                       </div>
                     )}
@@ -723,6 +734,26 @@ const Marketplace = () => {
         loading={!!payingOfferId}
         onSubmit={handleAddressSubmitted}
       />
+
+      {chatOffer && (
+        <OfferChatModal
+          open={!!chatOffer}
+          onClose={() => setChatOffer(null)}
+          offer={{
+            id: chatOffer.id,
+            listing_id: chatOffer.listing_id,
+            buyer_id: chatOffer.buyer_id,
+            seller_id: chatOffer.seller_id,
+            amount: chatOffer.amount,
+            listing_title: chatOffer.seller_listings?.title ?? null,
+            photo: (() => {
+              const p = chatOffer.seller_listings?.photos?.[0];
+              if (!p) return null;
+              return p.startsWith("http") ? p : `https://bkwieknlxvkrzluongif.supabase.co/storage/v1/object/public/listing-photos/${p}`;
+            })(),
+          }}
+        />
+      )}
 
       <Footer />
       <BackToTop />

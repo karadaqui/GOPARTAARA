@@ -174,6 +174,16 @@ const ListingDetail = () => {
         try {
           await supabase.rpc("increment_listing_view", { p_listing_id: id!, p_viewer_id: user?.id || null });
         } catch {}
+        // Track recently viewed for authenticated users
+        if (user) {
+          try {
+            const sb = supabase as any;
+            await sb.from("recently_viewed").upsert(
+              { user_id: user.id, listing_id: id!, viewed_at: new Date().toISOString() },
+              { onConflict: "user_id,listing_id" }
+            );
+          } catch {}
+        }
 
         const { data: revs } = await supabase
           .from("listing_reviews").select("*").eq("listing_id", id!).order("created_at", { ascending: false });

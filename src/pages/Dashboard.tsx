@@ -17,6 +17,7 @@ import BlogGenerateSection from "@/components/dashboard/BlogGenerateSection";
 import PriceAlertsSection from "@/components/dashboard/PriceAlertsSection";
 import AddressBookSection from "@/components/dashboard/AddressBookSection";
 import RecentlyViewedWidget from "@/components/dashboard/RecentlyViewedWidget";
+import RecentlyViewedListings from "@/components/dashboard/RecentlyViewedListings";
 import MyGarageSection from "@/components/dashboard/MyGarageSection";
 import GarageAnalyticsSection from "@/components/dashboard/GarageAnalyticsSection";
 import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
@@ -899,7 +900,10 @@ const Dashboard = () => {
 
 
 
-        {/* Recently Viewed (from localStorage) */}
+        {/* Recently Viewed Listings (marketplace) */}
+        {user && <RecentlyViewedListings />}
+
+        {/* Recently Searched (from localStorage) */}
         <RecentlyViewedWidget />
 
         {/* Blog Generator */}
