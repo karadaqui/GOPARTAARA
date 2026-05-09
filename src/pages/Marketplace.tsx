@@ -32,6 +32,8 @@ interface BuyerOffer {
   seller_listings?: {
     title: string;
     photos: string[];
+    shipping_fee?: number | null;
+    free_shipping?: boolean | null;
   } | null;
 }
 
@@ -47,6 +49,9 @@ interface ListingWithSeller {
   view_count: number;
   save_count: number;
   created_at: string;
+  shipping_fee: number | null;
+  free_shipping: boolean | null;
+  dispatch_time: string | null;
   seller_profiles: {
     id: string;
     business_name: string;
