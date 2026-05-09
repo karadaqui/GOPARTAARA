@@ -897,12 +897,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* Address Book */}
-        {user && (
-          <div className="mb-6">
-            <AddressBookSection />
-          </div>
-        )}
+
 
         {/* Recently Viewed (from localStorage) */}
         <RecentlyViewedWidget />
