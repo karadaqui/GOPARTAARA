@@ -899,7 +899,10 @@ const Dashboard = () => {
 
 
 
-        {/* Recently Viewed (from localStorage) */}
+        {/* Recently Viewed Listings (marketplace) */}
+        {user && <RecentlyViewedListings />}
+
+        {/* Recently Searched (from localStorage) */}
         <RecentlyViewedWidget />
 
         {/* Blog Generator */}
