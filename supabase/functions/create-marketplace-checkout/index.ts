@@ -186,7 +186,7 @@ Deno.serve(async (req) => {
           quantity: 1,
         }],
         mode: "payment",
-        success_url: `https://gopartara.com/marketplace?payment=success&listing=${listingId}&buynow=true`,
+        success_url: `https://gopartara.com/order-confirmation?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `https://gopartara.com/listing/${listingId}?payment=cancelled`,
         metadata: {
           listingId,
