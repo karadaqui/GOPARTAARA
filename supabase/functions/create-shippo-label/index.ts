@@ -220,11 +220,13 @@ Deno.serve(async (req) => {
     }
 
     if (action === "create_order") {
-      const { offer_id, shipping_address, buyer_name, buyer_email } = payload;
+      const {
+        offer_id, shipping_address, buyer_name, buyer_email,
+        billing_address, fulfillment_method, delivery_instructions,
+      } = payload;
       if (typeof offer_id !== "string" || !offer_id) return jsonResponse({ error: "offer_id required" }, 400);
       if (!shipping_address || typeof shipping_address !== "object") return jsonResponse({ error: "shipping_address required" }, 400);
 
-      // Look up offer & verify buyer
       const { data: offer, error: offerErr } = await admin
         .from("offers")
         .select("id, listing_id, seller_id, buyer_id, amount")
@@ -233,27 +235,42 @@ Deno.serve(async (req) => {
       if (offerErr || !offer) return jsonResponse({ error: "Offer not found" }, 404);
       if (offer.buyer_id !== userId) return jsonResponse({ error: "Forbidden" }, 403);
 
-      // Avoid duplicate
       const { data: existing } = await admin.from("orders").select("id").eq("offer_id", offer_id).maybeSingle();
       if (existing?.id) return jsonResponse({ order_id: existing.id, duplicate: true });
 
-      // Listing for shipping fee + seller mapping
       const { data: listing } = await admin
         .from("seller_listings")
         .select("id, shipping_fee, free_shipping, seller_id")
         .eq("id", offer.listing_id)
         .maybeSingle();
-      const shipping_fee = listing?.free_shipping ? 0 : Number(listing?.shipping_fee || 0);
+      const isCollection = fulfillment_method === "collection";
+      const shipping_fee = isCollection ? 0 : (listing?.free_shipping ? 0 : Number(listing?.shipping_fee || 0));
       const amount = Number(offer.amount || 0);
       const total_amount = amount + shipping_fee;
 
-      // seller_listings.seller_id is seller_profiles.id; map to user id
       let sellerUserId = offer.seller_id;
       if (listing?.seller_id) {
         const { data: sp } = await admin
           .from("seller_profiles").select("user_id").eq("id", listing.seller_id).maybeSingle();
         if (sp?.user_id) sellerUserId = sp.user_id;
       }
+
+      // Generate GP-XXXXXX order number
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let suffix = "";
+      for (let i = 0; i < 6; i++) suffix += chars[Math.floor(Math.random() * chars.length)];
+      const order_number = `GP-${suffix}`;
+
+      // Fraud check: new account flag (< 7 days)
+      let is_new_account = false;
+      try {
+        const { data: u } = await admin.auth.admin.getUserById(userId);
+        const created = u?.user?.created_at ? new Date(u.user.created_at).getTime() : 0;
+        is_new_account = created > 0 && (Date.now() - created) < 7 * 24 * 60 * 60 * 1000;
+        if (is_new_account && total_amount > 200) {
+          return jsonResponse({ error: "New accounts (less than 7 days old) cannot place orders over £200. Please contact support." }, 400);
+        }
+      } catch { /* ignore */ }
 
       const { data: inserted, error: insErr } = await admin.from("orders").insert({
         listing_id: offer.listing_id,
@@ -263,23 +280,48 @@ Deno.serve(async (req) => {
         amount,
         shipping_fee,
         total_amount,
-        status: "awaiting_shipment",
+        status: isCollection ? "awaiting_collection" : "awaiting_shipment",
         buyer_name: buyer_name || null,
         buyer_email: buyer_email || null,
         shipping_address,
-      }).select("id").single();
+        billing_address: billing_address || null,
+        fulfillment_method: isCollection ? "collection" : "delivery",
+        delivery_instructions: delivery_instructions || null,
+        order_number,
+        is_new_account,
+      }).select("id, order_number").single();
 
       if (insErr) return jsonResponse({ error: insErr.message }, 500);
 
-      // Notify seller
       try {
-        await admin.from("notifications").insert({
-          user_id: sellerUserId,
-          type: "order_received",
-          title: "New order — ready to ship",
-          message: `You have a new paid order. Total £${total_amount.toFixed(2)}.`,
-          link: "/my-market",
-        });
+        await admin.from("notifications").insert([
+          {
+            user_id: sellerUserId,
+            type: "order_received",
+            title: `New order ${inserted.order_number}`,
+            message: `${isCollection ? "Collection requested" : "Ready to ship"} — total £${total_amount.toFixed(2)}.`,
+            link: "/my-market",
+          },
+          {
+            user_id: userId,
+            type: "order_confirmed",
+            title: `Order confirmed — ${inserted.order_number}`,
+            message: isCollection ? "Your item will be ready for collection shortly." : "The seller will dispatch your part shortly.",
+            link: "/marketplace",
+          },
+        ]);
+      } catch (e) { console.error("[shippo] notify failed", e); }
+
+      return jsonResponse({ order_id: inserted.id, order_number: inserted.order_number });
+    }
+
+    return jsonResponse({ error: "Unknown action" }, 400);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("[create-shippo-label] error", msg);
+    return jsonResponse({ error: msg }, 500);
+  }
+});
       } catch (e) { console.error("[shippo] seller notify failed", e); }
 
       return jsonResponse({ order_id: inserted.id });
