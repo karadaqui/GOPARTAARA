@@ -24,6 +24,7 @@ import EmptyState from "@/components/EmptyState";
 import PayoutSetupModal from "@/components/PayoutSetupModal";
 import CreateShippingLabelModal, { type ShippingOrder } from "@/components/CreateShippingLabelModal";
 import SenderAddressFields from "@/components/SenderAddressFields";
+import AddressForm, { EMPTY_ADDRESS, type AddressFormValue } from "@/components/AddressForm";
 import type { ShippoAddress } from "@/lib/shippo";
 import { CreditCard, AlertTriangle, CheckCircle2, Truck } from "lucide-react";
 
@@ -47,6 +48,10 @@ interface SellerProfile {
   sender_zip?: string | null;
   sender_country?: string | null;
   sender_phone?: string | null;
+  offers_collection?: boolean | null;
+  collection_address?: any;
+  collection_instructions?: string | null;
+  collection_window?: string | null;
 }
 
 interface Listing {
@@ -87,6 +92,10 @@ interface OrderRow {
   carrier: string | null;
   label_url: string | null;
   created_at: string;
+  order_number?: string | null;
+  fulfillment_method?: string | null;
+  is_new_account?: boolean | null;
+  collected_at?: string | null;
   listing_title?: string;
   listing_photo?: string | null;
   listing_category?: string | null;
@@ -212,6 +221,10 @@ const MyMarket = () => {
     country: DEFAULT_COUNTRY,
     sender_name: "", sender_company: "", sender_street1: "", sender_street2: "",
     sender_city: "", sender_state: "", sender_zip: "", sender_country: "GB", sender_phone: "",
+    offers_collection: false,
+    collection_address: { ...EMPTY_ADDRESS, label: "Store" } as AddressFormValue,
+    collection_instructions: "",
+    collection_window: "Same day",
   });
 
   const [listingForm, setListingForm] = useState({
@@ -278,6 +291,10 @@ const MyMarket = () => {
         sender_zip: (sp as any).sender_zip || "",
         sender_country: (sp as any).sender_country || "GB",
         sender_phone: (sp as any).sender_phone || "",
+        offers_collection: !!(sp as any).offers_collection,
+        collection_address: ((sp as any).collection_address as AddressFormValue) || { ...EMPTY_ADDRESS, label: "Store" },
+        collection_instructions: (sp as any).collection_instructions || "",
+        collection_window: (sp as any).collection_window || "Same day",
       });
 
       const { data: ls } = await supabase
@@ -417,6 +434,10 @@ const MyMarket = () => {
       sender_zip: profileForm.sender_zip || null,
       sender_country: profileForm.sender_country || "GB",
       sender_phone: profileForm.sender_phone || null,
+      offers_collection: profileForm.offers_collection,
+      collection_address: profileForm.offers_collection ? profileForm.collection_address : null,
+      collection_instructions: profileForm.offers_collection ? (profileForm.collection_instructions || null) : null,
+      collection_window: profileForm.offers_collection ? (profileForm.collection_window || null) : null,
       approved: true,
     } as any);
 
@@ -467,6 +488,10 @@ const MyMarket = () => {
         sender_zip: profileForm.sender_zip || null,
         sender_country: profileForm.sender_country || "GB",
         sender_phone: profileForm.sender_phone || null,
+        offers_collection: profileForm.offers_collection,
+        collection_address: profileForm.offers_collection ? profileForm.collection_address : null,
+        collection_instructions: profileForm.offers_collection ? (profileForm.collection_instructions || null) : null,
+        collection_window: profileForm.offers_collection ? (profileForm.collection_window || null) : null,
       } as any)
       .eq("id", profile.id);
 
@@ -1242,15 +1267,63 @@ const MyMarket = () => {
             <div className="grid sm:grid-cols-2 gap-4">
               {orders.map(o => {
                 const addr = o.shipping_address || {};
+                const isCollection = o.fulfillment_method === "collection";
+                const awaiting = o.status === "awaiting_shipment";
                 const statusLabel =
-                  o.status === "shipped" ? "Shipped" :
-                  o.status === "delivered" ? "Delivered" :
-                  "Awaiting Shipment";
+                  o.status === "shipped" ? "🟢 Shipped" :
+                  o.status === "delivered" ? "✅ Delivered" :
+                  o.status === "collected" ? "✅ Collected" :
+                  awaiting && isCollection ? "🟡 Awaiting Collection" :
+                  awaiting ? "🔵 Awaiting Shipment" :
+                  o.status;
                 const statusClass =
-                  o.status === "shipped" ? "bg-blue-500/15 text-blue-300 border-blue-500/30" :
-                  o.status === "delivered" ? "bg-green-500/15 text-green-300 border-green-500/30" :
-                  "bg-amber-500/15 text-amber-300 border-amber-500/30";
+                  o.status === "shipped" ? "bg-green-500/15 text-green-600 border-green-500/30" :
+                  o.status === "delivered" || o.status === "collected" ? "bg-green-500/15 text-green-600 border-green-500/30" :
+                  awaiting && isCollection ? "bg-amber-500/15 text-amber-600 border-amber-500/30" :
+                  awaiting ? "bg-blue-500/15 text-blue-600 border-blue-500/30" :
+                  "bg-secondary text-foreground border-border";
                 const senderMissing = !profile?.sender_street1 || !profile?.sender_city || !profile?.sender_zip;
+                const handleMarkCollected = async () => {
+                  const { error } = await supabase
+                    .from("orders" as any)
+                    .update({ status: "collected", collected_at: new Date().toISOString() } as any)
+                    .eq("id", o.id);
+                  if (error) {
+                    toast({ title: "Failed", description: error.message, variant: "destructive" });
+                    return;
+                  }
+                  // Optimistic UI
+                  setOrders(prev => prev.map(x => x.id === o.id ? { ...x, status: "collected", collected_at: new Date().toISOString() } : x));
+                  // Notify buyer in-app
+                  try {
+                    await supabase.from("notifications").insert({
+                      user_id: o.buyer_id,
+                      type: "order_collected",
+                      title: "Order marked as collected",
+                      message: `The seller confirmed you collected "${o.listing_title}".`,
+                      link: `/messages`,
+                    } as any);
+                  } catch { /* ignore */ }
+                  // Send buyer confirmation email
+                  if (o.buyer_email) {
+                    try {
+                      await supabase.functions.invoke("send-transactional-email", {
+                        body: {
+                          templateName: "order-collected-buyer",
+                          recipientEmail: o.buyer_email,
+                          idempotencyKey: `order-collected-${o.id}`,
+                          templateData: {
+                            order_number: o.order_number || o.id.slice(0, 8),
+                            product_title: o.listing_title || "Your order",
+                            total: Number(o.total_amount || 0).toFixed(2),
+                            buyer_name: o.buyer_name || "",
+                          },
+                        },
+                      });
+                    } catch (e) { console.error("collected email failed", e); }
+                  }
+                  toast({ title: "Marked as collected ✓" });
+                };
                 return (
                   <div key={o.id} className="glass rounded-xl overflow-hidden border border-border">
                     <div className="flex gap-3 p-4">
@@ -1262,9 +1335,19 @@ const MyMarket = () => {
                         </div>
                       )}
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-start justify-between gap-2 flex-wrap">
                           <h3 className="font-display font-bold text-sm line-clamp-1">{o.listing_title}</h3>
-                          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap ${statusClass}`}>{statusLabel}</span>
+                          <div className="flex items-center gap-1 flex-wrap">
+                            {o.is_new_account && (
+                              <span
+                                title="Buyer account is less than 7 days old — please verify before shipping"
+                                className="text-[10px] font-semibold px-2 py-0.5 rounded-full border border-amber-500/40 bg-amber-500/15 text-amber-600 whitespace-nowrap"
+                              >
+                                ⚠️ New Account
+                              </span>
+                            )}
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border whitespace-nowrap ${statusClass}`}>{statusLabel}</span>
+                          </div>
                         </div>
                         <p className="text-xs text-muted-foreground mt-1">
                           <span className="font-medium text-foreground">{o.buyer_name || addr.name || "Buyer"}</span>
@@ -1272,8 +1355,11 @@ const MyMarket = () => {
                         </p>
                         {(addr.street1 || addr.city) && (
                           <p className="text-xs text-muted-foreground line-clamp-2">
-                            {[addr.street1, addr.street2, addr.city, addr.zip, addr.country].filter(Boolean).join(", ")}
+                            {[addr.street1, addr.street2, addr.city, addr.zip || addr.postcode, addr.country].filter(Boolean).join(", ")}
                           </p>
+                        )}
+                        {isCollection && (
+                          <p className="text-[11px] text-amber-600 mt-1">🏪 Collection at store</p>
                         )}
                       </div>
                     </div>
@@ -1285,7 +1371,15 @@ const MyMarket = () => {
                       <span className="text-muted-foreground">{new Date(o.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}</span>
                     </div>
                     <div className="px-4 pb-4">
-                      {o.status === "awaiting_shipment" ? (
+                      {awaiting && isCollection ? (
+                        <Button
+                          size="sm"
+                          className="w-full rounded-xl gap-1.5 bg-green-600 hover:bg-green-700 text-white"
+                          onClick={handleMarkCollected}
+                        >
+                          <Check size={14} /> Mark as Collected ✓
+                        </Button>
+                      ) : awaiting ? (
                         <Button
                           size="sm"
                           className="w-full rounded-xl gap-1.5"
@@ -1306,7 +1400,7 @@ const MyMarket = () => {
                                 street2: addr.street2 || undefined,
                                 city: addr.city || "",
                                 state: addr.state || undefined,
-                                zip: addr.zip || "",
+                                zip: addr.zip || addr.postcode || "",
                                 country: addr.country || "GB",
                                 phone: addr.phone || undefined,
                                 email: o.buyer_email || undefined,
@@ -1327,7 +1421,7 @@ const MyMarket = () => {
                           )}
                         </div>
                       ) : (
-                        <p className="text-xs text-muted-foreground">Order {statusLabel.toLowerCase()}.</p>
+                        <p className="text-xs text-muted-foreground">Order {statusLabel}.</p>
                       )}
                     </div>
                   </div>
@@ -1516,6 +1610,60 @@ const MyMarket = () => {
               value={profileForm}
               onChange={(patch) => setProfileForm(f => ({ ...f, ...patch }))}
             />
+
+            {/* Collection at Store Section */}
+            <div className="border border-border rounded-xl p-4">
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="text-sm font-medium flex items-center gap-2">
+                  <Store size={14} className="text-primary" /> Collection at store
+                </h3>
+                <label className="inline-flex items-center gap-2 text-xs cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={profileForm.offers_collection}
+                    onChange={e => setProfileForm(f => ({ ...f, offers_collection: e.target.checked }))}
+                    className="accent-primary h-4 w-4"
+                  />
+                  <span>Offer collection at store</span>
+                </label>
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">Let buyers pick up their order from your premises and waive the shipping fee.</p>
+              {profileForm.offers_collection && (
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-xs font-medium mb-1">Collection address</p>
+                    <AddressForm
+                      value={profileForm.collection_address}
+                      onChange={(v) => setProfileForm(f => ({ ...f, collection_address: v }))}
+                      showInstructions={false}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground block mb-1">Collection instructions</label>
+                    <Textarea
+                      value={profileForm.collection_instructions}
+                      onChange={e => setProfileForm(f => ({ ...f, collection_instructions: e.target.value }))}
+                      placeholder="e.g. Mon-Fri 9am-5pm, ask for John at reception"
+                      rows={2}
+                      className="bg-secondary border-border rounded-xl"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground block mb-1">Collection window</label>
+                    <select
+                      value={profileForm.collection_window}
+                      onChange={e => setProfileForm(f => ({ ...f, collection_window: e.target.value }))}
+                      className="w-full h-10 px-3 rounded-xl bg-secondary border border-border text-foreground text-sm"
+                    >
+                      <option value="Same day">Same day</option>
+                      <option value="Next day">Next day</option>
+                      <option value="2-3 days">2-3 days</option>
+                      <option value="By appointment">By appointment</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Payment Details Section */}
             <div className="border border-border rounded-xl p-4">
