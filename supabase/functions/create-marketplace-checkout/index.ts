@@ -10,7 +10,9 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    console.log("[checkout] Step 1: request received", { method: req.method });
     const authHeader = req.headers.get("Authorization");
+    console.log("[checkout] Step 2: auth header present:", !!authHeader);
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "Missing authorization" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
