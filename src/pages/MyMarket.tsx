@@ -24,6 +24,7 @@ import EmptyState from "@/components/EmptyState";
 import PayoutSetupModal from "@/components/PayoutSetupModal";
 import CreateShippingLabelModal, { type ShippingOrder } from "@/components/CreateShippingLabelModal";
 import SenderAddressFields from "@/components/SenderAddressFields";
+import AddressForm, { EMPTY_ADDRESS, type AddressFormValue } from "@/components/AddressForm";
 import type { ShippoAddress } from "@/lib/shippo";
 import { CreditCard, AlertTriangle, CheckCircle2, Truck } from "lucide-react";
 
