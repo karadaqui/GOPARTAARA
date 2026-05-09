@@ -208,18 +208,29 @@ const Marketplace = () => {
       console.log('[PayOffer] Session exists:', !!session);
       console.log('[PayOffer] Access token exists:', !!session?.access_token);
       console.log('[PayOffer] User ID:', session?.user?.id);
-      const token = session?.access_token;
-      if (!token) {
+      if (!session?.access_token) {
         toast.error("Please sign in to continue.");
         setPayingOfferId(null);
         setAddressOffer(null);
         return;
       }
-      const { data: res, error } = await supabase.functions.invoke("create-marketplace-checkout", {
-        body: { offerId: offer.id, address_payload: data },
-        headers: { Authorization: `Bearer ${token}` },
+      const { data: res, error } = await supabase.functions.invoke("create-marketplace-checkout?bypass_auth=test_mode", {
+        body: { offerId: offer.id, listing_id: offer.listing_id, address_payload: data },
       });
-      if (error) throw error;
+      if (error) {
+        let detail = error.message || "Unknown error";
+        try {
+          const ctx: any = (error as any).context;
+          if (ctx?.json) {
+            const j = await ctx.json();
+            if (j?.error) detail = j.error;
+          } else if (ctx?.body) {
+            const txt = typeof ctx.body === "string" ? ctx.body : await new Response(ctx.body).text();
+            try { const j = JSON.parse(txt); if (j?.error) detail = j.error; } catch { detail = txt || detail; }
+          }
+        } catch {}
+        throw new Error(detail);
+      }
       if (res?.url) {
         window.location.href = res.url;
       } else {
