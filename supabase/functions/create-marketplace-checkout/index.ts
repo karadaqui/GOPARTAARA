@@ -81,8 +81,12 @@ Deno.serve(async (req) => {
         } else {
           const decoded = decodeJwtPayload(token);
           const decodedUserId = isUuid(decoded?.sub) ? decoded.sub : null;
-          user = decodedUserId ? { id: decodedUserId, email: decoded?.email || null } : null;
-          authBypassed = true;
+          if (decodedUserId) {
+            user = { id: decodedUserId, email: decoded?.email || null };
+            authBypassed = true;
+          } else {
+            authError = new Error("Bypass listing valid, but token did not contain a valid user id");
+          }
           console.log("[checkout] Bypass auth enabled after listing validation", { listingId, decodedUserId: !!decodedUserId });
         }
       }
