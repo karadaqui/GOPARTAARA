@@ -18,6 +18,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { shippingBadge, shipsToBuyer, type BuyerLocation } from "@/lib/shipping";
 import DeliveryAddressModal, { type DeliveryFormData } from "@/components/DeliveryAddressModal";
 import OfferChatModal from "@/components/OfferChatModal";
+import CounterOfferModal from "@/components/CounterOfferModal";
+import { ensureOfferConversation, insertSystemMessage } from "@/components/OfferChatModal";
 import { shippoCreateOrder } from "@/lib/shippo";
 
 import ScrollReveal from "@/components/ScrollReveal";
