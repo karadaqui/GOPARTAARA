@@ -798,6 +798,22 @@ const ListingDetail = () => {
         <MakeOfferModal open={offerOpen} onClose={() => setOfferOpen(false)} listingId={listing.id} listingTitle={listing.title} sellerId={listing.seller_profiles.user_id} currentPrice={listing.price} />
       )}
 
+      {listing && (
+        <DeliveryAddressModal
+          open={buyNowOpen}
+          onOpenChange={(o) => { if (!o && !buyingNow) setBuyNowOpen(false); }}
+          defaultEmail={user?.email || ""}
+          loading={buyingNow}
+          summary={{
+            product_title: listing.title,
+            product_photo: listing.photos?.[0] || null,
+            amount: Number(listing.price || 0),
+            shipping_fee: listing.free_shipping ? 0 : Number(listing.shipping_fee || 0),
+          }}
+          onSubmit={handleBuyNowAddress}
+        />
+      )}
+
       <Footer />
     </div>
   );
