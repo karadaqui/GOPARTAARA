@@ -116,50 +116,87 @@ export default function AddressBookSection() {
   };
 
   return (
-    <div className="rounded-2xl border border-border bg-card p-4">
-      <div className="flex items-center justify-between mb-3">
+    <div className="rounded-2xl border border-border bg-card p-5 sm:p-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="font-display font-bold text-lg flex items-center gap-2"><MapPin size={18} className="text-primary" /> My Addresses</h3>
-          <p className="text-xs text-muted-foreground">Save up to {MAX} delivery addresses for faster checkout.</p>
+          <h2 className="font-display text-lg font-semibold flex items-center gap-2">
+            <span aria-hidden>📍</span> My Addresses
+          </h2>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Save up to {MAX} delivery addresses for faster checkout.
+          </p>
         </div>
-        <Button onClick={openNew} disabled={rows.length >= MAX} className="rounded-xl gap-2 h-9">
-          <Plus size={14} /> Add Address
-        </Button>
+        {rows.length > 0 && (
+          <Button
+            onClick={openNew}
+            disabled={rows.length >= MAX}
+            size="sm"
+            className="rounded-xl gap-1.5 h-9"
+            style={{ background: "#cc1111", color: "white" }}
+          >
+            <Plus size={14} /> Add Address
+          </Button>
+        )}
       </div>
 
       {loading ? (
-        <div className="text-center py-6"><Loader2 size={16} className="animate-spin inline" /></div>
+        <div className="text-center py-8"><Loader2 size={18} className="animate-spin inline text-muted-foreground" /></div>
       ) : rows.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-6">No addresses saved yet.</p>
+        <div className="flex flex-col items-center text-center py-10 px-4">
+          <div className="text-5xl mb-3 opacity-40" aria-hidden>📍</div>
+          <p className="font-display font-semibold text-base">No saved addresses yet</p>
+          <p className="text-sm text-muted-foreground mt-1 max-w-xs">
+            Save your delivery addresses for faster checkout
+          </p>
+          <Button
+            onClick={openNew}
+            className="rounded-xl gap-2 mt-5 h-10 px-5"
+            style={{ background: "#cc1111", color: "white" }}
+          >
+            <Plus size={16} /> Add Your First Address
+          </Button>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {rows.map(r => (
-            <div key={r.id} className="rounded-xl border border-border bg-secondary/30 p-3">
-              <div className="flex items-center justify-between mb-1 gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wide text-primary">{r.label}</span>
+            <div key={r.id} className="rounded-xl border border-border bg-secondary/30 p-4 flex flex-col">
+              <div className="flex items-center justify-between mb-2 gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider bg-primary/10 text-primary rounded-full px-2.5 py-1">
+                  {r.label || "Address"}
+                </span>
                 <div className="flex gap-1">
-                  {r.is_default && <span className="text-[10px] bg-primary/10 text-primary rounded-full px-2 py-0.5 inline-flex items-center gap-1"><Star size={9} className="fill-current"/>Default</span>}
-                  {r.is_billing && <span className="text-[10px] bg-amber-100 text-amber-800 rounded-full px-2 py-0.5 inline-flex items-center gap-1"><CreditCard size={9}/>Billing</span>}
+                  {r.is_default && (
+                    <span className="text-[10px] font-semibold bg-green-100 text-green-700 rounded-full px-2 py-0.5 inline-flex items-center gap-1">
+                      <Star size={9} className="fill-current" /> Default
+                    </span>
+                  )}
+                  {r.is_billing && (
+                    <span className="text-[10px] font-semibold bg-amber-100 text-amber-800 rounded-full px-2 py-0.5 inline-flex items-center gap-1">
+                      <CreditCard size={9} /> Billing
+                    </span>
+                  )}
                 </div>
               </div>
-              <p className="text-sm font-medium">{r.full_name}</p>
-              <p className="text-xs text-muted-foreground">{[r.street1, r.street2, r.city, r.county, r.postcode, r.country].filter(Boolean).join(", ")}</p>
+              <p className="text-sm font-semibold">{r.full_name}</p>
+              <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                {[r.street1, r.street2, r.city, r.county, r.postcode, r.country].filter(Boolean).join(", ")}
+              </p>
               {r.phone && <p className="text-xs text-muted-foreground mt-1">📞 {r.phone}</p>}
-              <div className="mt-2 flex flex-wrap gap-1">
+              <div className="mt-3 pt-3 border-t border-border/60 flex flex-wrap items-center gap-2">
                 <Button size="sm" variant="outline" className="rounded-lg h-7 text-xs gap-1" onClick={() => openEdit(r)}>
                   <Pencil size={11} /> Edit
-                </Button>
-                {!r.is_default && (
-                  <Button size="sm" variant="outline" className="rounded-lg h-7 text-xs gap-1" onClick={() => setDefault(r.id)}>
-                    <Star size={11} /> Set default
-                  </Button>
-                )}
-                <Button size="sm" variant="outline" className="rounded-lg h-7 text-xs gap-1" onClick={() => toggleBilling(r)}>
-                  <CreditCard size={11} /> {r.is_billing ? "Unset billing" : "Set billing"}
                 </Button>
                 <Button size="sm" variant="outline" className="rounded-lg h-7 text-xs gap-1 text-red-600 hover:text-red-700" onClick={() => remove(r.id)}>
                   <Trash2 size={11} /> Delete
                 </Button>
+                {!r.is_default && (
+                  <button
+                    onClick={() => setDefault(r.id)}
+                    className="ml-auto text-xs font-medium text-primary hover:underline inline-flex items-center gap-1"
+                  >
+                    <Star size={11} /> Set as Default
+                  </button>
+                )}
               </div>
             </div>
           ))}
