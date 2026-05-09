@@ -434,6 +434,10 @@ const MyMarket = () => {
       sender_zip: profileForm.sender_zip || null,
       sender_country: profileForm.sender_country || "GB",
       sender_phone: profileForm.sender_phone || null,
+      offers_collection: profileForm.offers_collection,
+      collection_address: profileForm.offers_collection ? profileForm.collection_address : null,
+      collection_instructions: profileForm.offers_collection ? (profileForm.collection_instructions || null) : null,
+      collection_window: profileForm.offers_collection ? (profileForm.collection_window || null) : null,
       approved: true,
     } as any);
 
