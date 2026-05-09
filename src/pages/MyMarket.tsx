@@ -1334,8 +1334,8 @@ const MyMarket = () => {
                 );
               })}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         <div className="flex justify-between items-center mb-6">
           <h2 className="font-display text-xl font-bold">My Listings</h2>
