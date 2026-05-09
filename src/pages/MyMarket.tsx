@@ -582,6 +582,9 @@ const MyMarket = () => {
         ...(listingForm.category === "Other" && listingForm.other_description.trim() ? [`OtherDesc: ${listingForm.other_description.trim()}`] : []),
       ],
       photos: listingForm.photos,
+      shipping_fee: listingForm.free_shipping ? 0 : (listingForm.shipping_fee ? parseFloat(listingForm.shipping_fee) : null),
+      free_shipping: !!listingForm.free_shipping,
+      dispatch_time: listingForm.dispatch_time || null,
     };
 
     let error;
