@@ -173,7 +173,7 @@ Deno.serve(async (req) => {
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
-        customer_email: user.email,
+        customer_email: user.email || undefined,
         line_items: [{
           price_data: {
             currency: "gbp",
@@ -250,7 +250,7 @@ Deno.serve(async (req) => {
     const amount = Number(offer.amount);
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      customer_email: user.email,
+      customer_email: user.email || undefined,
       line_items: [{
         price_data: {
           currency: "gbp",
