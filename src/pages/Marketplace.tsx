@@ -190,7 +190,9 @@ const Marketplace = () => {
           buyer_id,
           seller_listings!listing_id (
             title,
-            photos
+            photos,
+            shipping_fee,
+            free_shipping
           )
         `)
         .eq("buyer_id", user.id)
@@ -200,21 +202,31 @@ const Marketplace = () => {
     } catch {}
   };
 
-  const handlePayNow = async (offer: BuyerOffer) => {
+  // First step: collect delivery address before redirecting to Stripe.
+  const handlePayNow = (offer: BuyerOffer) => {
+    setAddressOffer(offer);
+  };
+
+  const handleAddressSubmitted = async (data: DeliveryFormData) => {
+    if (!addressOffer) return;
+    const offer = addressOffer;
     setPayingOfferId(offer.id);
     try {
-      const { data, error } = await supabase.functions.invoke("create-marketplace-checkout", {
+      // Persist the address so we can create the order on Stripe success redirect
+      localStorage.setItem(`order_address_${offer.id}`, JSON.stringify(data));
+      const { data: res, error } = await supabase.functions.invoke("create-marketplace-checkout", {
         body: { offerId: offer.id },
       });
       if (error) throw error;
-      if (data?.url) {
-        window.location.href = data.url;
+      if (res?.url) {
+        window.location.href = res.url;
       } else {
         throw new Error("No checkout URL returned");
       }
     } catch (err: any) {
       toast.error(err.message || "Failed to start checkout");
       setPayingOfferId(null);
+      setAddressOffer(null);
     }
   };
 
