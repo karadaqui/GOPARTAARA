@@ -17,6 +17,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { shippingBadge, shipsToBuyer, type BuyerLocation } from "@/lib/shipping";
 import DeliveryAddressModal, { type DeliveryFormData } from "@/components/DeliveryAddressModal";
+import OfferChatModal from "@/components/OfferChatModal";
 import { shippoCreateOrder } from "@/lib/shippo";
 
 import ScrollReveal from "@/components/ScrollReveal";
@@ -120,6 +121,7 @@ const Marketplace = () => {
   const [payingOfferId, setPayingOfferId] = useState<string | null>(null);
   const [hasShop, setHasShop] = useState(false);
   const [addressOffer, setAddressOffer] = useState<BuyerOffer | null>(null);
+  const [chatOffer, setChatOffer] = useState<BuyerOffer | null>(null);
 
   // Handle return from Stripe checkout — webhook handles order creation, this just shows toast
   useEffect(() => {
