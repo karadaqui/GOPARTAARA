@@ -147,26 +147,36 @@ Deno.serve(async (req) => {
   const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2025-08-27.basil" });
   const adminClient = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "");
 
-  // Manual replay endpoint for debugging — GET ?replay_session=cs_xxx
+  // Manual replay endpoint — GET ?replay_session=cs_xxx OR ?replay_pi=pi_xxx
   const url = new URL(req.url);
   const replaySession = url.searchParams.get("replay_session");
-  if (replaySession) {
-    console.log("[STRIPE-WEBHOOK] MANUAL REPLAY for session:", replaySession);
+  const replayPi = url.searchParams.get("replay_pi");
+  if (replaySession || replayPi) {
     try {
-      const session = await stripe.checkout.sessions.retrieve(replaySession);
-      console.log("[STRIPE-WEBHOOK] replay payment_status:", session.payment_status, "metadata:", JSON.stringify(session.metadata));
+      let session: Stripe.Checkout.Session | null = null;
+      if (replaySession) {
+        session = await stripe.checkout.sessions.retrieve(replaySession);
+      } else if (replayPi) {
+        const list = await stripe.checkout.sessions.list({ payment_intent: replayPi, limit: 1 });
+        session = list.data[0] || null;
+      }
+      if (!session) {
+        return new Response(JSON.stringify({ error: "session not found" }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      console.log("[STRIPE-WEBHOOK] REPLAY session:", session.id, "payment_status:", session.payment_status, "metadata:", JSON.stringify(session.metadata));
       const metadata = session.metadata || {};
       if (metadata.offerId) {
         await handleMarketplaceCheckout(adminClient, metadata.offerId);
-        return new Response(JSON.stringify({ replayed: true, offerId: metadata.offerId, payment_status: session.payment_status }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+        return new Response(JSON.stringify({ replayed: true, session_id: session.id, offerId: metadata.offerId, payment_status: session.payment_status }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
-      return new Response(JSON.stringify({ replayed: false, reason: "no offerId in metadata", metadata }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ replayed: false, session_id: session.id, reason: "no offerId in metadata", metadata }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       console.error("[STRIPE-WEBHOOK] replay error", msg);
       return new Response(JSON.stringify({ error: msg }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
   }
+
 
   const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
   const signature = req.headers.get("stripe-signature");
