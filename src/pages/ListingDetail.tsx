@@ -121,7 +121,7 @@ const ListingDetail = () => {
   const [buyingNow, setBuyingNow] = useState(false);
   const [buyNowOpen, setBuyNowOpen] = useState(false);
   const isAdmin = userPlan === "admin";
-  const isSeller = listing?.seller_profiles?.user_id === user?.id;
+  const isSeller = !!user && !!listing?.seller_profiles?.user_id && listing.seller_profiles.user_id === user.id;
 
   const handleBuyNow = () => {
     if (!user) {
