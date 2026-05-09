@@ -16,6 +16,8 @@ import { usePersistentCompare } from "@/hooks/usePersistentCompare";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { shippingBadge, shipsToBuyer, type BuyerLocation } from "@/lib/shipping";
+import DeliveryAddressModal, { type DeliveryFormData } from "@/components/DeliveryAddressModal";
+import { shippoCreateOrder } from "@/lib/shippo";
 
 import ScrollReveal from "@/components/ScrollReveal";
 import { toast } from "sonner";
