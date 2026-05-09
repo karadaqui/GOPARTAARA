@@ -45,16 +45,17 @@ const OfferChatModal = ({ open, onClose, offer }: OfferChatModalProps) => {
   const ensureConversation = useCallback(async () => {
     setLoading(true);
     try {
+      const sb = supabase as any;
       // Find existing conversation by offer_id
-      const { data: existing } = await supabase
+      const { data: existing } = await sb
         .from("conversations")
         .select("id")
-        .eq("offer_id" as any, offer.id)
+        .eq("offer_id", offer.id)
         .maybeSingle();
-      if (existing?.id) { setConvId(existing.id); return existing.id; }
+      if (existing?.id) { setConvId(existing.id); return existing.id as string; }
 
       // Fallback by listing+buyer+seller
-      const { data: alt } = await supabase
+      const { data: alt } = await sb
         .from("conversations")
         .select("id")
         .eq("listing_id", offer.listing_id)
@@ -62,24 +63,24 @@ const OfferChatModal = ({ open, onClose, offer }: OfferChatModalProps) => {
         .eq("seller_id", offer.seller_id)
         .maybeSingle();
       if (alt?.id) {
-        await supabase.from("conversations").update({ offer_id: offer.id } as any).eq("id", alt.id);
+        await sb.from("conversations").update({ offer_id: offer.id }).eq("id", alt.id);
         setConvId(alt.id);
-        return alt.id;
+        return alt.id as string;
       }
 
-      const { data: created, error } = await supabase
+      const { data: created, error } = await sb
         .from("conversations")
         .insert({
           listing_id: offer.listing_id,
           buyer_id: offer.buyer_id,
           seller_id: offer.seller_id,
           offer_id: offer.id,
-        } as any)
+        })
         .select("id")
         .single();
       if (error) throw error;
       setConvId(created.id);
-      return created.id;
+      return created.id as string;
     } finally {
       setLoading(false);
     }
