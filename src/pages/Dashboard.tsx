@@ -576,6 +576,13 @@ const Dashboard = () => {
           />
         </div>
 
+        {/* Address Book — placed right after stats, before My Garage */}
+        {user && (
+          <div className="mb-6">
+            <AddressBookSection />
+          </div>
+        )}
+
         {(isAdmin || user?.email === "info@gopartara.com") && (
           <div className="mb-6 flex justify-end">
             <button
