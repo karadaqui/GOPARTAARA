@@ -12,6 +12,7 @@ import {
   Star, Store, ExternalLink, Bookmark, BookmarkCheck, Eye,
   ChevronLeft, Loader2, Send, Bell, User, Trash2, Flag, Shield, MessageCircle
 } from "lucide-react";
+import DeliveryAddressModal, { type DeliveryFormData } from "@/components/DeliveryAddressModal";
 import MakeOfferModal from "@/components/MakeOfferModal";
 import PlanBadge from "@/components/badges/PlanBadge";
 import VerifiedSellerBadge from "@/components/badges/VerifiedSellerBadge";
@@ -118,34 +119,38 @@ const ListingDetail = () => {
   const [moderating, setModerating] = useState(false);
   const [offerOpen, setOfferOpen] = useState(false);
   const [buyingNow, setBuyingNow] = useState(false);
+  const [buyNowOpen, setBuyNowOpen] = useState(false);
   const isAdmin = userPlan === "admin";
   const isSeller = listing?.seller_profiles?.user_id === user?.id;
 
-  const handleBuyNow = async () => {
+  const handleBuyNow = () => {
     if (!user) {
       navigate("/auth?redirect=" + window.location.pathname);
       return;
     }
     if (!listing) return;
+    setBuyNowOpen(true);
+  };
+
+  const handleBuyNowAddress = async (data: DeliveryFormData) => {
+    if (!listing) return;
     setBuyingNow(true);
     try {
-      const { data, error } = await supabase.functions.invoke("create-marketplace-checkout", {
+      const { data: res, error } = await supabase.functions.invoke("create-marketplace-checkout", {
         body: {
           listingId: listing.id,
-          amount: listing.price,
-          partTitle: listing.title,
-          sellerId: listing.seller_profiles.user_id,
-          buyerId: user.id,
           buyNow: true,
+          address_payload: data,
         },
       });
       if (error) throw error;
-      if (!data?.url) throw new Error("No checkout URL returned");
-      window.location.href = data.url;
+      if (!res?.url) throw new Error("No checkout URL returned");
+      window.location.href = res.url;
     } catch (err) {
       console.error(err);
       toast({ title: "Could not start checkout", description: "Please try again.", variant: "destructive" });
       setBuyingNow(false);
+      setBuyNowOpen(false);
     }
   };
 
