@@ -143,12 +143,26 @@ const ListingDetail = () => {
           address_payload: data,
         },
       });
-      if (error) throw error;
+      if (error) {
+        // Try to surface the real error from the edge function response
+        let detail = error.message || "Unknown error";
+        try {
+          const ctx: any = (error as any).context;
+          if (ctx?.json) {
+            const j = await ctx.json();
+            if (j?.error) detail = j.error;
+          } else if (ctx?.body) {
+            const txt = typeof ctx.body === "string" ? ctx.body : await new Response(ctx.body).text();
+            try { const j = JSON.parse(txt); if (j?.error) detail = j.error; } catch { detail = txt || detail; }
+          }
+        } catch {}
+        throw new Error(detail);
+      }
       if (!res?.url) throw new Error("No checkout URL returned");
       window.location.href = res.url;
-    } catch (err) {
-      console.error(err);
-      toast({ title: "Could not start checkout", description: "Please try again.", variant: "destructive" });
+    } catch (err: any) {
+      console.error("[BuyNow] checkout failed:", err);
+      toast({ title: "Checkout failed", description: err?.message || "Please try again.", variant: "destructive" });
       setBuyingNow(false);
       setBuyNowOpen(false);
     }
