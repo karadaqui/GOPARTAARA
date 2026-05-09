@@ -2271,6 +2271,7 @@ const MyMarket = () => {
           }}
           onSuccess={() => loadData()}
         />
+      )}
 
       <Footer />
     </div>
