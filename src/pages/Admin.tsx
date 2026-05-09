@@ -275,21 +275,24 @@ const Admin = () => {
   const handleApproveListing = async (id: string) => {
     setProcessing(id);
     const listing = listings.find(l => l.id === id);
+    const wasRejected = listing?.approval_status === "rejected";
+    const updates: any = { approval_status: "approved", active: true };
+    if (wasRejected) updates.admin_approved = true;
     const { error } = await supabase
       .from("seller_listings")
-      .update({ approval_status: "approved", active: true } as any)
+      .update(updates)
       .eq("id", id);
     if (!error && listing?.seller_profiles?.id) {
       await supabase.from("seller_profiles").update({ approved: true } as any).eq("id", listing.seller_profiles.id);
     }
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-    else { toast({ title: "Listing approved" }); await loadListings(); }
+    else { toast({ title: wasRejected ? "Admin Approved ✓" : "Listing approved" }); await loadListings(); }
     setProcessing(null);
   };
 
   const handleRejectListing = async (id: string) => {
     setProcessing(id);
-    const { error } = await supabase.from("seller_listings").update({ approval_status: "rejected", active: false } as any).eq("id", id);
+    const { error } = await supabase.from("seller_listings").update({ approval_status: "rejected", active: false, admin_approved: false } as any).eq("id", id);
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Listing taken down" }); await loadListings(); }
     setProcessing(null);
