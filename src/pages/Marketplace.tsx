@@ -121,38 +121,12 @@ const Marketplace = () => {
   const [hasShop, setHasShop] = useState(false);
   const [addressOffer, setAddressOffer] = useState<BuyerOffer | null>(null);
 
-  // Handle return from Stripe checkout
+  // Handle return from Stripe checkout — webhook handles order creation, this just shows toast
   useEffect(() => {
     const status = searchParams.get("payment");
-    const offerId = searchParams.get("offer");
     if (!status) return;
     if (status === "success") {
-      toast.success("Payment successful! Creating your order…");
-      if (offerId) {
-        (async () => {
-          try {
-            await supabase.from("offers").update({ status: "paid" }).eq("id", offerId);
-            const stored = localStorage.getItem(`order_address_${offerId}`);
-            if (stored) {
-              const parsed = JSON.parse(stored) as DeliveryFormData;
-              await shippoCreateOrder({
-                offer_id: offerId,
-                shipping_address: parsed.address,
-                buyer_name: parsed.buyer_name,
-                buyer_email: parsed.buyer_email,
-                billing_address: parsed.billing_address,
-                fulfillment_method: parsed.fulfillment_method,
-                delivery_instructions: parsed.delivery_instructions,
-              } as any);
-              localStorage.removeItem(`order_address_${offerId}`);
-              toast.success("Order created — check My Orders for next steps.");
-            }
-          } catch (e: any) {
-            console.error("order creation failed", e);
-            toast.error(e?.message || "Could not create order automatically. Please contact support.");
-          }
-        })();
-      }
+      toast.success("Payment successful! Your order is being created — check My Orders shortly.");
     } else if (status === "cancelled") {
       toast.warning("Payment was cancelled. You can try again from your offers below.");
     }
@@ -215,10 +189,8 @@ const Marketplace = () => {
     const offer = addressOffer;
     setPayingOfferId(offer.id);
     try {
-      // Persist the address so we can create the order on Stripe success redirect
-      localStorage.setItem(`order_address_${offer.id}`, JSON.stringify(data));
       const { data: res, error } = await supabase.functions.invoke("create-marketplace-checkout", {
-        body: { offerId: offer.id },
+        body: { offerId: offer.id, address_payload: data },
       });
       if (error) throw error;
       if (res?.url) {

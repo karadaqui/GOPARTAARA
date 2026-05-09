@@ -28,6 +28,9 @@ import { template as listingRemoved } from './listing-removed.tsx'
 import { template as shopDeletionConfirm } from './shop-deletion-confirm.tsx'
 import { template as shopClosed } from './shop-closed.tsx'
 import { template as welcomeSignup } from './welcome-signup.tsx'
+import { template as orderConfirmationBuyer } from './order-confirmation-buyer.tsx'
+import { template as orderReceivedSeller } from './order-received-seller.tsx'
+import { template as orderCollectionReminder } from './order-collection-reminder.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'contact-notification': contactNotification,
@@ -49,4 +52,7 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'shop-deletion-confirm': shopDeletionConfirm,
   'shop-closed': shopClosed,
   'welcome-signup': welcomeSignup,
+  'order-confirmation-buyer': orderConfirmationBuyer,
+  'order-received-seller': orderReceivedSeller,
+  'order-collection-reminder': orderCollectionReminder,
 }

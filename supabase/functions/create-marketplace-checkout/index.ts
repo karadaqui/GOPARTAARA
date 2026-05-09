@@ -30,7 +30,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { offerId, listingId, buyNow } = body;
+    const { offerId, listingId, buyNow, address_payload } = body;
 
     // Service-role client for trusted reads/writes
     const supabaseAdmin = createClient(
@@ -121,8 +121,8 @@ Deno.serve(async (req) => {
         },
       });
 
-      // Create a buy_now offer record at status 'pending_payment'
-      await supabaseAdmin.from("offers").insert({
+      // Create a buy_now offer record at status 'pending_payment' with the buyer's address payload
+      const { data: insertedOffer } = await supabaseAdmin.from("offers").insert({
         listing_id: listingId,
         buyer_id: user.id,
         seller_id: sellerUserId,
@@ -130,7 +130,12 @@ Deno.serve(async (req) => {
         status: "pending_payment",
         message: "Buy Now purchase",
         stripe_session_id: session.id,
-      });
+        pending_address: address_payload || null,
+      } as any).select("id").single();
+      // Patch session metadata with the new offerId so the webhook can find it
+      if (insertedOffer?.id) {
+        try { await stripe.checkout.sessions.update(session.id, { metadata: { ...(session.metadata || {}), offerId: insertedOffer.id } }); } catch (e) { console.warn("metadata update failed", e); }
+      }
 
       return new Response(JSON.stringify({ url: session.url }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -193,7 +198,7 @@ Deno.serve(async (req) => {
     });
 
     await supabaseAdmin.from("offers")
-      .update({ status: "pending_payment", stripe_session_id: session.id })
+      .update({ status: "pending_payment", stripe_session_id: session.id, pending_address: address_payload || null } as any)
       .eq("id", offerId);
 
     return new Response(JSON.stringify({ url: session.url }), {
