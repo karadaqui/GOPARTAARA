@@ -23,6 +23,7 @@ import CategoryTagSelector from "@/components/CategoryTagSelector";
 import EmptyState from "@/components/EmptyState";
 import PayoutSetupModal from "@/components/PayoutSetupModal";
 import CreateShippingLabelModal, { type ShippingOrder } from "@/components/CreateShippingLabelModal";
+import SenderAddressFields from "@/components/SenderAddressFields";
 import type { ShippoAddress } from "@/lib/shippo";
 import { CreditCard, AlertTriangle, CheckCircle2, Truck } from "lucide-react";
 
