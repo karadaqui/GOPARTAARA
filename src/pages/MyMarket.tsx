@@ -180,6 +180,7 @@ const MyMarket = () => {
   const [payoutModalOpen, setPayoutModalOpen] = useState(false);
   const [payoutGateContinue, setPayoutGateContinue] = useState(false);
   const [orders, setOrders] = useState<OrderRow[]>([]);
+  const [chatOffer, setChatOffer] = useState<Offer | null>(null);
   const [shippingOrder, setShippingOrder] = useState<ShippingOrder | null>(null);
   const [shippingModalOpen, setShippingModalOpen] = useState(false);
 
