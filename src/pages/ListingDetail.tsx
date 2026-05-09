@@ -653,45 +653,40 @@ const ListingDetail = () => {
             <TabsContent value="description" className="mt-6">
               <div className="glass rounded-xl p-6 space-y-4">
                 {(() => {
-                  const raw = listing.description || "";
-                  // Strip lines that are raw metadata tags like "Condition: New", "Country: ...", "Ships: ..."
-                  const metaPrefixes = /^\s*(condition|country|ships|ships to|dispatch|shipping)\s*:/i;
-                  const otherDescPrefix = /^\s*otherdesc\s*:\s*/i;
-                  const lines = raw.split(/\r?\n/);
-                  const otherDescLines: string[] = [];
-                  const cleanLines: string[] = [];
-                  for (const ln of lines) {
-                    if (metaPrefixes.test(ln)) continue;
-                    if (otherDescPrefix.test(ln)) {
-                      otherDescLines.push(ln.replace(otherDescPrefix, "").trim());
-                      continue;
-                    }
-                    cleanLines.push(ln);
-                  }
-                  const cleanDesc = cleanLines.join("\n").trim();
-                  const otherDesc = otherDescLines.join("\n").trim();
+                  // Metadata (Condition/Country/Ships/OtherDesc) is stored in tags, not description.
+                  // Strip them so only user-facing tags + clean description remain.
+                  const metaTagPrefix = /^(condition|country|ships|ships to|dispatch|shipping|otherdesc)\s*:/i;
+                  const otherDescTag = (listing.tags || []).find(t => /^otherdesc\s*:/i.test(t));
+                  const otherDesc = otherDescTag ? otherDescTag.replace(/^otherdesc\s*:\s*/i, "").trim() : "";
+                  const cleanTags = (listing.tags || []).filter(t => !metaTagPrefix.test(t));
+                  // Also defensively strip any legacy metadata lines from description text.
+                  const cleanDesc = (listing.description || "")
+                    .split(/\r?\n/)
+                    .filter(ln => !/^\s*(condition|country|ships|ships to|dispatch|shipping|otherdesc)\s*:/i.test(ln))
+                    .join("\n")
+                    .trim();
                   const isOther = (listing.category || "").toLowerCase() === "other";
                   return (
                     <>
-                      {cleanDesc ? (
-                        <p className="text-secondary-foreground whitespace-pre-line leading-relaxed">{cleanDesc}</p>
-                      ) : (
-                        <p className="text-muted-foreground text-sm italic">No description provided.</p>
-                      )}
                       {isOther && otherDesc && (
                         <div className="rounded-lg border border-border bg-muted/30 p-4">
                           <h4 className="text-sm font-semibold mb-1.5">Part Details</h4>
                           <p className="text-secondary-foreground whitespace-pre-line leading-relaxed text-sm">{otherDesc}</p>
                         </div>
                       )}
+                      {cleanDesc ? (
+                        <p className="text-secondary-foreground whitespace-pre-line leading-relaxed">{cleanDesc}</p>
+                      ) : (
+                        <p className="text-muted-foreground text-sm italic">No description provided.</p>
+                      )}
+                      {cleanTags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 mt-4">
+                          {cleanTags.map(t => <Badge key={t} variant="secondary" className="text-xs">{t}</Badge>)}
+                        </div>
+                      )}
                     </>
                   );
                 })()}
-                {listing.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mt-4">
-                    {listing.tags.map(t => <Badge key={t} variant="secondary" className="text-xs">{t}</Badge>)}
-                  </div>
-                )}
               </div>
             </TabsContent>
 
