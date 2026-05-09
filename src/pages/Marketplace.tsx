@@ -208,8 +208,7 @@ const Marketplace = () => {
       console.log('[PayOffer] Session exists:', !!session);
       console.log('[PayOffer] Access token exists:', !!session?.access_token);
       console.log('[PayOffer] User ID:', session?.user?.id);
-      const token = session?.access_token;
-      if (!token) {
+      if (!session?.access_token) {
         toast.error("Please sign in to continue.");
         setPayingOfferId(null);
         setAddressOffer(null);
@@ -217,7 +216,6 @@ const Marketplace = () => {
       }
       const { data: res, error } = await supabase.functions.invoke("create-marketplace-checkout", {
         body: { offerId: offer.id, address_payload: data },
-        headers: { Authorization: `Bearer ${token}` },
       });
       if (error) throw error;
       if (res?.url) {
