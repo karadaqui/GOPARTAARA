@@ -121,7 +121,7 @@ const ListingDetail = () => {
   const [buyingNow, setBuyingNow] = useState(false);
   const [buyNowOpen, setBuyNowOpen] = useState(false);
   const isAdmin = userPlan === "admin";
-  const isSeller = listing?.seller_profiles?.user_id === user?.id;
+  const isSeller = !!user && !!listing?.seller_profiles?.user_id && listing.seller_profiles.user_id === user.id;
 
   const handleBuyNow = () => {
     if (!user) {
@@ -488,7 +488,7 @@ const ListingDetail = () => {
                       width: '100%',
                     }}
                   >
-                    {buyingNow ? 'Redirecting to checkout...' : `Buy Now — £${listing.price.toFixed(2)}`}
+                    {buyingNow ? 'Redirecting to checkout...' : `Buy Now — £${listing.price.toFixed(2)} →`}
                   </button>
                   <p style={{
                     fontSize: '12px',
@@ -502,35 +502,53 @@ const ListingDetail = () => {
                 </>
               )}
               {!isSeller && (
-                <Button
-                  onClick={() => { if (!user) { navigate("/auth"); return; } setOfferOpen(true); }}
-                  variant="secondary"
-                  className="w-full rounded-xl gap-2 h-12 text-base font-semibold"
-                >
-                  🤝 Make an Offer
-                </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    onClick={() => { if (!user) { navigate("/auth"); return; } setOfferOpen(true); }}
+                    variant="secondary"
+                    className="rounded-xl gap-2 h-12 text-sm font-semibold"
+                  >
+                    💬 Make an Offer
+                  </Button>
+                  <Button variant="outline" onClick={handleSave} className="rounded-xl gap-2 h-12 text-sm font-semibold">
+                    {saved ? <BookmarkCheck size={16} className="text-primary" /> : <Bookmark size={16} />}
+                    {saved ? "Saved" : "💾 Save"}
+                  </Button>
+                </div>
               )}
               {!isSeller && (
                 <Button variant="ghost" onClick={handleMessageSeller} className="w-full rounded-xl gap-2 h-11 border border-border">
                   <MessageCircle size={16} /> Message Seller
                 </Button>
               )}
-              {/* External link removed */}
-
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={handleSave} className="flex-1 rounded-xl gap-2 h-10">
-                  {saved ? <BookmarkCheck size={16} className="text-primary" /> : <Bookmark size={16} />}
-                  {saved ? "Saved" : "Save"}
-                </Button>
+              {!isSeller && (
                 <Button variant="outline" onClick={() => {
                   if (!user) { navigate("/auth"); return; }
                   setAlertEmail(user.email || "");
                   setAlertPrice(listing.price ? (listing.price * 0.9).toFixed(2) : "");
                   setAlertOpen(true);
-                }} className="flex-1 rounded-xl gap-2 h-10">
+                }} className="w-full rounded-xl gap-2 h-10">
                   <Bell size={16} /> Price Alert
                 </Button>
-              </div>
+              )}
+
+              {isSeller && (
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    onClick={() => navigate("/my-market")}
+                    className="rounded-xl gap-2 h-12 text-sm font-semibold"
+                  >
+                    Edit Listing
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate("/my-market")}
+                    className="rounded-xl gap-2 h-12 text-sm font-semibold"
+                  >
+                    Pause / Activate
+                  </Button>
+                </div>
+              )}
             </div>
 
             <div className="border-t border-border" />
@@ -633,8 +651,42 @@ const ListingDetail = () => {
             </TabsList>
 
             <TabsContent value="description" className="mt-6">
-              <div className="glass rounded-xl p-6">
-                <p className="text-secondary-foreground whitespace-pre-line leading-relaxed">{listing.description}</p>
+              <div className="glass rounded-xl p-6 space-y-4">
+                {(() => {
+                  const raw = listing.description || "";
+                  // Strip lines that are raw metadata tags like "Condition: New", "Country: ...", "Ships: ..."
+                  const metaPrefixes = /^\s*(condition|country|ships|ships to|dispatch|shipping)\s*:/i;
+                  const otherDescPrefix = /^\s*otherdesc\s*:\s*/i;
+                  const lines = raw.split(/\r?\n/);
+                  const otherDescLines: string[] = [];
+                  const cleanLines: string[] = [];
+                  for (const ln of lines) {
+                    if (metaPrefixes.test(ln)) continue;
+                    if (otherDescPrefix.test(ln)) {
+                      otherDescLines.push(ln.replace(otherDescPrefix, "").trim());
+                      continue;
+                    }
+                    cleanLines.push(ln);
+                  }
+                  const cleanDesc = cleanLines.join("\n").trim();
+                  const otherDesc = otherDescLines.join("\n").trim();
+                  const isOther = (listing.category || "").toLowerCase() === "other";
+                  return (
+                    <>
+                      {cleanDesc ? (
+                        <p className="text-secondary-foreground whitespace-pre-line leading-relaxed">{cleanDesc}</p>
+                      ) : (
+                        <p className="text-muted-foreground text-sm italic">No description provided.</p>
+                      )}
+                      {isOther && otherDesc && (
+                        <div className="rounded-lg border border-border bg-muted/30 p-4">
+                          <h4 className="text-sm font-semibold mb-1.5">Part Details</h4>
+                          <p className="text-secondary-foreground whitespace-pre-line leading-relaxed text-sm">{otherDesc}</p>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
                 {listing.tags.length > 0 && (
                   <div className="flex flex-wrap gap-1.5 mt-4">
                     {listing.tags.map(t => <Badge key={t} variant="secondary" className="text-xs">{t}</Badge>)}
