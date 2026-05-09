@@ -1,84 +1,85 @@
-## Shippo Shipping Integration
+## Marketplace Address System & Collection at Store
 
-Add full shipping workflow to the marketplace using Shippo, with seller addresses, per-listing shipping fields, an orders system, and edge-function-driven label creation.
+Large multi-area feature. I'll implement in this order:
 
-### 1. Database (single migration)
+### 1. Database (one migration)
+New table `user_addresses` (user_id, label, full_name, phone, street1, street2, city, county, postcode, country, is_default, is_billing, delivery_instructions, timestamps) with RLS (owner-only).
 
-**Extend `seller_listings`:**
-- `shipping_fee` numeric, nullable
-- `free_shipping` boolean, default false
-- `dispatch_time` text, nullable
+Add columns to `seller_profiles`:
+- `offers_collection bool default false`
+- `collection_address jsonb`
+- `collection_instructions text`
+- `collection_window text`
 
-**Extend `seller_profiles` — sender address:**
-- `sender_name`, `sender_company`, `sender_street1`, `sender_street2`, `sender_city`, `sender_state`, `sender_zip`, `sender_country`, `sender_phone`
+Add columns to `orders`:
+- `order_number text` (e.g. `GP-XXXXXX`, generated client/server-side on insert)
+- `fulfillment_method text default 'delivery'` (`delivery` | `collection`)
+- `is_new_account bool default false`
+- `collected_at timestamptz`
+- `billing_address jsonb`
+- `delivery_instructions text`
 
-**New `orders` table:**
-- `id`, `listing_id`, `seller_id`, `buyer_id`, `offer_id`
-- `amount`, `shipping_fee`, `total_amount`
-- `status` text default `'awaiting_shipment'`
-- `buyer_name`, `buyer_email`
-- `shipping_address` jsonb
-- `tracking_number`, `carrier`, `label_url`, `shippo_transaction_id`
-- timestamps + `update_updated_at_column` trigger
+### 2. Shared utilities (`src/lib/`)
+- `addressLookup.ts` — `lookupUKPostcode(postcode)` (postcodes.io) + `searchPhoton(query)` (photon.komoot.io). Debounced helpers + result normalizer.
+- `addressValidation.ts` — UK postcode regex, phone validators (UK + international 7–15 digits).
+- `orderNumber.ts` — `generateOrderNumber()` returning `GP-XXXXXX`.
 
-**RLS on `orders`:**
-- Seller sees own (`seller_id = auth.uid()`)
-- Buyer sees own (`buyer_id = auth.uid()`)
-- Both can update status of their own orders
-- Service role full access
-- Admin full access
+### 3. Reusable components (`src/components/`)
+- `PostcodeLookup.tsx` — input + dropdown of suggestions; on select fires `onSelect({street1, city, county, postcode, country})`. Shows "Address verified ✓" badge after autofill.
+- `AddressForm.tsx` — full address form (name, phone, street1/2, city, county, postcode, country, delivery_instructions) with `PostcodeLookup` integrated and inline validation.
+- `SavedAddressPicker.tsx` — list of saved address radio cards + "Use a different address" toggle that swaps to `AddressForm`.
 
-### 2. Edge function: `create-shippo-label`
+### 4. Address Book in Dashboard
+New section on `Dashboard.tsx` (or a new `AddressBookSection.tsx` under `src/components/dashboard/`):
+- Lists `user_addresses` cards with label badge, name, address, phone, default badge.
+- Buttons: Edit / Delete / Set as Default / Set as Billing.
+- "+ Add New Address" button (disabled at 5).
 
-Single function with three actions (POST body `{ action }`):
-- `get_rates` — calls `POST https://api.goshippo.com/shipments/` with `address_from`, `address_to`, `parcels`. Returns rate list.
-- `purchase_label` — calls `POST https://api.goshippo.com/transactions/` with `rate` id. Returns label_url + tracking_number, updates `orders` row, sends buyer notification.
-- `create_order` — used by client after Stripe redirect to create the order row from offer + buyer-supplied delivery address (also pings seller notification).
+### 5. Checkout flow rewrite
+Update `DeliveryAddressModal.tsx` into a 3-step modal:
+- **Step 1:** if saved addresses exist → `SavedAddressPicker`. Else → `AddressForm`.
+- **Step 2:** new address form (with "Save to my account" + "Different billing address" toggle).
+- **Step 3:** order summary with Delivery vs Collection toggle (only if seller `offers_collection`), final "Proceed to Payment".
 
-JWT-validated. Uses `SHIPPO_API_KEY` from env. Validates inputs with zod-style checks. Auto-injects HS code from listing category map.
+When user opts to save, insert into `user_addresses` (respect 5 cap). Always pass full address through to checkout so the order row stores it. Remove existing localStorage usage.
 
-### 3. Frontend changes
+### 6. Collection at Store (seller)
+In `MyMarket.tsx` Edit Profile section, add "Collection" block:
+- Toggle `offers_collection`
+- Address (with `PostcodeLookup`)
+- Instructions text
+- Window dropdown
 
-**`src/lib/hsCodes.ts`** (new) — category → HS code map per spec.
+Persist to `seller_profiles`.
 
-**`src/lib/shippo.ts`** (new) — typed `invokeShippo(action, payload)` wrapper around `supabase.functions.invoke`.
+### 7. Order creation + emails
+Update `create-marketplace-checkout` edge function:
+- Accept `delivery_address`, `billing_address`, `fulfillment_method`, `delivery_instructions` from client.
+- Compute `is_new_account` (user created < 7 days).
+- Store all on the offer/order metadata; pass billing address to Stripe (AVS).
 
-**`src/pages/MyMarket.tsx`:**
-- Listing form (create + edit): add Shipping section (fee input, free toggle disables fee, dispatch time select). Wire to new columns.
-- Edit Profile modal: add Sender Address section (all 9 fields, country dropdown reuses `COUNTRIES`).
-- New "Orders" tab/section: lists rows from `orders` for this seller with photo, buyer, total, status badge, and "Create Shipping Label →" button.
-- `CreateShippingLabelModal` (new component, inline or `src/components/CreateShippingLabelModal.tsx`):
-  - Step 1: from/to readonly + weight + L/W/H + carrier select + Brexit warning when UK→EU.
-  - Step 2: rates list (calls `get_rates`).
-  - Step 3: purchase + show "Download Label (PDF)" link, mark order shipped optimistically.
+Update `stripe-webhook`:
+- On payment success, insert into `orders` with `order_number = GP-XXXXXX`, `shipping_address`, `billing_address`, `fulfillment_method`, `is_new_account`, `delivery_instructions`.
+- Send buyer + seller emails via existing `send-transactional-email`.
+- Insert in-app notifications for both.
 
-**`src/pages/Marketplace.tsx`** — listing card: under price show shipping line (free / £X.XX / contact seller).
+### 8. Collection confirmation
+In MyMarket Orders:
+- For `fulfillment_method = 'collection'` orders, show "Awaiting Collection" yellow badge + "Mark as Collected ✓" button (instead of shipping label flow).
+- On click → update `status='collected'`, `collected_at=now()`, send buyer email.
+- (7-day reminder = a small note for now; cron not in scope unless trivial.)
 
-**`src/pages/ListingDetail.tsx`** — show shipping fee, dispatch time, ships-to badges (already partial).
+### 9. Fraud notes
+- Inline phone & postcode validators in `AddressForm`.
+- Edge function blocks orders > £200 for accounts < 7 days old (returns 400 with friendly message).
+- Seller order card shows "New account" badge when `is_new_account`.
 
-**Order creation hook on payment success:** in the existing post-checkout buyer flow (Marketplace "Your offers" pay path / success redirect), after successful Stripe payment we'll insert an `orders` row using the buyer's saved delivery address (collected at checkout success page or inferred from offer). For this iteration: when buyer returns to Marketplace with `?paid=offerId` (existing pattern) or via a new lightweight delivery-address modal before redirect, write the order. Seller notification inserted in same edge function path.
+### Out of scope / preserved
+- No changes to Tyres, Search, EV Charging, affiliate links.
+- No changes to `src/integrations/supabase/client.ts` or `types.ts`.
 
-### 4. Out of scope / preserved
+### Risks / notes
+- Photon and postcodes.io are called directly from the browser (both are public, CORS-enabled, no key) — fine.
+- The 7-day reminder cron is deferred unless you want it now (mention in final summary).
 
-- Payment, commission, Stripe checkout function unchanged.
-- Tyres / Search / EV Charging / affiliates untouched.
-- `SHIPPO_API_KEY` only used inside the edge function.
-
-### 5. Files touched
-
-Created:
-- `supabase/functions/create-shippo-label/index.ts`
-- `src/lib/hsCodes.ts`
-- `src/lib/shippo.ts`
-- `src/components/CreateShippingLabelModal.tsx`
-- one migration in `supabase/migrations/`
-
-Edited:
-- `src/pages/MyMarket.tsx` (listing form, profile modal, orders section)
-- `src/pages/Marketplace.tsx` (card shipping line + order creation on pay)
-- `src/pages/ListingDetail.tsx` (shipping detail block)
-- `supabase/config.toml` (no change needed — defaults fine)
-
-### Open question
-
-The spec says "When a buyer pays … create an order record." The current marketplace pay flow goes via `create-marketplace-checkout`. To keep that function untouched, I'll create the order client-side after Stripe redirects back (buyer prompted for delivery address in a small modal on return). If you'd prefer the order to be created server-side inside the Stripe webhook instead, say so and I'll wire it there.
+If approved, I'll execute in this order: migration → libs/components → Dashboard address book → checkout modal rewrite → seller collection UI → edge function + webhook + emails → orders UI for collection.
