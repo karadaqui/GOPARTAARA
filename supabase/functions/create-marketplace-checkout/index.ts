@@ -33,6 +33,7 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
     const { offerId, listingId, buyNow, address_payload } = body;
+    console.log("[checkout] Step 3: body parsed", { offerId, listingId, buyNow, hasAddress: !!address_payload, userId: user.id });
 
     // Service-role client for trusted reads/writes
     const supabaseAdmin = createClient(
@@ -40,12 +41,20 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
+    console.log("[checkout] Step 4: STRIPE_SECRET_KEY present:", !!stripeKey, "prefix:", stripeKey?.slice(0, 7));
+    if (!stripeKey) {
+      return new Response(JSON.stringify({ error: "Server missing STRIPE_SECRET_KEY" }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const stripe = new Stripe(stripeKey, {
       apiVersion: "2025-08-27.basil",
     });
 
     // ============= BUY NOW FLOW =============
     if (buyNow === true) {
+      console.log("[checkout] Step 5: BUY NOW flow", { listingId });
       if (!listingId || typeof listingId !== "string") {
         return new Response(JSON.stringify({ error: "Missing listingId" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
