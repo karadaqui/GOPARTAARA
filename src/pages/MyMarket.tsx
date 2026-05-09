@@ -376,6 +376,15 @@ const MyMarket = () => {
       contact_phone: profileForm.contact_phone || null,
       website_url: profileForm.website_url || null,
       ships_to: profileForm.ships_to.length > 0 ? profileForm.ships_to : ["UK"],
+      sender_name: profileForm.sender_name || null,
+      sender_company: profileForm.sender_company || null,
+      sender_street1: profileForm.sender_street1 || null,
+      sender_street2: profileForm.sender_street2 || null,
+      sender_city: profileForm.sender_city || null,
+      sender_state: profileForm.sender_state || null,
+      sender_zip: profileForm.sender_zip || null,
+      sender_country: profileForm.sender_country || "GB",
+      sender_phone: profileForm.sender_phone || null,
       approved: true,
     } as any);
 
