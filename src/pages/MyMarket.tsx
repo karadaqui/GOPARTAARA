@@ -221,6 +221,10 @@ const MyMarket = () => {
     country: DEFAULT_COUNTRY,
     sender_name: "", sender_company: "", sender_street1: "", sender_street2: "",
     sender_city: "", sender_state: "", sender_zip: "", sender_country: "GB", sender_phone: "",
+    offers_collection: false,
+    collection_address: { ...EMPTY_ADDRESS, label: "Store" } as AddressFormValue,
+    collection_instructions: "",
+    collection_window: "Same day",
   });
 
   const [listingForm, setListingForm] = useState({
