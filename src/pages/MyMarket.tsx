@@ -291,6 +291,10 @@ const MyMarket = () => {
         sender_zip: (sp as any).sender_zip || "",
         sender_country: (sp as any).sender_country || "GB",
         sender_phone: (sp as any).sender_phone || "",
+        offers_collection: !!(sp as any).offers_collection,
+        collection_address: ((sp as any).collection_address as AddressFormValue) || { ...EMPTY_ADDRESS, label: "Store" },
+        collection_instructions: (sp as any).collection_instructions || "",
+        collection_window: (sp as any).collection_window || "Same day",
       });
 
       const { data: ls } = await supabase
