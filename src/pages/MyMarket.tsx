@@ -441,7 +441,7 @@ const MyMarket = () => {
       // Issue 3: proceed straight into the listing form so the new seller
       // can publish their first part without an extra click.
       setEditingListing(null);
-      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
+      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
       setListingDialog(true);
     }
     setSaving(false);
@@ -555,7 +555,7 @@ const MyMarket = () => {
         return;
       }
       setEditingListing(null);
-      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
+      setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
     }
     setListingDialog(true);
   };
@@ -1913,7 +1913,7 @@ const MyMarket = () => {
               setPayoutGateContinue(false);
               // Open listing form now that payout exists
               setEditingListing(null);
-              setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
+              setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
               setListingDialog(true);
             }
           }}
@@ -1922,7 +1922,7 @@ const MyMarket = () => {
             if (payoutGateContinue) {
               setPayoutGateContinue(false);
               setEditingListing(null);
-              setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: profileForm.ships_to.length ? profileForm.ships_to : ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
+              setListingForm({ title: "", description: "", price: "", category: "", condition: "", country: profileForm.country || DEFAULT_COUNTRY, other_description: "", ships_to: ["UK"], compatible_vehicles: [], tags: [], photos: [], shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days" });
               setListingDialog(true);
             }
           }}
