@@ -230,14 +230,15 @@ export async function insertSystemMessage(conversationId: string, senderId: stri
 /** Ensure a conversation exists for an offer, returning its id. */
 export async function ensureOfferConversation(offer: { id: string; listing_id: string; buyer_id: string; seller_id: string; }): Promise<string | null> {
   try {
-    const { data: existing } = await supabase
+    const sb = supabase as any;
+    const { data: existing } = await sb
       .from("conversations")
       .select("id")
-      .eq("offer_id" as any, offer.id)
+      .eq("offer_id", offer.id)
       .maybeSingle();
-    if (existing?.id) return existing.id;
+    if (existing?.id) return existing.id as string;
 
-    const { data: alt } = await supabase
+    const { data: alt } = await sb
       .from("conversations")
       .select("id")
       .eq("listing_id", offer.listing_id)
@@ -245,21 +246,21 @@ export async function ensureOfferConversation(offer: { id: string; listing_id: s
       .eq("seller_id", offer.seller_id)
       .maybeSingle();
     if (alt?.id) {
-      await supabase.from("conversations").update({ offer_id: offer.id } as any).eq("id", alt.id);
-      return alt.id;
+      await sb.from("conversations").update({ offer_id: offer.id }).eq("id", alt.id);
+      return alt.id as string;
     }
 
-    const { data: created } = await supabase
+    const { data: created } = await sb
       .from("conversations")
       .insert({
         listing_id: offer.listing_id,
         buyer_id: offer.buyer_id,
         seller_id: offer.seller_id,
         offer_id: offer.id,
-      } as any)
+      })
       .select("id")
       .single();
-    return created?.id || null;
+    return (created?.id as string) || null;
   } catch {
     return null;
   }
