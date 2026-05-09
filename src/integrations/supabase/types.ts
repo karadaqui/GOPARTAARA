@@ -592,6 +592,7 @@ export type Database = {
           message: string | null
           payout_date: string | null
           payout_sent: boolean
+          pending_address: Json | null
           seller_id: string
           status: string
           stripe_session_id: string | null
@@ -605,6 +606,7 @@ export type Database = {
           message?: string | null
           payout_date?: string | null
           payout_sent?: boolean
+          pending_address?: Json | null
           seller_id: string
           status?: string
           stripe_session_id?: string | null
@@ -618,6 +620,7 @@ export type Database = {
           message?: string | null
           payout_date?: string | null
           payout_sent?: boolean
+          pending_address?: Json | null
           seller_id?: string
           status?: string
           stripe_session_id?: string | null
