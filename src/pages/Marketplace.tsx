@@ -127,6 +127,7 @@ const Marketplace = () => {
   const [hasShop, setHasShop] = useState(false);
   const [addressOffer, setAddressOffer] = useState<BuyerOffer | null>(null);
   const [chatOffer, setChatOffer] = useState<BuyerOffer | null>(null);
+  const [counterOffer, setCounterOffer] = useState<BuyerOffer | null>(null);
 
   // Handle return from Stripe checkout — webhook handles order creation, this just shows toast
   useEffect(() => {
