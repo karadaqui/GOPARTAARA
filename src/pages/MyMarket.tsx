@@ -1222,14 +1222,23 @@ const MyMarket = () => {
         )}
 
         {/* Orders section */}
-        {orders.length > 0 && (
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display text-xl font-bold flex items-center gap-2">
-                <Truck size={18} className="text-primary" /> Orders
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-display text-xl font-bold flex items-center gap-2">
+              <Truck size={18} className="text-primary" /> My Orders
+              {orders.length > 0 && (
                 <span className="text-xs font-normal text-muted-foreground">({orders.length})</span>
-              </h2>
+              )}
+            </h2>
+          </div>
+          {orders.length === 0 ? (
+            <div className="glass rounded-xl border border-border p-8 text-center">
+              <Package size={28} className="mx-auto mb-2 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
+                No orders yet. Orders will appear here when buyers purchase your listings.
+              </p>
             </div>
+          ) : (
             <div className="grid sm:grid-cols-2 gap-4">
               {orders.map(o => {
                 const addr = o.shipping_address || {};
@@ -1325,8 +1334,8 @@ const MyMarket = () => {
                 );
               })}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         <div className="flex justify-between items-center mb-6">
           <h2 className="font-display text-xl font-bold">My Listings</h2>
