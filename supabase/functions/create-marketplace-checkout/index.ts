@@ -107,6 +107,7 @@ Deno.serve(async (req) => {
       }
 
       const amount = Number(listing.price);
+      console.log("[checkout] Step 7: creating Stripe session", { amount, sellerUserId });
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
