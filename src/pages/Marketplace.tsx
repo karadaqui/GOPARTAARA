@@ -844,6 +844,26 @@ const Marketplace = () => {
         />
       )}
 
+      {counterOffer && (
+        <CounterOfferModal
+          open={!!counterOffer}
+          onClose={() => setCounterOffer(null)}
+          initiator="buyer"
+          originalOffer={{
+            id: counterOffer.id,
+            listing_id: counterOffer.listing_id,
+            buyer_id: counterOffer.buyer_id,
+            seller_id: counterOffer.seller_id,
+            amount: counterOffer.amount,
+            counter_count: counterOffer.counter_count || 0,
+            listing_title: counterOffer.seller_listings?.title ?? null,
+            listing_photo: counterOffer.seller_listings?.photos?.[0] ?? null,
+            buyer_email: user?.email ?? null,
+          }}
+          onSuccess={() => loadBuyerOffers()}
+        />
+      )}
+
       <Footer />
       <BackToTop />
     </div>
