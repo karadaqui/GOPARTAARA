@@ -322,15 +322,3 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: msg }, 500);
   }
 });
-      } catch (e) { console.error("[shippo] seller notify failed", e); }
-
-      return jsonResponse({ order_id: inserted.id });
-    }
-
-    return jsonResponse({ error: "Unknown action" }, 400);
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e);
-    console.error("[create-shippo-label] error", msg);
-    return jsonResponse({ error: msg }, 500);
-  }
-});
