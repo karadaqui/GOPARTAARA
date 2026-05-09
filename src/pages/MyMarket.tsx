@@ -206,6 +206,8 @@ const MyMarket = () => {
     bank_account_name: "", bank_sort_code: "", bank_account_number: "", bank_paypal_email: "",
     ships_to: ["UK"] as string[],
     country: DEFAULT_COUNTRY,
+    sender_name: "", sender_company: "", sender_street1: "", sender_street2: "",
+    sender_city: "", sender_state: "", sender_zip: "", sender_country: "GB", sender_phone: "",
   });
 
   const [listingForm, setListingForm] = useState({
@@ -214,7 +216,8 @@ const MyMarket = () => {
     other_description: "",
     ships_to: ["UK"] as string[],
     compatible_vehicles: [] as string[],
-    tags: [] as string[], photos: [] as string[]
+    tags: [] as string[], photos: [] as string[],
+    shipping_fee: "", free_shipping: false, dispatch_time: "1-2 days",
   });
 
   useEffect(() => {
