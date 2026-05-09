@@ -741,6 +741,14 @@ const Marketplace = () => {
         <CompareModal items={compareParts} onRemove={(id) => setCompareParts((prev) => prev.filter((p) => p.id !== id))} onClose={() => setShowCompare(false)} />
       )}
 
+      <DeliveryAddressModal
+        open={!!addressOffer}
+        onOpenChange={(o) => { if (!o) setAddressOffer(null); }}
+        defaultEmail={user?.email || ""}
+        loading={!!payingOfferId}
+        onSubmit={handleAddressSubmitted}
+      />
+
       <Footer />
       <BackToTop />
     </div>
