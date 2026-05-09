@@ -69,6 +69,7 @@ const EvCharging = lazy(() => import("./pages/EvCharging.tsx"));
 const Status = lazy(() => import("./pages/Status.tsx"));
 const PartSearchRedirect = lazy(() => import("./components/PartSearchRedirect.tsx"));
 const Sitemap = lazy(() => import("./pages/Sitemap.tsx"));
+const OrderConfirmation = lazy(() => import("./pages/OrderConfirmation.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -141,6 +142,7 @@ const App = () => {
                 <Route path="/ev-charging" element={<EvChargingMaintained />} />
                 <Route path="/status" element={<Status />} />
                 <Route path="/sitemap" element={<Sitemap />} />
+                <Route path="/order-confirmation" element={<OrderConfirmation />} />
                 <Route path="*" element={<PartSearchRedirect />} />
               </Routes>
               </div>
