@@ -170,6 +170,9 @@ const Marketplace = () => {
           listing_id,
           seller_id,
           buyer_id,
+          parent_offer_id,
+          initiated_by,
+          counter_count,
           seller_listings!listing_id (
             title,
             photos,
@@ -178,9 +181,13 @@ const Marketplace = () => {
           )
         `)
         .eq("buyer_id", user.id)
-        .in("status", ["accepted", "pending_payment", "paid"])
+        .in("status", ["accepted", "pending_payment", "paid", "pending"])
         .order("created_at", { ascending: false });
-      setBuyerOffers((data || []) as BuyerOffer[]);
+      // Only show pending if it's a seller-initiated counter awaiting buyer
+      const filtered = ((data as any[]) || []).filter((o: any) =>
+        o.status !== "pending" || o.initiated_by === "seller"
+      );
+      setBuyerOffers(filtered as BuyerOffer[]);
     } catch {}
   };
 
