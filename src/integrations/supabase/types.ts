@@ -632,6 +632,69 @@ export type Database = {
           },
         ]
       }
+      orders: {
+        Row: {
+          amount: number
+          buyer_email: string | null
+          buyer_id: string
+          buyer_name: string | null
+          carrier: string | null
+          created_at: string
+          id: string
+          label_url: string | null
+          listing_id: string
+          offer_id: string | null
+          seller_id: string
+          shipping_address: Json | null
+          shipping_fee: number
+          shippo_transaction_id: string | null
+          status: string
+          total_amount: number
+          tracking_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          buyer_email?: string | null
+          buyer_id: string
+          buyer_name?: string | null
+          carrier?: string | null
+          created_at?: string
+          id?: string
+          label_url?: string | null
+          listing_id: string
+          offer_id?: string | null
+          seller_id: string
+          shipping_address?: Json | null
+          shipping_fee?: number
+          shippo_transaction_id?: string | null
+          status?: string
+          total_amount?: number
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          buyer_email?: string | null
+          buyer_id?: string
+          buyer_name?: string | null
+          carrier?: string | null
+          created_at?: string
+          id?: string
+          label_url?: string | null
+          listing_id?: string
+          offer_id?: string | null
+          seller_id?: string
+          shipping_address?: Json | null
+          shipping_fee?: number
+          shippo_transaction_id?: string | null
+          status?: string
+          total_amount?: number
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       part_reviews: {
         Row: {
           comment: string | null
@@ -1100,14 +1163,17 @@ export type Database = {
           created_at: string
           currency: string
           description: string
+          dispatch_time: string | null
           external_link: string | null
           featured: boolean
           featured_until: string | null
+          free_shipping: boolean
           id: string
           photos: string[]
           price: number | null
           save_count: number
           seller_id: string
+          shipping_fee: number | null
           tags: string[]
           title: string
           updated_at: string
@@ -1122,14 +1188,17 @@ export type Database = {
           created_at?: string
           currency?: string
           description?: string
+          dispatch_time?: string | null
           external_link?: string | null
           featured?: boolean
           featured_until?: string | null
+          free_shipping?: boolean
           id?: string
           photos?: string[]
           price?: number | null
           save_count?: number
           seller_id: string
+          shipping_fee?: number | null
           tags?: string[]
           title: string
           updated_at?: string
@@ -1144,14 +1213,17 @@ export type Database = {
           created_at?: string
           currency?: string
           description?: string
+          dispatch_time?: string | null
           external_link?: string | null
           featured?: boolean
           featured_until?: string | null
+          free_shipping?: boolean
           id?: string
           photos?: string[]
           price?: number | null
           save_count?: number
           seller_id?: string
+          shipping_fee?: number | null
           tags?: string[]
           title?: string
           updated_at?: string
@@ -1214,6 +1286,15 @@ export type Database = {
           id: string
           logo_url: string | null
           seller_tier: string
+          sender_city: string | null
+          sender_company: string | null
+          sender_country: string | null
+          sender_name: string | null
+          sender_phone: string | null
+          sender_state: string | null
+          sender_street1: string | null
+          sender_street2: string | null
+          sender_zip: string | null
           ships_to: string[]
           updated_at: string
           user_id: string
@@ -1229,6 +1310,15 @@ export type Database = {
           id?: string
           logo_url?: string | null
           seller_tier?: string
+          sender_city?: string | null
+          sender_company?: string | null
+          sender_country?: string | null
+          sender_name?: string | null
+          sender_phone?: string | null
+          sender_state?: string | null
+          sender_street1?: string | null
+          sender_street2?: string | null
+          sender_zip?: string | null
           ships_to?: string[]
           updated_at?: string
           user_id: string
@@ -1244,6 +1334,15 @@ export type Database = {
           id?: string
           logo_url?: string | null
           seller_tier?: string
+          sender_city?: string | null
+          sender_company?: string | null
+          sender_country?: string | null
+          sender_name?: string | null
+          sender_phone?: string | null
+          sender_state?: string | null
+          sender_street1?: string | null
+          sender_street2?: string | null
+          sender_zip?: string | null
           ships_to?: string[]
           updated_at?: string
           user_id?: string
