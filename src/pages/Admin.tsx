@@ -543,7 +543,19 @@ const Admin = () => {
     setDisputes(prev => prev.map(d => d.id === resolveId ? { ...d, status: newStatus, admin_response: adminNote, resolved_at: new Date().toISOString() } : d));
   };
 
-  const filteredListings = listings.filter(l => listingFilter === "all" || l.approval_status === listingFilter);
+  const matchesFilter = (l: PendingListing) => {
+    if (listingFilter === "all") return true;
+    if (listingFilter === "paused") return l.active === false && l.approval_status !== "rejected";
+    if (listingFilter === "approved") return l.approval_status === "approved" && l.active !== false;
+    return l.approval_status === listingFilter;
+  };
+  const filteredListings = listings.filter(matchesFilter);
+  const countFor = (f: typeof listingFilter) => listings.filter(l => {
+    if (f === "all") return true;
+    if (f === "paused") return l.active === false && l.approval_status !== "rejected";
+    if (f === "approved") return l.approval_status === "approved" && l.active !== false;
+    return l.approval_status === f;
+  }).length;
   const pendingDisputeCount = disputes.filter(d => d.status === "pending").length;
   const unresolvedContactCount = contacts.filter(c => !c.resolved).length;
 
