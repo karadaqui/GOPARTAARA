@@ -132,6 +132,9 @@ interface Offer {
   created_at: string;
   listing_title?: string;
   buyer_name?: string;
+  buyer_email?: string | null;
+  listing_photo?: string | null;
+  unread_chat?: number;
 }
 
 const CATEGORIES = [
@@ -349,17 +352,51 @@ const MyMarket = () => {
         const buyerIds = [...new Set(offersData.map((o: any) => o.buyer_id))];
         const offerListingIds = [...new Set(offersData.map((o: any) => o.listing_id))];
         const [buyerProfiles, offerListings] = await Promise.all([
-          supabase.from("profiles").select("user_id, display_name").in("user_id", buyerIds),
-          supabase.from("seller_listings").select("id, title").in("id", offerListingIds),
+          supabase.from("profiles").select("user_id, display_name, email").in("user_id", buyerIds),
+          supabase.from("seller_listings").select("id, title, photos").in("id", offerListingIds),
         ]);
-        const buyerMap = new Map((buyerProfiles.data || []).map(p => [p.user_id, p.display_name]));
-        const offerListingMap = new Map((offerListings.data || []).map(l => [l.id, l.title]));
+        const buyerMap = new Map((buyerProfiles.data || []).map(p => [p.user_id, { name: p.display_name, email: p.email }]));
+        const offerListingMap = new Map((offerListings.data || []).map((l: any) => [l.id, { title: l.title, photo: l.photos?.[0] || null }]));
 
-        setOffers(offersData.map((o: any) => ({
-          ...o,
-          buyer_name: buyerMap.get(o.buyer_id) || "Anonymous",
-          listing_title: offerListingMap.get(o.listing_id) || "Unknown",
-        })));
+        // Fetch unread chat counts per offer
+        const offerIds = offersData.map((o: any) => o.id);
+        const sb = supabase as any;
+        const { data: convs } = await sb
+          .from("conversations")
+          .select("id, offer_id")
+          .in("offer_id", offerIds);
+        const convByOffer = new Map<string, string>((convs || []).map((c: any) => [c.offer_id, c.id]));
+        let unreadByConv = new Map<string, number>();
+        if (convs && convs.length) {
+          const { data: msgs } = await supabase
+            .from("chat_messages")
+            .select("conversation_id")
+            .in("conversation_id", convs.map((c: any) => c.id))
+            .eq("read", false)
+            .neq("sender_id", user!.id);
+          (msgs || []).forEach((m: any) => {
+            unreadByConv.set(m.conversation_id, (unreadByConv.get(m.conversation_id) || 0) + 1);
+          });
+        }
+
+        setOffers(offersData.map((o: any) => {
+          const li: any = offerListingMap.get(o.listing_id);
+          const buyer: any = buyerMap.get(o.buyer_id);
+          const cid = convByOffer.get(o.id);
+          const rawPhoto = li?.photo || null;
+          const photo = rawPhoto
+            ? rawPhoto.startsWith("http") ? rawPhoto
+              : `https://bkwieknlxvkrzluongif.supabase.co/storage/v1/object/public/listing-photos/${rawPhoto}`
+            : null;
+          return {
+            ...o,
+            buyer_name: buyer?.name || "Anonymous",
+            buyer_email: buyer?.email || null,
+            listing_title: li?.title || "Unknown",
+            listing_photo: photo,
+            unread_chat: cid ? (unreadByConv.get(cid) || 0) : 0,
+          };
+        }));
       } else {
         setOffers([]);
       }
