@@ -31,6 +31,7 @@ interface PendingListing {
   price: number | null;
   category: string | null;
   photos: string[];
+  active: boolean;
   created_at: string;
   approval_status: string;
   seller_profiles: {
