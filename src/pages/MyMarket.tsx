@@ -346,6 +346,34 @@ const MyMarket = () => {
       } else {
         setOffers([]);
       }
+
+      // Load orders for this seller
+      try {
+        const { data: ordersData } = await supabase
+          .from("orders" as any)
+          .select("*")
+          .eq("seller_id", user!.id)
+          .order("created_at", { ascending: false });
+        if (ordersData && ordersData.length > 0) {
+          const orderListingIds = [...new Set((ordersData as any[]).map(o => o.listing_id))];
+          const { data: orderListings } = await supabase
+            .from("seller_listings")
+            .select("id, title, photos, category")
+            .in("id", orderListingIds);
+          const olMap = new Map((orderListings || []).map((l: any) => [l.id, l]));
+          setOrders((ordersData as any[]).map(o => ({
+            ...o,
+            listing_title: olMap.get(o.listing_id)?.title || "Listing",
+            listing_photo: olMap.get(o.listing_id)?.photos?.[0] || null,
+            listing_category: olMap.get(o.listing_id)?.category || null,
+          })) as OrderRow[]);
+        } else {
+          setOrders([]);
+        }
+      } catch (e) {
+        console.error("orders load failed", e);
+        setOrders([]);
+      }
     }
     setLoading(false);
   };
