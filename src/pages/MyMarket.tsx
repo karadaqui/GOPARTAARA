@@ -230,14 +230,18 @@ const MyMarket = () => {
   const [profileForm, setProfileForm] = useState({
     business_name: "", description: "", contact_email: "", contact_phone: "", website_url: "",
     bank_account_name: "", bank_sort_code: "", bank_account_number: "", bank_paypal_email: "",
-    ships_to: ["UK"] as string[],
+    ships_to: ["GB"] as string[],
     country: DEFAULT_COUNTRY,
     sender_name: "", sender_company: "", sender_street1: "", sender_street2: "",
     sender_city: "", sender_state: "", sender_zip: "", sender_country: "GB", sender_phone: "",
     offers_collection: false,
-    collection_address: { ...EMPTY_ADDRESS, label: "Store" } as AddressFormValue,
+    collection_address: { ...EMPTY_COLLECTION_ADDRESS } as CollectionAddress,
     collection_instructions: "",
     collection_window: "Same day",
+    opening_hours: { ...DEFAULT_OPENING_HOURS } as OpeningHours,
+    collection_contact_name: "",
+    collection_contact_phone: "",
+    dispatch_time: "1-2 days",
   });
 
   const [listingForm, setListingForm] = useState({
