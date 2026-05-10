@@ -25,6 +25,8 @@ import PayoutSetupModal from "@/components/PayoutSetupModal";
 import CreateShippingLabelModal, { type ShippingOrder } from "@/components/CreateShippingLabelModal";
 import SenderAddressFields from "@/components/SenderAddressFields";
 import AddressForm, { EMPTY_ADDRESS, type AddressFormValue } from "@/components/AddressForm";
+import { EMPTY_COLLECTION_ADDRESS, DEFAULT_OPENING_HOURS, type CollectionAddress, type OpeningHours } from "@/components/EditShopProfileDrawer";
+import { normalizeShipsToCodes } from "@/lib/countriesData";
 import type { ShippoAddress } from "@/lib/shippo";
 import OfferChatModal from "@/components/OfferChatModal";
 import CounterOfferModal from "@/components/CounterOfferModal";
