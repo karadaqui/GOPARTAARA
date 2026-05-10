@@ -153,12 +153,12 @@ const BRAND_OPTIONS: FilterOption[] = [
   { label: "🇪🇸 neumaticos-online.es", value: "neumaticos-online.es" },
   { label: "🇮🇹 Pneumatici IT", value: "Pneumatici IT" },
   { label: "🇪🇪 ReifenDirekt EE", value: "ReifenDirekt EE" },
+  { label: "🇺🇸 Dunford Inc", value: "Dunford Inc" },
+  { label: "🇧🇪 Autobandenmarkt", value: "Autobandenmarkt" },
+  { label: "🇺🇸 Maxpeedingrods", value: "Maxpeedingrods" },
+  { label: "🇩🇪 Kohl Automobile", value: "Kohl Automobile" },
+  { label: "🇳🇴 Tirendo", value: "Tirendo" },
   { label: "Amazon · Coming soon", value: "Amazon", disabled: true },
-  { label: "Euro Car Parts · Coming soon", value: "Euro Car Parts", disabled: true },
-  { label: "GSF Car Parts · Coming soon", value: "GSF Car Parts", disabled: true },
-  { label: "Autodoc · Coming soon", value: "Autodoc", disabled: true },
-  { label: "Halfords · Coming soon", value: "Halfords", disabled: true },
-  { label: "Black Circles · Coming soon", value: "Black Circles", disabled: true },
 ];
 
 const FilterBar = ({
