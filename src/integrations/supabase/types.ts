@@ -1331,6 +1331,8 @@ export type Database = {
           approved: boolean
           business_name: string
           collection_address: Json | null
+          collection_contact_name: string | null
+          collection_contact_phone: string | null
           collection_instructions: string | null
           collection_window: string | null
           contact_email: string | null
@@ -1340,6 +1342,7 @@ export type Database = {
           id: string
           logo_url: string | null
           offers_collection: boolean
+          opening_hours: Json | null
           seller_tier: string
           sender_city: string | null
           sender_company: string | null
@@ -1359,6 +1362,8 @@ export type Database = {
           approved?: boolean
           business_name: string
           collection_address?: Json | null
+          collection_contact_name?: string | null
+          collection_contact_phone?: string | null
           collection_instructions?: string | null
           collection_window?: string | null
           contact_email?: string | null
@@ -1368,6 +1373,7 @@ export type Database = {
           id?: string
           logo_url?: string | null
           offers_collection?: boolean
+          opening_hours?: Json | null
           seller_tier?: string
           sender_city?: string | null
           sender_company?: string | null
@@ -1387,6 +1393,8 @@ export type Database = {
           approved?: boolean
           business_name?: string
           collection_address?: Json | null
+          collection_contact_name?: string | null
+          collection_contact_phone?: string | null
           collection_instructions?: string | null
           collection_window?: string | null
           contact_email?: string | null
@@ -1396,6 +1404,7 @@ export type Database = {
           id?: string
           logo_url?: string | null
           offers_collection?: boolean
+          opening_hours?: Json | null
           seller_tier?: string
           sender_city?: string | null
           sender_company?: string | null

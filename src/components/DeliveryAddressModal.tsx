@@ -24,6 +24,9 @@ interface SellerCollection {
   collection_instructions?: string | null;
   collection_window?: string | null;
   business_name?: string;
+  opening_hours?: any;
+  collection_contact_name?: string | null;
+  collection_contact_phone?: string | null;
 }
 
 interface OrderSummary {
@@ -297,16 +300,43 @@ export default function DeliveryAddressModal({
             {fulfillment === "collection" && offerCollection && (
               <div className="rounded-xl border border-border p-3">
                 <p className="text-xs text-muted-foreground mb-1 inline-flex items-center gap-1"><Store size={12}/> Collect from</p>
-                <p className="text-sm font-medium">{seller?.business_name || "Seller store"}</p>
+                <p className="text-sm font-medium">{seller!.collection_address?.business_name || seller?.business_name || "Seller store"}</p>
                 <p className="text-xs text-muted-foreground">
                   {[seller!.collection_address?.street1, seller!.collection_address?.city, seller!.collection_address?.postcode]
                     .filter(Boolean).join(", ")}
                 </p>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([seller!.collection_address?.business_name, seller!.collection_address?.street1, seller!.collection_address?.city, seller!.collection_address?.postcode, seller!.collection_address?.country].filter(Boolean).join(", "))}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="text-[11px] text-primary hover:underline mt-1 inline-block"
+                >
+                  Open in Google Maps →
+                </a>
+                {seller?.opening_hours && (
+                  <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-0.5 text-[11px]">
+                    {(["mon","tue","wed","thu","fri","sat","sun"] as const).map(k => {
+                      const d = (seller.opening_hours as any)?.[k];
+                      if (!d) return null;
+                      const label = { mon:"Mon",tue:"Tue",wed:"Wed",thu:"Thu",fri:"Fri",sat:"Sat",sun:"Sun" }[k];
+                      return (
+                        <div key={k} className="flex justify-between text-muted-foreground">
+                          <span>{label}</span>
+                          <span>{d.open ? `${d.from}–${d.to}` : "Closed"}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+                {seller?.collection_window && (
+                  <p className="text-[11px] text-muted-foreground mt-1">⏱ {seller.collection_window}</p>
+                )}
                 {seller?.collection_instructions && (
                   <p className="text-[11px] text-muted-foreground mt-1">📝 {seller.collection_instructions}</p>
                 )}
-                {seller?.collection_window && (
-                  <p className="text-[11px] text-muted-foreground">⏱ {seller.collection_window}</p>
+                {(seller?.collection_contact_name || seller?.collection_contact_phone) && (
+                  <p className="text-[11px] text-muted-foreground mt-1">
+                    📞 {seller.collection_contact_name}{seller.collection_contact_phone ? ` · ${seller.collection_contact_phone}` : ""}
+                  </p>
                 )}
               </div>
             )}

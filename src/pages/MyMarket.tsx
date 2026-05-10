@@ -25,6 +25,21 @@ import PayoutSetupModal from "@/components/PayoutSetupModal";
 import CreateShippingLabelModal, { type ShippingOrder } from "@/components/CreateShippingLabelModal";
 import SenderAddressFields from "@/components/SenderAddressFields";
 import AddressForm, { EMPTY_ADDRESS, type AddressFormValue } from "@/components/AddressForm";
+import { EMPTY_COLLECTION_ADDRESS, DEFAULT_OPENING_HOURS, type CollectionAddress, type OpeningHours } from "@/components/EditShopProfileDrawer";
+import { normalizeShipsToCodes } from "@/lib/countriesData";
+
+function normalizeCollectionAddress(raw: any): CollectionAddress {
+  if (!raw || typeof raw !== "object") return { ...EMPTY_COLLECTION_ADDRESS };
+  return {
+    business_name: raw.business_name || raw.full_name || "",
+    street1: raw.street1 || "",
+    street2: raw.street2 || "",
+    city: raw.city || "",
+    county: raw.county || raw.state || "",
+    postcode: raw.postcode || raw.zip || "",
+    country: raw.country || "GB",
+  };
+}
 import type { ShippoAddress } from "@/lib/shippo";
 import OfferChatModal from "@/components/OfferChatModal";
 import CounterOfferModal from "@/components/CounterOfferModal";
@@ -228,14 +243,18 @@ const MyMarket = () => {
   const [profileForm, setProfileForm] = useState({
     business_name: "", description: "", contact_email: "", contact_phone: "", website_url: "",
     bank_account_name: "", bank_sort_code: "", bank_account_number: "", bank_paypal_email: "",
-    ships_to: ["UK"] as string[],
+    ships_to: ["GB"] as string[],
     country: DEFAULT_COUNTRY,
     sender_name: "", sender_company: "", sender_street1: "", sender_street2: "",
     sender_city: "", sender_state: "", sender_zip: "", sender_country: "GB", sender_phone: "",
     offers_collection: false,
-    collection_address: { ...EMPTY_ADDRESS, label: "Store" } as AddressFormValue,
+    collection_address: { ...EMPTY_COLLECTION_ADDRESS } as CollectionAddress,
     collection_instructions: "",
     collection_window: "Same day",
+    opening_hours: { ...DEFAULT_OPENING_HOURS } as OpeningHours,
+    collection_contact_name: "",
+    collection_contact_phone: "",
+    dispatch_time: "1-2 days",
   });
 
   const [listingForm, setListingForm] = useState({
@@ -291,7 +310,7 @@ const MyMarket = () => {
         bank_sort_code: bankDetails.sort_code || "",
         bank_account_number: bankDetails.account_number || "",
         bank_paypal_email: bankDetails.paypal_email || "",
-        ships_to: ((sp as any).ships_to && (sp as any).ships_to.length > 0) ? (sp as any).ships_to : ["UK"],
+        ships_to: normalizeShipsToCodes((sp as any).ships_to),
         country: ((sp as any).description?.match(/^Country: ([^\n]+)/)?.[1]) || DEFAULT_COUNTRY,
         sender_name: (sp as any).sender_name || "",
         sender_company: (sp as any).sender_company || "",
@@ -303,9 +322,13 @@ const MyMarket = () => {
         sender_country: (sp as any).sender_country || "GB",
         sender_phone: (sp as any).sender_phone || "",
         offers_collection: !!(sp as any).offers_collection,
-        collection_address: ((sp as any).collection_address as AddressFormValue) || { ...EMPTY_ADDRESS, label: "Store" },
+        collection_address: normalizeCollectionAddress((sp as any).collection_address),
         collection_instructions: (sp as any).collection_instructions || "",
         collection_window: (sp as any).collection_window || "Same day",
+        opening_hours: ((sp as any).opening_hours as OpeningHours) || { ...DEFAULT_OPENING_HOURS },
+        collection_contact_name: (sp as any).collection_contact_name || "",
+        collection_contact_phone: (sp as any).collection_contact_phone || "",
+        dispatch_time: "1-2 days",
       });
 
       const { data: ls } = await supabase
@@ -469,7 +492,7 @@ const MyMarket = () => {
       contact_email: profileForm.contact_email || null,
       contact_phone: profileForm.contact_phone || null,
       website_url: profileForm.website_url || null,
-      ships_to: profileForm.ships_to.length > 0 ? profileForm.ships_to : ["UK"],
+      ships_to: profileForm.ships_to.length > 0 ? profileForm.ships_to : ["GB"],
       sender_name: profileForm.sender_name || null,
       sender_company: profileForm.sender_company || null,
       sender_street1: profileForm.sender_street1 || null,
@@ -483,6 +506,9 @@ const MyMarket = () => {
       collection_address: profileForm.offers_collection ? profileForm.collection_address : null,
       collection_instructions: profileForm.offers_collection ? (profileForm.collection_instructions || null) : null,
       collection_window: profileForm.offers_collection ? (profileForm.collection_window || null) : null,
+      opening_hours: profileForm.offers_collection ? profileForm.opening_hours : null,
+      collection_contact_name: profileForm.offers_collection ? (profileForm.collection_contact_name || null) : null,
+      collection_contact_phone: profileForm.offers_collection ? (profileForm.collection_contact_phone || null) : null,
       approved: true,
     } as any);
 
@@ -523,7 +549,7 @@ const MyMarket = () => {
         contact_email: profileForm.contact_email || null,
         contact_phone: profileForm.contact_phone || null,
         website_url: profileForm.website_url || null,
-        ships_to: profileForm.ships_to.length > 0 ? profileForm.ships_to : ["UK"],
+        ships_to: profileForm.ships_to.length > 0 ? profileForm.ships_to : ["GB"],
         sender_name: profileForm.sender_name || null,
         sender_company: profileForm.sender_company || null,
         sender_street1: profileForm.sender_street1 || null,
@@ -537,6 +563,9 @@ const MyMarket = () => {
         collection_address: profileForm.offers_collection ? profileForm.collection_address : null,
         collection_instructions: profileForm.offers_collection ? (profileForm.collection_instructions || null) : null,
         collection_window: profileForm.offers_collection ? (profileForm.collection_window || null) : null,
+        opening_hours: profileForm.offers_collection ? profileForm.opening_hours : null,
+        collection_contact_name: profileForm.offers_collection ? (profileForm.collection_contact_name || null) : null,
+        collection_contact_phone: profileForm.offers_collection ? (profileForm.collection_contact_phone || null) : null,
       } as any)
       .eq("id", profile.id);
 
