@@ -133,6 +133,7 @@ const App = () => {
                 <Route path="/confirm-shop-delete/:token" element={<ConfirmShopDelete />} />
                 <Route path="/recent" element={<RecentParts />} />
                 <Route path="/tyres" element={<Tyres />} />
+                <Route path="/motor-parts" element={<MotorParts />} />
                 <Route path="/deals" element={<Deals />} />
                 <Route path="/affiliate-disclosure" element={<AffiliateDisclosure />} />
                 <Route path="/business" element={<Business />} />
