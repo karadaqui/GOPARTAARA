@@ -460,6 +460,11 @@ const SearchResults = () => {
     }
   }, [searchParams]);
 
+  // Reset reachable-page cap whenever the underlying query/filters change
+  useEffect(() => {
+    setMaxReachablePage(400);
+  }, [activeQuery, selectedCategory, country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter, vinCountryInfo]);
+
   // ── eBay search ──
   useEffect(() => {
     if (!activeQuery.trim()) { setLiveResults([]); setTotalResults(0); setEbayFallback(false); setLiveError(false); return; }
