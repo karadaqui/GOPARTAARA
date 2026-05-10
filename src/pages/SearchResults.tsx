@@ -2214,6 +2214,103 @@ const SearchResults = () => {
                   })}
                 </div>
 
+                {/* ── Pagination (numeric) — directly after results grid ── */}
+                {liveResults.length > 0 && totalPages > 1 && (() => {
+                  const goTo = (p: number) => {
+                    const target = Math.max(1, Math.min(totalPages, p));
+                    if (target === currentPage) return;
+                    setCurrentPage(target);
+                    const el = resultsRef.current;
+                    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    else window.scrollTo({ top: 0, behavior: "smooth" });
+                  };
+                  const buildPages = (): (number | "...")[] => {
+                    const last = totalPages;
+                    if (last <= 7) return Array.from({ length: last }, (_, i) => i + 1);
+                    if (isMobile) {
+                      const arr: (number | "...")[] = [];
+                      const start = Math.max(1, currentPage - 1);
+                      const end = Math.min(last, currentPage + 1);
+                      for (let i = start; i <= end; i++) arr.push(i);
+                      return arr;
+                    }
+                    const set = new Set<number>();
+                    if (currentPage <= 5) {
+                      for (let i = 1; i <= 5; i++) set.add(i);
+                      set.add(last - 1); set.add(last);
+                    } else if (currentPage >= last - 4) {
+                      set.add(1); set.add(2);
+                      for (let i = last - 4; i <= last; i++) set.add(i);
+                    } else {
+                      set.add(1); set.add(2);
+                      for (let i = currentPage - 2; i <= currentPage + 2; i++) set.add(i);
+                      set.add(last - 1); set.add(last);
+                    }
+                    const sorted = Array.from(set).filter((n) => n >= 1 && n <= last).sort((a, b) => a - b);
+                    const out: (number | "...")[] = [];
+                    let prev = 0;
+                    for (const p of sorted) {
+                      if (prev && p - prev > 1) out.push("...");
+                      out.push(p);
+                      prev = p;
+                    }
+                    return out;
+                  };
+                  const pages = buildPages();
+                  const startN = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+                  const endN = Math.min(currentPage * ITEMS_PER_PAGE, totalResults);
+                  const totalLabel = hitApiLimit
+                    ? `${(MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE).toLocaleString()}+`
+                    : totalResults.toLocaleString();
+                  return (
+                    <div className="mt-10 mb-4">
+                      <p className="text-center mb-4" style={{ fontSize: "13px", color: "#71717a" }}>
+                        Showing results {startN.toLocaleString()}–{endN.toLocaleString()} of {totalLabel}
+                      </p>
+                      <nav aria-label="Pagination" className="flex items-center justify-center gap-1.5 flex-wrap">
+                        <button
+                          type="button"
+                          onClick={() => goTo(currentPage - 1)}
+                          disabled={currentPage === 1 || liveLoading}
+                          className="inline-flex items-center gap-1 h-10 px-3 rounded-lg text-sm font-medium border border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-zinc-900/60 disabled:hover:text-zinc-300"
+                        >
+                          <ChevronLeft size={14} />
+                          <span className="hidden sm:inline">Prev</span>
+                        </button>
+                        {pages.map((p, i) =>
+                          p === "..." ? (
+                            <span key={`ellipsis-${i}`} className="inline-flex items-center justify-center h-10 w-8 text-zinc-500 text-sm select-none" aria-hidden>…</span>
+                          ) : (
+                            <button
+                              key={p}
+                              type="button"
+                              onClick={() => goTo(p)}
+                              disabled={liveLoading}
+                              aria-current={p === currentPage ? "page" : undefined}
+                              className={
+                                p === currentPage
+                                  ? "inline-flex items-center justify-center h-10 min-w-[40px] px-2 rounded-lg text-sm font-semibold border bg-[#cc1111] text-white border-[#cc1111] cursor-default"
+                                  : "inline-flex items-center justify-center h-10 min-w-[40px] px-2 rounded-lg text-sm font-medium border border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:bg-[#cc1111]/10 hover:border-[#cc1111]/40 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              }
+                            >
+                              {p.toLocaleString()}
+                            </button>
+                          ),
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => goTo(currentPage + 1)}
+                          disabled={currentPage >= totalPages || liveLoading}
+                          className="inline-flex items-center gap-1 h-10 px-3 rounded-lg text-sm font-medium border border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-zinc-900/60 disabled:hover:text-zinc-300"
+                        >
+                          <span className="hidden sm:inline">Next</span>
+                          <ChevronRight size={14} />
+                        </button>
+                      </nav>
+                    </div>
+                  );
+                })()}
+
             {/* ── Autodoc Affiliate Banner (geo-targeted, hidden for ad-free users) ── */}
             {!searchLimit.isPro && (() => {
               const autodocCountries: Record<string, string> = {
@@ -2283,132 +2380,6 @@ const SearchResults = () => {
                     </a>
                   );
                 })()}
-
-                {/* Premium "Load more" button (append-style pagination) */}
-                {liveResults.length > 0 && (
-                  <div className="mt-10 mb-2">
-                    {(() => {
-                      if (totalPages <= 1) return null;
-                      const goTo = (p: number) => {
-                        const target = Math.max(1, Math.min(totalPages, p));
-                        if (target === currentPage) return;
-                        setCurrentPage(target);
-                        const el = resultsRef.current;
-                        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                        else window.scrollTo({ top: 0, behavior: "smooth" });
-                      };
-
-                      const buildPages = (): (number | "...")[] => {
-                        const last = totalPages;
-                        // Small page counts — show all
-                        if (last <= 7) {
-                          return Array.from({ length: last }, (_, i) => i + 1);
-                        }
-                        if (isMobile) {
-                          // Mobile: condensed — current-1, current, current+1
-                          const arr: (number | "...")[] = [];
-                          const start = Math.max(1, currentPage - 1);
-                          const end = Math.min(last, currentPage + 1);
-                          for (let i = start; i <= end; i++) arr.push(i);
-                          return arr;
-                        }
-
-                        // Desktop spec:
-                        // Near start (≤5):  1 2 3 4 5 ... last-1 last
-                        // Near end (≥last-4): 1 2 ... last-4..last
-                        // Middle: 1 2 ... c-2 c-1 c c+1 c+2 ... last-1 last
-                        const set = new Set<number>();
-                        if (currentPage <= 5) {
-                          for (let i = 1; i <= 5; i++) set.add(i);
-                          set.add(last - 1); set.add(last);
-                        } else if (currentPage >= last - 4) {
-                          set.add(1); set.add(2);
-                          for (let i = last - 4; i <= last; i++) set.add(i);
-                        } else {
-                          set.add(1); set.add(2);
-                          for (let i = currentPage - 2; i <= currentPage + 2; i++) set.add(i);
-                          set.add(last - 1); set.add(last);
-                        }
-                        const sorted = Array.from(set).filter((n) => n >= 1 && n <= last).sort((a, b) => a - b);
-                        const out: (number | "...")[] = [];
-                        let prev = 0;
-                        for (const p of sorted) {
-                          if (prev && p - prev > 1) out.push("...");
-                          out.push(p);
-                          prev = p;
-                        }
-                        return out;
-                      };
-
-                      const pages = buildPages();
-                      const startN = (currentPage - 1) * ITEMS_PER_PAGE + 1;
-                      const endN = Math.min(currentPage * ITEMS_PER_PAGE, totalResults);
-                      const totalLabel = hitApiLimit
-                        ? `${(MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE).toLocaleString()}+`
-                        : totalResults.toLocaleString();
-
-                      return (
-                        <div className="mt-10">
-                          <p className="text-center mb-4" style={{ fontSize: "13px", color: "#71717a" }}>
-                            Showing results {startN.toLocaleString()}–{endN.toLocaleString()} of {totalLabel}
-                          </p>
-                          <nav
-                            aria-label="Pagination"
-                            className="flex items-center justify-center gap-1.5 flex-wrap"
-                          >
-                            <button
-                              type="button"
-                              onClick={() => goTo(currentPage - 1)}
-                              disabled={currentPage === 1 || liveLoading}
-                              className="inline-flex items-center gap-1 h-10 px-3 rounded-lg text-sm font-medium border border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-zinc-900/60 disabled:hover:text-zinc-300"
-                            >
-                              <ChevronLeft size={14} />
-                              <span className="hidden sm:inline">Prev</span>
-                            </button>
-
-                            {pages.map((p, i) =>
-                              p === "..." ? (
-                                <span
-                                  key={`ellipsis-${i}`}
-                                  className="inline-flex items-center justify-center h-10 w-8 text-zinc-500 text-sm select-none"
-                                  aria-hidden
-                                >
-                                  …
-                                </span>
-                              ) : (
-                                <button
-                                  key={p}
-                                  type="button"
-                                  onClick={() => goTo(p)}
-                                  disabled={liveLoading}
-                                  aria-current={p === currentPage ? "page" : undefined}
-                                  className={
-                                    p === currentPage
-                                      ? "inline-flex items-center justify-center h-10 min-w-[40px] px-2 rounded-lg text-sm font-semibold border bg-[#cc1111] text-white border-[#cc1111] cursor-default"
-                                      : "inline-flex items-center justify-center h-10 min-w-[40px] px-2 rounded-lg text-sm font-medium border border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:bg-[#cc1111]/10 hover:border-[#cc1111]/40 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                  }
-                                >
-                                  {p.toLocaleString()}
-                                </button>
-                              ),
-                            )}
-
-                            <button
-                              type="button"
-                              onClick={() => goTo(currentPage + 1)}
-                              disabled={currentPage >= totalPages || liveLoading}
-                              className="inline-flex items-center gap-1 h-10 px-3 rounded-lg text-sm font-medium border border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-zinc-900/60 disabled:hover:text-zinc-300"
-                            >
-                              <span className="hidden sm:inline">Next</span>
-                              <ChevronRight size={14} />
-                            </button>
-                          </nav>
-                        </div>
-                      );
-                    })()}
-                  </div>
-                )}
-
 
                 {/* Amazon Affiliate Banner */}
                 {activeQuery && (
