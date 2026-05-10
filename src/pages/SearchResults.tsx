@@ -1608,30 +1608,36 @@ const SearchResults = () => {
                     <span aria-hidden>🔗</span> Share this search
                   </button>
                 </div>
-                {totalResults > 0 && !liveLoading && (
+                {(liveLoading || totalResults > 0) && (
                   <>
                     <p className="mt-2 flex items-center gap-2 flex-wrap" style={{ fontSize: "13px", color: "#52525b" }}>
                       <span className="rounded-full bg-emerald-500 animate-pulse" style={{ width: "6px", height: "6px" }} />
                       <span>
-                        {activeFilterCount > 0
-                          ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
-                          : `Page ${currentPage.toLocaleString()} of ${Math.max(totalPages, 1).toLocaleString()} pages · ${hitApiLimit ? `${(MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE).toLocaleString()}+` : totalResults.toLocaleString()} total listings`}
+                        {liveLoading
+                          ? "Searching..."
+                          : activeFilterCount > 0
+                            ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
+                            : `Page ${currentPage.toLocaleString()} of ${Math.max(totalPages, 1).toLocaleString()} pages · ${hitApiLimit ? `${(MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE).toLocaleString()}+` : totalResults.toLocaleString()} total listings`}
                       </span>
-                      <span style={{ fontSize: "12px", color: "#3f3f46", marginLeft: "8px" }}>
-                        Prices verified · Best match first
-                      </span>
+                      {!liveLoading && (
+                        <span style={{ fontSize: "12px", color: "#3f3f46", marginLeft: "8px" }}>
+                          Prices verified · Best match first
+                        </span>
+                      )}
                     </p>
-                    <p className="mt-1.5" style={{ fontSize: "12px", color: "#52525b" }}>
-                      from{" "}
-                      <button
-                        type="button"
-                        onClick={scrollToSuppliers}
-                        className="text-zinc-400 hover:text-[#cc1111] underline-offset-2 hover:underline transition-colors"
-                      >
-                        {liveSupplierCount} suppliers
-                      </button>{" "}
-                      · Last updated just now
-                    </p>
+                    {!liveLoading && (
+                      <p className="mt-1.5" style={{ fontSize: "12px", color: "#52525b" }}>
+                        from{" "}
+                        <button
+                          type="button"
+                          onClick={scrollToSuppliers}
+                          className="text-zinc-400 hover:text-[#cc1111] underline-offset-2 hover:underline transition-colors"
+                        >
+                          {liveSupplierCount} suppliers
+                        </button>{" "}
+                        · Last updated just now
+                      </p>
+                    )}
                   </>
                 )}
               </div>
