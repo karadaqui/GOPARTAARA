@@ -297,7 +297,7 @@ const MyMarket = () => {
         bank_sort_code: bankDetails.sort_code || "",
         bank_account_number: bankDetails.account_number || "",
         bank_paypal_email: bankDetails.paypal_email || "",
-        ships_to: ((sp as any).ships_to && (sp as any).ships_to.length > 0) ? (sp as any).ships_to : ["UK"],
+        ships_to: normalizeShipsToCodes((sp as any).ships_to),
         country: ((sp as any).description?.match(/^Country: ([^\n]+)/)?.[1]) || DEFAULT_COUNTRY,
         sender_name: (sp as any).sender_name || "",
         sender_company: (sp as any).sender_company || "",
@@ -309,9 +309,13 @@ const MyMarket = () => {
         sender_country: (sp as any).sender_country || "GB",
         sender_phone: (sp as any).sender_phone || "",
         offers_collection: !!(sp as any).offers_collection,
-        collection_address: ((sp as any).collection_address as AddressFormValue) || { ...EMPTY_ADDRESS, label: "Store" },
+        collection_address: normalizeCollectionAddress((sp as any).collection_address),
         collection_instructions: (sp as any).collection_instructions || "",
         collection_window: (sp as any).collection_window || "Same day",
+        opening_hours: ((sp as any).opening_hours as OpeningHours) || { ...DEFAULT_OPENING_HOURS },
+        collection_contact_name: (sp as any).collection_contact_name || "",
+        collection_contact_phone: (sp as any).collection_contact_phone || "",
+        dispatch_time: "1-2 days",
       });
 
       const { data: ls } = await supabase
