@@ -1927,7 +1927,7 @@ const SearchResults = () => {
                 </p>
                 <button
                   type="button"
-                  onClick={() => goTo(1)}
+                  onClick={() => { setCurrentPage(1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
                   className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors"
                 >
                   Go to page 1
