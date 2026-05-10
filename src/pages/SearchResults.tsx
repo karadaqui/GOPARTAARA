@@ -308,6 +308,12 @@ const SearchResults = () => {
     const p = parseInt(new URLSearchParams(window.location.search).get("page") || "1", 10);
     return Number.isFinite(p) && p > 0 ? p : 1;
   });
+  // Tracks the last page index we know returns results (shrinks when API offset limit hit)
+  const [maxReachablePage, setMaxReachablePage] = useState(400);
+  // Increments per search request; stale responses are ignored
+  const searchRequestIdRef = useRef(0);
+  // Debounce timer for pagination clicks
+  const goToDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
    const internalSearchRef = useRef(false);
   const [authGateOpen, setAuthGateOpen] = useState(false);
   const [searchLimitModalOpen, setSearchLimitModalOpen] = useState(false);
@@ -454,11 +460,18 @@ const SearchResults = () => {
     }
   }, [searchParams]);
 
+  // Reset reachable-page cap whenever the underlying query/filters change
+  useEffect(() => {
+    setMaxReachablePage(400);
+  }, [activeQuery, selectedCategory, country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter, vinCountryInfo]);
+
   // ── eBay search ──
   useEffect(() => {
     if (!activeQuery.trim()) { setLiveResults([]); setTotalResults(0); setEbayFallback(false); setLiveError(false); return; }
     if (!user) { setAuthGateOpen(true); setLiveResults([]); setTotalResults(0); return; }
-    let cancelled = false;
+    // Bump request id; any in-flight older request will be ignored when it resolves.
+    const requestId = ++searchRequestIdRef.current;
+    const isCurrent = () => searchRequestIdRef.current === requestId;
 
     // Build a cache key from all filter state
     const cacheKey = JSON.stringify({ activeQuery, selectedCategory, currentPage, marketplace: country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter });
@@ -501,53 +514,63 @@ const SearchResults = () => {
             if (isFromGarage) body.skipCredit = true;
 
             const { data, error } = await supabase.functions.invoke("search-parts", { body });
-            // Detect server-enforced limit (HTTP 429) — supabase-js puts FunctionsHttpError on `error`
-            // but body is still parsed into `data` in newer SDK versions.
+            // Stale response — silently ignore
+            if (!isCurrent()) return;
+            // Detect server-enforced limit (HTTP 429)
             const limitFromData = data?.error === "SEARCH_LIMIT_REACHED";
             const limitFromError = error && typeof (error as any)?.message === "string" &&
               ((error as any).message.includes("SEARCH_LIMIT_REACHED") || (error as any).message.includes("429"));
             if (limitFromData || limitFromError) {
-              if (!cancelled) {
-                setServerLimitReached(true);
-                setLiveResults([]);
-                setTotalResults(0);
-                setLiveError(false);
-                searchLimit.refresh();
-              }
+              setServerLimitReached(true);
+              setLiveResults([]);
+              setTotalResults(0);
+              setLiveError(false);
+              searchLimit.refresh();
               return;
             }
             if (error) {
               const msg = (error as any)?.message || "";
-              if (msg.includes("UNAUTHORIZED") || msg.includes("401")) { if (!cancelled) setAuthGateOpen(true); return; }
+              if (msg.includes("UNAUTHORIZED") || msg.includes("401")) { setAuthGateOpen(true); return; }
               throw error;
             }
-            if (!cancelled) {
-              if (data?.error === "UNAUTHORIZED") { setAuthGateOpen(true); return; }
-              setServerLimitReached(false);
-              if (data?.fallback) { setEbayFallback(true); setLiveResults([]); setTotalResults(0); }
-              else {
-                const incoming = data?.results || [];
-                setLiveResults(incoming);
-                setTotalResults(data?.totalResults || 0); searchLimit.refresh();
-                setCachedSearch(cacheKey, { results: incoming, totalResults: data?.totalResults, fallback: false });
+            if (data?.error === "UNAUTHORIZED") { setAuthGateOpen(true); return; }
+            setServerLimitReached(false);
+            if (data?.fallback) { setEbayFallback(true); setLiveResults([]); setTotalResults(0); }
+            else {
+              const incoming = data?.results || [];
+              setLiveResults(incoming);
+              setTotalResults(data?.totalResults || 0); searchLimit.refresh();
+              setCachedSearch(cacheKey, { results: incoming, totalResults: data?.totalResults, fallback: false });
+
+              // Detect API offset limit: if we asked for a deep page and got fewer than expected,
+              // shrink maxReachablePage so the UI stops offering empty pages.
+              if (currentPage > 1 && incoming.length === 0) {
+                const fallbackPage = Math.max(1, currentPage - 1);
+                setMaxReachablePage((prev) => Math.min(prev, fallbackPage));
+                // Auto-redirect to a safe page
+                setCurrentPage(1);
+              } else if (incoming.length > 0 && incoming.length < ITEMS_PER_PAGE) {
+                // Partial last page is fine — cap at this page
+                setMaxReachablePage((prev) => Math.min(prev, currentPage));
               }
             }
           }
 
         } catch (err) {
+          if (!isCurrent()) return;
           console.error("Live search failed:", err);
-          if (!cancelled) {
-            setLiveResults([]);
-            setTotalResults(0);
-            setEbayFallback(true);
-            setLiveError(true);
-          }
-        } finally { if (!cancelled) setLiveLoading(false); }
+          setLiveResults([]);
+          setTotalResults(0);
+          setEbayFallback(true);
+          setLiveError(true);
+        } finally {
+          if (isCurrent()) setLiveLoading(false);
+        }
       };
       fetchLive();
     }, cached ? 0 : 300);
 
-    return () => { cancelled = true; clearTimeout(debounceTimer); };
+    return () => { clearTimeout(debounceTimer); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter, vinCountryInfo, retryNonce]);
 
@@ -710,8 +733,12 @@ const SearchResults = () => {
   };
 
   // ── Pagination ──
-  const maxPages = Math.max(1, Math.floor(10000 / ITEMS_PER_PAGE));
-  const totalPages = Math.min(Math.ceil(totalResults / ITEMS_PER_PAGE), maxPages);
+  // Hard cap: API offset limit is ~10,000 results. 400 pages × 24 = 9,600 keeps us safely under.
+  const MAX_PAGES_HARD_CAP = 400;
+  const maxPages = MAX_PAGES_HARD_CAP;
+  const totalPagesFromCount = Math.min(Math.ceil(totalResults / ITEMS_PER_PAGE), MAX_PAGES_HARD_CAP);
+  const totalPages = Math.min(totalPagesFromCount, maxReachablePage);
+  const hitApiLimit = totalResults > MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE;
   const startItem = (currentPage - 1) * ITEMS_PER_PAGE + 1;
   const endItem = Math.min(currentPage * ITEMS_PER_PAGE, totalResults);
   const PAGES_PER_CHUNK = 50;
@@ -882,10 +909,17 @@ const SearchResults = () => {
   // Read ?page= when URL changes externally (back/forward nav)
   useEffect(() => {
     const p = parseInt(searchParams.get("page") || "1", 10);
-    const target = Number.isFinite(p) && p > 0 ? p : 1;
+    let target = Number.isFinite(p) && p > 0 ? p : 1;
+    // Hard cap and reachable-page guard
+    if (target > MAX_PAGES_HARD_CAP) target = 1;
     if (target !== currentPage) setCurrentPage(target);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  // If maxReachablePage shrinks below current page, redirect to page 1
+  useEffect(() => {
+    if (currentPage > maxReachablePage) setCurrentPage(1);
+  }, [maxReachablePage, currentPage]);
 
 
   // ── Scroll position memory: save before user clicks an outbound link, restore on back nav ──
@@ -1578,7 +1612,7 @@ const SearchResults = () => {
                       <span>
                         {activeFilterCount > 0
                           ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
-                          : `Page ${currentPage.toLocaleString()} of ${Math.max(totalPages, 1).toLocaleString()} pages · ${totalResults.toLocaleString()} total listings`}
+                          : `Page ${currentPage.toLocaleString()} of ${Math.max(totalPages, 1).toLocaleString()} pages · ${hitApiLimit ? `${(MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE).toLocaleString()}+` : totalResults.toLocaleString()} total listings`}
                       </span>
                       <span style={{ fontSize: "12px", color: "#3f3f46", marginLeft: "8px" }}>
                         Prices verified · Best match first
@@ -2249,47 +2283,69 @@ const SearchResults = () => {
                       const goTo = (p: number) => {
                         const target = Math.max(1, Math.min(totalPages, p));
                         if (target === currentPage) return;
-                        setCurrentPage(target);
-                        const el = resultsRef.current;
-                        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                        else window.scrollTo({ top: 0, behavior: "smooth" });
+                        // 150ms debounce — collapse rapid double-clicks
+                        if (goToDebounceRef.current) clearTimeout(goToDebounceRef.current);
+                        goToDebounceRef.current = setTimeout(() => {
+                          setCurrentPage(target);
+                          const el = resultsRef.current;
+                          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                          else window.scrollTo({ top: 0, behavior: "smooth" });
+                        }, 150);
                       };
 
                       const buildPages = (): (number | "...")[] => {
-                        const pages: (number | "...")[] = [];
+                        const last = totalPages;
+                        // Small page counts — show all
+                        if (last <= 7) {
+                          return Array.from({ length: last }, (_, i) => i + 1);
+                        }
                         if (isMobile) {
-                          // Mobile: just current-1, current, current+1
+                          // Mobile: condensed — current-1, current, current+1
+                          const arr: (number | "...")[] = [];
                           const start = Math.max(1, currentPage - 1);
-                          const end = Math.min(totalPages, currentPage + 1);
-                          for (let i = start; i <= end; i++) pages.push(i);
-                          return pages;
+                          const end = Math.min(last, currentPage + 1);
+                          for (let i = start; i <= end; i++) arr.push(i);
+                          return arr;
                         }
-                        // Desktop: first 2, current ±2, last 2
+
+                        // Desktop spec:
+                        // Near start (≤5):  1 2 3 4 5 ... last-1 last
+                        // Near end (≥last-4): 1 2 ... last-4..last
+                        // Middle: 1 2 ... c-2 c-1 c c+1 c+2 ... last-1 last
                         const set = new Set<number>();
-                        [1, 2, totalPages - 1, totalPages].forEach((n) => {
-                          if (n >= 1 && n <= totalPages) set.add(n);
-                        });
-                        for (let i = currentPage - 2; i <= currentPage + 2; i++) {
-                          if (i >= 1 && i <= totalPages) set.add(i);
+                        if (currentPage <= 5) {
+                          for (let i = 1; i <= 5; i++) set.add(i);
+                          set.add(last - 1); set.add(last);
+                        } else if (currentPage >= last - 4) {
+                          set.add(1); set.add(2);
+                          for (let i = last - 4; i <= last; i++) set.add(i);
+                        } else {
+                          set.add(1); set.add(2);
+                          for (let i = currentPage - 2; i <= currentPage + 2; i++) set.add(i);
+                          set.add(last - 1); set.add(last);
                         }
-                        const sorted = Array.from(set).sort((a, b) => a - b);
+                        const sorted = Array.from(set).filter((n) => n >= 1 && n <= last).sort((a, b) => a - b);
+                        const out: (number | "...")[] = [];
                         let prev = 0;
                         for (const p of sorted) {
-                          if (prev && p - prev > 1) pages.push("...");
-                          pages.push(p);
+                          if (prev && p - prev > 1) out.push("...");
+                          out.push(p);
                           prev = p;
                         }
-                        return pages;
+                        return out;
                       };
 
                       const pages = buildPages();
                       const startN = (currentPage - 1) * ITEMS_PER_PAGE + 1;
                       const endN = Math.min(currentPage * ITEMS_PER_PAGE, totalResults);
+                      const totalLabel = hitApiLimit
+                        ? `${(MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE).toLocaleString()}+`
+                        : totalResults.toLocaleString();
 
                       return (
                         <div className="mt-10">
                           <p className="text-center mb-4" style={{ fontSize: "13px", color: "#71717a" }}>
-                            Showing results {startN.toLocaleString()}–{endN.toLocaleString()} of {totalResults.toLocaleString()}
+                            Showing results {startN.toLocaleString()}–{endN.toLocaleString()} of {totalLabel}
                           </p>
                           <nav
                             aria-label="Pagination"
