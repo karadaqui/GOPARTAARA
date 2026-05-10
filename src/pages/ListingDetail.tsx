@@ -57,6 +57,13 @@ interface ListingFull {
     website_url: string | null;
     created_at: string;
     ships_to: string[] | null;
+    offers_collection?: boolean | null;
+    collection_address?: any;
+    collection_instructions?: string | null;
+    collection_window?: string | null;
+    opening_hours?: any;
+    collection_contact_name?: string | null;
+    collection_contact_phone?: string | null;
   };
 }
 
