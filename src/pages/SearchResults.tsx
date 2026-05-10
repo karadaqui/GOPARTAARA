@@ -549,13 +549,6 @@ const SearchResults = () => {
                 MAX_PAGES_HARD_CAP
               );
               setMaxReachablePage(calculatedMax > 0 ? calculatedMax : 400);
-
-              // Detect API offset limit: deep page returned empty → shrink cap and bounce to page 1
-              if (currentPage > 1 && incoming.length === 0) {
-                const fallbackPage = Math.max(1, currentPage - 1);
-                setMaxReachablePage((prev) => Math.min(prev, fallbackPage));
-                setCurrentPage(1);
-              }
             }
           }
 
@@ -740,7 +733,7 @@ const SearchResults = () => {
   const MAX_PAGES_HARD_CAP = 400;
   const maxPages = MAX_PAGES_HARD_CAP;
   const totalPagesFromCount = Math.min(Math.ceil(totalResults / ITEMS_PER_PAGE), MAX_PAGES_HARD_CAP);
-  const totalPages = Math.min(totalPagesFromCount, maxReachablePage);
+  const totalPages = totalPagesFromCount;
   const hitApiLimit = totalResults > MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE;
   const startItem = (currentPage - 1) * ITEMS_PER_PAGE + 1;
   const endItem = Math.min(currentPage * ITEMS_PER_PAGE, totalResults);
@@ -909,20 +902,14 @@ const SearchResults = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
-  // Read ?page= when URL changes externally (back/forward nav)
+  // Read ?page= when URL changes externally (back/forward nav). Trust the URL — never auto-redirect.
   useEffect(() => {
     const p = parseInt(searchParams.get("page") || "1", 10);
     let target = Number.isFinite(p) && p > 0 ? p : 1;
-    // Hard cap and reachable-page guard
-    if (target > MAX_PAGES_HARD_CAP) target = 1;
+    if (target > MAX_PAGES_HARD_CAP) target = MAX_PAGES_HARD_CAP;
     if (target !== currentPage) setCurrentPage(target);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
-
-  // If maxReachablePage shrinks below current page, redirect to page 1
-  useEffect(() => {
-    if (currentPage > maxReachablePage) setCurrentPage(1);
-  }, [maxReachablePage, currentPage]);
 
 
   // ── Scroll position memory: save before user clicks an outbound link, restore on back nav ──
@@ -1617,7 +1604,7 @@ const SearchResults = () => {
                           ? "Searching..."
                           : activeFilterCount > 0
                             ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
-                            : `Page ${currentPage.toLocaleString()} of ${Math.max(totalPages, 1).toLocaleString()} pages · ${hitApiLimit ? `${(MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE).toLocaleString()}+` : totalResults.toLocaleString()} total listings`}
+                            : `Page ${currentPage.toLocaleString()} of ${Math.max(totalPages, 1).toLocaleString()} pages · ${totalResults.toLocaleString()} total listings`}
                       </span>
                       {!liveLoading && (
                         <span style={{ fontSize: "12px", color: "#3f3f46", marginLeft: "8px" }}>
@@ -1636,6 +1623,11 @@ const SearchResults = () => {
                           {liveSupplierCount} suppliers
                         </button>{" "}
                         · Last updated just now
+                      </p>
+                    )}
+                    {!liveLoading && hitApiLimit && activeFilterCount === 0 && (
+                      <p className="mt-1" style={{ fontSize: "11px", color: "#71717a" }}>
+                        Page {currentPage.toLocaleString()} of {MAX_PAGES_HARD_CAP} · {(MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE).toLocaleString()}+ results accessible via pagination
                       </p>
                     )}
                   </>
@@ -1925,6 +1917,21 @@ const SearchResults = () => {
             ) : liveLoading ? (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-10">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+              </div>
+            ) : !liveLoading && activeQuery && currentPage > 1 && liveResults.length === 0 && !ebayFallback && !liveError ? (
+              <div className="flex flex-col items-center justify-center py-16 mb-8 px-4">
+                <div className="text-5xl mb-4 opacity-30">📄</div>
+                <p className="text-lg font-semibold text-white mb-1">You've reached the end of available results</p>
+                <p className="text-sm text-zinc-500 mb-5 text-center max-w-md">
+                  Showing page {currentPage.toLocaleString()} of {currentPage.toLocaleString()}. Pagination access tops out at ~{(MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE).toLocaleString()} results — refine your search to dig deeper.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => { setCurrentPage(1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors"
+                >
+                  Go to page 1
+                </button>
               </div>
             ) : liveResults.length > 0 && unifiedResults.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 mb-8">
