@@ -58,19 +58,11 @@ const parseTwemoji = () => {
   }
 };
 
-// ── Supplier configs ──
-const SUPPLIERS = [
-  { id: 'ebay', label: 'eBay Global', status: 'live' },
-  { id: 'greensparkplug', label: 'Green Spark Plug Co.', status: 'live' },
-  { id: 'mytyres', label: 'mytyres.co.uk', status: 'live' },
-  { id: 'tyresuk', label: 'Tyres UK', status: 'live' },
-  { id: 'neumaticos', label: 'neumaticos-online.es', status: 'live' },
-  { id: 'pneumatici', label: 'Pneumatici IT', status: 'live' },
-  { id: 'reifendirekt', label: 'ReifenDirekt EE', status: 'live' },
-  { id: 'eurocarparts', label: 'Euro Car Parts', status: 'coming' },
-  { id: 'gsf', label: 'GSF Car Parts', status: 'coming' },
-  { id: 'autodoc', label: 'Autodoc', status: 'coming' },
-];
+// ── Supplier configs (filtered by selected country at render time) ──
+import { SUPPLIERS as ALL_SUPPLIERS, suppliersForCountry } from "@/data/suppliers";
+const SUPPLIERS = ALL_SUPPLIERS
+  .filter(s => s.live !== false)
+  .map(s => ({ id: s.id, label: s.name === "eBay" ? "eBay Global" : s.name, status: "live" as const }));
 
 const googleSite = (domain: string) => (q: string) =>
   `https://www.google.com/search?q=site:${domain}+${q.replace(/\s+/g, "+")}`;
