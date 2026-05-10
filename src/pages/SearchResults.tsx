@@ -1918,6 +1918,21 @@ const SearchResults = () => {
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5 mb-10">
                 {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
               </div>
+            ) : !liveLoading && activeQuery && currentPage > 1 && liveResults.length === 0 && !ebayFallback && !liveError ? (
+              <div className="flex flex-col items-center justify-center py-16 mb-8 px-4">
+                <div className="text-5xl mb-4 opacity-30">📄</div>
+                <p className="text-lg font-semibold text-white mb-1">You've reached the end of available results</p>
+                <p className="text-sm text-zinc-500 mb-5 text-center max-w-md">
+                  Showing page {currentPage.toLocaleString()} of {currentPage.toLocaleString()}. Pagination access tops out at ~{(MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE).toLocaleString()} results — refine your search to dig deeper.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => goTo(1)}
+                  className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm font-semibold transition-colors"
+                >
+                  Go to page 1
+                </button>
+              </div>
             ) : liveResults.length > 0 && unifiedResults.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 mb-8">
                 <div className="text-5xl mb-4 opacity-30">🔍</div>
