@@ -2244,129 +2244,109 @@ const SearchResults = () => {
                 {/* Premium "Load more" button (append-style pagination) */}
                 {liveResults.length > 0 && (
                   <div className="mt-10 mb-2">
-                    {currentPage < totalPages ? (
-                      <>
-                        <button
-                          type="button"
-                          onClick={handleLoadMore}
-                          disabled={loadingMore || liveLoading}
-                          className="flex items-center justify-center gap-2 transition-colors disabled:cursor-not-allowed group"
-                          style={{
-                            display: "flex",
-                            width: "100%",
-                            maxWidth: "600px",
-                            margin: "40px auto 0",
-                            height: "52px",
-                            background: "transparent",
-                            border: "1px solid #27272a",
-                            borderRadius: "12px",
-                            color: "#a1a1aa",
-                            fontSize: "15px",
-                            fontWeight: 500,
-                          }}
-                          onMouseEnter={(e) => {
-                            if (!loadingMore && !liveLoading) {
-                              e.currentTarget.style.borderColor = "#3f3f46";
-                              e.currentTarget.style.color = "#ffffff";
-                              e.currentTarget.style.background = "#111111";
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.borderColor = "#27272a";
-                            e.currentTarget.style.color = "#a1a1aa";
-                            e.currentTarget.style.background = "transparent";
-                          }}
-                        >
-                          {loadingMore || liveLoading ? (
-                            <>
-                              <Loader2 size={16} className="animate-spin" />
-                              Loading...
-                            </>
-                          ) : (
-                            <>Load {Math.min(ITEMS_PER_PAGE, totalResults - endItem)} more results</>
-                          )}
-                        </button>
-                        <p className="text-center mt-3" style={{ fontSize: "13px", color: "#52525b" }}>
-                          Showing {endItem.toLocaleString()} of {totalResults.toLocaleString()} results · 7 suppliers searched
-                        </p>
-                        <div className="text-center mt-2">
-                          <button
-                            type="button"
-                            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                            className="transition-colors"
-                            style={{ fontSize: "13px", color: "#52525b", background: "transparent", border: "none", cursor: "pointer" }}
-                            onMouseEnter={(e) => { e.currentTarget.style.color = "#ffffff"; }}
-                            onMouseLeave={(e) => { e.currentTarget.style.color = "#52525b"; }}
-                          >
-                            ↑ Back to top
-                          </button>
-                        </div>
+                    {(() => {
+                      if (totalPages <= 1) return null;
+                      const goTo = (p: number) => {
+                        const target = Math.max(1, Math.min(totalPages, p));
+                        if (target === currentPage) return;
+                        setCurrentPage(target);
+                        const el = resultsRef.current;
+                        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                        else window.scrollTo({ top: 0, behavior: "smooth" });
+                      };
 
-                        {/* Auto-load more toggle */}
-                        <div className="flex items-center justify-center gap-2 mt-3">
-                          <label
-                            className="inline-flex items-center gap-2 cursor-pointer select-none"
-                            style={{ fontSize: "12px", color: "#71717a" }}
+                      const buildPages = (): (number | "...")[] => {
+                        const pages: (number | "...")[] = [];
+                        if (isMobile) {
+                          // Mobile: just current-1, current, current+1
+                          const start = Math.max(1, currentPage - 1);
+                          const end = Math.min(totalPages, currentPage + 1);
+                          for (let i = start; i <= end; i++) pages.push(i);
+                          return pages;
+                        }
+                        // Desktop: first 2, current ±2, last 2
+                        const set = new Set<number>();
+                        [1, 2, totalPages - 1, totalPages].forEach((n) => {
+                          if (n >= 1 && n <= totalPages) set.add(n);
+                        });
+                        for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+                          if (i >= 1 && i <= totalPages) set.add(i);
+                        }
+                        const sorted = Array.from(set).sort((a, b) => a - b);
+                        let prev = 0;
+                        for (const p of sorted) {
+                          if (prev && p - prev > 1) pages.push("...");
+                          pages.push(p);
+                          prev = p;
+                        }
+                        return pages;
+                      };
+
+                      const pages = buildPages();
+                      const startN = (currentPage - 1) * ITEMS_PER_PAGE + 1;
+                      const endN = Math.min(currentPage * ITEMS_PER_PAGE, totalResults);
+
+                      return (
+                        <div className="mt-10">
+                          <p className="text-center mb-4" style={{ fontSize: "13px", color: "#71717a" }}>
+                            Showing results {startN.toLocaleString()}–{endN.toLocaleString()} of {totalResults.toLocaleString()}
+                          </p>
+                          <nav
+                            aria-label="Pagination"
+                            className="flex items-center justify-center gap-1.5 flex-wrap"
                           >
-                            <span
-                              className="relative inline-flex items-center"
-                              style={{
-                                width: 28,
-                                height: 16,
-                                borderRadius: 999,
-                                background: autoLoadMore ? "#cc1111" : "#27272a",
-                                transition: "background 150ms ease",
-                              }}
+                            <button
+                              type="button"
+                              onClick={() => goTo(currentPage - 1)}
+                              disabled={currentPage === 1 || liveLoading}
+                              className="inline-flex items-center gap-1 h-10 px-3 rounded-lg text-sm font-medium border border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-zinc-900/60 disabled:hover:text-zinc-300"
                             >
-                              <span
-                                style={{
-                                  position: "absolute",
-                                  top: 2,
-                                  left: autoLoadMore ? 14 : 2,
-                                  width: 12,
-                                  height: 12,
-                                  borderRadius: "50%",
-                                  background: "#ffffff",
-                                  transition: "left 150ms ease",
-                                }}
-                              />
-                            </span>
-                            <input
-                              type="checkbox"
-                              className="sr-only"
-                              checked={autoLoadMore}
-                              onChange={(e) => {
-                                const next = e.target.checked;
-                                setAutoLoadMore(next);
-                                try {
-                                  localStorage.setItem("autoLoadResults", next ? "1" : "0");
-                                } catch {/* ignore */}
-                              }}
-                            />
-                            Auto-load more results
-                          </label>
+                              <ChevronLeft size={14} />
+                              <span className="hidden sm:inline">Prev</span>
+                            </button>
+
+                            {pages.map((p, i) =>
+                              p === "..." ? (
+                                <span
+                                  key={`ellipsis-${i}`}
+                                  className="inline-flex items-center justify-center h-10 w-8 text-zinc-500 text-sm select-none"
+                                  aria-hidden
+                                >
+                                  …
+                                </span>
+                              ) : (
+                                <button
+                                  key={p}
+                                  type="button"
+                                  onClick={() => goTo(p)}
+                                  disabled={liveLoading}
+                                  aria-current={p === currentPage ? "page" : undefined}
+                                  className={
+                                    p === currentPage
+                                      ? "inline-flex items-center justify-center h-10 min-w-[40px] px-2 rounded-lg text-sm font-semibold border bg-[#cc1111] text-white border-[#cc1111] cursor-default"
+                                      : "inline-flex items-center justify-center h-10 min-w-[40px] px-2 rounded-lg text-sm font-medium border border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:bg-[#cc1111]/10 hover:border-[#cc1111]/40 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                  }
+                                >
+                                  {p.toLocaleString()}
+                                </button>
+                              ),
+                            )}
+
+                            <button
+                              type="button"
+                              onClick={() => goTo(currentPage + 1)}
+                              disabled={currentPage >= totalPages || liveLoading}
+                              className="inline-flex items-center gap-1 h-10 px-3 rounded-lg text-sm font-medium border border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:bg-zinc-800 hover:text-white hover:border-zinc-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-zinc-900/60 disabled:hover:text-zinc-300"
+                            >
+                              <span className="hidden sm:inline">Next</span>
+                              <ChevronRight size={14} />
+                            </button>
+                          </nav>
                         </div>
-
-                        {/* Auto-load infinite-scroll spinner */}
-                        {autoLoadMore && (loadingMore || liveLoading) && currentPage < totalPages && (
-                          <div className="flex items-center justify-center gap-2 mt-4" style={{ fontSize: 12, color: "#a1a1aa" }}>
-                            <Loader2 className="animate-spin" size={14} />
-                            Loading more results…
-                          </div>
-                        )}
-
-                        {/* Sentinel for IntersectionObserver (300px threshold) */}
-                        <div ref={loadMoreSentinelRef} aria-hidden style={{ height: 1, width: "100%" }} />
-                      </>
-                    ) : (
-                      <p className="text-center mt-10" style={{ fontSize: "13px", color: "#71717a" }}>
-                        You've seen all {totalResults.toLocaleString()} results
-                      </p>
-                    )}
+                      );
+                    })()}
                   </div>
                 )}
-
-                {/* Page-jump pagination removed in favor of "Load more" append flow */}
 
 
                 {/* Amazon Affiliate Banner */}
