@@ -778,7 +778,7 @@ const SearchResults = () => {
   })();
 
   // ── Unified results (eBay only) — grows with currentPage so "Load more" appends ──
-  const visibleCount = currentPage * ITEMS_PER_PAGE;
+  const visibleCount = ITEMS_PER_PAGE;
   const unifiedResults = useMemo(() => {
     return filteredResults
       .slice(0, visibleCount)
