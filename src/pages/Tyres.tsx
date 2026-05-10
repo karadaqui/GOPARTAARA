@@ -215,6 +215,16 @@ const Tyres = () => {
     displayed = displayed.filter(t => String(t.advertiserId) === String(supplier));
   }
 
+  // Country filter (skip when Global is selected). Keep items from suppliers
+  // we don't recognise so we don't accidentally hide unmatched feed sources.
+  if (!isGlobal && country?.code) {
+    displayed = displayed.filter(t => {
+      const name = (t as any).supplier_name || (t as any).supplier || '';
+      const codes = lookupSupplierCountries(name);
+      return codes.length === 0 || codes.includes(country.code);
+    });
+  }
+
   if (brand !== 'all' && brand !== '') {
     displayed = displayed.filter(t => (t.brand || '').toLowerCase() === brand.toLowerCase());
   }
