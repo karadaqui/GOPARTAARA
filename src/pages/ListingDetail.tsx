@@ -650,6 +650,9 @@ const ListingDetail = () => {
                   </div>
                 )}
               </div>
+              {listing.seller_profiles.offers_collection && (
+                <CollectionInfoBlock seller={listing.seller_profiles} />
+              )}
             </div>
 
             {/* Safety notice */}
