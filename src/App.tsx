@@ -57,6 +57,7 @@ const Messages = lazy(() => import("./pages/Messages.tsx"));
 const ConfirmShopDelete = lazy(() => import("./pages/ConfirmShopDelete.tsx"));
 const RecentParts = lazy(() => import("./pages/RecentParts.tsx"));
 const Tyres = lazy(() => import("./pages/Tyres.tsx"));
+const MotorParts = lazy(() => import("./pages/MotorParts.tsx"));
 const Deals = lazy(() => import("./pages/Deals.tsx"));
 const AffiliateDisclosure = lazy(() => import("./pages/AffiliateDisclosure.tsx"));
 const Business = lazy(() => import("./pages/Business.tsx"));
@@ -132,6 +133,7 @@ const App = () => {
                 <Route path="/confirm-shop-delete/:token" element={<ConfirmShopDelete />} />
                 <Route path="/recent" element={<RecentParts />} />
                 <Route path="/tyres" element={<Tyres />} />
+                <Route path="/motor-parts" element={<MotorParts />} />
                 <Route path="/deals" element={<Deals />} />
                 <Route path="/affiliate-disclosure" element={<AffiliateDisclosure />} />
                 <Route path="/business" element={<Business />} />

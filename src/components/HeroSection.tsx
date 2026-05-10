@@ -11,6 +11,8 @@ import SearchCounter from "@/components/SearchCounter";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
+import { useCountry } from "@/hooks/useCountry";
+import { suppliersForCountry } from "@/data/suppliers";
 
 const buildPhotoSearchTerms = (
   partName: string,
@@ -87,6 +89,14 @@ const HeroSection = () => {
   const [authGateOpen, setAuthGateOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const navigate = useNavigate();
+  const { country } = useCountry();
+  const heroSubtitle = (() => {
+    const list = suppliersForCountry(country.code);
+    const names = list.slice(0, 4).map(s => s.name);
+    if (names.length === 0) return "Searching trusted parts & tyre suppliers — updated daily.";
+    const head = names.join(", ");
+    return `Searching ${head} and more — updated daily.`;
+  })();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
@@ -388,7 +398,7 @@ const HeroSection = () => {
               lineHeight: 1.65,
             }}
           >
-            The smart search engine that simultaneously checks eBay, mytyres.co.uk, Tyres UK, Green Spark Plug Co., neumaticos-online.es, Pneumatici IT and ReifenDirekt EE.
+            {heroSubtitle}
           </p>
         </div>
 

@@ -16,6 +16,8 @@ import {
   Search as SearchIcon,
   Globe,
 } from "lucide-react";
+import { useCountry } from "@/hooks/useCountry";
+import { lookupSupplierCountries } from "@/data/suppliers";
 
 const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305','315','325','335','345','355'];
 const PROFILES = ['30','35','40','45','50','55','60','65','70','75','80'];
@@ -111,6 +113,7 @@ const Tyres = () => {
 
   const [season, setSeason] = useState<'all' | 'summer' | 'winter' | 'allseason'>('all');
   const [supplier, setSupplier] = useState<string>('all');
+  const { country, isGlobal } = useCountry();
   const [brand, setBrand] = useState<string>('all');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
@@ -210,6 +213,16 @@ const Tyres = () => {
 
   if (supplier !== 'all' && supplier !== '') {
     displayed = displayed.filter(t => String(t.advertiserId) === String(supplier));
+  }
+
+  // Country filter (skip when Global is selected). Keep items from suppliers
+  // we don't recognise so we don't accidentally hide unmatched feed sources.
+  if (!isGlobal && country?.code) {
+    displayed = displayed.filter(t => {
+      const name = (t as any).supplier_name || (t as any).supplier || '';
+      const codes = lookupSupplierCountries(name);
+      return codes.length === 0 || codes.includes(country.code);
+    });
   }
 
   if (brand !== 'all' && brand !== '') {

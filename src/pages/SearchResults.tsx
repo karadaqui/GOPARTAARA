@@ -58,19 +58,11 @@ const parseTwemoji = () => {
   }
 };
 
-// ── Supplier configs ──
-const SUPPLIERS = [
-  { id: 'ebay', label: 'eBay Global', status: 'live' },
-  { id: 'greensparkplug', label: 'Green Spark Plug Co.', status: 'live' },
-  { id: 'mytyres', label: 'mytyres.co.uk', status: 'live' },
-  { id: 'tyresuk', label: 'Tyres UK', status: 'live' },
-  { id: 'neumaticos', label: 'neumaticos-online.es', status: 'live' },
-  { id: 'pneumatici', label: 'Pneumatici IT', status: 'live' },
-  { id: 'reifendirekt', label: 'ReifenDirekt EE', status: 'live' },
-  { id: 'eurocarparts', label: 'Euro Car Parts', status: 'coming' },
-  { id: 'gsf', label: 'GSF Car Parts', status: 'coming' },
-  { id: 'autodoc', label: 'Autodoc', status: 'coming' },
-];
+// ── Supplier configs (filtered by selected country at render time) ──
+import { SUPPLIERS as ALL_SUPPLIERS, suppliersForCountry } from "@/data/suppliers";
+const SUPPLIERS = ALL_SUPPLIERS
+  .filter(s => s.live !== false)
+  .map(s => ({ id: s.id, label: s.name === "eBay" ? "eBay Global" : s.name, status: "live" as const }));
 
 const googleSite = (domain: string) => (q: string) =>
   `https://www.google.com/search?q=site:${domain}+${q.replace(/\s+/g, "+")}`;
@@ -1400,7 +1392,7 @@ const SearchResults = () => {
         {!supplierBannerDismissed && (
           <div ref={supplierBannerRef} className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3 scroll-mt-24">
             <div className="flex items-center gap-2 shrink-0 flex-wrap">
-              {SUPPLIERS.map((supplier, idx) => {
+              {SUPPLIERS.filter(s => suppliersForCountry(country.code).some(x => x.id === s.id)).map((supplier, idx) => {
                 const isActive = activeSupplierId === supplier.id;
                 const isFilterable = !!SUPPLIER_BRAND_MAP[supplier.id];
                 const dimmed = activeSupplierId !== null && !isActive;
@@ -2246,7 +2238,7 @@ const SearchResults = () => {
                   <div className="text-4xl mb-3">🔧</div>
                   <h3 className="text-lg font-bold text-white mb-1.5">More suppliers coming soon</h3>
                   <p className="text-sm text-zinc-400 max-w-md mx-auto mb-3">
-                    We're working with Amazon, Euro Car Parts, GSF Car Parts, Autodoc, Halfords and more. Currently live: eBay Global, Green Spark Plug Co., and 5 tyre suppliers across UK & EU.
+                    We're onboarding more partners across the UK, EU and US. Currently live: eBay Global, Amazon UK, Green Spark Plug Co., Dunford, Maxpeedingrods, Kohl, Tirendo and 5 tyre suppliers across UK & EU.
                   </p>
                   <a href="/contact" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
                     Want to suggest a supplier? Contact us →
