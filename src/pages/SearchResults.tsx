@@ -538,20 +538,23 @@ const SearchResults = () => {
             if (data?.fallback) { setEbayFallback(true); setLiveResults([]); setTotalResults(0); }
             else {
               const incoming = data?.results || [];
+              const totalCount = data?.totalResults || 0;
               setLiveResults(incoming);
-              setTotalResults(data?.totalResults || 0); searchLimit.refresh();
-              setCachedSearch(cacheKey, { results: incoming, totalResults: data?.totalResults, fallback: false });
+              setTotalResults(totalCount); searchLimit.refresh();
+              setCachedSearch(cacheKey, { results: incoming, totalResults: totalCount, fallback: false });
 
-              // Detect API offset limit: if we asked for a deep page and got fewer than expected,
-              // shrink maxReachablePage so the UI stops offering empty pages.
+              // Calculate maxReachablePage from the real total returned by the API
+              const calculatedMax = Math.min(
+                Math.ceil(totalCount / ITEMS_PER_PAGE),
+                MAX_PAGES_HARD_CAP
+              );
+              setMaxReachablePage(calculatedMax > 0 ? calculatedMax : 400);
+
+              // Detect API offset limit: deep page returned empty → shrink cap and bounce to page 1
               if (currentPage > 1 && incoming.length === 0) {
                 const fallbackPage = Math.max(1, currentPage - 1);
                 setMaxReachablePage((prev) => Math.min(prev, fallbackPage));
-                // Auto-redirect to a safe page
                 setCurrentPage(1);
-              } else if (incoming.length > 0 && incoming.length < ITEMS_PER_PAGE) {
-                // Partial last page is fine — cap at this page
-                setMaxReachablePage((prev) => Math.min(prev, currentPage));
               }
             }
           }
