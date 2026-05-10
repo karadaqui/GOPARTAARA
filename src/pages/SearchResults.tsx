@@ -733,7 +733,7 @@ const SearchResults = () => {
   const MAX_PAGES_HARD_CAP = 400;
   const maxPages = MAX_PAGES_HARD_CAP;
   const totalPagesFromCount = Math.min(Math.ceil(totalResults / ITEMS_PER_PAGE), MAX_PAGES_HARD_CAP);
-  const totalPages = Math.min(totalPagesFromCount, maxReachablePage);
+  const totalPages = totalPagesFromCount;
   const hitApiLimit = totalResults > MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE;
   const startItem = (currentPage - 1) * ITEMS_PER_PAGE + 1;
   const endItem = Math.min(currentPage * ITEMS_PER_PAGE, totalResults);
