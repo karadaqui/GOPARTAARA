@@ -538,20 +538,23 @@ const SearchResults = () => {
             if (data?.fallback) { setEbayFallback(true); setLiveResults([]); setTotalResults(0); }
             else {
               const incoming = data?.results || [];
+              const totalCount = data?.totalResults || 0;
               setLiveResults(incoming);
-              setTotalResults(data?.totalResults || 0); searchLimit.refresh();
-              setCachedSearch(cacheKey, { results: incoming, totalResults: data?.totalResults, fallback: false });
+              setTotalResults(totalCount); searchLimit.refresh();
+              setCachedSearch(cacheKey, { results: incoming, totalResults: totalCount, fallback: false });
 
-              // Detect API offset limit: if we asked for a deep page and got fewer than expected,
-              // shrink maxReachablePage so the UI stops offering empty pages.
+              // Calculate maxReachablePage from the real total returned by the API
+              const calculatedMax = Math.min(
+                Math.ceil(totalCount / ITEMS_PER_PAGE),
+                MAX_PAGES_HARD_CAP
+              );
+              setMaxReachablePage(calculatedMax > 0 ? calculatedMax : 400);
+
+              // Detect API offset limit: deep page returned empty → shrink cap and bounce to page 1
               if (currentPage > 1 && incoming.length === 0) {
                 const fallbackPage = Math.max(1, currentPage - 1);
                 setMaxReachablePage((prev) => Math.min(prev, fallbackPage));
-                // Auto-redirect to a safe page
                 setCurrentPage(1);
-              } else if (incoming.length > 0 && incoming.length < ITEMS_PER_PAGE) {
-                // Partial last page is fine — cap at this page
-                setMaxReachablePage((prev) => Math.min(prev, currentPage));
               }
             }
           }
@@ -1605,30 +1608,36 @@ const SearchResults = () => {
                     <span aria-hidden>🔗</span> Share this search
                   </button>
                 </div>
-                {totalResults > 0 && !liveLoading && (
+                {(liveLoading || totalResults > 0) && (
                   <>
                     <p className="mt-2 flex items-center gap-2 flex-wrap" style={{ fontSize: "13px", color: "#52525b" }}>
                       <span className="rounded-full bg-emerald-500 animate-pulse" style={{ width: "6px", height: "6px" }} />
                       <span>
-                        {activeFilterCount > 0
-                          ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
-                          : `Page ${currentPage.toLocaleString()} of ${Math.max(totalPages, 1).toLocaleString()} pages · ${hitApiLimit ? `${(MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE).toLocaleString()}+` : totalResults.toLocaleString()} total listings`}
+                        {liveLoading
+                          ? "Searching..."
+                          : activeFilterCount > 0
+                            ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
+                            : `Page ${currentPage.toLocaleString()} of ${Math.max(totalPages, 1).toLocaleString()} pages · ${hitApiLimit ? `${(MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE).toLocaleString()}+` : totalResults.toLocaleString()} total listings`}
                       </span>
-                      <span style={{ fontSize: "12px", color: "#3f3f46", marginLeft: "8px" }}>
-                        Prices verified · Best match first
-                      </span>
+                      {!liveLoading && (
+                        <span style={{ fontSize: "12px", color: "#3f3f46", marginLeft: "8px" }}>
+                          Prices verified · Best match first
+                        </span>
+                      )}
                     </p>
-                    <p className="mt-1.5" style={{ fontSize: "12px", color: "#52525b" }}>
-                      from{" "}
-                      <button
-                        type="button"
-                        onClick={scrollToSuppliers}
-                        className="text-zinc-400 hover:text-[#cc1111] underline-offset-2 hover:underline transition-colors"
-                      >
-                        {liveSupplierCount} suppliers
-                      </button>{" "}
-                      · Last updated just now
-                    </p>
+                    {!liveLoading && (
+                      <p className="mt-1.5" style={{ fontSize: "12px", color: "#52525b" }}>
+                        from{" "}
+                        <button
+                          type="button"
+                          onClick={scrollToSuppliers}
+                          className="text-zinc-400 hover:text-[#cc1111] underline-offset-2 hover:underline transition-colors"
+                        >
+                          {liveSupplierCount} suppliers
+                        </button>{" "}
+                        · Last updated just now
+                      </p>
+                    )}
                   </>
                 )}
               </div>
@@ -2283,14 +2292,10 @@ const SearchResults = () => {
                       const goTo = (p: number) => {
                         const target = Math.max(1, Math.min(totalPages, p));
                         if (target === currentPage) return;
-                        // 150ms debounce — collapse rapid double-clicks
-                        if (goToDebounceRef.current) clearTimeout(goToDebounceRef.current);
-                        goToDebounceRef.current = setTimeout(() => {
-                          setCurrentPage(target);
-                          const el = resultsRef.current;
-                          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                          else window.scrollTo({ top: 0, behavior: "smooth" });
-                        }, 150);
+                        setCurrentPage(target);
+                        const el = resultsRef.current;
+                        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                        else window.scrollTo({ top: 0, behavior: "smooth" });
                       };
 
                       const buildPages = (): (number | "...")[] => {
