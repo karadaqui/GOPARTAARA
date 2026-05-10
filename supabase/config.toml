@@ -27,3 +27,5 @@ project_id = "bkwieknlxvkrzluongif"
     verify_jwt = false
   [functions.awin-merchant-feed]
     verify_jwt = false
+  [functions.refresh-merchant-cache]
+    verify_jwt = false
