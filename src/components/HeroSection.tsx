@@ -11,6 +11,8 @@ import SearchCounter from "@/components/SearchCounter";
 import { useSearchLimit } from "@/hooks/useSearchLimit";
 import AuthGateModal from "@/components/AuthGateModal";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
+import { useCountry } from "@/hooks/useCountry";
+import { suppliersForCountry } from "@/data/suppliers";
 
 const buildPhotoSearchTerms = (
   partName: string,
