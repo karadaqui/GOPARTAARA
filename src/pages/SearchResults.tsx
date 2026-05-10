@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { X } from "lucide-react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { sanitizeInput, checkRateLimit, getCachedSearch, setCachedSearch } from "@/lib/sanitize";
