@@ -2283,47 +2283,69 @@ const SearchResults = () => {
                       const goTo = (p: number) => {
                         const target = Math.max(1, Math.min(totalPages, p));
                         if (target === currentPage) return;
-                        setCurrentPage(target);
-                        const el = resultsRef.current;
-                        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                        else window.scrollTo({ top: 0, behavior: "smooth" });
+                        // 150ms debounce — collapse rapid double-clicks
+                        if (goToDebounceRef.current) clearTimeout(goToDebounceRef.current);
+                        goToDebounceRef.current = setTimeout(() => {
+                          setCurrentPage(target);
+                          const el = resultsRef.current;
+                          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                          else window.scrollTo({ top: 0, behavior: "smooth" });
+                        }, 150);
                       };
 
                       const buildPages = (): (number | "...")[] => {
-                        const pages: (number | "...")[] = [];
+                        const last = totalPages;
+                        // Small page counts — show all
+                        if (last <= 7) {
+                          return Array.from({ length: last }, (_, i) => i + 1);
+                        }
                         if (isMobile) {
-                          // Mobile: just current-1, current, current+1
+                          // Mobile: condensed — current-1, current, current+1
+                          const arr: (number | "...")[] = [];
                           const start = Math.max(1, currentPage - 1);
-                          const end = Math.min(totalPages, currentPage + 1);
-                          for (let i = start; i <= end; i++) pages.push(i);
-                          return pages;
+                          const end = Math.min(last, currentPage + 1);
+                          for (let i = start; i <= end; i++) arr.push(i);
+                          return arr;
                         }
-                        // Desktop: first 2, current ±2, last 2
+
+                        // Desktop spec:
+                        // Near start (≤5):  1 2 3 4 5 ... last-1 last
+                        // Near end (≥last-4): 1 2 ... last-4..last
+                        // Middle: 1 2 ... c-2 c-1 c c+1 c+2 ... last-1 last
                         const set = new Set<number>();
-                        [1, 2, totalPages - 1, totalPages].forEach((n) => {
-                          if (n >= 1 && n <= totalPages) set.add(n);
-                        });
-                        for (let i = currentPage - 2; i <= currentPage + 2; i++) {
-                          if (i >= 1 && i <= totalPages) set.add(i);
+                        if (currentPage <= 5) {
+                          for (let i = 1; i <= 5; i++) set.add(i);
+                          set.add(last - 1); set.add(last);
+                        } else if (currentPage >= last - 4) {
+                          set.add(1); set.add(2);
+                          for (let i = last - 4; i <= last; i++) set.add(i);
+                        } else {
+                          set.add(1); set.add(2);
+                          for (let i = currentPage - 2; i <= currentPage + 2; i++) set.add(i);
+                          set.add(last - 1); set.add(last);
                         }
-                        const sorted = Array.from(set).sort((a, b) => a - b);
+                        const sorted = Array.from(set).filter((n) => n >= 1 && n <= last).sort((a, b) => a - b);
+                        const out: (number | "...")[] = [];
                         let prev = 0;
                         for (const p of sorted) {
-                          if (prev && p - prev > 1) pages.push("...");
-                          pages.push(p);
+                          if (prev && p - prev > 1) out.push("...");
+                          out.push(p);
                           prev = p;
                         }
-                        return pages;
+                        return out;
                       };
 
                       const pages = buildPages();
                       const startN = (currentPage - 1) * ITEMS_PER_PAGE + 1;
                       const endN = Math.min(currentPage * ITEMS_PER_PAGE, totalResults);
+                      const totalLabel = hitApiLimit
+                        ? `${(MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE).toLocaleString()}+`
+                        : totalResults.toLocaleString();
 
                       return (
                         <div className="mt-10">
                           <p className="text-center mb-4" style={{ fontSize: "13px", color: "#71717a" }}>
-                            Showing results {startN.toLocaleString()}–{endN.toLocaleString()} of {totalResults.toLocaleString()}
+                            Showing results {startN.toLocaleString()}–{endN.toLocaleString()} of {totalLabel}
                           </p>
                           <nav
                             aria-label="Pagination"
