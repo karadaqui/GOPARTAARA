@@ -315,6 +315,7 @@ const SearchResults = () => {
   const [supplierBannerDismissed, setSupplierBannerDismissed] = useState(() => localStorage.getItem("supplier_banner_dismissed") === "1");
   const resultsRef = useRef<HTMLDivElement>(null);
   const supplierBannerRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
   const userPlan = useUserPlan();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [upgradeFeature, setUpgradeFeature] = useState("");
