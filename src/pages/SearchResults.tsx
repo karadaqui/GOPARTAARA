@@ -710,8 +710,12 @@ const SearchResults = () => {
   };
 
   // ── Pagination ──
-  const maxPages = Math.max(1, Math.floor(10000 / ITEMS_PER_PAGE));
-  const totalPages = Math.min(Math.ceil(totalResults / ITEMS_PER_PAGE), maxPages);
+  // Hard cap: API offset limit is ~10,000 results. 400 pages × 24 = 9,600 keeps us safely under.
+  const MAX_PAGES_HARD_CAP = 400;
+  const maxPages = MAX_PAGES_HARD_CAP;
+  const totalPagesFromCount = Math.min(Math.ceil(totalResults / ITEMS_PER_PAGE), MAX_PAGES_HARD_CAP);
+  const totalPages = Math.min(totalPagesFromCount, maxReachablePage);
+  const hitApiLimit = totalResults > MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE;
   const startItem = (currentPage - 1) * ITEMS_PER_PAGE + 1;
   const endItem = Math.min(currentPage * ITEMS_PER_PAGE, totalResults);
   const PAGES_PER_CHUNK = 50;
