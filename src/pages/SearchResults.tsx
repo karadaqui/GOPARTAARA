@@ -2286,14 +2286,10 @@ const SearchResults = () => {
                       const goTo = (p: number) => {
                         const target = Math.max(1, Math.min(totalPages, p));
                         if (target === currentPage) return;
-                        // 150ms debounce — collapse rapid double-clicks
-                        if (goToDebounceRef.current) clearTimeout(goToDebounceRef.current);
-                        goToDebounceRef.current = setTimeout(() => {
-                          setCurrentPage(target);
-                          const el = resultsRef.current;
-                          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                          else window.scrollTo({ top: 0, behavior: "smooth" });
-                        }, 150);
+                        setCurrentPage(target);
+                        const el = resultsRef.current;
+                        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                        else window.scrollTo({ top: 0, behavior: "smooth" });
                       };
 
                       const buildPages = (): (number | "...")[] => {
