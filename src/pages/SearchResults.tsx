@@ -2238,7 +2238,7 @@ const SearchResults = () => {
                   <div className="text-4xl mb-3">🔧</div>
                   <h3 className="text-lg font-bold text-white mb-1.5">More suppliers coming soon</h3>
                   <p className="text-sm text-zinc-400 max-w-md mx-auto mb-3">
-                    We're working with Amazon, Euro Car Parts, GSF Car Parts, Autodoc, Halfords and more. Currently live: eBay Global, Green Spark Plug Co., and 5 tyre suppliers across UK & EU.
+                    We're onboarding more partners across the UK, EU and US. Currently live: eBay Global, Amazon UK, Green Spark Plug Co., Dunford, Maxpeedingrods, Kohl, Tirendo and 5 tyre suppliers across UK & EU.
                   </p>
                   <a href="/contact" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
                     Want to suggest a supplier? Contact us →
