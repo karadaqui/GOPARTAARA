@@ -103,11 +103,11 @@ const MerchantBlock = ({
 const AwinMerchantResultsSection = ({ searchQuery, countryCode }: Props) => {
   if (!searchQuery?.trim()) return null;
 
+  // These merchants ship internationally via Awin — render for all countries.
+  // Empty merchants self-hide via MerchantBlock when products.length === 0.
+  void countryCode;
   const merchants = SUPPLIERS.filter((s) =>
-    s.live !== false &&
-    !!s.mid &&
-    FEED_MERCHANT_IDS.has(s.mid) &&
-    (countryCode === "GLOBAL" || s.countries.includes(countryCode)),
+    s.live !== false && !!s.mid && FEED_MERCHANT_IDS.has(s.mid),
   );
 
   if (merchants.length === 0) return null;
