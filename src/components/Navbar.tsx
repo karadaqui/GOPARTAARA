@@ -10,6 +10,7 @@ import {
   Mail as MailIcon,
   Scale,
   Zap,
+  Bike,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
