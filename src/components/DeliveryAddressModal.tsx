@@ -24,6 +24,9 @@ interface SellerCollection {
   collection_instructions?: string | null;
   collection_window?: string | null;
   business_name?: string;
+  opening_hours?: any;
+  collection_contact_name?: string | null;
+  collection_contact_phone?: string | null;
 }
 
 interface OrderSummary {
