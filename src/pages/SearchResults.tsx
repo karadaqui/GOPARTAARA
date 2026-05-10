@@ -1625,6 +1625,11 @@ const SearchResults = () => {
                         · Last updated just now
                       </p>
                     )}
+                    {!liveLoading && hitApiLimit && activeFilterCount === 0 && (
+                      <p className="mt-1" style={{ fontSize: "11px", color: "#71717a" }}>
+                        Page {currentPage.toLocaleString()} of {MAX_PAGES_HARD_CAP} · {(MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE).toLocaleString()}+ results accessible via pagination
+                      </p>
+                    )}
                   </>
                 )}
               </div>
