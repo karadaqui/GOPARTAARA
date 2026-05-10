@@ -47,6 +47,7 @@ import { findDealByBrand, EBAY_ALL_DEALS_URL, isUKUser } from "@/data/ebayDeals"
 import GreenSparkFeaturedCard, { isClassicPartSearch } from "@/components/GreenSparkFeaturedCard";
 import GreenSparkResultsRow from "@/components/GreenSparkResultsRow";
 import GreenSparkProductCard, { useGspProducts } from "@/components/GreenSparkProductCard";
+import AwinMerchantResultsSection from "@/components/AwinMerchantResultsSection";
 import RecentSearches, { addRecentSearch } from "@/components/RecentSearches";
 import { addRecentSearch as addRecentSearchV2 } from "@/lib/recentSearches";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
@@ -2347,6 +2348,9 @@ const SearchResults = () => {
                 </a>
               );
             })()}
+
+                {/* New Awin merchants — auto-rendered for the active country */}
+                <AwinMerchantResultsSection searchQuery={activeQuery} countryCode={country.code} />
 
                 {/* More suppliers coming soon — honest banner */}
                 <div className="bg-zinc-900/40 border border-white/[0.06] rounded-2xl p-6 mt-6 text-center">
