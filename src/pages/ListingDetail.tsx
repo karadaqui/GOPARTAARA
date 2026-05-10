@@ -912,4 +912,56 @@ const ListingDetail = () => {
   );
 };
 
+function CollectionInfoBlock({ seller }: { seller: any }) {
+  const [open, setOpen] = useState(false);
+  const a = seller.collection_address || {};
+  const addrLine = [a.street1, a.street2, a.city, a.postcode].filter(Boolean).join(", ");
+  const mapsQuery = encodeURIComponent([a.business_name, a.street1, a.city, a.postcode, a.country].filter(Boolean).join(", "));
+  const oh = seller.opening_hours || {};
+  const days: { key: string; label: string }[] = [
+    { key: "mon", label: "Mon" }, { key: "tue", label: "Tue" }, { key: "wed", label: "Wed" },
+    { key: "thu", label: "Thu" }, { key: "fri", label: "Fri" }, { key: "sat", label: "Sat" }, { key: "sun", label: "Sun" },
+  ];
+  return (
+    <div className="mt-3 pt-3 border-t border-border">
+      <button onClick={() => setOpen(o => !o)} className="w-full flex items-center justify-between text-xs text-foreground hover:text-primary transition-colors">
+        <span className="font-medium">🏪 Collection available</span>
+        <span className="text-muted-foreground">{open ? "Hide" : "Details"}</span>
+      </button>
+      {open && (
+        <div className="mt-2 space-y-2 text-xs text-muted-foreground animate-fade-in">
+          {addrLine && (
+            <div>
+              <p className="text-foreground">{a.business_name || seller.business_name}</p>
+              <p>{addrLine}</p>
+              <a href={`https://www.google.com/maps/search/?api=1&query=${mapsQuery}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline text-[11px]">
+                Open in Google Maps →
+              </a>
+            </div>
+          )}
+          {Object.keys(oh).length > 0 && (
+            <div className="rounded-md bg-muted/40 p-2 space-y-0.5">
+              {days.map(d => {
+                const day = oh[d.key];
+                if (!day) return null;
+                return (
+                  <div key={d.key} className="flex justify-between text-[11px]">
+                    <span className="text-foreground/80 w-10">{d.label}</span>
+                    <span>{day.open ? `${day.from} – ${day.to}` : "Closed"}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          {seller.collection_window && <p>⏱ Collection window: {seller.collection_window}</p>}
+          {seller.collection_instructions && <p>📝 {seller.collection_instructions}</p>}
+          {(seller.collection_contact_name || seller.collection_contact_phone) && (
+            <p>📞 {seller.collection_contact_name}{seller.collection_contact_phone ? ` · ${seller.collection_contact_phone}` : ""}</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default ListingDetail;
