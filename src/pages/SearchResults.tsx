@@ -308,6 +308,12 @@ const SearchResults = () => {
     const p = parseInt(new URLSearchParams(window.location.search).get("page") || "1", 10);
     return Number.isFinite(p) && p > 0 ? p : 1;
   });
+  // Tracks the last page index we know returns results (shrinks when API offset limit hit)
+  const [maxReachablePage, setMaxReachablePage] = useState(400);
+  // Increments per search request; stale responses are ignored
+  const searchRequestIdRef = useRef(0);
+  // Debounce timer for pagination clicks
+  const goToDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
    const internalSearchRef = useRef(false);
   const [authGateOpen, setAuthGateOpen] = useState(false);
   const [searchLimitModalOpen, setSearchLimitModalOpen] = useState(false);
