@@ -566,8 +566,6 @@ const SearchResults = () => {
     }, cached ? 0 : 300);
 
     return () => { clearTimeout(debounceTimer); };
-
-    return () => { cancelled = true; clearTimeout(debounceTimer); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeQuery, selectedCategory, currentPage, user, country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter, vinCountryInfo, retryNonce]);
 
