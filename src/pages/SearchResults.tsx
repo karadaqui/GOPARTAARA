@@ -464,7 +464,9 @@ const SearchResults = () => {
   useEffect(() => {
     if (!activeQuery.trim()) { setLiveResults([]); setTotalResults(0); setEbayFallback(false); setLiveError(false); return; }
     if (!user) { setAuthGateOpen(true); setLiveResults([]); setTotalResults(0); return; }
-    let cancelled = false;
+    // Bump request id; any in-flight older request will be ignored when it resolves.
+    const requestId = ++searchRequestIdRef.current;
+    const isCurrent = () => searchRequestIdRef.current === requestId;
 
     // Build a cache key from all filter state
     const cacheKey = JSON.stringify({ activeQuery, selectedCategory, currentPage, marketplace: country.ebayMarketplace, conditionFilter, shippingFilter, priceRangeIdx, sortBy, categoryFilter, brandFilter });
@@ -507,51 +509,63 @@ const SearchResults = () => {
             if (isFromGarage) body.skipCredit = true;
 
             const { data, error } = await supabase.functions.invoke("search-parts", { body });
-            // Detect server-enforced limit (HTTP 429) — supabase-js puts FunctionsHttpError on `error`
-            // but body is still parsed into `data` in newer SDK versions.
+            // Stale response — silently ignore
+            if (!isCurrent()) return;
+            // Detect server-enforced limit (HTTP 429)
             const limitFromData = data?.error === "SEARCH_LIMIT_REACHED";
             const limitFromError = error && typeof (error as any)?.message === "string" &&
               ((error as any).message.includes("SEARCH_LIMIT_REACHED") || (error as any).message.includes("429"));
             if (limitFromData || limitFromError) {
-              if (!cancelled) {
-                setServerLimitReached(true);
-                setLiveResults([]);
-                setTotalResults(0);
-                setLiveError(false);
-                searchLimit.refresh();
-              }
+              setServerLimitReached(true);
+              setLiveResults([]);
+              setTotalResults(0);
+              setLiveError(false);
+              searchLimit.refresh();
               return;
             }
             if (error) {
               const msg = (error as any)?.message || "";
-              if (msg.includes("UNAUTHORIZED") || msg.includes("401")) { if (!cancelled) setAuthGateOpen(true); return; }
+              if (msg.includes("UNAUTHORIZED") || msg.includes("401")) { setAuthGateOpen(true); return; }
               throw error;
             }
-            if (!cancelled) {
-              if (data?.error === "UNAUTHORIZED") { setAuthGateOpen(true); return; }
-              setServerLimitReached(false);
-              if (data?.fallback) { setEbayFallback(true); setLiveResults([]); setTotalResults(0); }
-              else {
-                const incoming = data?.results || [];
-                setLiveResults(incoming);
-                setTotalResults(data?.totalResults || 0); searchLimit.refresh();
-                setCachedSearch(cacheKey, { results: incoming, totalResults: data?.totalResults, fallback: false });
+            if (data?.error === "UNAUTHORIZED") { setAuthGateOpen(true); return; }
+            setServerLimitReached(false);
+            if (data?.fallback) { setEbayFallback(true); setLiveResults([]); setTotalResults(0); }
+            else {
+              const incoming = data?.results || [];
+              setLiveResults(incoming);
+              setTotalResults(data?.totalResults || 0); searchLimit.refresh();
+              setCachedSearch(cacheKey, { results: incoming, totalResults: data?.totalResults, fallback: false });
+
+              // Detect API offset limit: if we asked for a deep page and got fewer than expected,
+              // shrink maxReachablePage so the UI stops offering empty pages.
+              if (currentPage > 1 && incoming.length === 0) {
+                const fallbackPage = Math.max(1, currentPage - 1);
+                setMaxReachablePage((prev) => Math.min(prev, fallbackPage));
+                // Auto-redirect to a safe page
+                setCurrentPage(1);
+              } else if (incoming.length > 0 && incoming.length < ITEMS_PER_PAGE) {
+                // Partial last page is fine — cap at this page
+                setMaxReachablePage((prev) => Math.min(prev, currentPage));
               }
             }
           }
 
         } catch (err) {
+          if (!isCurrent()) return;
           console.error("Live search failed:", err);
-          if (!cancelled) {
-            setLiveResults([]);
-            setTotalResults(0);
-            setEbayFallback(true);
-            setLiveError(true);
-          }
-        } finally { if (!cancelled) setLiveLoading(false); }
+          setLiveResults([]);
+          setTotalResults(0);
+          setEbayFallback(true);
+          setLiveError(true);
+        } finally {
+          if (isCurrent()) setLiveLoading(false);
+        }
       };
       fetchLive();
     }, cached ? 0 : 300);
+
+    return () => { clearTimeout(debounceTimer); };
 
     return () => { cancelled = true; clearTimeout(debounceTimer); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
