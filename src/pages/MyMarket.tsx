@@ -27,6 +27,19 @@ import SenderAddressFields from "@/components/SenderAddressFields";
 import AddressForm, { EMPTY_ADDRESS, type AddressFormValue } from "@/components/AddressForm";
 import { EMPTY_COLLECTION_ADDRESS, DEFAULT_OPENING_HOURS, type CollectionAddress, type OpeningHours } from "@/components/EditShopProfileDrawer";
 import { normalizeShipsToCodes } from "@/lib/countriesData";
+
+function normalizeCollectionAddress(raw: any): CollectionAddress {
+  if (!raw || typeof raw !== "object") return { ...EMPTY_COLLECTION_ADDRESS };
+  return {
+    business_name: raw.business_name || raw.full_name || "",
+    street1: raw.street1 || "",
+    street2: raw.street2 || "",
+    city: raw.city || "",
+    county: raw.county || raw.state || "",
+    postcode: raw.postcode || raw.zip || "",
+    country: raw.country || "GB",
+  };
+}
 import type { ShippoAddress } from "@/lib/shippo";
 import OfferChatModal from "@/components/OfferChatModal";
 import CounterOfferModal from "@/components/CounterOfferModal";
