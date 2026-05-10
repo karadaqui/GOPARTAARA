@@ -89,6 +89,14 @@ const HeroSection = () => {
   const [authGateOpen, setAuthGateOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const navigate = useNavigate();
+  const { country } = useCountry();
+  const heroSubtitle = (() => {
+    const list = suppliersForCountry(country.code);
+    const names = list.slice(0, 4).map(s => s.name);
+    if (names.length === 0) return "Searching trusted parts & tyre suppliers — updated daily.";
+    const head = names.join(", ");
+    return `Searching ${head} and more — updated daily.`;
+  })();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
