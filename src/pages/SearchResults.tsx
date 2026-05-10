@@ -1612,7 +1612,7 @@ const SearchResults = () => {
                       <span>
                         {activeFilterCount > 0
                           ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
-                          : `Page ${currentPage.toLocaleString()} of ${Math.max(totalPages, 1).toLocaleString()} pages · ${totalResults.toLocaleString()} total listings`}
+                          : `Page ${currentPage.toLocaleString()} of ${Math.max(totalPages, 1).toLocaleString()} pages · ${hitApiLimit ? `${(MAX_PAGES_HARD_CAP * ITEMS_PER_PAGE).toLocaleString()}+` : totalResults.toLocaleString()} total listings`}
                       </span>
                       <span style={{ fontSize: "12px", color: "#3f3f46", marginLeft: "8px" }}>
                         Prices verified · Best match first
