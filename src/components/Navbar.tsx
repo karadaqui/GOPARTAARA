@@ -38,6 +38,7 @@ const moreLinks: MoreLink[] = [
   { label: "EV Charging", href: "/ev-charging", Icon: Zap },
   { label: "Bulk Compare", href: "/compare", Icon: Scale, elite: true },
   { label: "Tyres", href: "/tyres", Icon: CircleDot },
+  { label: "Motor Parts", href: "/motor-parts", Icon: Bike },
   { label: "For Business", href: "/business", Icon: Briefcase },
   { label: "Blog", href: "/blog", Icon: BookOpen },
   { label: "Help Center", href: "/help", Icon: HelpCircle },
