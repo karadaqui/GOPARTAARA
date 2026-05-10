@@ -909,10 +909,17 @@ const SearchResults = () => {
   // Read ?page= when URL changes externally (back/forward nav)
   useEffect(() => {
     const p = parseInt(searchParams.get("page") || "1", 10);
-    const target = Number.isFinite(p) && p > 0 ? p : 1;
+    let target = Number.isFinite(p) && p > 0 ? p : 1;
+    // Hard cap and reachable-page guard
+    if (target > MAX_PAGES_HARD_CAP) target = 1;
     if (target !== currentPage) setCurrentPage(target);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  // If maxReachablePage shrinks below current page, redirect to page 1
+  useEffect(() => {
+    if (currentPage > maxReachablePage) setCurrentPage(1);
+  }, [maxReachablePage, currentPage]);
 
 
   // ── Scroll position memory: save before user clicks an outbound link, restore on back nav ──
