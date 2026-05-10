@@ -1392,7 +1392,7 @@ const SearchResults = () => {
         {!supplierBannerDismissed && (
           <div ref={supplierBannerRef} className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3 scroll-mt-24">
             <div className="flex items-center gap-2 shrink-0 flex-wrap">
-              {SUPPLIERS.map((supplier, idx) => {
+              {SUPPLIERS.filter(s => suppliersForCountry(country.code).some(x => x.id === s.id)).map((supplier, idx) => {
                 const isActive = activeSupplierId === supplier.id;
                 const isFilterable = !!SUPPLIER_BRAND_MAP[supplier.id];
                 const dimmed = activeSupplierId !== null && !isActive;
