@@ -876,39 +876,25 @@ const SearchResults = () => {
     return null;
   })();
 
-  // Premium "Load more" handler — advances page; data fetch appends new results
-  const handleLoadMore = async () => {
-    if (currentPage >= totalPages || loadingMore) return;
-    setLoadingMore(true);
-    setCurrentPage(currentPage + 1);
-    // Do NOT scroll — appended results render below; user stays in place
-  };
-  // Reset loadingMore once new results arrive
+  // Sync currentPage ↔ ?page= URL param
   useEffect(() => {
-    if (!liveLoading) setLoadingMore(false);
-  }, [liveLoading, liveResults]);
+    const next = new URLSearchParams(searchParams);
+    if (currentPage > 1) next.set("page", String(currentPage));
+    else next.delete("page");
+    if (next.toString() !== searchParams.toString()) {
+      setSearchParams(next, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
 
-  // Auto-load more via IntersectionObserver when toggle is enabled
+  // Read ?page= when URL changes externally (back/forward nav)
   useEffect(() => {
-    if (!autoLoadMore) return;
-    const node = loadMoreSentinelRef.current;
-    if (!node) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (
-          entries[0]?.isIntersecting &&
-          currentPage < totalPages &&
-          !loadingMore &&
-          !liveLoading
-        ) {
-          handleLoadMore();
-        }
-      },
-      { rootMargin: "300px 0px" },
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [autoLoadMore, currentPage, totalPages, loadingMore, liveLoading]);
+    const p = parseInt(searchParams.get("page") || "1", 10);
+    const target = Number.isFinite(p) && p > 0 ? p : 1;
+    if (target !== currentPage) setCurrentPage(target);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
 
   // ── Scroll position memory: save before user clicks an outbound link, restore on back nav ──
   const saveScrollPosition = useCallback(() => {
