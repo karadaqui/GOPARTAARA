@@ -302,7 +302,11 @@ const SearchResults = () => {
   const [liveError, setLiveError] = useState(false);
   const [serverLimitReached, setServerLimitReached] = useState(false);
   const [retryNonce, setRetryNonce] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(() => {
+    if (typeof window === "undefined") return 1;
+    const p = parseInt(new URLSearchParams(window.location.search).get("page") || "1", 10);
+    return Number.isFinite(p) && p > 0 ? p : 1;
+  });
    const internalSearchRef = useRef(false);
   const [authGateOpen, setAuthGateOpen] = useState(false);
   const [searchLimitModalOpen, setSearchLimitModalOpen] = useState(false);
@@ -310,20 +314,6 @@ const SearchResults = () => {
   const [supplierBannerDismissed, setSupplierBannerDismissed] = useState(() => localStorage.getItem("supplier_banner_dismissed") === "1");
   const resultsRef = useRef<HTMLDivElement>(null);
   const supplierBannerRef = useRef<HTMLDivElement>(null);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [autoLoadMore, setAutoLoadMore] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    // Migrate legacy key → new camelCase key
-    const legacy = localStorage.getItem("auto_load_results");
-    const current = localStorage.getItem("autoLoadResults");
-    if (current === null && legacy !== null) {
-      localStorage.setItem("autoLoadResults", legacy);
-      localStorage.removeItem("auto_load_results");
-      return legacy === "1";
-    }
-    return current === "1";
-  });
-  const loadMoreSentinelRef = useRef<HTMLDivElement>(null);
   const userPlan = useUserPlan();
   const [upgradeOpen, setUpgradeOpen] = useState(false);
   const [upgradeFeature, setUpgradeFeature] = useState("");
