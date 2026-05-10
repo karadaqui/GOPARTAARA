@@ -2348,6 +2348,9 @@ const SearchResults = () => {
               );
             })()}
 
+                {/* New Awin merchants — auto-rendered for the active country */}
+                <AwinMerchantResultsSection searchQuery={activeQuery} countryCode={country.code} />
+
                 {/* More suppliers coming soon — honest banner */}
                 <div className="bg-zinc-900/40 border border-white/[0.06] rounded-2xl p-6 mt-6 text-center">
                   <div className="text-4xl mb-3">🔧</div>
