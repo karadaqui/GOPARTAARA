@@ -549,7 +549,7 @@ const MyMarket = () => {
         contact_email: profileForm.contact_email || null,
         contact_phone: profileForm.contact_phone || null,
         website_url: profileForm.website_url || null,
-        ships_to: profileForm.ships_to.length > 0 ? profileForm.ships_to : ["UK"],
+        ships_to: profileForm.ships_to.length > 0 ? profileForm.ships_to : ["GB"],
         sender_name: profileForm.sender_name || null,
         sender_company: profileForm.sender_company || null,
         sender_street1: profileForm.sender_street1 || null,
@@ -563,6 +563,9 @@ const MyMarket = () => {
         collection_address: profileForm.offers_collection ? profileForm.collection_address : null,
         collection_instructions: profileForm.offers_collection ? (profileForm.collection_instructions || null) : null,
         collection_window: profileForm.offers_collection ? (profileForm.collection_window || null) : null,
+        opening_hours: profileForm.offers_collection ? profileForm.opening_hours : null,
+        collection_contact_name: profileForm.offers_collection ? (profileForm.collection_contact_name || null) : null,
+        collection_contact_phone: profileForm.offers_collection ? (profileForm.collection_contact_phone || null) : null,
       } as any)
       .eq("id", profile.id);
 
