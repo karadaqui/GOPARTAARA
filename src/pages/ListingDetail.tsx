@@ -897,6 +897,16 @@ const ListingDetail = () => {
           onOpenChange={(o) => { if (!o && !buyingNow) setBuyNowOpen(false); }}
           defaultEmail={user?.email || ""}
           loading={buyingNow}
+          seller={{
+            offers_collection: !!listing.seller_profiles.offers_collection,
+            collection_address: listing.seller_profiles.collection_address,
+            collection_instructions: listing.seller_profiles.collection_instructions,
+            collection_window: listing.seller_profiles.collection_window,
+            business_name: listing.seller_profiles.business_name,
+            opening_hours: (listing.seller_profiles as any).opening_hours,
+            collection_contact_name: (listing.seller_profiles as any).collection_contact_name,
+            collection_contact_phone: (listing.seller_profiles as any).collection_contact_phone,
+          } as any}
           summary={{
             product_title: listing.title,
             product_photo: listing.photos?.[0] || null,
