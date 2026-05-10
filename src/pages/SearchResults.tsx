@@ -549,13 +549,6 @@ const SearchResults = () => {
                 MAX_PAGES_HARD_CAP
               );
               setMaxReachablePage(calculatedMax > 0 ? calculatedMax : 400);
-
-              // Detect API offset limit: deep page returned empty → shrink cap and bounce to page 1
-              if (currentPage > 1 && incoming.length === 0) {
-                const fallbackPage = Math.max(1, currentPage - 1);
-                setMaxReachablePage((prev) => Math.min(prev, fallbackPage));
-                setCurrentPage(1);
-              }
             }
           }
 
