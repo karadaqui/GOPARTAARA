@@ -120,7 +120,7 @@ const countryBadges: Record<string, string> = {
   GB: "UK", US: "US", DE: "DE", CN: "CN", IT: "IT", FR: "FR", ES: "ES", PL: "PL", NL: "NL", JP: "JP", AU: "AU",
 };
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 24;
 
 const MODEL_EXAMPLES: Record<string, string> = {
   VAUXHALL: "e.g. Astra, Corsa, Insignia, Mokka, Grandland",
