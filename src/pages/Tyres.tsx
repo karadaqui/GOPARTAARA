@@ -113,6 +113,7 @@ const Tyres = () => {
 
   const [season, setSeason] = useState<'all' | 'summer' | 'winter' | 'allseason'>('all');
   const [supplier, setSupplier] = useState<string>('all');
+  const { country, isGlobal } = useCountry();
   const [brand, setBrand] = useState<string>('all');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
