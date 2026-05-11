@@ -63,7 +63,7 @@ const About = () => (
         "name": "GOPARTARA Ltd",
         "url": "https://gopartara.com",
         "logo": "https://gopartara.com/logo.png",
-        "description": "GOPARTARA is a UK car parts price comparison platform that searches 7 suppliers simultaneously.",
+        "description": "GOPARTARA is a UK car parts price comparison platform that searches 14 global suppliers simultaneously.",
         "foundingDate": "2026",
         "contactPoint": {
           "@type": "ContactPoint",
