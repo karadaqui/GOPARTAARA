@@ -2053,6 +2053,9 @@ const SearchResults = () => {
                         />
                       );
                     }
+                    if (entry.__awin) {
+                      return <AwinMerchantCard key={`awin-${entry.id}-${idx}`} product={entry} />;
+                    }
                     const item = entry;
                     // ── eBay Card ──
                     const priceBadge = getPriceBadge(item.price);
