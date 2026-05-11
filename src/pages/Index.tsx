@@ -224,6 +224,7 @@ const Index = () => {
 
       <SectionDivider />
       <PopularSearchesStrip />
+      <TrustedSuppliersBar />
       <SectionDivider />
 
       {/* The GoPartara Guarantee */}
