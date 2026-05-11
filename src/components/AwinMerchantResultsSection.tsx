@@ -14,22 +14,6 @@ interface Props {
 // Amazon UK affiliate banner, and the existing tyre-cache feeds).
 const FEED_MERCHANT_IDS = new Set<number>([67974, 8626, 16673, 16809, 8794]);
 
-const ShippingBadge = ({ supplier, countryCode }: { supplier: Supplier; countryCode: string }) => {
-  const info = getSupplierShipping(supplier);
-  const matches = countryCode && countryCode !== "GLOBAL" && info.codes.includes(countryCode);
-  const cls = matches
-    ? "bg-emerald-600/90 text-white border-emerald-400/40"
-    : "bg-zinc-800/90 text-zinc-300 border-white/10";
-  const text = matches ? "✅ Ships to your country" : info.label;
-  return (
-    <span
-      className={`absolute top-2 right-2 z-10 inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] font-semibold backdrop-blur-sm ${cls}`}
-    >
-      {text}
-    </span>
-  );
-};
-
 const MerchantBlock = ({
   supplier,
   query,
