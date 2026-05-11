@@ -2087,7 +2087,43 @@ const SearchResults = () => {
                       );
                     }
                     if (entry.__awin) {
-                      return <AwinMerchantCard key={`awin-${entry.id}-${idx}`} product={entry} />;
+                      const awinKey = `awin-${entry.supplier}-${entry.id}`;
+                      return (
+                        <AwinMerchantCard
+                          key={`awin-${entry.id}-${idx}`}
+                          product={entry}
+                          onSave={handleSave}
+                          isSaved={savedIds.has(awinKey)}
+                          savingId={savingId}
+                          onCompareToggle={(c) => {
+                            const isSelected = compareParts.some((p) => p.id === c.id);
+                            if (isSelected) {
+                              setCompareParts((prev) => prev.filter((p) => p.id !== c.id));
+                            } else if (compareParts.length < 3) {
+                              setCompareParts((prev) => [
+                                ...prev,
+                                {
+                                  id: c.id,
+                                  title: c.title,
+                                  price: c.price,
+                                  condition: c.condition,
+                                  sellerName: c.sellerName,
+                                  sellerRating: 100,
+                                  freeShipping: false,
+                                  shippingCost: 0,
+                                  location: "—",
+                                  itemCountry: "",
+                                  url: c.url,
+                                  imageUrl: c.imageUrl,
+                                  source: "ebay" as const,
+                                },
+                              ]);
+                            }
+                          }}
+                          isComparing={compareParts.some((p) => p.id === awinKey)}
+                          compareDisabled={compareParts.length >= 3}
+                        />
+                      );
                     }
                     const item = entry;
                     // ── eBay Card ──
