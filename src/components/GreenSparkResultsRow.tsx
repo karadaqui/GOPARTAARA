@@ -1,3 +1,5 @@
+import ShippingPill from "@/components/ShippingPill";
+
 interface GreenSparkResultsRowProps {
   searchQuery: string;
   variant?: "row" | "grid";
@@ -131,7 +133,7 @@ const GreenSparkResultsRow = ({ searchQuery, variant = "row" }: GreenSparkResult
 
             {/* Shipping */}
             <p className="text-[11px] text-muted-foreground mb-1">{product.shipping}</p>
-            <p className="text-[10px] text-muted-foreground mb-3">🌍 Ships worldwide</p>
+            <ShippingPill supplierName="Green Spark Plug Co." className="self-start mb-3" />
 
             {/* CTA */}
             <span className="mt-auto block w-full text-center py-2 bg-amber-600/20 group-hover:bg-amber-600/30 border border-amber-700/30 text-amber-400 text-xs font-semibold rounded-xl transition-colors">
