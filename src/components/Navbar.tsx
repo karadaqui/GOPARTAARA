@@ -33,10 +33,11 @@ type MoreLink = {
   href: string;
   Icon: LucideIcon;
   elite?: boolean;
+  disabled?: boolean;
 };
 
 const moreLinks: MoreLink[] = [
-  { label: "Elite Suppliers", href: "/suppliers/trodo", Icon: Star },
+  { label: "Trodo (Coming Soon)", href: "/suppliers/trodo", Icon: Star, disabled: true },
   { label: "EV Charging", href: "/ev-charging", Icon: Zap },
   { label: "Bulk Compare", href: "/compare", Icon: Scale, elite: true },
   { label: "Tyres", href: "/tyres", Icon: CircleDot },
