@@ -9,7 +9,7 @@ import { User } from "lucide-react";
 
 const TEAM = [
   { name: "Name coming soon", role: "Founder & CEO", bio: "Leading the GOPARTARA mission to make car parts simple, transparent and fair for every UK driver." },
-  { name: "Name coming soon", role: "Head of Technology", bio: "Building the search infrastructure that pulls live pricing from 7 suppliers in under 3 seconds." },
+  { name: "Name coming soon", role: "Head of Technology", bio: "Building the search infrastructure that pulls live pricing from 14 global suppliers in under 3 seconds." },
   { name: "Name coming soon", role: "Head of Partnerships", bio: "Bringing trusted UK suppliers onto the platform so drivers always get the best available price." },
 ];
 
@@ -32,7 +32,7 @@ const VALUES = [
   {
     icon: "⚡",
     title: "Speed",
-    desc: "Search results in under 3 seconds. All 7 suppliers checked simultaneously.",
+    desc: "Search results in under 3 seconds. 14 global suppliers checked simultaneously.",
   },
   {
     icon: "⚖️",
@@ -55,7 +55,7 @@ const About = () => (
   <div className="min-h-screen bg-background">
     <SEOHead
       title="About GOPARTARA — UK Car Parts Price Comparison"
-      description="GOPARTARA was built to end car parts confusion. We search 7 suppliers simultaneously so you always get the best price. Transparent, unbiased, always free to browse."
+      description="GOPARTARA was built to end car parts confusion. We search 14 global suppliers simultaneously so you always get the best price. Transparent, unbiased, always free to browse."
       path="/about"
       jsonLd={{
         "@context": "https://schema.org",
@@ -63,7 +63,7 @@ const About = () => (
         "name": "GOPARTARA Ltd",
         "url": "https://gopartara.com",
         "logo": "https://gopartara.com/logo.png",
-        "description": "GOPARTARA is a UK car parts price comparison platform that searches 7 suppliers simultaneously.",
+        "description": "GOPARTARA is a UK car parts price comparison platform that searches 14 global suppliers simultaneously.",
         "foundingDate": "2026",
         "contactPoint": {
           "@type": "ContactPoint",
@@ -152,7 +152,7 @@ const About = () => (
               One search. Every supplier.
             </h2>
             <p style={{ fontSize: "15px", color: "#a1a1aa", lineHeight: 1.7 }}>
-              GOPARTARA aggregates live inventory and pricing from 7 trusted UK suppliers into a
+              GOPARTARA aggregates live inventory and pricing from 14 global suppliers into a
               single, unbiased search. Type a part name, snap a photo, or enter your reg plate —
               and within seconds you see every option, sorted by price, with no hidden fees.
             </p>
@@ -224,7 +224,7 @@ const About = () => (
           />
           {[
             { icon: "🚀", year: "2024", text: "GOPARTARA Founded. The idea: one search engine for all UK car parts." },
-            { icon: "🔧", year: "Early 2025", text: "First 7 suppliers integrated. 1,000,000+ parts searchable for the first time." },
+            { icon: "🔧", year: "Early 2025", text: "14 global suppliers integrated. 1,000,000+ parts searchable for the first time." },
             { icon: "📈", year: "Mid 2025", text: "Beta launched. First real users start saving money on car parts." },
             { icon: "🌍", year: "2026", text: "European expansion begins. EU suppliers added. Going global." },
             { icon: "🎯", year: "Future", text: "500+ suppliers. Mobile app. The world's #1 car parts comparison platform.", future: true },
@@ -331,68 +331,6 @@ const About = () => (
 
       {/* CTA — same as homepage */}
       <HomeCTASection />
-
-      {/* Join Us / Careers */}
-      <section className="max-w-6xl mx-auto px-4 py-16 md:py-20">
-        <div className="text-center mb-10">
-          <h2 className="font-display text-3xl md:text-5xl font-bold mb-4 tracking-tight">
-            Join the GOPARTARA Team
-          </h2>
-          <p className="text-muted-foreground max-w-xl mx-auto text-base md:text-lg leading-relaxed">
-            We're building the future of car parts discovery. Want to be part of it?
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            { icon: "🛠️", title: "Full Stack Developer", desc: "Remote · Part-time / Full-time · Help build our search engine" },
-            { icon: "📈", title: "Growth & Marketing", desc: "Remote · Part-time · Drive user acquisition across UK & EU" },
-            { icon: "🤝", title: "Supplier Partnerships", desc: "Remote · Part-time · Expand our supplier network to 500+" },
-          ].map((role) => (
-            <div
-              key={role.title}
-              className="flex flex-col h-full transition-colors hover:border-white/15"
-              style={{
-                background: "#111111",
-                border: "1px solid #1f1f1f",
-                borderRadius: "12px",
-                padding: "24px",
-              }}
-            >
-              <div style={{ fontSize: 28, marginBottom: 12 }} aria-hidden="true">{role.icon}</div>
-              <h3 style={{ fontSize: 18, fontWeight: 700, color: "#ffffff", marginBottom: 8 }}>
-                {role.title}
-              </h3>
-              <p style={{ fontSize: 13, color: "#a1a1aa", lineHeight: 1.6, marginBottom: 20, flex: 1 }}>
-                {role.desc}
-              </p>
-              <a
-                href={`mailto:info@gopartara.com?subject=Career Interest: ${encodeURIComponent(role.title)}`}
-                className="inline-flex items-center justify-center transition-opacity hover:opacity-90"
-                style={{
-                  background: "#fbbf24",
-                  color: "#0a1628",
-                  padding: "10px 16px",
-                  borderRadius: 8,
-                  fontSize: 13,
-                  fontWeight: 700,
-                  textDecoration: "none",
-                }}
-              >
-                Express Interest →
-              </a>
-            </div>
-          ))}
-        </div>
-
-        <p className="text-center text-sm mt-8" style={{ color: "#71717a" }}>
-          Don't see your role? Email us at{" "}
-          <a href="mailto:info@gopartara.com" style={{ color: "#fbbf24", textDecoration: "underline" }}>
-            info@gopartara.com
-          </a>{" "}
-          — we're always open to talented people.
-        </p>
-      </section>
 
       {/* Company Information */}
       <section className="max-w-3xl mx-auto px-4 pb-16">
