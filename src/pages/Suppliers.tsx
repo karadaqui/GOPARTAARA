@@ -14,6 +14,22 @@ type Partner = {
   supplierParam: string;
 };
 
+const SUPPLIER_LINKS: Record<string, string> = {
+  "Green Spark Plug Co.":  "https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&ued=https%3A%2F%2Fwww.gsparkplug.com",
+  "mytyres.co.uk":         "https://www.awin1.com/cread.php?awinmid=4118&awinaffid=2845282&ued=https%3A%2F%2Fwww.mytyres.co.uk",
+  "Tyres UK":              "https://www.awin1.com/cread.php?awinmid=12715&awinaffid=2845282&ued=https%3A%2F%2Fwww.tyres.net",
+  "EV King":               "https://www.awin1.com/cread.php?awinmid=22473&awinaffid=2845282&ued=https%3A%2F%2Fwww.ev-king.com",
+  "Amazon UK":             "https://www.awin1.com/cread.php?awinmid=118045&awinaffid=2845282&ued=https%3A%2F%2Fwww.amazon.co.uk%2Fcar-parts",
+  "Maxpeedingrods":        "https://www.awin1.com/cread.php?awinmid=16673&awinaffid=2845282&ued=https%3A%2F%2Fwww.maxpeedingrods.com",
+  "Pneumatici IT":         "https://www.awin1.com/cread.php?awinmid=12716&awinaffid=2845282&ued=https%3A%2F%2Fwww.pneumatici.it",
+  "neumaticos-online.es":  "https://www.awin1.com/cread.php?awinmid=10499&awinaffid=2845282&ued=https%3A%2F%2Fwww.neumaticos-online.es",
+  "ReifenDirekt EE":       "https://www.awin1.com/cread.php?awinmid=10747&awinaffid=2845282&ued=https%3A%2F%2Fwww.reifendirekt.ee",
+  "autobandenmarkt":       "https://www.awin1.com/cread.php?awinmid=8626&awinaffid=2845282&ued=https%3A%2F%2Fwww.autobandenmarkt.be",
+  "Kohl Automobile":       "https://www.awin1.com/cread.php?awinmid=16809&awinaffid=2845282&ued=https%3A%2F%2Fwww.kohl-automobile.de",
+  "Tirendo":               "https://www.awin1.com/cread.php?awinmid=8794&awinaffid=2845282&ued=https%3A%2F%2Fwww.tirendo.no",
+  "Dunford Inc":           "https://www.awin1.com/cread.php?awinmid=67974&awinaffid=2845282&ued=https%3A%2F%2Fwww.dunford.com",
+};
+
 const partners: Partner[] = [
   { name: "Green Spark Plug Co.", domain: "gsparkplug.com", flag: "🇬🇧", ships: "Ships worldwide", description: "Classic & vintage ignition specialists. 25,000+ parts. Est. 1980.", supplierParam: "greensparkplug" },
   { name: "mytyres.co.uk", domain: "mytyres.co.uk", flag: "🇬🇧", ships: "UK only", description: "UK's leading online tyre retailer.", supplierParam: "mytyres" },
@@ -93,12 +109,14 @@ export default function Suppliers() {
                   </div>
                 </div>
                 <p className="text-sm text-zinc-400 mb-4 flex-1">{p.description}</p>
-                <button
-                  onClick={() => navigate(`/search?q=&supplier=${encodeURIComponent(p.supplierParam)}`)}
+                <a
+                  href={SUPPLIER_LINKS[p.name]}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-sm font-semibold text-[#cc1111] hover:text-[#ff3333] text-left"
                 >
-                  Search their parts →
-                </button>
+                  Visit Supplier →
+                </a>
               </div>
             ))}
           </div>
