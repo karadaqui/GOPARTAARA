@@ -851,19 +851,38 @@ const SearchResults = () => {
       _sortPrice: parsePriceStr(p.price),
     }));
 
-    // Helper: interleave affiliate items into the eBay stream so they appear
-    // throughout the grid (not buried at the end). Drops one affiliate every
-    // ~`step` eBay items.
-    const interleave = (base: any[], extras: any[], step = 3) => {
+    // Helper: deterministic seeded RNG (mulberry32) — stable per search query
+    const seedFromString = (s: string) => {
+      let h = 2166136261;
+      for (let i = 0; i < s.length; i++) {
+        h ^= s.charCodeAt(i);
+        h = Math.imul(h, 16777619);
+      }
+      return h >>> 0;
+    };
+    const mulberry32 = (a: number) => () => {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+
+    // Helper: insert one affiliate into each group of 3 eBay items, at a
+    // randomized slot (1, 2 or 3) — randomized per search, stable on re-render.
+    const interleave = (base: any[], extras: any[], groupSize = 3) => {
       if (extras.length === 0) return base;
       if (base.length === 0) return extras;
+      const rand = mulberry32(seedFromString(activeQuery || "default"));
       const out: any[] = [];
       let ei = 0;
-      for (let i = 0; i < base.length; i++) {
-        out.push(base[i]);
-        if ((i + 1) % step === 0 && ei < extras.length) {
-          out.push(extras[ei++]);
+      for (let i = 0; i < base.length; i += groupSize) {
+        const group = base.slice(i, i + groupSize);
+        if (ei < extras.length) {
+          // Random slot 0..groupSize within this group
+          const slot = Math.floor(rand() * (group.length + 1));
+          group.splice(slot, 0, extras[ei++]);
         }
+        out.push(...group);
       }
       // Append any leftover affiliate items
       while (ei < extras.length) out.push(extras[ei++]);
