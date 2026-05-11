@@ -137,9 +137,9 @@ const AwinMerchantCard = ({
           <ShippingPill supplierName={product.supplierName} className="self-start" />
         </div>
 
-        <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
+        <div className="flex flex-col gap-0.5 text-xs border-t border-white/[0.06] pt-3 mt-auto">
           <span className="font-medium truncate text-amber-400">{product.supplierName}</span>
-          <span className="text-zinc-600 ml-auto">Affiliate</span>
+          <span className="text-zinc-500 italic">Visit supplier for full details</span>
         </div>
 
         {/* CTA + Compare + Save + Alert (matches eBay card row) */}
