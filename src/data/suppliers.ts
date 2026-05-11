@@ -235,6 +235,45 @@ export function suppliersForCountryAndCategory(
   );
 }
 
+// ── Shipping coverage (used by Awin merchant cards & sorting) ─────────
+// Keyed by Awin mid; "evking" keyed by id since it has no mid.
+const EU_CODES = ["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE"];
+
+interface ShippingInfo {
+  label: string;
+  codes: string[]; // expanded ISO-2 list
+  worldwide?: boolean;
+}
+
+const SHIPS_TO: Record<string, ShippingInfo> = {
+  "16976": { label: "🌍 Ships worldwide", codes: ["GB", ...EU_CODES, "US", "AU"], worldwide: true },
+  "4118":  { label: "🇬🇧 UK", codes: ["GB"] },
+  "12715": { label: "🇬🇧 UK", codes: ["GB"] },
+  "12716": { label: "🇮🇹 IT + EU", codes: ["IT", ...EU_CODES] },
+  "10499": { label: "🇪🇸 ES + EU", codes: ["ES", ...EU_CODES] },
+  "10747": { label: "🇩🇪 DE + EU", codes: ["DE", ...EU_CODES] },
+  "evking":{ label: "🇬🇧 UK + EU", codes: ["GB", ...EU_CODES] },
+  "67974": { label: "🇺🇸 US only", codes: ["US"] },
+  "8626":  { label: "🇧🇪 BE + EU", codes: ["BE","FR","NL", ...EU_CODES] },
+  "16673": { label: "🌍 Ships worldwide", codes: ["US","GB","DE","FR","IT","ES","AU","CA"], worldwide: true },
+  "16809": { label: "🇩🇪 DE + EU", codes: ["DE", ...EU_CODES] },
+  "8794":  { label: "🇳🇴 Norway only", codes: ["NO"] },
+  "118045":{ label: "🇬🇧 UK + EU", codes: ["GB", ...EU_CODES] },
+};
+
+export function getSupplierShipping(supplier: Supplier): ShippingInfo {
+  const key = supplier.mid ? String(supplier.mid) : supplier.id;
+  return SHIPS_TO[key] ?? { label: "🌍 Ships internationally", codes: supplier.countries, worldwide: false };
+}
+
+/** Sort priority: ships-to-country (0), worldwide (1), other (2). */
+export function shippingPriority(supplier: Supplier, countryCode: string): number {
+  const info = getSupplierShipping(supplier);
+  if (countryCode && countryCode !== "GLOBAL" && info.codes.includes(countryCode)) return 0;
+  if (info.worldwide) return 1;
+  return 2;
+}
+
 /** Map a free-text supplier name (from feeds) to ISO-2 country codes. */
 export function lookupSupplierCountries(name: string): string[] {
   if (!name) return [];

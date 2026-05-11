@@ -61,10 +61,10 @@ const parseTwemoji = () => {
 };
 
 // ── Supplier configs (filtered by selected country at render time) ──
-import { SUPPLIERS as ALL_SUPPLIERS, suppliersForCountry } from "@/data/suppliers";
+import { SUPPLIERS as ALL_SUPPLIERS, shippingPriority } from "@/data/suppliers";
 const SUPPLIERS = ALL_SUPPLIERS
   .filter(s => s.live !== false)
-  .map(s => ({ id: s.id, label: s.name === "eBay" ? "eBay Global" : s.name, status: "live" as const }));
+  .map(s => ({ id: s.id, label: s.name === "eBay" ? "eBay Global" : s.name, status: "live" as const, _supplier: s }));
 
 const googleSite = (domain: string) => (q: string) =>
   `https://www.google.com/search?q=site:${domain}+${q.replace(/\s+/g, "+")}`;
@@ -1385,10 +1385,15 @@ const SearchResults = () => {
         {!supplierBannerDismissed && (
           <div ref={supplierBannerRef} className="mb-4 bg-zinc-900/50 border border-white/[0.06] rounded-xl px-4 py-2.5 flex items-center gap-3 scroll-mt-24">
             <div className="flex items-center gap-2 shrink-0 flex-wrap">
-              {SUPPLIERS.filter(s => suppliersForCountry(country.code).some(x => x.id === s.id)).map((supplier, idx) => {
+              {SUPPLIERS
+                .slice()
+                .sort((a, b) => shippingPriority(a._supplier, country.code) - shippingPriority(b._supplier, country.code))
+                .map((supplier, idx) => {
                 const isActive = activeSupplierId === supplier.id;
                 const isFilterable = !!SUPPLIER_BRAND_MAP[supplier.id];
                 const dimmed = activeSupplierId !== null && !isActive;
+                const shipsHere = country.code && country.code !== "GLOBAL"
+                  && supplier._supplier.countries.includes(country.code);
                 if (supplier.status !== "live") {
                   return (
                     <span key={supplier.id} className="flex items-center gap-1.5">
@@ -1415,14 +1420,16 @@ const SearchResults = () => {
                           ? "text-[#cc1111] border-b-2 border-[#cc1111] -mb-[2px] pb-[1px]"
                           : dimmed
                             ? "text-white opacity-50"
-                            : "text-white"
+                            : shipsHere
+                              ? "text-emerald-300"
+                              : "text-white/70"
                       }`}
                       style={{ fontSize: "12px", fontWeight: 500 }}
                     >
                       {isActive ? (
                         <Check size={11} className="text-[#cc1111]" strokeWidth={3} />
                       ) : (
-                        <span className="rounded-full bg-emerald-400 inline-block" style={{ width: "6px", height: "6px" }} />
+                        <span className={`rounded-full inline-block ${shipsHere ? "bg-emerald-400" : "bg-zinc-500"}`} style={{ width: "6px", height: "6px" }} />
                       )}
                       {supplier.label}
                     </button>

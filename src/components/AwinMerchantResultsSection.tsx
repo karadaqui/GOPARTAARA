@@ -1,6 +1,6 @@
 import { ExternalLink } from "lucide-react";
 import SafeImage from "@/components/SafeImage";
-import { SUPPLIERS, type Supplier } from "@/data/suppliers";
+import { SUPPLIERS, getSupplierShipping, shippingPriority, type Supplier } from "@/data/suppliers";
 import { useAwinMerchantProducts, type AwinMerchantProduct } from "@/hooks/useAwinMerchantProducts";
 
 interface Props {
@@ -13,12 +13,30 @@ interface Props {
 // Amazon UK affiliate banner, and the existing tyre-cache feeds).
 const FEED_MERCHANT_IDS = new Set<number>([67974, 8626, 16673, 16809, 8794]);
 
+const ShippingBadge = ({ supplier, countryCode }: { supplier: Supplier; countryCode: string }) => {
+  const info = getSupplierShipping(supplier);
+  const matches = countryCode && countryCode !== "GLOBAL" && info.codes.includes(countryCode);
+  const cls = matches
+    ? "bg-emerald-600/90 text-white border-emerald-400/40"
+    : "bg-zinc-800/90 text-zinc-300 border-white/10";
+  const text = matches ? "✅ Ships to your country" : info.label;
+  return (
+    <span
+      className={`absolute top-2 right-2 z-10 inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] font-semibold backdrop-blur-sm ${cls}`}
+    >
+      {text}
+    </span>
+  );
+};
+
 const MerchantBlock = ({
   supplier,
   query,
+  countryCode,
 }: {
   supplier: Supplier;
   query: string;
+  countryCode: string;
 }) => {
   const { products, loading } = useAwinMerchantProducts(
     String(supplier.mid),
@@ -28,12 +46,14 @@ const MerchantBlock = ({
 
   if (!loading && products.length === 0) return null;
 
+  const shipInfo = getSupplierShipping(supplier);
+
   return (
     <section className="mb-8 animate-fade-in" aria-label={`${supplier.name} results`}>
       <div className="flex items-end justify-between mb-3 gap-3 flex-wrap">
         <div>
           <p className="text-[11px] font-semibold tracking-widest uppercase text-amber-500/70 mb-1">
-            {supplier.flag} {supplier.countries.join(" · ")} · AFFILIATE PARTNER
+            {supplier.flag} {shipInfo.label} · AFFILIATE PARTNER
           </p>
           <h3 className="text-base font-bold text-foreground">
             {supplier.name}
@@ -63,8 +83,9 @@ const MerchantBlock = ({
               href={p.url}
               target="_blank"
               rel="noopener sponsored noreferrer"
-              className="group rounded-2xl border border-white/[0.06] bg-zinc-900/40 hover:border-amber-600/40 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/30 transition-[colors,transform] flex flex-col overflow-hidden"
+              className="relative group rounded-2xl border border-white/[0.06] bg-zinc-900/40 hover:border-amber-600/40 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/30 transition-[colors,transform] flex flex-col overflow-hidden"
             >
+              <ShippingBadge supplier={supplier} countryCode={countryCode} />
               <div className="aspect-square bg-zinc-950/40 flex items-center justify-center overflow-hidden">
                 {p.image ? (
                   <SafeImage src={p.image} alt={p.title} className="w-full h-full object-contain p-3" />
@@ -103,19 +124,19 @@ const MerchantBlock = ({
 const AwinMerchantResultsSection = ({ searchQuery, countryCode }: Props) => {
   if (!searchQuery?.trim()) return null;
 
-  // These merchants ship internationally via Awin — render for all countries.
-  // Empty merchants self-hide via MerchantBlock when products.length === 0.
-  void countryCode;
-  const merchants = SUPPLIERS.filter((s) =>
-    s.live !== false && !!s.mid && FEED_MERCHANT_IDS.has(s.mid),
-  );
+  // Show every active feed merchant; sort so ships-to-country first,
+  // then worldwide, then everything else. Empty merchants self-hide.
+  const merchants = SUPPLIERS
+    .filter((s) => s.live !== false && !!s.mid && FEED_MERCHANT_IDS.has(s.mid))
+    .slice()
+    .sort((a, b) => shippingPriority(a, countryCode) - shippingPriority(b, countryCode));
 
   if (merchants.length === 0) return null;
 
   return (
     <div className="mt-6">
       {merchants.map((s) => (
-        <MerchantBlock key={s.id} supplier={s} query={searchQuery} />
+        <MerchantBlock key={s.id} supplier={s} query={searchQuery} countryCode={countryCode} />
       ))}
     </div>
   );
