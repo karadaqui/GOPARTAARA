@@ -61,10 +61,10 @@ const parseTwemoji = () => {
 };
 
 // ── Supplier configs (filtered by selected country at render time) ──
-import { SUPPLIERS as ALL_SUPPLIERS, suppliersForCountry } from "@/data/suppliers";
+import { SUPPLIERS as ALL_SUPPLIERS, suppliersForCountry, shippingPriority } from "@/data/suppliers";
 const SUPPLIERS = ALL_SUPPLIERS
   .filter(s => s.live !== false)
-  .map(s => ({ id: s.id, label: s.name === "eBay" ? "eBay Global" : s.name, status: "live" as const }));
+  .map(s => ({ id: s.id, label: s.name === "eBay" ? "eBay Global" : s.name, status: "live" as const, _supplier: s }));
 
 const googleSite = (domain: string) => (q: string) =>
   `https://www.google.com/search?q=site:${domain}+${q.replace(/\s+/g, "+")}`;
