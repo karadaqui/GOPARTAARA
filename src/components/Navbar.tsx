@@ -37,6 +37,7 @@ type MoreLink = {
 };
 
 const moreLinks: MoreLink[] = [
+  { label: "Suppliers", href: "/suppliers", Icon: Star },
   { label: "Trodo (Coming Soon)", href: "/suppliers/trodo", Icon: Star, disabled: true },
   { label: "EV Charging", href: "/ev-charging", Icon: Zap },
   { label: "Bulk Compare", href: "/compare", Icon: Scale, elite: true },

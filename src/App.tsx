@@ -72,6 +72,7 @@ const PartSearchRedirect = lazy(() => import("./components/PartSearchRedirect.ts
 const Sitemap = lazy(() => import("./pages/Sitemap.tsx"));
 const OrderConfirmation = lazy(() => import("./pages/OrderConfirmation.tsx"));
 const SuppliersTrodo = lazy(() => import("./pages/SuppliersTrodo.tsx"));
+const Suppliers = lazy(() => import("./pages/Suppliers.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -146,6 +147,7 @@ const App = () => {
                 <Route path="/status" element={<Status />} />
                 <Route path="/sitemap" element={<Sitemap />} />
                 <Route path="/order-confirmation" element={<OrderConfirmation />} />
+                <Route path="/suppliers" element={<Suppliers />} />
                 <Route path="/suppliers/trodo" element={<SuppliersTrodo />} />
                 <Route path="*" element={<PartSearchRedirect />} />
               </Routes>

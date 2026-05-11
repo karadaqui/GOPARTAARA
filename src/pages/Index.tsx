@@ -12,6 +12,7 @@ import FeaturedListingsSection from "@/components/FeaturedListingsSection";
 import SectionDivider from "@/components/SectionDivider";
 
 import HomeShareRow from "@/components/HomeShareRow";
+import TrustedSuppliersBar from "@/components/TrustedSuppliersBar";
 
 // Below-the-fold: lazy-load to keep initial JS small and defer their data fetches
 const FeaturesSection = lazy(() => import("@/components/FeaturesSection"));
@@ -223,6 +224,7 @@ const Index = () => {
 
       <SectionDivider />
       <PopularSearchesStrip />
+      <TrustedSuppliersBar />
       <SectionDivider />
 
       {/* The GoPartara Guarantee */}
