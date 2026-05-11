@@ -816,23 +816,71 @@ const SearchResults = () => {
   const gspIsClassic = isClassicPartSearch(activeQuery);
   const { products: gspProducts } = useGspProducts(activeQuery, gspIsClassic && brandFilter !== "Amazon");
 
-  // Interleave GSP products into the eBay grid at positions 3 and 7 (after items 2 and 6)
+  // ── All Awin merchant feeds (Dunford, Maxpeedingrods, Kohl, Tirendo, Autobandenmarkt) ──
+  const { products: awinAllProducts } = useAllAwinMerchants(
+    activeQuery,
+    !!activeQuery && brandFilter !== "Amazon",
+  );
+
+  // Helper: parse price strings like "£12.99" / "$45.00" / "EUR 19,90" → number
+  const parsePriceStr = (raw: string | number | undefined): number => {
+    if (typeof raw === "number") return raw;
+    if (!raw) return 0;
+    const m = String(raw).replace(/,/g, ".").match(/[\d]+(?:\.[\d]+)?/);
+    return m ? parseFloat(m[0]) : 0;
+  };
+
+  // ── Unified grid: eBay + GSP + Awin merchants merged into one grid ──
+  // Apply supplier (brand) filter, then sort the unified array.
   const interleavedResults = useMemo(() => {
-    if (!gspProducts.length || brandFilter === "Amazon") return unifiedResults;
-    const gspToInsert = gspProducts.slice(0, 4).map((p) => ({ ...p, __gsp: true }));
-    const out: any[] = [];
-    let gIdx = 0;
-    unifiedResults.forEach((it: any, i: number) => {
-      out.push(it);
-      if ((i === 1 || i === 5) && gIdx < gspToInsert.length) {
-        for (let s = 0; s < 2 && gIdx < gspToInsert.length; s++) {
-          out.push(gspToInsert[gIdx++]);
-        }
-      }
-    });
-    while (gIdx < gspToInsert.length) out.push(gspToInsert[gIdx++]);
-    return out;
-  }, [unifiedResults, gspProducts, brandFilter]);
+    const ebayItems = filteredResults
+      .slice(0, ITEMS_PER_PAGE)
+      .map((r: any) => ({ ...r, _source: "ebay" as const, _sortPrice: r.price || 0 }));
+
+    const gspItems = gspProducts.map((p) => ({
+      ...p,
+      __gsp: true,
+      _source: "gsp" as const,
+      _sortPrice: parsePriceStr(p.price),
+    }));
+
+    const awinItems = awinAllProducts.map((p) => ({
+      ...p,
+      __awin: true,
+      _source: "awin" as const,
+      _sortPrice: parsePriceStr(p.price),
+    }));
+
+    // Apply supplier (brand) filter across all sources
+    let merged: any[];
+    if (brandFilter === "All") {
+      merged = [...ebayItems, ...gspItems, ...awinItems];
+    } else if (brandFilter === "eBay") {
+      merged = ebayItems;
+    } else if (brandFilter === "Green Spark Plug Co.") {
+      merged = gspItems;
+    } else if (brandFilter === "Amazon") {
+      merged = ebayItems; // Amazon section is a banner; show eBay grid only
+    } else {
+      // Awin merchant filter — match by supplierName
+      const target = brandFilter.toLowerCase();
+      merged = awinItems.filter((p) =>
+        (p.supplierName || "").toLowerCase().includes(target),
+      );
+    }
+
+    // Sort
+    if (sortBy === "price_asc") {
+      merged = [...merged].sort((a, b) => (a._sortPrice || Infinity) - (b._sortPrice || Infinity));
+    } else if (sortBy === "price_desc") {
+      merged = [...merged].sort((a, b) => (b._sortPrice || 0) - (a._sortPrice || 0));
+    }
+    // best_match / fastest_ship / etc — keep insertion order (eBay relevance first,
+    // then affiliates appended). Server-side eBay sort already applied to ebayItems.
+
+    return merged;
+  }, [filteredResults, gspProducts, awinAllProducts, brandFilter, sortBy]);
+
 
   const clearAllFilters = () => {
     setConditionFilter("All");
