@@ -70,7 +70,6 @@ const MerchantBlock = ({
               rel="noopener sponsored noreferrer"
               className="relative group rounded-2xl border border-white/[0.06] bg-zinc-900/40 hover:border-amber-600/40 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/30 transition-[colors,transform] flex flex-col overflow-hidden"
             >
-              <ShippingBadge supplier={supplier} countryCode={countryCode} />
               <div className="aspect-square bg-zinc-950/40 flex items-center justify-center overflow-hidden">
                 {p.image ? (
                   <SafeImage src={p.image} alt={p.title} className="w-full h-full object-contain p-3" />
@@ -90,6 +89,7 @@ const MerchantBlock = ({
                 <div className="flex items-baseline gap-1 mb-2">
                   <span className="text-lg font-bold text-foreground">{p.price || "See price"}</span>
                 </div>
+                <ShippingPill supplierName={supplier.name} className="mb-2 self-start" />
                 <p className="text-[11px] text-muted-foreground mb-3">{p.shipping}</p>
                 <span className="mt-auto block w-full text-center py-2 bg-amber-600/20 group-hover:bg-amber-600/30 border border-amber-700/30 text-amber-400 text-xs font-semibold rounded-xl transition-colors">
                   View on {supplier.name} →
