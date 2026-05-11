@@ -44,12 +44,12 @@ function LogoOrInitial({ domain, name }: { domain?: string; name: string }) {
   }
   return (
     <img
-      src={`https://logo.clearbit.com/${domain}`}
+      src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`}
       alt={`${name} logo`}
       width={56}
       height={56}
       onError={() => setError(true)}
-      className="rounded-lg bg-white p-1 object-contain"
+      className="rounded-lg bg-white p-2 object-contain"
       style={{ width: 56, height: 56 }}
     />
   );
