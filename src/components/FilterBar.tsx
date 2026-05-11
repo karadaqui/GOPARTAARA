@@ -90,25 +90,52 @@ const FilterDropdown = ({
           onMouseDown={(e) => e.stopPropagation()}
         >
           {options.map((opt) => (
-            <button
+            <div
               key={opt.value}
-              onClick={() => {
-                if (opt.disabled) return;
-                onChange(opt.value);
-                setOpen(false);
-              }}
-              disabled={opt.disabled}
-              className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-colors min-h-[44px] flex items-center ${
-                opt.disabled
-                  ? "text-zinc-600 opacity-50 cursor-not-allowed"
-                  :
-                value === opt.value
-                  ? "bg-red-600/20 text-red-400 font-medium"
-                  : "text-zinc-300 hover:bg-zinc-800 hover:text-white"
+              className={`w-full flex items-center gap-1 rounded-xl ${
+                value === opt.value && !opt.disabled ? "bg-red-600/20" : "hover:bg-zinc-800"
               }`}
             >
-              {opt.label}
-            </button>
+              <button
+                onClick={() => {
+                  if (opt.disabled) return;
+                  onChange(opt.value);
+                  setOpen(false);
+                }}
+                disabled={opt.disabled}
+                className={`flex-1 text-left px-3 py-2.5 rounded-xl text-sm transition-colors min-h-[44px] flex items-center ${
+                  opt.disabled
+                    ? "text-zinc-600 opacity-50 cursor-not-allowed"
+                    : value === opt.value
+                    ? "text-red-400 font-medium"
+                    : "text-zinc-300 hover:text-white"
+                }`}
+              >
+                {opt.label}
+              </button>
+              {opt.tooltip && (
+                <TooltipProvider delayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        aria-label={`Shipping info: ${opt.tooltip}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="shrink-0 p-2 mr-1 text-zinc-500 hover:text-white rounded-lg"
+                      >
+                        <Info size={14} />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="left"
+                      className="z-[10000] bg-zinc-950 text-white border-white/10 text-xs"
+                    >
+                      Ships to: {opt.tooltip}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+            </div>
           ))}
         </div>,
         document.body
