@@ -224,7 +224,7 @@ const About = () => (
           />
           {[
             { icon: "🚀", year: "2024", text: "GOPARTARA Founded. The idea: one search engine for all UK car parts." },
-            { icon: "🔧", year: "Early 2025", text: "First 7 suppliers integrated. 1,000,000+ parts searchable for the first time." },
+            { icon: "🔧", year: "Early 2025", text: "14 global suppliers integrated. 1,000,000+ parts searchable for the first time." },
             { icon: "📈", year: "Mid 2025", text: "Beta launched. First real users start saving money on car parts." },
             { icon: "🌍", year: "2026", text: "European expansion begins. EU suppliers added. Going global." },
             { icon: "🎯", year: "Future", text: "500+ suppliers. Mobile app. The world's #1 car parts comparison platform.", future: true },
