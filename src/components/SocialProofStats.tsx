@@ -6,7 +6,7 @@ type Stat = {
 // Hardcoded marketing numbers — DO NOT fetch from database.
 const stats: Stat[] = [
   { label: "Parts searchable", display: "1,000,000+" },
-  { label: "Live suppliers", display: "7" },
+  { label: "Global suppliers", display: "14+" },
   { label: "Always available", display: "24/7" },
   { label: "Always free to use", display: "Free" },
 ];
