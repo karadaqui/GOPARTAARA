@@ -214,6 +214,17 @@ const GreenSparkProductCard = ({
           </p>
         </a>
 
+        {/* Supplier pill (mirrors eBay supplier badge row) */}
+        <div className="flex items-center flex-wrap gap-1.5 -mt-1">
+          <span
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-white/[0.04] border border-white/[0.08] text-zinc-300"
+            title="Green Spark Plug Co."
+          >
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#fbbf24" }} />
+            GSP
+          </span>
+        </div>
+
         {/* Specs — whitelist only, compact 2-col grid, key/value on one line */}
         {(() => {
           const specs = product.specs || {};
