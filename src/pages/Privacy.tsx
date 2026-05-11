@@ -19,7 +19,7 @@ const Privacy = () => (
             <Shield size={28} />
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">Privacy Policy</h1>
-          <p className="text-muted-foreground">Last updated: 9 April 2026</p>
+          <p className="text-muted-foreground">Last updated: May 2026</p>
         </div>
 
         <article className="space-y-10">
@@ -29,7 +29,11 @@ const Privacy = () => (
               <strong>gopartara.com</strong> and the GOPARTARA application.
             </p>
             <p>
-              <strong>Data Controller:</strong> GOPARTARA
+              <strong>Data Controller:</strong> Partara Ltd
+              <br />
+              Company registered in England &amp; Wales
+              <br />
+              <strong>Trading as:</strong> GOPARTARA
               <br />
               <strong>Contact:</strong>{" "}
               <a href="mailto:info@gopartara.com" className="text-primary hover:underline">

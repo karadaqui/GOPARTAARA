@@ -117,36 +117,9 @@ const Terms = () => (
               />
             </div>
 
-            <p className="mt-6 font-semibold text-foreground">Seller Plans</p>
-            <p className="mt-1">For sellers listing on the GOPARTARA Marketplace:</p>
-            <div className="grid sm:grid-cols-3 gap-4 mt-4">
-              <PlanCard
-                name="Basic Seller"
-                price="£9.99/mo"
-                features={["Up to 20 listings", "Basic analytics", "Standard visibility"]}
-              />
-              <PlanCard
-                name="Featured Seller"
-                price="£24.99/mo"
-                features={[
-                  "Up to 100 listings",
-                  "Featured placement",
-                  "Advanced analytics",
-                  "Priority moderation",
-                ]}
-              />
-              <PlanCard
-                name="Pro Seller"
-                price="£49.99/mo"
-                features={[
-                  "Unlimited listings",
-                  "Top placement",
-                  "Full analytics suite",
-                  "Priority support",
-                  "Verified seller badge",
-                ]}
-              />
-            </div>
+            <p className="mt-6">
+              Seller plans for the GOPARTARA Marketplace are coming soon. Details will be published when the Marketplace launches.
+            </p>
 
             <div className="mt-6 space-y-2">
               <p>
@@ -167,7 +140,7 @@ const Terms = () => (
                 days' written notice. Continued use after the effective date constitutes acceptance.
               </p>
               <p>
-                <strong>Refunds:</strong> Refund requests must be submitted within 7 days of your initial subscription payment. Refunds are not available after this period. You may request a refund from your{" "}
+                <strong>Refunds:</strong> Refund requests must be submitted within 14 days of your initial subscription payment. Refunds are not available after this period. You may request a refund from your{" "}
                 <a href="/refund" className="text-primary hover:underline">
                   dashboard refund page
                 </a>. Cancellation results in immediate loss of paid features. Each account is entitled to one refund only.
@@ -183,9 +156,7 @@ const Terms = () => (
             <div className="rounded-xl border border-border bg-card p-6 space-y-3">
               <p>All users may list up to 5 items for free. Pro and Elite members may list unlimited items.</p>
               <p>
-                GOPARTARA Marketplace is currently commission-free. GOPARTARA reserves the right to introduce a
-                commission fee on future sales. All active sellers will receive at least 30 days written notice
-                before any commission is implemented.
+                GOPARTARA Marketplace sellers are charged a 5% commission on completed sales. This commission is deducted automatically at the point of sale. GOPARTARA reserves the right to adjust the commission rate with at least 30 days written notice to active sellers.
               </p>
               <p>Featured listing promotions are available to all users as optional paid upgrades.</p>
             </div>
