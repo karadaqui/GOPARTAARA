@@ -2000,17 +2000,11 @@ const SearchResults = () => {
                   Clear all filters
                 </button>
               </div>
-            ) : unifiedResults.length > 0 ? (
+            ) : interleavedResults.length > 0 ? (
               <div className="mb-10 animate-fade-in">
                 {isClassicPartSearch(activeQuery) && brandFilter !== "Green Spark Plug Co." && brandFilter !== "Amazon" && (
-                  <>
-                    <GreenSparkFeaturedCard searchQuery={activeQuery} />
-                    <p className="text-[11px] text-muted-foreground mb-2 uppercase tracking-widest">
-                      Also available on eBay
-                    </p>
-                  </>
+                  <GreenSparkFeaturedCard searchQuery={activeQuery} />
                 )}
-                {brandFilter !== "Green Spark Plug Co." && (
                 <>
                 <div className="results-grid-stagger grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
                   {interleavedResults.map((entry: any, idx: number) => {
