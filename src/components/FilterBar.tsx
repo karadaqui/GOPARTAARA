@@ -123,6 +123,7 @@ const FilterDropdown = ({
                 <button
                   type="button"
                   aria-label={`Shipping info: ${opt.tooltip}`}
+                  onMouseDown={(e) => e.stopPropagation()}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (tooltipOpen === opt.value) {
