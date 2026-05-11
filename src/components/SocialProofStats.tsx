@@ -8,7 +8,7 @@ const stats: Stat[] = [
   { label: "Parts searchable", display: "1,000,000+" },
   { label: "Global suppliers", display: "14+" },
   { label: "Always available", display: "24/7" },
-  { label: "Always free to use", display: "Free" },
+  { label: "Free plan available", display: "Free" },
 ];
 
 const StatCell = ({ stat }: { stat: Stat }) => (
