@@ -19,6 +19,8 @@ const FilterDropdown = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
+  const [tooltipOpen, setTooltipOpen] = useState<string | null>(null);
+  const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
   const ref = useRef<HTMLDivElement>(null);
 
   const updatePos = useCallback(() => {
