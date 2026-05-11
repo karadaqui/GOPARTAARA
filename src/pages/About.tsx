@@ -153,7 +153,7 @@ const About = () => (
             </h2>
             <p style={{ fontSize: "15px", color: "#a1a1aa", lineHeight: 1.7 }}>
               GOPARTARA aggregates live inventory and pricing from 14 global suppliers into a
-              single, unbiased search. Type a part name, snap a photo, or enter your reg plate —
+              single, unbiased search. Type a part name, snap a photo, or enter your registration plate —
               and within seconds you see every option, sorted by price, with no hidden fees.
             </p>
           </div>
