@@ -851,10 +851,31 @@ const SearchResults = () => {
       _sortPrice: parsePriceStr(p.price),
     }));
 
+    // Helper: interleave affiliate items into the eBay stream so they appear
+    // throughout the grid (not buried at the end). Drops one affiliate every
+    // ~`step` eBay items.
+    const interleave = (base: any[], extras: any[], step = 3) => {
+      if (extras.length === 0) return base;
+      if (base.length === 0) return extras;
+      const out: any[] = [];
+      let ei = 0;
+      for (let i = 0; i < base.length; i++) {
+        out.push(base[i]);
+        if ((i + 1) % step === 0 && ei < extras.length) {
+          out.push(extras[ei++]);
+        }
+      }
+      // Append any leftover affiliate items
+      while (ei < extras.length) out.push(extras[ei++]);
+      return out;
+    };
+
     // Apply supplier (brand) filter across all sources
     let merged: any[];
     if (brandFilter === "All") {
-      merged = [...ebayItems, ...gspItems, ...awinItems];
+      // Mix GSP + Awin together as the affiliate pool, then interleave into eBay
+      const affiliates = [...gspItems, ...awinItems];
+      merged = interleave(ebayItems, affiliates, 3);
     } else if (brandFilter === "eBay") {
       merged = ebayItems;
     } else if (brandFilter === "Green Spark Plug Co.") {
@@ -869,14 +890,13 @@ const SearchResults = () => {
       );
     }
 
-    // Sort
+    // Sort — explicit price sorts override interleave order
     if (sortBy === "price_asc") {
       merged = [...merged].sort((a, b) => (a._sortPrice || Infinity) - (b._sortPrice || Infinity));
     } else if (sortBy === "price_desc") {
       merged = [...merged].sort((a, b) => (b._sortPrice || 0) - (a._sortPrice || 0));
     }
-    // best_match / fastest_ship / etc — keep insertion order (eBay relevance first,
-    // then affiliates appended). Server-side eBay sort already applied to ebayItems.
+    // best_match / fastest_ship / etc — keep interleaved order
 
     return merged;
   }, [filteredResults, gspProducts, awinAllProducts, brandFilter, sortBy]);
