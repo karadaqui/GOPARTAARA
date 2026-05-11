@@ -115,26 +115,23 @@ const FilterDropdown = ({
                 {opt.label}
               </button>
               {opt.tooltip && (
-                <TooltipProvider delayDuration={100}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        type="button"
-                        aria-label={`Shipping info: ${opt.tooltip}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="shrink-0 p-2 mr-1 text-zinc-500 hover:text-white rounded-lg"
-                      >
-                        <Info size={14} />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent
-                      side="left"
-                      className="z-[10000] bg-zinc-950 text-white border-white/10 text-xs"
-                    >
-                      Ships to: {opt.tooltip}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <button
+                  type="button"
+                  aria-label={`Shipping info: ${opt.tooltip}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (tooltipOpen === opt.value) {
+                      setTooltipOpen(null);
+                      return;
+                    }
+                    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                    setTooltipPos({ top: rect.top - 8, left: rect.left + rect.width / 2 });
+                    setTooltipOpen(opt.value);
+                  }}
+                  className="shrink-0 p-2 mr-1 text-zinc-500 hover:text-white rounded-lg"
+                >
+                  <Info size={14} />
+                </button>
               )}
             </div>
           ))}
