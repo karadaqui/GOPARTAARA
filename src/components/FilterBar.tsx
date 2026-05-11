@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, Info } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type FilterOption = { label: string; value: string; disabled?: boolean; tooltip?: string };
 
@@ -20,6 +19,8 @@ const FilterDropdown = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
+  const [tooltipOpen, setTooltipOpen] = useState<string | null>(null);
+  const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
   const ref = useRef<HTMLDivElement>(null);
 
   const updatePos = useCallback(() => {
@@ -38,10 +39,15 @@ const FilterDropdown = ({
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
       }
+      setTooltipOpen(null);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  useEffect(() => {
+    if (!open) setTooltipOpen(null);
+  }, [open]);
 
   useEffect(() => {
     if (open) {
@@ -114,29 +120,48 @@ const FilterDropdown = ({
                 {opt.label}
               </button>
               {opt.tooltip && (
-                <TooltipProvider delayDuration={100}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        type="button"
-                        aria-label={`Shipping info: ${opt.tooltip}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="shrink-0 p-2 mr-1 text-zinc-500 hover:text-white rounded-lg"
-                      >
-                        <Info size={14} />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent
-                      side="left"
-                      className="z-[10000] bg-zinc-950 text-white border-white/10 text-xs"
-                    >
-                      Ships to: {opt.tooltip}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <button
+                  type="button"
+                  aria-label={`Shipping info: ${opt.tooltip}`}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (tooltipOpen === opt.value) {
+                      setTooltipOpen(null);
+                      return;
+                    }
+                    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                    setTooltipPos({ top: rect.top - 8, left: rect.left + rect.width / 2 });
+                    setTooltipOpen(opt.value);
+                  }}
+                  className="shrink-0 p-2 mr-1 text-zinc-500 hover:text-white rounded-lg"
+                >
+                  <Info size={14} />
+                </button>
               )}
             </div>
           ))}
+        </div>,
+        document.body
+      )}
+
+      {tooltipOpen && createPortal(
+        <div
+          style={{
+            position: "fixed",
+            zIndex: 10001,
+            top: tooltipPos.top,
+            left: tooltipPos.left,
+            transform: "translate(-50%, -100%)",
+          }}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+          className="pointer-events-auto"
+        >
+          <div className="relative rounded-md border border-white/10 bg-[#1a1a1a] px-3 py-1.5 text-xs text-white shadow-xl whitespace-nowrap">
+            Ships to: {options.find((o) => o.value === tooltipOpen)?.tooltip}
+            <div className="absolute left-1/2 -bottom-1 h-2 w-2 -translate-x-1/2 rotate-45 bg-[#1a1a1a] border-r border-b border-white/10" />
+          </div>
         </div>,
         document.body
       )}
