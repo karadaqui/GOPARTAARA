@@ -75,41 +75,6 @@ export default function Suppliers() {
           </p>
         </section>
 
-        {/* Elite */}
-        <section className="container pb-12">
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">⭐ Elite Suppliers</h2>
-          <div
-            className="rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-6"
-            style={{
-              background: "linear-gradient(135deg, rgba(251,191,36,0.08), rgba(251,191,36,0.02))",
-              border: "1px solid rgba(251,191,36,0.3)",
-            }}
-          >
-            <LogoOrInitial domain="trodo.com" name="TRODO" />
-            <div className="flex-1">
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <h3 className="text-2xl font-black">TRODO</h3>
-                <span className="text-zinc-400 text-sm">🇱🇻 Latvia · ships worldwide</span>
-              </div>
-              <div
-                className="inline-block px-3 py-1 rounded-full mb-2"
-                style={{
-                  fontSize: 11, fontWeight: 600, color: "#fbbf24",
-                  background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.3)",
-                }}
-              >
-                ⭐ Elite Supplier — Coming Soon
-              </div>
-              <p className="text-zinc-300 text-sm">
-                4M+ parts across 17 markets. Europe's trusted auto parts specialist.
-              </p>
-            </div>
-            <Button disabled className="opacity-60 cursor-not-allowed bg-zinc-700 hover:bg-zinc-700 text-white">
-              Coming Soon
-            </Button>
-          </div>
-        </section>
-
         {/* Verified */}
         <section className="container pb-12">
           <h2 className="text-xl font-bold mb-4">✅ Verified Partners</h2>
