@@ -329,14 +329,15 @@ const About = () => (
           <h2 className="text-3xl font-bold text-white mb-4">Meet the Team</h2>
           <p className="text-gray-400">The people building GOPARTARA.</p>
         </div>
-        <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
+        {(() => {
+          const members = [
             { name: "Ömer Karadayi", role: "Founder & CEO", bio: "Visionary behind GOPARTARA, passionate about making car parts accessible to everyone." },
             { name: "Yusuf Karadayi", role: "Co-Founder & Head of Technology", bio: "Building the search engine and infrastructure that powers 1M+ part comparisons." },
             { name: "Enver Bayirli", role: "Head of Partnerships", bio: "Growing our supplier network and forging relationships with the automotive industry." },
             { name: "Fatma Karadayi", role: "Head of Localisation & Expansion", bio: "Leading our multilingual expansion — ensuring GOPARTARA speaks every driver's language across the UK and Europe." },
             { name: "Betul Ungan", role: "Head of Customer Success", bio: "Bringing years of retail management experience to ensure every GOPARTARA customer gets the best possible experience." }
-          ].map((member, i) => (
+          ];
+          const renderCard = (member: typeof members[number], i: number) => (
             <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
               <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-10 h-10 text-gray-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
@@ -347,8 +348,18 @@ const About = () => (
               <h3 className={`font-bold ${member.name ? "text-[#cc1111] text-xs uppercase tracking-wider mb-2" : "text-white text-lg mb-1"}`}>{member.role}</h3>
               <p className="text-gray-400 text-sm">{member.bio}</p>
             </div>
-          ))}
-        </div>
+          );
+          return (
+            <div className="max-w-4xl mx-auto">
+              <div className="grid grid-cols-3 gap-6 mb-6">
+                {members.slice(0, 3).map(renderCard)}
+              </div>
+              <div className="grid grid-cols-2 gap-6 max-w-2xl mx-auto">
+                {members.slice(3).map((m, i) => renderCard(m, i + 3))}
+              </div>
+            </div>
+          );
+        })()}
         <p className="text-center text-gray-600 text-sm mt-8">Team photos and full bios coming soon.</p>
       </section>
 
