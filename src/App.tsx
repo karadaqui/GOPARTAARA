@@ -71,6 +71,7 @@ const Status = lazy(() => import("./pages/Status.tsx"));
 const PartSearchRedirect = lazy(() => import("./components/PartSearchRedirect.tsx"));
 const Sitemap = lazy(() => import("./pages/Sitemap.tsx"));
 const OrderConfirmation = lazy(() => import("./pages/OrderConfirmation.tsx"));
+const SuppliersTrodo = lazy(() => import("./pages/SuppliersTrodo.tsx"));
 
 const queryClient = new QueryClient();
 
