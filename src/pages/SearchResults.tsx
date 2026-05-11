@@ -2402,8 +2402,7 @@ const SearchResults = () => {
               );
             })()}
 
-                {/* New Awin merchants — auto-rendered for the active country */}
-                <AwinMerchantResultsSection searchQuery={activeQuery} countryCode={country.code} />
+                {/* Awin merchant products are now merged into the main grid above */}
 
                 {/* More suppliers coming soon — honest banner */}
                 <div className="bg-zinc-900/40 border border-white/[0.06] rounded-2xl p-6 mt-6 text-center">
