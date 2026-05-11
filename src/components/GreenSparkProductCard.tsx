@@ -260,9 +260,7 @@ const GreenSparkProductCard = ({
           <span className="inline-flex items-center gap-1 text-xs text-zinc-500">
             🚚 {product.shipping || "See site for delivery"}
           </span>
-          <span className="inline-flex items-center gap-1 text-[11px] text-zinc-600">
-            🌍 Ships worldwide
-          </span>
+          <ShippingPill supplierName="Green Spark Plug Co." className="self-start" />
         </div>
 
         <div className="flex items-center gap-1.5 text-xs text-zinc-500 border-t border-white/[0.06] pt-3 mt-auto">
