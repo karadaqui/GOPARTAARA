@@ -32,7 +32,7 @@ const VALUES = [
   {
     icon: "⚡",
     title: "Speed",
-    desc: "Search results in under 3 seconds. All 7 suppliers checked simultaneously.",
+    desc: "Search results in under 3 seconds. 14 global suppliers checked simultaneously.",
   },
   {
     icon: "⚖️",
