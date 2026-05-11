@@ -918,7 +918,7 @@ const SearchResults = () => {
     // best_match / fastest_ship / etc — keep interleaved order
 
     return merged;
-  }, [filteredResults, gspProducts, awinAllProducts, brandFilter, sortBy]);
+  }, [filteredResults, gspProducts, awinAllProducts, brandFilter, sortBy, activeQuery]);
 
 
   const clearAllFilters = () => {
