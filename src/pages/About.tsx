@@ -331,10 +331,11 @@ const About = () => (
         </div>
         <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { name: null, role: "Founder & CEO", bio: "Visionary behind GOPARTARA, passionate about making car parts accessible to everyone." },
-            { name: null, role: "Head of Technology", bio: "Building the search engine and infrastructure that powers 1M+ part comparisons." },
-            { name: null, role: "Head of Partnerships", bio: "Growing our supplier network and forging relationships with the automotive industry." },
-            { name: "Fatma Karadayı", role: "Language & Localisation", bio: "Leading our multilingual expansion — ensuring GOPARTARA speaks every driver's language across the UK and Europe." }
+            { name: "Ömer Karadayi", role: "Founder & CEO", bio: "Visionary behind GOPARTARA, passionate about making car parts accessible to everyone." },
+            { name: "Yusuf Karadayi", role: "Co-Founder & Head of Technology", bio: "Building the search engine and infrastructure that powers 1M+ part comparisons." },
+            { name: "Enver Bayirli", role: "Head of Partnerships", bio: "Growing our supplier network and forging relationships with the automotive industry." },
+            { name: "Fatma Karadayi", role: "Head of Localisation & Expansion", bio: "Leading our multilingual expansion — ensuring GOPARTARA speaks every driver's language across the UK and Europe." },
+            { name: "Betul Ungan", role: "Head of Customer Success", bio: "Bringing years of retail management experience to ensure every GOPARTARA customer gets the best possible experience." }
           ].map((member, i) => (
             <div key={i} className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
               <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
