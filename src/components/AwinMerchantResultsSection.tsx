@@ -1,5 +1,6 @@
 import { ExternalLink } from "lucide-react";
 import SafeImage from "@/components/SafeImage";
+import ShippingPill from "@/components/ShippingPill";
 import { SUPPLIERS, getSupplierShipping, shippingPriority, type Supplier } from "@/data/suppliers";
 import { useAwinMerchantProducts, type AwinMerchantProduct } from "@/hooks/useAwinMerchantProducts";
 
