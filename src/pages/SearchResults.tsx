@@ -61,7 +61,7 @@ const parseTwemoji = () => {
 };
 
 // ── Supplier configs (filtered by selected country at render time) ──
-import { SUPPLIERS as ALL_SUPPLIERS, suppliersForCountry, shippingPriority } from "@/data/suppliers";
+import { SUPPLIERS as ALL_SUPPLIERS, shippingPriority } from "@/data/suppliers";
 const SUPPLIERS = ALL_SUPPLIERS
   .filter(s => s.live !== false)
   .map(s => ({ id: s.id, label: s.name === "eBay" ? "eBay Global" : s.name, status: "live" as const, _supplier: s }));
