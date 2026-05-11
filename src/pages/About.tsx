@@ -360,7 +360,7 @@ const About = () => (
             </div>
           );
         })()}
-        <p className="text-center text-gray-600 text-sm mt-8">Team photos and full bios coming soon.</p>
+        <p className="text-center text-gray-600 text-sm mt-8">​</p>
       </section>
 
       {/* Stats bar (reused) */}
