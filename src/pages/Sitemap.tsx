@@ -19,6 +19,8 @@ const SECTIONS: Section[] = [
       { label: "Pricing", href: "/pricing" },
       { label: "Tyres", href: "/tyres" },
       { label: "EV Charging", href: "/ev-charging" },
+      { label: "Suppliers", href: "/suppliers" },
+      { label: "Motor Parts", href: "/motor-parts" },
     ],
   },
   {
@@ -47,6 +49,7 @@ const SECTIONS: Section[] = [
     links: [
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms of Service", href: "/terms" },
+      { label: "Sitemap", href: "/sitemap" },
     ],
   },
 ];
