@@ -46,7 +46,7 @@ export default function SuppliersTrodo() {
       <SEOHead
         title="Trodo — Elite Supplier | GOPARTARA"
         description="Trodo is an Elite Supplier on GOPARTARA. 4M+ car parts, 17 markets, fast DHL delivery. Compare prices on Bosch, Brembo, Febi & more."
-        canonicalUrl="https://gopartara.com/suppliers/trodo"
+        path="/suppliers/trodo"
       />
       <Navbar />
 
