@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Bookmark, BookmarkCheck, ExternalLink, Loader2, Scale } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import SafeImage from "@/components/SafeImage";
+import ShippingPill from "@/components/ShippingPill";
 import PriceAlertDialog from "@/components/PriceAlertDialog";
 
 export interface GspProductSpecs {
