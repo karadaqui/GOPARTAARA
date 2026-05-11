@@ -45,9 +45,10 @@ import FilterBar from "@/components/FilterBar";
 import TecDocPartsSection from "@/components/TecDocPartsSection";
 import { findDealByBrand, EBAY_ALL_DEALS_URL, isUKUser } from "@/data/ebayDeals";
 import GreenSparkFeaturedCard, { isClassicPartSearch } from "@/components/GreenSparkFeaturedCard";
-import GreenSparkResultsRow from "@/components/GreenSparkResultsRow";
+
 import GreenSparkProductCard, { useGspProducts } from "@/components/GreenSparkProductCard";
-import AwinMerchantResultsSection from "@/components/AwinMerchantResultsSection";
+import AwinMerchantCard from "@/components/AwinMerchantCard";
+import { useAllAwinMerchants } from "@/hooks/useAllAwinMerchants";
 import RecentSearches, { addRecentSearch } from "@/components/RecentSearches";
 import { addRecentSearch as addRecentSearchV2 } from "@/lib/recentSearches";
 import SearchAutocomplete from "@/components/SearchAutocomplete";
@@ -815,23 +816,71 @@ const SearchResults = () => {
   const gspIsClassic = isClassicPartSearch(activeQuery);
   const { products: gspProducts } = useGspProducts(activeQuery, gspIsClassic && brandFilter !== "Amazon");
 
-  // Interleave GSP products into the eBay grid at positions 3 and 7 (after items 2 and 6)
+  // ── All Awin merchant feeds (Dunford, Maxpeedingrods, Kohl, Tirendo, Autobandenmarkt) ──
+  const { products: awinAllProducts } = useAllAwinMerchants(
+    activeQuery,
+    !!activeQuery && brandFilter !== "Amazon",
+  );
+
+  // Helper: parse price strings like "£12.99" / "$45.00" / "EUR 19,90" → number
+  const parsePriceStr = (raw: string | number | undefined): number => {
+    if (typeof raw === "number") return raw;
+    if (!raw) return 0;
+    const m = String(raw).replace(/,/g, ".").match(/[\d]+(?:\.[\d]+)?/);
+    return m ? parseFloat(m[0]) : 0;
+  };
+
+  // ── Unified grid: eBay + GSP + Awin merchants merged into one grid ──
+  // Apply supplier (brand) filter, then sort the unified array.
   const interleavedResults = useMemo(() => {
-    if (!gspProducts.length || brandFilter === "Amazon") return unifiedResults;
-    const gspToInsert = gspProducts.slice(0, 4).map((p) => ({ ...p, __gsp: true }));
-    const out: any[] = [];
-    let gIdx = 0;
-    unifiedResults.forEach((it: any, i: number) => {
-      out.push(it);
-      if ((i === 1 || i === 5) && gIdx < gspToInsert.length) {
-        for (let s = 0; s < 2 && gIdx < gspToInsert.length; s++) {
-          out.push(gspToInsert[gIdx++]);
-        }
-      }
-    });
-    while (gIdx < gspToInsert.length) out.push(gspToInsert[gIdx++]);
-    return out;
-  }, [unifiedResults, gspProducts, brandFilter]);
+    const ebayItems = filteredResults
+      .slice(0, ITEMS_PER_PAGE)
+      .map((r: any) => ({ ...r, _source: "ebay" as const, _sortPrice: r.price || 0 }));
+
+    const gspItems = gspProducts.map((p) => ({
+      ...p,
+      __gsp: true,
+      _source: "gsp" as const,
+      _sortPrice: parsePriceStr(p.price),
+    }));
+
+    const awinItems = awinAllProducts.map((p) => ({
+      ...p,
+      __awin: true,
+      _source: "awin" as const,
+      _sortPrice: parsePriceStr(p.price),
+    }));
+
+    // Apply supplier (brand) filter across all sources
+    let merged: any[];
+    if (brandFilter === "All") {
+      merged = [...ebayItems, ...gspItems, ...awinItems];
+    } else if (brandFilter === "eBay") {
+      merged = ebayItems;
+    } else if (brandFilter === "Green Spark Plug Co.") {
+      merged = gspItems;
+    } else if (brandFilter === "Amazon") {
+      merged = ebayItems; // Amazon section is a banner; show eBay grid only
+    } else {
+      // Awin merchant filter — match by supplierName
+      const target = brandFilter.toLowerCase();
+      merged = awinItems.filter((p) =>
+        (p.supplierName || "").toLowerCase().includes(target),
+      );
+    }
+
+    // Sort
+    if (sortBy === "price_asc") {
+      merged = [...merged].sort((a, b) => (a._sortPrice || Infinity) - (b._sortPrice || Infinity));
+    } else if (sortBy === "price_desc") {
+      merged = [...merged].sort((a, b) => (b._sortPrice || 0) - (a._sortPrice || 0));
+    }
+    // best_match / fastest_ship / etc — keep insertion order (eBay relevance first,
+    // then affiliates appended). Server-side eBay sort already applied to ebayItems.
+
+    return merged;
+  }, [filteredResults, gspProducts, awinAllProducts, brandFilter, sortBy]);
+
 
   const clearAllFilters = () => {
     setConditionFilter("All");
@@ -1951,17 +2000,11 @@ const SearchResults = () => {
                   Clear all filters
                 </button>
               </div>
-            ) : unifiedResults.length > 0 ? (
+            ) : interleavedResults.length > 0 ? (
               <div className="mb-10 animate-fade-in">
                 {isClassicPartSearch(activeQuery) && brandFilter !== "Green Spark Plug Co." && brandFilter !== "Amazon" && (
-                  <>
-                    <GreenSparkFeaturedCard searchQuery={activeQuery} />
-                    <p className="text-[11px] text-muted-foreground mb-2 uppercase tracking-widest">
-                      Also available on eBay
-                    </p>
-                  </>
+                  <GreenSparkFeaturedCard searchQuery={activeQuery} />
                 )}
-                {brandFilter !== "Green Spark Plug Co." && (
                 <>
                 <div className="results-grid-stagger grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
                   {interleavedResults.map((entry: any, idx: number) => {
@@ -2003,6 +2046,9 @@ const SearchResults = () => {
                           compareDisabled={compareParts.length >= 3}
                         />
                       );
+                    }
+                    if (entry.__awin) {
+                      return <AwinMerchantCard key={`awin-${entry.id}-${idx}`} product={entry} />;
                     }
                     const item = entry;
                     // ── eBay Card ──
@@ -2356,8 +2402,7 @@ const SearchResults = () => {
               );
             })()}
 
-                {/* New Awin merchants — auto-rendered for the active country */}
-                <AwinMerchantResultsSection searchQuery={activeQuery} countryCode={country.code} />
+                {/* Awin merchant products are now merged into the main grid above */}
 
                 {/* More suppliers coming soon — honest banner */}
                 <div className="bg-zinc-900/40 border border-white/[0.06] rounded-2xl p-6 mt-6 text-center">
@@ -2434,10 +2479,6 @@ const SearchResults = () => {
                   </a>
                 </div>
                 </>
-                )}
-                {isClassicPartSearch(activeQuery) && brandFilter !== "eBay" && brandFilter !== "Amazon" && (
-                  <GreenSparkResultsRow searchQuery={activeQuery} />
-                )}
               </div>
             ) : (liveLoading || isInitialLoad) ? (
               /* ── Loading State (also covers initial-load grace period) ── */
