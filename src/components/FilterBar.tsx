@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-type FilterOption = { label: string; value: string; disabled?: boolean };
+type FilterOption = { label: string; value: string; disabled?: boolean; tooltip?: string };
 
 const FilterDropdown = ({
   label,
@@ -89,25 +90,52 @@ const FilterDropdown = ({
           onMouseDown={(e) => e.stopPropagation()}
         >
           {options.map((opt) => (
-            <button
+            <div
               key={opt.value}
-              onClick={() => {
-                if (opt.disabled) return;
-                onChange(opt.value);
-                setOpen(false);
-              }}
-              disabled={opt.disabled}
-              className={`w-full text-left px-3 py-2.5 rounded-xl text-sm transition-colors min-h-[44px] flex items-center ${
-                opt.disabled
-                  ? "text-zinc-600 opacity-50 cursor-not-allowed"
-                  :
-                value === opt.value
-                  ? "bg-red-600/20 text-red-400 font-medium"
-                  : "text-zinc-300 hover:bg-zinc-800 hover:text-white"
+              className={`w-full flex items-center gap-1 rounded-xl ${
+                value === opt.value && !opt.disabled ? "bg-red-600/20" : "hover:bg-zinc-800"
               }`}
             >
-              {opt.label}
-            </button>
+              <button
+                onClick={() => {
+                  if (opt.disabled) return;
+                  onChange(opt.value);
+                  setOpen(false);
+                }}
+                disabled={opt.disabled}
+                className={`flex-1 text-left px-3 py-2.5 rounded-xl text-sm transition-colors min-h-[44px] flex items-center ${
+                  opt.disabled
+                    ? "text-zinc-600 opacity-50 cursor-not-allowed"
+                    : value === opt.value
+                    ? "text-red-400 font-medium"
+                    : "text-zinc-300 hover:text-white"
+                }`}
+              >
+                {opt.label}
+              </button>
+              {opt.tooltip && (
+                <TooltipProvider delayDuration={100}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        aria-label={`Shipping info: ${opt.tooltip}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="shrink-0 p-2 mr-1 text-zinc-500 hover:text-white rounded-lg"
+                      >
+                        <Info size={14} />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="left"
+                      className="z-[10000] bg-zinc-950 text-white border-white/10 text-xs"
+                    >
+                      Ships to: {opt.tooltip}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
+            </div>
           ))}
         </div>,
         document.body
@@ -146,18 +174,18 @@ const CONDITION_OPTIONS: FilterOption[] = [
 
 const BRAND_OPTIONS: FilterOption[] = [
   { label: "All Suppliers", value: "All" },
-  { label: "🌍 eBay Global", value: "eBay" },
-  { label: "🔩 Green Spark Plug Co. (Classic & Vintage)", value: "Green Spark Plug Co." },
-  { label: "🇬🇧 mytyres.co.uk", value: "mytyres.co.uk" },
-  { label: "🌍 Tyres UK (Tyres.net)", value: "Tyres UK" },
-  { label: "🇪🇸 neumaticos-online.es", value: "neumaticos-online.es" },
-  { label: "🇮🇹 Pneumatici IT", value: "Pneumatici IT" },
-  { label: "🇪🇪 ReifenDirekt EE", value: "ReifenDirekt EE" },
-  { label: "🇺🇸 Dunford Inc", value: "Dunford Inc" },
-  { label: "🇧🇪 Autobandenmarkt", value: "Autobandenmarkt" },
-  { label: "🇺🇸 Maxpeedingrods", value: "Maxpeedingrods" },
-  { label: "🇩🇪 Kohl Automobile", value: "Kohl Automobile" },
-  { label: "🇳🇴 Tirendo", value: "Tirendo" },
+  { label: "🌍 eBay Global", value: "eBay", tooltip: "Varies by seller" },
+  { label: "🔩 Green Spark Plug Co. (Classic & Vintage)", value: "Green Spark Plug Co.", tooltip: "Worldwide" },
+  { label: "🇬🇧 mytyres.co.uk", value: "mytyres.co.uk", tooltip: "UK only" },
+  { label: "🌍 Tyres UK (Tyres.net)", value: "Tyres UK", tooltip: "UK only" },
+  { label: "🇪🇸 neumaticos-online.es", value: "neumaticos-online.es", tooltip: "Spain + EU" },
+  { label: "🇮🇹 Pneumatici IT", value: "Pneumatici IT", tooltip: "Italy + EU" },
+  { label: "🇪🇪 ReifenDirekt EE", value: "ReifenDirekt EE", tooltip: "Germany + EU" },
+  { label: "🇺🇸 Dunford Inc", value: "Dunford Inc", tooltip: "US only" },
+  { label: "🇧🇪 Autobandenmarkt", value: "Autobandenmarkt", tooltip: "Belgium + EU" },
+  { label: "🇺🇸 Maxpeedingrods", value: "Maxpeedingrods", tooltip: "Worldwide" },
+  { label: "🇩🇪 Kohl Automobile", value: "Kohl Automobile", tooltip: "Germany + EU" },
+  { label: "🇳🇴 Tirendo", value: "Tirendo", tooltip: "Norway only" },
   { label: "Amazon · Coming soon", value: "Amazon", disabled: true },
 ];
 
