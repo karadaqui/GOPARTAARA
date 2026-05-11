@@ -1,3 +1,5 @@
+import ShippingPill from "@/components/ShippingPill";
+
 interface GreenSparkResultsRowProps {
   searchQuery: string;
   variant?: "row" | "grid";
