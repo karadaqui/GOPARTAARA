@@ -146,6 +146,7 @@ const App = () => {
                 <Route path="/status" element={<Status />} />
                 <Route path="/sitemap" element={<Sitemap />} />
                 <Route path="/order-confirmation" element={<OrderConfirmation />} />
+                <Route path="/suppliers/trodo" element={<SuppliersTrodo />} />
                 <Route path="*" element={<PartSearchRedirect />} />
               </Routes>
               </div>
