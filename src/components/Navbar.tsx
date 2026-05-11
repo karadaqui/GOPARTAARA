@@ -11,6 +11,7 @@ import {
   Scale,
   Zap,
   Bike,
+  Star,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
