@@ -33,10 +33,11 @@ type MoreLink = {
   href: string;
   Icon: LucideIcon;
   elite?: boolean;
+  disabled?: boolean;
 };
 
 const moreLinks: MoreLink[] = [
-  { label: "Elite Suppliers", href: "/suppliers/trodo", Icon: Star },
+  { label: "Trodo (Coming Soon)", href: "/suppliers/trodo", Icon: Star, disabled: true },
   { label: "EV Charging", href: "/ev-charging", Icon: Zap },
   { label: "Bulk Compare", href: "/compare", Icon: Scale, elite: true },
   { label: "Tyres", href: "/tyres", Icon: CircleDot },
@@ -242,22 +243,27 @@ const Navbar = () => {
                       return (
                         <button
                           key={l.href}
-                          onClick={() => handleNavClick(l.href)}
+                          onClick={() => !l.disabled && handleNavClick(l.href)}
+                          disabled={l.disabled}
+                          aria-disabled={l.disabled}
                           className="w-full rounded-md px-3 py-2 text-left transition-colors flex items-center gap-2.5"
                           style={{
                             fontSize: "13px",
                             fontWeight: isActive ? 500 : 400,
-                            color: isActive ? "#ffffff" : "#a1a1aa",
+                            color: l.disabled ? "#52525b" : isActive ? "#ffffff" : "#a1a1aa",
                             background: "none",
                             border: "none",
-                            cursor: "pointer",
+                            cursor: l.disabled ? "not-allowed" : "pointer",
                             whiteSpace: "nowrap",
+                            opacity: l.disabled ? 0.6 : 1,
                           }}
                           onMouseEnter={(e) => {
+                            if (l.disabled) return;
                             e.currentTarget.style.color = "#ffffff";
                             e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.05)";
                           }}
                           onMouseLeave={(e) => {
+                            if (l.disabled) return;
                             if (!isActive) e.currentTarget.style.color = "#a1a1aa";
                             e.currentTarget.style.backgroundColor = "transparent";
                           }}
