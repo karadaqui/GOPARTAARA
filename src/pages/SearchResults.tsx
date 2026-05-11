@@ -2479,10 +2479,6 @@ const SearchResults = () => {
                   </a>
                 </div>
                 </>
-                )}
-                {isClassicPartSearch(activeQuery) && brandFilter !== "eBay" && brandFilter !== "Amazon" && (
-                  <GreenSparkResultsRow searchQuery={activeQuery} />
-                )}
               </div>
             ) : (liveLoading || isInitialLoad) ? (
               /* ── Loading State (also covers initial-load grace period) ── */
