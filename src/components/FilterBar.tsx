@@ -39,10 +39,15 @@ const FilterDropdown = ({
       if (ref.current && !ref.current.contains(e.target as Node)) {
         setOpen(false);
       }
+      setTooltipOpen(null);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  useEffect(() => {
+    if (!open) setTooltipOpen(null);
+  }, [open]);
 
   useEffect(() => {
     if (open) {
