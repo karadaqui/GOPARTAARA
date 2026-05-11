@@ -137,10 +137,10 @@ const About = () => (
               A market built for confusion.
             </h2>
             <p style={{ fontSize: "15px", color: "#a1a1aa", lineHeight: 1.7 }}>
-              The UK car parts market is fragmented across hundreds of sellers, factor branches,
+              The car parts market is fragmented across hundreds of sellers, factor branches,
               and online retailers — each with their own catalogue, pricing structure, and
-              inventory system. Drivers waste hours opening tabs, copying part numbers, and
-              second-guessing whether they're being overcharged.
+              inventory system. Drivers across the UK and Europe waste hours opening tabs,
+              copying part numbers, and second-guessing whether they're being overcharged.
             </p>
           </div>
           <div>
