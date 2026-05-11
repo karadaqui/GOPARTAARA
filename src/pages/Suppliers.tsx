@@ -139,37 +139,6 @@ export default function Suppliers() {
           </div>
         </section>
 
-        {/* Marketplace */}
-        <section className="container pb-12">
-          <h2 className="text-xl font-bold mb-4">🏪 Marketplace Sellers</h2>
-          <div
-            className="rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-6"
-            style={{ background: "#111", border: "1px solid #222" }}
-          >
-            <LogoOrInitial name="Rosslyn" />
-            <div className="flex-1">
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <h3 className="text-xl font-bold">Rosslyn Car Parts Ltd</h3>
-                <span className="text-zinc-400 text-sm">🇬🇧</span>
-              </div>
-              <div
-                className="inline-block px-3 py-1 rounded-full mb-2"
-                style={{
-                  fontSize: 11, fontWeight: 600, color: "#9ca3af",
-                  background: "rgba(255,255,255,0.05)", border: "1px solid #333",
-                }}
-              >
-                Marketplace Seller — Coming Soon
-              </div>
-              <p className="text-zinc-300 text-sm">
-                UK-based car parts specialist joining GOPARTARA Marketplace.
-              </p>
-            </div>
-            <Button disabled className="opacity-60 cursor-not-allowed bg-zinc-700 hover:bg-zinc-700 text-white">
-              Coming Soon
-            </Button>
-          </div>
-        </section>
 
         <section className="container pb-16">
           <p className="text-xs text-zinc-500 text-center max-w-2xl mx-auto">
