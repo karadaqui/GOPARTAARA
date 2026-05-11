@@ -194,15 +194,7 @@ const GreenSparkProductCard = ({
   };
 
   return (
-    <div className="group rounded-3xl overflow-hidden border border-amber-800/40 bg-[#111]/60 backdrop-blur-sm hover:border-amber-600/60 hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-[colors,transform] flex flex-col relative animate-fade-in">
-      {/* Condition bar — same height/style as eBay "New" bar */}
-      <div
-        className="h-7 flex items-center justify-center text-xs font-semibold tracking-wide uppercase border-b border-white/10"
-        style={{ background: "#14532d", color: "#4ade80" }}
-      >
-        New
-      </div>
-
+    <div className="group rounded-3xl overflow-hidden border border-white/[0.06] bg-[#111]/60 backdrop-blur-sm hover:border-white/[0.15] hover:bg-[#111]/80 hover:shadow-2xl hover:shadow-black/60 hover:-translate-y-0.5 transition-[colors,transform] flex flex-col relative animate-fade-in">
       {/* Image */}
       <a href={product.url} target="_blank" rel="noopener noreferrer sponsored" className="block relative">
         <div className="h-[140px] sm:h-[180px] lg:h-[200px] bg-[#0d0d0d] overflow-hidden relative">
@@ -211,13 +203,6 @@ const GreenSparkProductCard = ({
             alt={product.title}
             className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500"
           />
-          {/* Supplier label top-left on the image */}
-          <span className="absolute top-2 left-2 flex items-center gap-1 bg-black/70 backdrop-blur-sm border border-amber-700/40 rounded-full px-2 py-0.5">
-            <span className="text-[10px]">🔩</span>
-            <span className="text-[10px] font-semibold text-amber-400">
-              Green Spark Plug Co.
-            </span>
-          </span>
         </div>
       </a>
 
@@ -228,6 +213,17 @@ const GreenSparkProductCard = ({
             {product.title}
           </p>
         </a>
+
+        {/* Supplier pill (mirrors eBay supplier badge row) */}
+        <div className="flex items-center flex-wrap gap-1.5 -mt-1">
+          <span
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-white/[0.04] border border-white/[0.08] text-zinc-300"
+            title="Green Spark Plug Co."
+          >
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#fbbf24" }} />
+            GSP
+          </span>
+        </div>
 
         {/* Specs — whitelist only, compact 2-col grid, key/value on one line */}
         {(() => {
