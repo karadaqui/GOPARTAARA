@@ -138,6 +138,27 @@ const FilterDropdown = ({
         </div>,
         document.body
       )}
+
+      {tooltipOpen && createPortal(
+        <div
+          style={{
+            position: "fixed",
+            zIndex: 10001,
+            top: tooltipPos.top,
+            left: tooltipPos.left,
+            transform: "translate(-50%, -100%)",
+          }}
+          onMouseDown={(e) => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
+          className="pointer-events-auto"
+        >
+          <div className="relative rounded-md border border-white/10 bg-[#1a1a1a] px-3 py-1.5 text-xs text-white shadow-xl whitespace-nowrap">
+            Ships to: {options.find((o) => o.value === tooltipOpen)?.tooltip}
+            <div className="absolute left-1/2 -bottom-1 h-2 w-2 -translate-x-1/2 rotate-45 bg-[#1a1a1a] border-r border-b border-white/10" />
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };
