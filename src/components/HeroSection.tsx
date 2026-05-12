@@ -356,7 +356,7 @@ const HeroSection = () => {
         {/* Heading */}
         <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <h1
-            className="font-display mb-5"
+            className="font-display gp-hero-h1 mb-5"
             style={{
               fontSize: "clamp(44px, 5.5vw, 72px)",
               fontWeight: 800,
