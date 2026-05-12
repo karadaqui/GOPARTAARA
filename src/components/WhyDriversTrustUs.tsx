@@ -9,7 +9,7 @@ const TRUST_POINTS = [
   {
     icon: "⚡",
     title: "Results in under 3 seconds",
-    description: "Our search engine checks all 7 suppliers simultaneously, not one by one.",
+    description: "Our search engine checks all 14 global suppliers simultaneously, not one by one.",
   },
   {
     icon: "🎯",
