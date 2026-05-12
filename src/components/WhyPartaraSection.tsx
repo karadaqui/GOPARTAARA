@@ -37,7 +37,7 @@ const renderCell = (value: Cell, isPartara: boolean, feature?: string) => {
 
 const WhyPartaraSection = () => {
   return (
-    <section className="animated-gradient-bg px-4 py-12 md:py-16 relative overflow-hidden">
+    <section className="animated-gradient-bg px-4 py-10 md:py-12 relative overflow-hidden">
       <div
         aria-hidden="true"
         style={{
