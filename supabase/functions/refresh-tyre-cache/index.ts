@@ -8,7 +8,7 @@ const cors = {
 
 const FEED_LIST_URL = 'https://ui.awin.com/productdata-darwin-download/publisher/2845282/f0b723c9643205a96aeb31377b805e02/1/feedList'
 
-const TYRE_KEYWORDS = ['tyre', 'reifen', 'pneuma', 'neumatico', 'mytyres', 'gomme', 'pneu', 'wheel']
+const TYRE_KEYWORDS = ['tyre', 'reifen', 'pneuma', 'neumatico', 'mytyres', 'gomme', 'pneu', 'wheel', 'tirendo', 'autobandenmarkt', 'banden']
 
 // Currency by region/language
 function detectCurrency(region: string, language: string): string {
