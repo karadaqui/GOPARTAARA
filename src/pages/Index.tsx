@@ -59,7 +59,7 @@ const Index = () => {
               "@id": "https://gopartara.com/#website",
               "url": "https://gopartara.com",
               "name": "GOPARTARA",
-              "description": "Search and compare car parts prices from 7 trusted global suppliers simultaneously.",
+              "description": "Search and compare car parts prices from 14 global suppliers simultaneously.",
               "publisher": {
                 "@type": "Organization",
                 "name": "GOPARTARA Ltd",
