@@ -36,7 +36,7 @@ export const helpCategories: Record<string, HelpCategoryData> = {
     slug: "getting-started",
     title: "Getting Started",
     description:
-      "Learn how to search for parts, use UK reg plate lookup, photo search and understand price quality badges.",
+      "Learn how to search for parts, use reg plate lookup (UK), photo search and understand price quality badges.",
     articles: [
       {
         q: "How do I search for car parts on GOPARTARA?",
@@ -298,6 +298,92 @@ export const helpCategories: Record<string, HelpCategoryData> = {
             <L href="/privacy">gopartara.com/privacy</L> for full details.
           </>
         ),
+      },
+    ],
+  },
+  tyres: {
+    slug: "tyres",
+    title: "Tyres",
+    description: "Tyre search, sizing, and fitting partners",
+    articles: [
+      {
+        q: "How does tyre search work?",
+        a: (
+          <>
+            Enter your tyre size (e.g. 205/55 R16) or your vehicle reg plate on the{" "}
+            <L href="/tyres">Tyres page</L>. GOPARTARA compares prices across multiple
+            tyre suppliers instantly.
+          </>
+        ),
+      },
+      {
+        q: "Can I get tyres fitted?",
+        a: "Yes. Our tyre suppliers offer delivery to local fitting centres. Select a fitting option at checkout on the supplier's website.",
+      },
+    ],
+  },
+  "shipping-delivery": {
+    slug: "shipping-delivery",
+    title: "Shipping & Delivery",
+    description: "How orders and deliveries work",
+    articles: [
+      {
+        q: "Who handles my order and delivery?",
+        a: "GOPARTARA is a comparison platform. When you click through to a supplier, your order and delivery are handled entirely by that supplier. We are not a party to the transaction.",
+      },
+      {
+        q: "Can I return a part?",
+        a: "Return policies vary by supplier. Please check the supplier's returns policy before purchasing. For marketplace purchases, contact the seller directly.",
+      },
+    ],
+  },
+  troubleshooting: {
+    slug: "troubleshooting",
+    title: "Troubleshooting",
+    description: "Fix common issues with search and account",
+    articles: [
+      {
+        q: "Photo search isn't recognising my part",
+        a: "For best results: take the photo in good lighting, on a plain background, with the part clearly visible. Avoid blurry or partial images. If it still doesn't work, try a text search instead.",
+      },
+      {
+        q: "I'm not receiving price alert emails",
+        a: (
+          <>
+            Check your spam or junk folder first. If emails are missing, make sure your
+            email address is correct in your account settings. You can also re-enable
+            alerts from <L href="/dashboard">your dashboard</L>.
+          </>
+        ),
+      },
+      {
+        q: "A price looks wrong or outdated",
+        a: "Prices are updated daily from our suppliers. If a price looks incorrect, it may have changed since our last update. Always verify the final price on the supplier's website before purchasing.",
+      },
+    ],
+  },
+  "suppliers-affiliate": {
+    slug: "suppliers-affiliate",
+    title: "Suppliers & Affiliate Links",
+    description: "How our supplier network and affiliate links work",
+    articles: [
+      {
+        q: "Which suppliers do you search?",
+        a: (
+          <>
+            GOPARTARA searches 14 global suppliers including eBay, Green Spark Plug Co.,
+            mytyres.co.uk, Tyres UK, EV King, Amazon UK, Maxpeedingrods, and more. See
+            our full supplier list at <L href="/suppliers">gopartara.com/suppliers</L>.
+          </>
+        ),
+      },
+      {
+        q: "Do affiliate links cost me more?",
+        a: "No. When you click through to a supplier via GOPARTARA, you pay exactly the same price as if you went directly. GOPARTARA may earn a small commission from the supplier — this never affects your price.",
+      },
+      {
+        q: "Why are some results marked 'Affiliate'?",
+        a: "Some results come from our affiliate partner network (via Awin). These are clearly marked. Affiliate relationships do not affect the order or ranking of results — everything is sorted by price or best match.",
       },
     ],
   },
