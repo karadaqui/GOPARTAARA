@@ -99,271 +99,64 @@ const Index = () => {
       />
       <Navbar />
       <HeroSection />
-      <LiveActivityCounter />
 
-      <FeaturedPartsSection />
-
-
-      {/* Live social proof ticker */}
-      <div
-        aria-label="Live activity ticker"
+      {/* Trust Bar */}
+      <section
+        aria-label="Trust bar"
         style={{
           background: "#0a0a0a",
           borderTop: "1px solid rgba(255,255,255,0.06)",
           borderBottom: "1px solid rgba(255,255,255,0.06)",
-          overflow: "hidden",
-          padding: "8px 0",
         }}
       >
-        <style>{`
-          @keyframes gp-ticker-scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-          }
-          .gp-ticker-track {
-            display: inline-flex;
-            white-space: nowrap;
-            animation: gp-ticker-scroll 60s linear infinite;
-            will-change: transform;
-          }
-          .gp-ticker-track:hover { animation-play-state: paused; }
-          @media (prefers-reduced-motion: reduce) {
-            .gp-ticker-track { animation: none; }
-          }
-        `}</style>
-        <div style={{ width: "100%", overflow: "hidden" }}>
-          <div className="gp-ticker-track">
-            {Array.from({ length: 1 }).map((_, dup) => (
-              <div key={dup} style={{ display: "inline-flex", alignItems: "center" }}>
-                {[
-                  "🔍 Someone in Manchester just found brake pads for £38 less",
-                  "⚡ 653,750 results for BMW parts",
-                  "💰 Average saving today: £43",
-                  "🛞 205/55 R16 tyres compared across 5 suppliers",
-                  "🔧 Ford Focus clutch kit — 12 results found",
-                  "⭐ 14 global suppliers checked simultaneously",
-                  "🏆 1,000,000+ parts searchable right now",
-                ].map((msg, i) => (
-                  <span
-                    key={`${dup}-${i}`}
-                    style={{
-                      color: "#a1a1aa",
-                      fontSize: 12,
-                      fontWeight: 500,
-                      padding: "0 28px",
-                      borderRight: "1px solid rgba(255,255,255,0.08)",
-                    }}
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-center">
+            {[
+              { label: "🏢 Partara Ltd · Registered in England & Wales" },
+              { label: "🔍 1,000,000+ Parts" },
+              { label: "🌍 14 Global Suppliers" },
+              { label: "🔒 Free & Secure" },
+              {
+                label: "⭐ Rated on Trustpilot",
+                href: "https://www.trustpilot.com/review/gopartara.com",
+              },
+            ].map((item, idx, arr) => (
+              <div key={item.label} className="flex items-center gap-x-6">
+                {item.href ? (
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "#d4d4d8", fontSize: 13, fontWeight: 500 }}
+                    className="hover:text-white transition-colors"
                   >
-                    {msg}
+                    {item.label}
+                  </a>
+                ) : (
+                  <span style={{ color: "#d4d4d8", fontSize: 13, fontWeight: 500 }}>
+                    {item.label}
                   </span>
-                ))}
+                )}
+                {idx < arr.length - 1 && (
+                  <span
+                    aria-hidden="true"
+                    style={{
+                      width: 1,
+                      height: 16,
+                      background: "rgba(255,255,255,0.12)",
+                      display: "inline-block",
+                    }}
+                  />
+                )}
               </div>
             ))}
           </div>
         </div>
-      </div>
-
-      <SectionDivider />
-      
-      <TrustedSuppliersBar />
-      <SectionDivider />
-
-      {/* The GoPartara Guarantee */}
-      <section
-        className="px-4 py-8"
-        style={{
-          background: "rgba(0,182,122,0.04)",
-          borderLeft: "3px solid #00b67a",
-          borderTop: "1px solid rgba(0,182,122,0.15)",
-          borderBottom: "1px solid rgba(0,182,122,0.15)",
-        }}
-      >
-        <div className="max-w-5xl mx-auto">
-          <div className="flex items-center justify-center gap-2 mb-5">
-            <span aria-hidden="true" style={{ fontSize: 22 }}>🛡️</span>
-            <h2
-              className="font-display"
-              style={{ color: "#ffffff", fontSize: 20, fontWeight: 700, letterSpacing: "-0.01em" }}
-            >
-              The GoPartara Guarantee
-            </h2>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-            {[
-              { icon: "✅", label: "Free to Search — Always" },
-              { icon: "🔒", label: "Secure & Private" },
-              { icon: "💰", label: "Real Prices, No Markup" },
-              { icon: "⚡", label: "Live Data from 14 Suppliers" },
-            ].map((item) => (
-              <span
-                key={item.label}
-                className="inline-flex items-center gap-2"
-                style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(0,182,122,0.35)",
-                  color: "#ffffff",
-                  fontSize: 13,
-                  fontWeight: 600,
-                  padding: "8px 14px",
-                  borderRadius: 999,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                <span aria-hidden="true">{item.icon}</span>
-                {item.label}
-              </span>
-            ))}
-          </div>
-        </div>
       </section>
-
-      <SectionDivider />
-      <FeaturedListingsSection />
-      <FeaturedSupplierSpotlight />
-      <WhyDriversTrustUs />
-      <SectionDivider />
-      <SocialProofStats />
-      <SectionDivider />
-
-      {/* Trust bar */}
-      <section className="px-4 mb-8 mt-2">
-        <div className="max-w-4xl mx-auto text-center">
-          <p style={{ fontSize: "12px", color: "#52525b", margin: "8px 0", textAlign: "center" }}>
-            Trusted by drivers worldwide.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
-            {[
-              "UK's Most Comprehensive Parts Search",
-              "SSL Secured · No Credit Card Required",
-              "Live data from 14 global suppliers",
-            ].map((label) => (
-              <span
-                key={label}
-                className="inline-flex items-center"
-                style={{
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid rgba(255,255,255,0.06)",
-                  color: "#52525b",
-                  fontSize: "11px",
-                  padding: "4px 10px",
-                  borderRadius: "999px",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {label}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <Link
-        to="/deals"
-        className="flex items-center justify-between px-5 py-3 mx-4 mb-6 max-w-4xl md:mx-auto rounded-2xl transition-colors group"
-        style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
-      >
-        <div className="flex items-center gap-3">
-          <div>
-            <p className="text-foreground text-sm font-bold">Deals &amp; Savings</p>
-            <p className="text-muted-foreground text-xs">
-              eBay · Amazon · Classic Parts — Updated daily
-            </p>
-          </div>
-        </div>
-        <span className="group-hover:translate-x-0.5 transition-transform text-sm font-semibold" style={{ color: "#cc1111" }}>
-          View deals →
-        </span>
-      </Link>
 
       <Suspense fallback={<div className="h-32" />}>
-        <ScrollReveal><HowItWorksSection /></ScrollReveal>
         <SectionDivider />
-
-        {/* See it in action — video placeholder */}
-        <section className="px-4 py-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2
-              className="text-2xl md:text-3xl font-bold"
-              style={{ color: "#fafafa", marginBottom: "8px" }}
-            >
-              See GOPARTARA in action
-            </h2>
-            <p
-              style={{
-                fontSize: "14px",
-                color: "#a1a1aa",
-                marginBottom: "24px",
-              }}
-            >
-              Watch how we find the cheapest car part in under 30 seconds
-            </p>
-
-            <div
-              style={{
-                maxWidth: "800px",
-                margin: "0 auto",
-                aspectRatio: "16 / 9",
-                background:
-                  "linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0a0a0a 100%)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: "12px",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                position: "relative",
-                overflow: "hidden",
-              }}
-            >
-              <div
-                style={{
-                  width: "72px",
-                  height: "72px",
-                  borderRadius: "50%",
-                  background: "rgba(255,255,255,0.95)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  boxShadow: "0 4px 24px rgba(0,0,0,0.4)",
-                  marginBottom: "16px",
-                }}
-                aria-hidden="true"
-              >
-                <span
-                  style={{
-                    width: 0,
-                    height: 0,
-                    borderTop: "14px solid transparent",
-                    borderBottom: "14px solid transparent",
-                    borderLeft: "22px solid #0a0a0a",
-                    marginLeft: "6px",
-                  }}
-                />
-              </div>
-              <p
-                style={{
-                  fontSize: "13px",
-                  color: "#a1a1aa",
-                  margin: 0,
-                }}
-              >
-                Coming soon — full demo video
-              </p>
-            </div>
-
-            <p
-              style={{
-                fontSize: "13px",
-                color: "#71717a",
-                marginTop: "16px",
-              }}
-            >
-              In the meantime, try a live search above →
-            </p>
-          </div>
-        </section>
-
+        <ScrollReveal><HowItWorksSection /></ScrollReveal>
         <SectionDivider />
         <ScrollReveal><FeaturesSection /></ScrollReveal>
         <SectionDivider />
@@ -428,11 +221,6 @@ const Index = () => {
           </a>
         </div>
       </section>
-
-      <SectionDivider />
-
-      {/* Newsletter signup */}
-      <NewsletterSignup />
 
       <Footer />
       <BackToTop />
