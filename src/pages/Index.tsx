@@ -17,7 +17,6 @@ import TrustedSuppliersBar from "@/components/TrustedSuppliersBar";
 // Below-the-fold: lazy-load to keep initial JS small and defer their data fetches
 const FeaturesSection = lazy(() => import("@/components/FeaturesSection"));
 const HowItWorksSection = lazy(() => import("@/components/HowItWorksSection"));
-const TestimonialsSection = lazy(() => import("@/components/TestimonialsSection"));
 const PricingSection = lazy(() => import("@/components/PricingSection"));
 const WhyPartaraSection = lazy(() => import("@/components/WhyPartaraSection"));
 
