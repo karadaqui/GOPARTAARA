@@ -36,7 +36,7 @@ const cells: Cell[] = [
 
 const FeaturesSection = () => {
   return (
-    <section className="py-12 md:py-16">
+    <section className="py-10 md:py-12">
       <div className="container px-6 md:px-4">
         <ScrollReveal className="text-center mb-16">
           <span
