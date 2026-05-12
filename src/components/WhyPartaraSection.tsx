@@ -176,7 +176,7 @@ const WhyPartaraSection = () => {
               textDecoration: "none",
             }}
           >
-            Start searching free — we cover all 7 suppliers →
+            Start searching free — we cover all 14 global suppliers →
           </a>
         </div>
 
