@@ -135,7 +135,7 @@ const HowItWorksSection = () => (
                 }}
                 className={isSearch ? "cursor-pointer" : ""}
               >
-                <div style={{ fontSize: "11px", color: "#3f3f46", fontWeight: 700, letterSpacing: "0.1em" }}>
+                <div className="gp-step-num">
                   {s.number}
                 </div>
                 <h3 style={{ fontSize: "20px", fontWeight: 700, color: "#ffffff", marginTop: "16px" }}>
