@@ -1044,7 +1044,7 @@ const HeroSection = () => {
               </div>
               <div className="inline-flex items-center gap-1.5 text-[10px] bg-green-500/10 border border-green-500/20 text-green-400 rounded-full px-2 py-0.5 font-bold">
                 <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse" />
-                7 Live
+                14 Live
               </div>
             </div>
 
@@ -1088,16 +1088,6 @@ const HeroSection = () => {
                   <div key={s.name} className={rowClass}>{inner}</div>
                 );
               })}
-            </div>
-
-            {/* Coming soon */}
-            <div className="mt-5 flex flex-wrap items-center gap-1.5">
-              <span className="text-zinc-600 text-[10px] font-semibold uppercase tracking-wider mr-1">
-                Coming soon:
-              </span>
-              {['Amazon','Euro Car Parts','GSF Car Parts','Autodoc','Halfords','Black Circles'].map(n => (
-                <span key={n} className="text-[10px] text-zinc-500">{n}</span>
-              ))}
             </div>
           </section>
         </div>
