@@ -369,10 +369,6 @@ const Index = () => {
         <SectionDivider />
         <ScrollReveal><WhyPartaraSection /></ScrollReveal>
         <SectionDivider />
-        <ScrollReveal><TestimonialsSection /></ScrollReveal>
-        <SectionDivider />
-        <ScrollReveal><SavingsComparison /></ScrollReveal>
-        <SectionDivider />
         <ScrollReveal><PricingSection /></ScrollReveal>
       </Suspense>
 
