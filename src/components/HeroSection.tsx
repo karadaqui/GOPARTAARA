@@ -338,12 +338,13 @@ const HeroSection = () => {
   return (
     <section
       id="home"
-      className="relative flex items-center justify-center pt-16 pb-8 overflow-x-visible overflow-y-hidden animated-gradient-bg"
+      className="relative flex items-center justify-center pt-16 pb-8 overflow-x-visible overflow-y-hidden"
       style={{
+        backgroundColor: "#0a0a0a",
         backgroundImage:
-          "radial-gradient(ellipse 80% 40% at 50% -10%, rgba(204,17,17,0.12) 0%, transparent 70%), radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
-        backgroundSize: "auto, 24px 24px",
-        backgroundRepeat: "no-repeat, repeat",
+          "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(220,38,38,0.12) 0%, transparent 70%), linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
+        backgroundSize: "auto, 40px 40px, 40px 40px",
+        backgroundRepeat: "no-repeat, repeat, repeat",
       }}
     >
       {/* Background glow orbs */}
@@ -355,7 +356,7 @@ const HeroSection = () => {
         {/* Heading */}
         <div className={`transition-[colors,transform] ease-out delay-100 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
           <h1
-            className="font-display mb-5"
+            className="font-display gp-hero-h1 mb-5"
             style={{
               fontSize: "clamp(44px, 5.5vw, 72px)",
               fontWeight: 800,
@@ -596,7 +597,7 @@ const HeroSection = () => {
                       <button
                         type="submit"
                         disabled={identifying}
-                        className="shrink-0 flex-1 sm:flex-none transition-transform disabled:opacity-60 hover:scale-[1.02]"
+                        className="gp-search-btn shrink-0 flex-1 sm:flex-none transition-transform disabled:opacity-60 hover:scale-[1.02]"
                         style={{
                           background: "#cc1111",
                           color: "#ffffff",
@@ -672,7 +673,7 @@ const HeroSection = () => {
                           setAutoOpen(true);
                           heroInputRef.current?.focus();
                         }}
-                        className="transition-[colors,transform] hover:-translate-y-0.5"
+                        className="gp-make-btn transition-[colors,transform] hover:-translate-y-0.5"
                         style={{
                           display: "flex",
                           alignItems: "center",
@@ -1054,7 +1055,7 @@ const HeroSection = () => {
                 { name: 'Tirendo', cat: 'Tyres', coverage: 'Norway only', twemoji: '1f1f3-1f1f4', url: 'https://www.awin1.com/cread.php?awinmid=8794&awinaffid=2845282&ued=https%3A%2F%2Fwww.tirendo.no' },
                 { name: 'Dunford Inc', cat: 'Auto Parts', coverage: 'US only', twemoji: '1f1fa-1f1f8', url: 'https://www.awin1.com/cread.php?awinmid=67974&awinaffid=2845282&ued=https%3A%2F%2Fwww.dunford.com' },
               ].map((s: { name: string; cat: string; coverage: string; twemoji: string; url: string }) => {
-                const rowClass = "flex items-center gap-3 py-2.5 hover:bg-zinc-900/40 -mx-2 px-2 rounded-lg transition-colors group";
+                const rowClass = "gp-supplier-row flex items-center gap-3 py-2.5 -mx-2 px-2 rounded-lg group";
                 const inner = (
                   <>
                     <img
@@ -1070,7 +1071,7 @@ const HeroSection = () => {
                     <span className="text-zinc-600 text-xs hidden sm:inline">·</span>
                     <span className="text-zinc-500 text-xs hidden sm:inline truncate">{s.cat}</span>
                     <span className="text-zinc-600 text-xs hidden md:inline truncate ml-auto">{s.coverage}</span>
-                    <span className="flex-shrink-0 text-[9px] text-green-400 font-bold tracking-wider sm:ml-0 ml-auto">
+                    <span className="gp-live-pulse flex-shrink-0 text-[9px] text-green-400 font-bold tracking-wider sm:ml-0 ml-auto">
                       LIVE
                     </span>
                   </>

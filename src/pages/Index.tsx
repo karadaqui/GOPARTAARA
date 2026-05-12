@@ -92,52 +92,58 @@ const Index = () => {
       <section
         aria-label="Trust bar"
         style={{
-          background: "#0a0a0a",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          background: "rgba(255,255,255,0.02)",
+          borderTop: "1px solid rgba(255,255,255,0.08)",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
         }}
       >
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-center">
             {[
-              { label: "🏢 Partara Ltd · Registered in England & Wales" },
-              { label: "🔍 1,000,000+ Parts" },
-              { label: "🌍 14 Global Suppliers" },
-              { label: "🔒 Free & Secure" },
+              { icon: "🏢", text: "Partara Ltd · Registered in England & Wales" },
+              { icon: "🔍", text: "1,000,000+ Parts" },
+              { icon: "🌍", text: "14 Global Suppliers" },
+              { icon: "🔒", text: "Free & Secure" },
               {
-                label: "⭐ Rated on Trustpilot",
+                icon: "⭐",
+                text: "Rated on Trustpilot",
                 href: "https://www.trustpilot.com/review/gopartara.com",
               },
-            ].map((item, idx, arr) => (
-              <div key={item.label} className="flex items-center gap-x-6">
-                {item.href ? (
-                  <a
-                    href={item.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: "#d4d4d8", fontSize: 13, fontWeight: 500 }}
-                    className="hover:text-white transition-colors"
-                  >
-                    {item.label}
-                  </a>
-                ) : (
-                  <span style={{ color: "#d4d4d8", fontSize: 13, fontWeight: 500 }}>
-                    {item.label}
-                  </span>
-                )}
-                {idx < arr.length - 1 && (
-                  <span
-                    aria-hidden="true"
-                    style={{
-                      width: 1,
-                      height: 16,
-                      background: "rgba(255,255,255,0.12)",
-                      display: "inline-block",
-                    }}
-                  />
-                )}
-              </div>
-            ))}
+            ].map((item, idx, arr) => {
+              const inner = (
+                <span style={{ color: "#d4d4d8", fontSize: 13, fontWeight: 500, display: "inline-flex", alignItems: "center" }}>
+                  <span aria-hidden="true" className="gp-trust-icon">{item.icon}</span>
+                  {item.text}
+                </span>
+              );
+              return (
+                <div key={item.text} className="flex items-center gap-x-6">
+                  {item.href ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-white transition-colors"
+                    >
+                      {inner}
+                    </a>
+                  ) : (
+                    inner
+                  )}
+                  {idx < arr.length - 1 && (
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        width: 1,
+                        height: 16,
+                        background: "rgba(255,255,255,0.12)",
+                        display: "inline-block",
+                      }}
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
