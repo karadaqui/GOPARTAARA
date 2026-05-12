@@ -3,7 +3,7 @@ const COMPETITORS = ["GOPARTARA", "carpartscompare.uk", "whatpart.co.uk", "compa
 type Cell = string | true | false;
 
 const ROWS: { feature: string; values: [Cell, Cell, Cell, Cell] }[] = [
-  { feature: "Suppliers searched", values: ["7 live", "3", "2", "4"] },
+  { feature: "Suppliers searched", values: ["14 live", "3", "2", "4"] },
   { feature: "Photo search", values: [true, false, false, false] },
   { feature: "VIN search", values: [true, false, false, false] },
   { feature: "UK Reg plate", values: [true, true, true, false] },
@@ -71,7 +71,7 @@ const WhyPartaraSection = () => {
             The only search that covers them all.
           </h2>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-            While others search one site, we search seven simultaneously.
+            While others search one site, we search fourteen simultaneously.
           </p>
         </div>
 
@@ -176,7 +176,7 @@ const WhyPartaraSection = () => {
               textDecoration: "none",
             }}
           >
-            Start searching free — we cover all 7 suppliers →
+            Start searching free — we cover all 14 global suppliers →
           </a>
         </div>
 

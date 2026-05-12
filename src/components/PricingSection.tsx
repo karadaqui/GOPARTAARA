@@ -121,8 +121,8 @@ export const faqItems = [
     a: "Yes, you can change your plan anytime. Upgrades take effect immediately. Downgrades take effect at the next billing cycle.",
   },
   {
-    q: "How does the 7-day money back guarantee work?",
-    a: "If you're not satisfied within 7 days of your first subscription, email us at info@gopartara.com and we'll issue a full refund — no questions asked.",
+    q: "How does the 14-day money back guarantee work?",
+    a: "If you're not satisfied within 14 days of your first subscription, email us at info@gopartara.com and we'll issue a full refund — no questions asked.",
   },
   {
     q: "Do you store my payment details?",
@@ -134,7 +134,7 @@ export const faqItems = [
   },
   {
     q: "Do you offer refunds?",
-    a: "Yes, full refund within 7 days of any paid subscription. No questions asked.",
+    a: "Yes, full refund within 14 days of any paid subscription. No questions asked.",
   },
   {
     q: "Can I use GOPARTARA for my garage business?",

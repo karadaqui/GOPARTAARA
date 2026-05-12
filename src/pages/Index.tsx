@@ -5,9 +5,9 @@ import HeroSection from "@/components/HeroSection";
 import LiveActivityCounter from "@/components/LiveActivityCounter";
 import SocialProofStats from "@/components/SocialProofStats";
 import HomeCTASection from "@/components/HomeCTASection";
-import SavingsComparison from "@/components/SavingsComparison";
+
 import PopularSearchesStrip from "@/components/PopularSearchesStrip";
-import BrowseByMakeSection from "@/components/BrowseByMakeSection";
+
 import FeaturedListingsSection from "@/components/FeaturedListingsSection";
 import SectionDivider from "@/components/SectionDivider";
 
@@ -17,7 +17,6 @@ import TrustedSuppliersBar from "@/components/TrustedSuppliersBar";
 // Below-the-fold: lazy-load to keep initial JS small and defer their data fetches
 const FeaturesSection = lazy(() => import("@/components/FeaturesSection"));
 const HowItWorksSection = lazy(() => import("@/components/HowItWorksSection"));
-const TestimonialsSection = lazy(() => import("@/components/TestimonialsSection"));
 const PricingSection = lazy(() => import("@/components/PricingSection"));
 const WhyPartaraSection = lazy(() => import("@/components/WhyPartaraSection"));
 
@@ -32,7 +31,6 @@ import ExitIntentPopup from "@/components/ExitIntentPopup";
 import FeaturedPartsSection from "@/components/FeaturedPartsSection";
 import FeaturedSupplierSpotlight from "@/components/FeaturedSupplierSpotlight";
 import WhyDriversTrustUs from "@/components/WhyDriversTrustUs";
-import HowToSaveSection from "@/components/HowToSaveSection";
 
 const Index = () => {
   const location = useLocation();
@@ -51,7 +49,7 @@ const Index = () => {
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <SEOHead
         title="GOPARTARA — Compare Car Parts Prices | Search 1M+ Parts Free"
-        description="Search and compare car parts prices from 7 trusted global suppliers simultaneously. Free to use. No account needed. Find brake pads, filters, tyres and more — shipped worldwide."
+        description="Search and compare car parts prices from 14 global suppliers simultaneously. Free to use. No account needed. Find brake pads, filters, tyres and more — shipped worldwide."
         path="/"
         jsonLd={{
           "@context": "https://schema.org",
@@ -61,7 +59,7 @@ const Index = () => {
               "@id": "https://gopartara.com/#website",
               "url": "https://gopartara.com",
               "name": "GOPARTARA",
-              "description": "Search and compare car parts prices from 7 trusted global suppliers simultaneously.",
+              "description": "Search and compare car parts prices from 14 global suppliers simultaneously.",
               "publisher": {
                 "@type": "Organization",
                 "name": "GOPARTARA Ltd",
@@ -103,63 +101,6 @@ const Index = () => {
       <HeroSection />
       <LiveActivityCounter />
 
-      {/* Trust stats bar */}
-      <section
-        aria-label="Platform statistics"
-        className="px-4 py-8"
-        style={{
-          background: "#0a0a0a",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-        }}
-      >
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4">
-            {[
-              { value: "1,000,000+", label: "Parts searchable" },
-              { value: "7", label: "Live suppliers" },
-              { value: "£43", label: "Average saving per search" },
-              { value: "Free", label: "Always and forever" },
-            ].map((s, i, arr) => (
-              <div
-                key={s.label}
-                className="text-center px-4 py-3"
-                style={{
-                  borderRight:
-                    i < arr.length - 1
-                      ? "1px solid rgba(255,255,255,0.08)"
-                      : "none",
-                }}
-              >
-                <div
-                  className="font-display"
-                  style={{
-                    color: "#ffffff",
-                    fontSize: "clamp(24px, 4vw, 36px)",
-                    fontWeight: 800,
-                    letterSpacing: "-0.02em",
-                    lineHeight: 1.1,
-                    marginBottom: 6,
-                  }}
-                >
-                  {s.value}
-                </div>
-                <div
-                  style={{
-                    color: "#a1a1aa",
-                    fontSize: 12,
-                    fontWeight: 500,
-                    letterSpacing: "0.02em",
-                  }}
-                >
-                  {s.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <FeaturedPartsSection />
 
 
@@ -200,7 +141,7 @@ const Index = () => {
                   "💰 Average saving today: £43",
                   "🛞 205/55 R16 tyres compared across 5 suppliers",
                   "🔧 Ford Focus clutch kit — 12 results found",
-                  "⭐ 7 trusted suppliers checked simultaneously",
+                  "⭐ 14 global suppliers checked simultaneously",
                   "🏆 1,000,000+ parts searchable right now",
                 ].map((msg, i) => (
                   <span
@@ -253,7 +194,7 @@ const Index = () => {
               { icon: "✅", label: "Free to Search — Always" },
               { icon: "🔒", label: "Secure & Private" },
               { icon: "💰", label: "Real Prices, No Markup" },
-              { icon: "⚡", label: "Live Data from 7 Suppliers" },
+              { icon: "⚡", label: "Live Data from 14 Suppliers" },
             ].map((item) => (
               <span
                 key={item.label}
@@ -278,84 +219,9 @@ const Index = () => {
       </section>
 
       <SectionDivider />
-
-      {/* As Seen In — Press & Media (placeholder) */}
-      <section
-        className="px-4 py-12"
-        style={{
-          background: "rgba(255,255,255,0.02)",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-        }}
-      >
-        <div className="max-w-5xl mx-auto text-center">
-          <p
-            style={{
-              fontSize: 11,
-              color: "#cc1111",
-              fontWeight: 700,
-              letterSpacing: "0.14em",
-              textTransform: "uppercase",
-              marginBottom: 8,
-            }}
-          >
-            Press &amp; Media
-          </p>
-          <h2
-            className="font-display"
-            style={{
-              fontSize: "24px",
-              fontWeight: 700,
-              color: "#ffffff",
-              letterSpacing: "-0.01em",
-              marginBottom: 28,
-            }}
-          >
-            As seen in
-          </h2>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-            {["Autocar", "Top Gear", "Evo Magazine", "Car Throttle", "Auto Express"].map(
-              (name) => (
-                <div
-                  key={name}
-                  className="flex items-center justify-center"
-                  style={{
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                    borderRadius: 10,
-                    height: 64,
-                    color: "#a1a1aa",
-                    fontSize: 14,
-                    fontWeight: 600,
-                    letterSpacing: "0.02em",
-                    opacity: 0.4,
-                  }}
-                >
-                  {name}
-                </div>
-              )
-            )}
-          </div>
-
-          <p
-            style={{
-              fontSize: 12,
-              color: "#52525b",
-              marginTop: 20,
-            }}
-          >
-            Media enquiries: press@gopartara.com
-          </p>
-        </div>
-      </section>
-
-      <SectionDivider />
       <FeaturedListingsSection />
       <FeaturedSupplierSpotlight />
       <WhyDriversTrustUs />
-      <HowToSaveSection />
-      <BrowseByMakeSection />
       <SectionDivider />
       <SocialProofStats />
       <SectionDivider />
@@ -370,7 +236,7 @@ const Index = () => {
             {[
               "UK's Most Comprehensive Parts Search",
               "SSL Secured · No Credit Card Required",
-              "Live data from 7 verified suppliers",
+              "Live data from 14 global suppliers",
             ].map((label) => (
               <span
                 key={label}
@@ -503,10 +369,6 @@ const Index = () => {
         <SectionDivider />
         <ScrollReveal><WhyPartaraSection /></ScrollReveal>
         <SectionDivider />
-        <ScrollReveal><TestimonialsSection /></ScrollReveal>
-        <SectionDivider />
-        <ScrollReveal><SavingsComparison /></ScrollReveal>
-        <SectionDivider />
         <ScrollReveal><PricingSection /></ScrollReveal>
       </Suspense>
 
@@ -572,172 +434,6 @@ const Index = () => {
       <ScrollReveal><HomeCTASection /></ScrollReveal>
 
       <HomeShareRow />
-
-      {/* Live stats bar (above footer) */}
-      <section
-        aria-label="Live platform stats"
-        className="px-4 py-8"
-        style={{
-          background: "#0a0a0a",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
-        }}
-      >
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-white/10">
-            {[
-              { value: "653,750+", label: "Parts compared today" },
-              { value: "£43", label: "Average saving per search" },
-              { value: "7", label: "Live suppliers right now" },
-              { value: "2 min", label: "Average search time" },
-            ].map((s) => (
-              <div key={s.label} className="text-center px-4 py-4">
-                <p
-                  className="font-display"
-                  style={{
-                    fontSize: 30,
-                    fontWeight: 900,
-                    color: "#ffffff",
-                    letterSpacing: "-0.02em",
-                    lineHeight: 1,
-                    marginBottom: 6,
-                  }}
-                >
-                  {s.value}
-                </p>
-                <p
-                  style={{
-                    fontSize: 11,
-                    color: "#a1a1aa",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                    fontWeight: 600,
-                  }}
-                >
-                  {s.label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Competitor comparison */}
-      <section
-        aria-label="Why GOPARTARA beats the rest"
-        style={{ background: "#0a0a0a", borderTop: "1px solid rgba(255,255,255,0.06)" }}
-      >
-        <div className="max-w-5xl mx-auto px-4 py-14">
-          <div className="text-center mb-8">
-            <span
-              style={{
-                display: "inline-block",
-                fontSize: 11,
-                fontWeight: 800,
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-                color: "#cc1111",
-                marginBottom: 8,
-              }}
-            >
-              Comparison
-            </span>
-            <h2
-              className="font-display"
-              style={{
-                fontSize: "clamp(22px, 2.6vw, 30px)",
-                fontWeight: 800,
-                color: "#ffffff",
-                letterSpacing: "-0.01em",
-              }}
-            >
-              Why GOPARTARA beats the rest
-            </h2>
-          </div>
-
-          <div
-            style={{
-              background: "#111111",
-              border: "1px solid #27272a",
-              borderRadius: 14,
-              overflow: "hidden",
-            }}
-          >
-            <div style={{ overflowX: "auto" }}>
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  fontSize: 14,
-                  color: "#e4e4e7",
-                  minWidth: 560,
-                }}
-              >
-                <thead>
-                  <tr style={{ background: "#0f0f0f" }}>
-                    {["Feature", "GOPARTARA", "CarPartsCompare", "WhatPart"].map((h, i) => (
-                      <th
-                        key={h}
-                        style={{
-                          textAlign: i === 0 ? "left" : "center",
-                          padding: "14px 16px",
-                          fontSize: 12,
-                          fontWeight: 800,
-                          letterSpacing: "0.06em",
-                          textTransform: "uppercase",
-                          color: i === 1 ? "#ffffff" : "#a1a1aa",
-                          background: i === 1 ? "#cc1111" : undefined,
-                          borderBottom: "1px solid #27272a",
-                        }}
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { feature: "Suppliers checked simultaneously", gp: "7 ✅", cpc: "1 ❌", wp: "1 ❌" },
-                    { feature: "UK Reg Plate search", gp: "✅", cpc: "❌", wp: "✅" },
-                    { feature: "Photo search", gp: "✅", cpc: "❌", wp: "❌" },
-                    { feature: "Tyre comparison", gp: "✅", cpc: "❌", wp: "❌" },
-                    { feature: "P2P Marketplace", gp: "✅", cpc: "❌", wp: "❌" },
-                    { feature: "Price alerts", gp: "✅", cpc: "❌", wp: "❌" },
-                    { feature: "Always free", gp: "✅", cpc: "✅", wp: "✅" },
-                  ].map((row, idx) => (
-                    <tr key={row.feature} style={{ borderTop: idx === 0 ? "none" : "1px solid #1f1f1f" }}>
-                      <td style={{ padding: "13px 16px", color: "#e4e4e7", fontWeight: 500 }}>
-                        {row.feature}
-                      </td>
-                      <td
-                        style={{
-                          padding: "13px 16px",
-                          textAlign: "center",
-                          background: "rgba(204,17,17,0.08)",
-                          color: "#ffffff",
-                          fontWeight: 700,
-                        }}
-                      >
-                        {row.gp}
-                      </td>
-                      <td style={{ padding: "13px 16px", textAlign: "center", color: "#a1a1aa" }}>
-                        {row.cpc}
-                      </td>
-                      <td style={{ padding: "13px 16px", textAlign: "center", color: "#a1a1aa" }}>
-                        {row.wp}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <p style={{ color: "#52525b", fontSize: 11, marginTop: 12, textAlign: "center" }}>
-            Comparison based on publicly available features at time of writing.
-          </p>
-        </div>
-      </section>
 
       {/* Newsletter signup */}
       <NewsletterSignup />
