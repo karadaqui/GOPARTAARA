@@ -338,12 +338,13 @@ const HeroSection = () => {
   return (
     <section
       id="home"
-      className="relative flex items-center justify-center pt-16 pb-8 overflow-x-visible overflow-y-hidden animated-gradient-bg"
+      className="relative flex items-center justify-center pt-16 pb-8 overflow-x-visible overflow-y-hidden"
       style={{
+        backgroundColor: "#0a0a0a",
         backgroundImage:
-          "radial-gradient(ellipse 80% 40% at 50% -10%, rgba(204,17,17,0.12) 0%, transparent 70%), radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
-        backgroundSize: "auto, 24px 24px",
-        backgroundRepeat: "no-repeat, repeat",
+          "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(220,38,38,0.12) 0%, transparent 70%), linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)",
+        backgroundSize: "auto, 40px 40px, 40px 40px",
+        backgroundRepeat: "no-repeat, repeat, repeat",
       }}
     >
       {/* Background glow orbs */}
