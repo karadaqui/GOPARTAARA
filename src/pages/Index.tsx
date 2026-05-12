@@ -7,7 +7,7 @@ import SocialProofStats from "@/components/SocialProofStats";
 import HomeCTASection from "@/components/HomeCTASection";
 
 import PopularSearchesStrip from "@/components/PopularSearchesStrip";
-import BrowseByMakeSection from "@/components/BrowseByMakeSection";
+
 import FeaturedListingsSection from "@/components/FeaturedListingsSection";
 import SectionDivider from "@/components/SectionDivider";
 
