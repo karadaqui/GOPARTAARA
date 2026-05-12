@@ -236,7 +236,7 @@ const Index = () => {
             {[
               "UK's Most Comprehensive Parts Search",
               "SSL Secured · No Credit Card Required",
-              "Live data from 7 verified suppliers",
+              "Live data from 14 global suppliers",
             ].map((label) => (
               <span
                 key={label}
