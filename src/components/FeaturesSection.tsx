@@ -11,7 +11,7 @@ const cells: Cell[] = [
   {
     label: "Photo Search",
     title: "Point. Snap. Find.",
-    desc: "Upload a photo of any car part — we identify it instantly and find the cheapest price across 7 suppliers.",
+    desc: "Upload a photo of any car part — we identify it instantly and find the cheapest price across 14 global suppliers.",
     colSpan: "1 / 3",
   },
   {
