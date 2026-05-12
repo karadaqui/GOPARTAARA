@@ -71,7 +71,7 @@ const WhyPartaraSection = () => {
             The only search that covers them all.
           </h2>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
-            While others search one site, we search seven simultaneously.
+            While others search one site, we search fourteen simultaneously.
           </p>
         </div>
 
