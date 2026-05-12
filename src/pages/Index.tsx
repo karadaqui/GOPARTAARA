@@ -91,6 +91,7 @@ const Index = () => {
       {/* Trust Bar */}
       <section
         aria-label="Trust bar"
+        className="animated-gradient-bg"
         style={{
           background: "rgba(255,255,255,0.02)",
           borderTop: "1px solid rgba(255,255,255,0.08)",
@@ -163,7 +164,7 @@ const Index = () => {
 
       {/* Trustpilot trust section (early stage) */}
       <section
-        className="px-4 py-10"
+        className="animated-gradient-bg px-4 py-10"
         style={{
           background: "rgba(255,255,255,0.02)",
           borderTop: "1px solid rgba(255,255,255,0.06)",
