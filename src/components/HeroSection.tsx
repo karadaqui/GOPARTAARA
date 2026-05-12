@@ -673,7 +673,7 @@ const HeroSection = () => {
                           setAutoOpen(true);
                           heroInputRef.current?.focus();
                         }}
-                        className="transition-[colors,transform] hover:-translate-y-0.5"
+                        className="gp-make-btn transition-[colors,transform] hover:-translate-y-0.5"
                         style={{
                           display: "flex",
                           alignItems: "center",
