@@ -141,7 +141,7 @@ const Index = () => {
                   "💰 Average saving today: £43",
                   "🛞 205/55 R16 tyres compared across 5 suppliers",
                   "🔧 Ford Focus clutch kit — 12 results found",
-                  "⭐ 7 trusted suppliers checked simultaneously",
+                  "⭐ 14 global suppliers checked simultaneously",
                   "🏆 1,000,000+ parts searchable right now",
                 ].map((msg, i) => (
                   <span
