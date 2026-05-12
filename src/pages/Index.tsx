@@ -49,7 +49,7 @@ const Index = () => {
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <SEOHead
         title="GOPARTARA — Compare Car Parts Prices | Search 1M+ Parts Free"
-        description="Search and compare car parts prices from 7 trusted global suppliers simultaneously. Free to use. No account needed. Find brake pads, filters, tyres and more — shipped worldwide."
+        description="Search and compare car parts prices from 14 global suppliers simultaneously. Free to use. No account needed. Find brake pads, filters, tyres and more — shipped worldwide."
         path="/"
         jsonLd={{
           "@context": "https://schema.org",
