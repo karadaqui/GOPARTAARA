@@ -164,7 +164,7 @@ const Index = () => {
       </div>
 
       <SectionDivider />
-      <PopularSearchesStrip />
+      
       <TrustedSuppliersBar />
       <SectionDivider />
 
