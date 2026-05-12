@@ -134,7 +134,7 @@ export const faqItems = [
   },
   {
     q: "Do you offer refunds?",
-    a: "Yes, full refund within 7 days of any paid subscription. No questions asked.",
+    a: "Yes, full refund within 14 days of any paid subscription. No questions asked.",
   },
   {
     q: "Can I use GOPARTARA for my garage business?",
