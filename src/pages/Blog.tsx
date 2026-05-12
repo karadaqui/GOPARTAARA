@@ -161,7 +161,7 @@ const Blog = () => {
             </div>
           </div>
           <p style={{ fontSize: "16px", color: "#71717a", maxWidth: "280px", lineHeight: 1.5 }}>
-            Expert guides, savings tips & industry insights for UK car owners.
+            Expert guides, savings tips & industry insights for car owners across the UK, Europe and worldwide.
           </p>
         </div>
 
