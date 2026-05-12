@@ -15,7 +15,6 @@ const DEPARTMENTS = [
   { value: "General enquiry", subjectPrefix: "General Enquiry" },
   { value: "Technical support", subjectPrefix: "Technical Support" },
   { value: "Partnership / supplier enquiry", subjectPrefix: "Partnership Enquiry" },
-  { value: "Press & media", subjectPrefix: "Press & Media" },
   { value: "Business / trade account", subjectPrefix: "Business / Trade Account" },
   { value: "Report an issue", subjectPrefix: "Issue Report" },
 ] as const;
@@ -23,8 +22,6 @@ const DEPARTMENTS = [
 const DEPARTMENT_NOTES: Record<string, string> = {
   "Partnership / supplier enquiry":
     "For supplier partnerships, email partnerships@gopartara.com directly for faster response.",
-  "Press & media":
-    "For press enquiries, email press@gopartara.com with your publication name.",
 };
 
 const SUBJECTS = DEPARTMENTS.map((d) => d.value);
