@@ -194,7 +194,7 @@ const Index = () => {
               { icon: "✅", label: "Free to Search — Always" },
               { icon: "🔒", label: "Secure & Private" },
               { icon: "💰", label: "Real Prices, No Markup" },
-              { icon: "⚡", label: "Live Data from 7 Suppliers" },
+              { icon: "⚡", label: "Live Data from 14 Suppliers" },
             ].map((item) => (
               <span
                 key={item.label}
