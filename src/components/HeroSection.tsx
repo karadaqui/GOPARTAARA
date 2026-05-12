@@ -1051,21 +1051,21 @@ const HeroSection = () => {
             {/* Compact inline list */}
             <div className="divide-y divide-zinc-800/40">
               {[
-                { name: 'eBay Global', cat: 'All Car Parts', coverage: 'Worldwide · 1M+ parts', twemoji: '1f30d', url: null as string | null },
-                { name: 'mytyres.co.uk', cat: 'Tyres', coverage: 'UK + 35 countries', twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=4118&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.mytyres.co.uk' },
-                { name: 'Tyres UK', cat: 'Tyres', coverage: '64 countries', twemoji: '1f30d', url: 'https://www.awin1.com/cread.php?awinmid=12715&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.tyres.net' },
-                { name: 'Green Spark Plug Co.', cat: 'Classic Parts', coverage: 'Worldwide shipping', twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.greenspark.co.uk' },
-                { name: 'neumaticos-online.es', cat: 'Tyres', coverage: 'Spain only', twemoji: '1f1ea-1f1f8', url: 'https://www.awin1.com/cread.php?awinmid=10499&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.neumaticos-online.es' },
-                { name: 'Pneumatici IT', cat: 'Tyres', coverage: 'Italy only', twemoji: '1f1ee-1f1f9', url: 'https://www.awin1.com/cread.php?awinmid=12716&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.pneumatici.it' },
-                { name: 'ReifenDirekt EE', cat: 'Tyres', coverage: 'Estonia, Latvia, Lithuania', twemoji: '1f1ea-1f1ea', url: 'https://www.awin1.com/cread.php?awinmid=10747&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.reifendirekt.co.ee' },
-                { name: 'EV King', cat: 'EV Parts', coverage: 'UK + EU', twemoji: '26a1', url: null as string | null },
-                { name: 'Amazon UK', cat: 'All Car Parts', coverage: 'UK + EU', twemoji: '1f1ec-1f1e7', url: null as string | null },
-                { name: 'Maxpeedingrods', cat: 'Performance Parts', coverage: 'Worldwide', twemoji: '1f30d', url: null as string | null },
-                { name: 'autobandenmarkt', cat: 'Tyres', coverage: 'Belgium + EU', twemoji: '1f1e7-1f1ea', url: null as string | null },
-                { name: 'Kohl Automobile', cat: 'Auto Parts', coverage: 'Germany + EU', twemoji: '1f1e9-1f1ea', url: null as string | null },
-                { name: 'Tirendo', cat: 'Tyres', coverage: 'Norway only', twemoji: '1f1f3-1f1f4', url: null as string | null },
-                { name: 'Dunford Inc', cat: 'Auto Parts', coverage: 'US only', twemoji: '1f1fa-1f1f8', url: null as string | null },
-              ].map(s => {
+                { name: 'eBay Global', cat: 'All Car Parts', coverage: 'Worldwide · 1M+ parts', twemoji: '1f30d', url: 'https://www.awin1.com/cread.php?awinmid=6220&awinaffid=2845282&ued=https%3A%2F%2Fwww.ebay.co.uk%2Fb%2FCar-Parts%2F6030%2Fbn_1839048' },
+                { name: 'mytyres.co.uk', cat: 'Tyres', coverage: 'UK + 35 countries', twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=4118&awinaffid=2845282&ued=https%3A%2F%2Fwww.mytyres.co.uk' },
+                { name: 'Tyres UK', cat: 'Tyres', coverage: '64 countries', twemoji: '1f30d', url: 'https://www.awin1.com/cread.php?awinmid=12715&awinaffid=2845282&ued=https%3A%2F%2Fwww.tyres.net' },
+                { name: 'Green Spark Plug Co.', cat: 'Classic Parts', coverage: 'Worldwide shipping', twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=16976&awinaffid=2845282&ued=https%3A%2F%2Fwww.gsparkplug.com' },
+                { name: 'neumaticos-online.es', cat: 'Tyres', coverage: 'Spain only', twemoji: '1f1ea-1f1f8', url: 'https://www.awin1.com/cread.php?awinmid=10499&awinaffid=2845282&ued=https%3A%2F%2Fwww.neumaticos-online.es' },
+                { name: 'Pneumatici IT', cat: 'Tyres', coverage: 'Italy only', twemoji: '1f1ee-1f1f9', url: 'https://www.awin1.com/cread.php?awinmid=12716&awinaffid=2845282&ued=https%3A%2F%2Fwww.pneumatici.it' },
+                { name: 'ReifenDirekt EE', cat: 'Tyres', coverage: 'Estonia, Latvia, Lithuania', twemoji: '1f1ea-1f1ea', url: 'https://www.awin1.com/cread.php?awinmid=10747&awinaffid=2845282&ued=https%3A%2F%2Fwww.reifendirekt.ee' },
+                { name: 'EV King', cat: 'EV Parts', coverage: 'UK + EU', twemoji: '26a1', url: 'https://www.awin1.com/cread.php?awinmid=22473&awinaffid=2845282&ued=https%3A%2F%2Fwww.ev-king.com' },
+                { name: 'Amazon UK', cat: 'All Car Parts', coverage: 'UK + EU', twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=118045&awinaffid=2845282&ued=https%3A%2F%2Fwww.amazon.co.uk%2Fcar-parts' },
+                { name: 'Maxpeedingrods', cat: 'Performance Parts', coverage: 'Worldwide', twemoji: '1f30d', url: 'https://www.awin1.com/cread.php?awinmid=16673&awinaffid=2845282&ued=https%3A%2F%2Fwww.maxpeedingrods.com' },
+                { name: 'autobandenmarkt', cat: 'Tyres', coverage: 'Belgium + EU', twemoji: '1f1e7-1f1ea', url: 'https://www.awin1.com/cread.php?awinmid=8626&awinaffid=2845282&ued=https%3A%2F%2Fwww.autobandenmarkt.be' },
+                { name: 'Kohl Automobile', cat: 'Auto Parts', coverage: 'Germany + EU', twemoji: '1f1e9-1f1ea', url: 'https://www.awin1.com/cread.php?awinmid=16809&awinaffid=2845282&ued=https%3A%2F%2Fwww.kohl-automobile.de' },
+                { name: 'Tirendo', cat: 'Tyres', coverage: 'Norway only', twemoji: '1f1f3-1f1f4', url: 'https://www.awin1.com/cread.php?awinmid=8794&awinaffid=2845282&ued=https%3A%2F%2Fwww.tirendo.no' },
+                { name: 'Dunford Inc', cat: 'Auto Parts', coverage: 'US only', twemoji: '1f1fa-1f1f8', url: 'https://www.awin1.com/cread.php?awinmid=67974&awinaffid=2845282&ued=https%3A%2F%2Fwww.dunford.com' },
+              ].map((s: { name: string; cat: string; coverage: string; twemoji: string; url: string }) => {
                 const rowClass = "flex items-center gap-3 py-2.5 hover:bg-zinc-900/40 -mx-2 px-2 rounded-lg transition-colors group";
                 const inner = (
                   <>
