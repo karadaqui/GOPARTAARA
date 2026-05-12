@@ -28,6 +28,10 @@ const categories: Category[] = [
   { id: "my-garage", icon: <Car size={28} className="text-[#cc1111]" />, title: "My Garage", description: "Adding vehicles, MOT reminders", count: 3 },
   { id: "marketplace", icon: <ShoppingBag size={28} className="text-[#cc1111]" />, title: "Marketplace", description: "Buying and selling parts", count: 4 },
   { id: "account-privacy", icon: <Shield size={28} className="text-[#cc1111]" />, title: "Account & Privacy", description: "Account settings, data, GDPR", count: 3 },
+  { id: "tyres", icon: <span className="text-[28px] leading-none">🔵</span>, title: "Tyres", description: "Tyre search, sizing, and fitting partners", count: 2 },
+  { id: "shipping-delivery", icon: <span className="text-[28px] leading-none">📦</span>, title: "Shipping & Delivery", description: "How orders and deliveries work", count: 2 },
+  { id: "troubleshooting", icon: <span className="text-[28px] leading-none">🔧</span>, title: "Troubleshooting", description: "Fix common issues with search and account", count: 3 },
+  { id: "suppliers-affiliate", icon: <span className="text-[28px] leading-none">🤝</span>, title: "Suppliers & Affiliate Links", description: "How our supplier network and affiliate links work", count: 3 },
 ];
 
 const popularArticles: Article[] = [
