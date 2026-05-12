@@ -133,7 +133,7 @@ const Index = () => {
         `}</style>
         <div style={{ width: "100%", overflow: "hidden" }}>
           <div className="gp-ticker-track">
-            {Array.from({ length: 2 }).map((_, dup) => (
+            {Array.from({ length: 1 }).map((_, dup) => (
               <div key={dup} style={{ display: "inline-flex", alignItems: "center" }}>
                 {[
                   "🔍 Someone in Manchester just found brake pads for £38 less",
