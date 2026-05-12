@@ -597,7 +597,7 @@ const HeroSection = () => {
                       <button
                         type="submit"
                         disabled={identifying}
-                        className="shrink-0 flex-1 sm:flex-none transition-transform disabled:opacity-60 hover:scale-[1.02]"
+                        className="gp-search-btn shrink-0 flex-1 sm:flex-none transition-transform disabled:opacity-60 hover:scale-[1.02]"
                         style={{
                           background: "#cc1111",
                           color: "#ffffff",
