@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const LOGOS = [
-  { name: "Trodo", domain: "trodo.com" },
+  
   { name: "Green Spark Plug", domain: "gsparkplug.com" },
   { name: "mytyres", domain: "mytyres.co.uk" },
   { name: "Tyres UK", domain: "tyres.net" },
