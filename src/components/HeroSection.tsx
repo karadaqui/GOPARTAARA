@@ -1058,6 +1058,13 @@ const HeroSection = () => {
                 { name: 'neumaticos-online.es', cat: 'Tyres', coverage: 'Spain only', twemoji: '1f1ea-1f1f8', url: 'https://www.awin1.com/cread.php?awinmid=10499&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.neumaticos-online.es' },
                 { name: 'Pneumatici IT', cat: 'Tyres', coverage: 'Italy only', twemoji: '1f1ee-1f1f9', url: 'https://www.awin1.com/cread.php?awinmid=12716&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.pneumatici.it' },
                 { name: 'ReifenDirekt EE', cat: 'Tyres', coverage: 'Estonia, Latvia, Lithuania', twemoji: '1f1ea-1f1ea', url: 'https://www.awin1.com/cread.php?awinmid=10747&awinaffid=2845282&clickref=partara-suppliers&p=https%3A%2F%2Fwww.reifendirekt.co.ee' },
+                { name: 'EV King', cat: 'EV Parts', coverage: 'UK + EU', twemoji: '26a1', url: null as string | null },
+                { name: 'Amazon UK', cat: 'All Car Parts', coverage: 'UK + EU', twemoji: '1f1ec-1f1e7', url: null as string | null },
+                { name: 'Maxpeedingrods', cat: 'Performance Parts', coverage: 'Worldwide', twemoji: '1f30d', url: null as string | null },
+                { name: 'autobandenmarkt', cat: 'Tyres', coverage: 'Belgium + EU', twemoji: '1f1e7-1f1ea', url: null as string | null },
+                { name: 'Kohl Automobile', cat: 'Auto Parts', coverage: 'Germany + EU', twemoji: '1f1e9-1f1ea', url: null as string | null },
+                { name: 'Tirendo', cat: 'Tyres', coverage: 'Norway only', twemoji: '1f1f3-1f1f4', url: null as string | null },
+                { name: 'Dunford Inc', cat: 'Auto Parts', coverage: 'US only', twemoji: '1f1fa-1f1f8', url: null as string | null },
               ].map(s => {
                 const rowClass = "flex items-center gap-3 py-2.5 hover:bg-zinc-900/40 -mx-2 px-2 rounded-lg transition-colors group";
                 const inner = (
