@@ -715,6 +715,57 @@ const Tyres = () => {
               })}
             </div>
 
+            {/* No-exact-match supplier fallback cards */}
+            {searched && !loading && (() => {
+              const presentIds = new Set(allResults.map(t => String(t.advertiserId)));
+              const missing = EXPECTED_SUPPLIERS.filter(s => {
+                if (presentIds.has(s.id)) return false;
+                if (!isGlobal && country?.code) {
+                  const codes = lookupSupplierCountries(s.name);
+                  if (codes.length > 0 && !codes.includes(country.code)) return false;
+                }
+                if (supplier !== 'all' && supplier !== '' && String(supplier) !== s.id) return false;
+                return true;
+              });
+              const seenNames = new Set<string>();
+              const unique = missing.filter(s => {
+                if (seenNames.has(s.name)) return false;
+                seenNames.add(s.name);
+                return true;
+              });
+              if (unique.length === 0) return null;
+              return (
+                <div className="mt-6">
+                  <div className="text-[11px] uppercase tracking-wider text-zinc-500 mb-2 font-semibold">
+                    No exact match for {width}/{profile} R{rim} from these suppliers
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {unique.map(s => (
+                      <a
+                        key={s.id}
+                        href={buildBrowseUrl(s.id, s.home)}
+                        target="_blank"
+                        rel="noopener noreferrer sponsored"
+                        className="rounded-xl p-4 flex items-center justify-between transition-all hover:-translate-y-0.5"
+                        style={{ background: CARD, border: `1px dashed ${BORDER_2}` }}
+                        onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = RED; }}
+                        onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.borderColor = BORDER_2; }}
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Flag id={s.id} />
+                          <div className="min-w-0">
+                            <div className="text-sm font-bold text-white truncate">{s.name}</div>
+                            <div className="text-[11px] text-zinc-500">No exact match — browse all tyres</div>
+                          </div>
+                        </div>
+                        <span className="text-xs font-bold whitespace-nowrap" style={{ color: RED }}>Browse →</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-12 flex-wrap">
                 <button
