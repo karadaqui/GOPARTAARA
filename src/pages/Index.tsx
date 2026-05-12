@@ -431,10 +431,6 @@ const Index = () => {
 
       <SectionDivider />
 
-      <ScrollReveal><HomeCTASection /></ScrollReveal>
-
-      <HomeShareRow />
-
       {/* Newsletter signup */}
       <NewsletterSignup />
 
