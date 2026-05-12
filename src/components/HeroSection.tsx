@@ -92,7 +92,7 @@ const HeroSection = () => {
   const { country } = useCountry();
   void country;
   const heroSubtitle =
-    "Searching eBay, Green Spark Plug Co., mytyres, Amazon UK and 10+ global suppliers — updated daily.";
+    "Compare prices from 14 global suppliers — free, instant, no account needed.";
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const heroInputRef = useRef<HTMLInputElement>(null);
