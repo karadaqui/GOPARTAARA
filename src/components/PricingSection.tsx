@@ -522,7 +522,7 @@ const PlanCard = ({
   const cardBorderClass = bestValue
     ? "shadow-[0_0_30px_-8px_rgba(251,191,36,0.18)] z-10 bg-card"
     : popular
-      ? "border-primary/60 shadow-[0_0_30px_-5px_hsl(var(--primary)/0.3)] scale-[1.02] z-10 bg-card"
+      ? "gp-pro-card border-primary/60 scale-[1.02] z-10 bg-card"
       : "border-border/30 bg-card/50 hover:border-border/60 hover:-translate-y-1";
 
   return (
