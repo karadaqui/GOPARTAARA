@@ -3,7 +3,7 @@ const COMPETITORS = ["GOPARTARA", "carpartscompare.uk", "whatpart.co.uk", "compa
 type Cell = string | true | false;
 
 const ROWS: { feature: string; values: [Cell, Cell, Cell, Cell] }[] = [
-  { feature: "Suppliers searched", values: ["7 live", "3", "2", "4"] },
+  { feature: "Suppliers searched", values: ["14 live", "3", "2", "4"] },
   { feature: "Photo search", values: [true, false, false, false] },
   { feature: "VIN search", values: [true, false, false, false] },
   { feature: "UK Reg plate", values: [true, true, true, false] },
