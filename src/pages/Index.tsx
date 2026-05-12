@@ -6,7 +6,7 @@ import LiveActivityCounter from "@/components/LiveActivityCounter";
 import SocialProofStats from "@/components/SocialProofStats";
 import HomeCTASection from "@/components/HomeCTASection";
 
-import PopularSearchesStrip from "@/components/PopularSearchesStrip";
+
 
 import FeaturedListingsSection from "@/components/FeaturedListingsSection";
 import SectionDivider from "@/components/SectionDivider";
