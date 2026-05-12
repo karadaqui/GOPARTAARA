@@ -36,7 +36,7 @@ export const helpCategories: Record<string, HelpCategoryData> = {
     slug: "getting-started",
     title: "Getting Started",
     description:
-      "Learn how to search for parts, use UK reg plate lookup, photo search and understand price quality badges.",
+      "Learn how to search for parts, use reg plate lookup (UK), photo search and understand price quality badges.",
     articles: [
       {
         q: "How do I search for car parts on GOPARTARA?",
