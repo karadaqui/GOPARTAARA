@@ -9,12 +9,12 @@ const benefits = [
   {
     icon: "🔍",
     title: "Unlimited Searches",
-    desc: "Search all 7 suppliers simultaneously. No monthly limits, no throttling.",
+    desc: "Search all 14 global suppliers simultaneously. No monthly limits, no throttling.",
   },
   {
     icon: "👥",
     title: "Team Access",
-    desc: "Add up to 10 team members. Each gets their own login and search history.",
+    desc: "Multiple user access available on custom plans.",
   },
   {
     icon: "📊",
@@ -45,23 +45,6 @@ const audiences = [
   { icon: "🔧", label: "Mobile Mechanics" },
 ];
 
-const businessTestimonials = [
-  {
-    quote: "We save about £800/month on parts. The team access is perfect.",
-    author: "Mike's Auto",
-    location: "Birmingham",
-  },
-  {
-    quote: "Comparing prices across suppliers saves us hours every week.",
-    author: "AutoFix Pro",
-    location: "Manchester",
-  },
-  {
-    quote: "The analytics show us exactly where we're saving money.",
-    author: "Fleet Services Ltd",
-    location: "London",
-  },
-];
 
 const Business = () => {
   const [partsPerMonth, setPartsPerMonth] = useState(15);
@@ -96,9 +79,7 @@ const Business = () => {
             <span style={{ color: "#cc1111" }}>every parts order.</span>
           </h1>
           <p className="text-zinc-400 text-sm md:text-[14px] max-w-2xl mx-auto mb-8 leading-relaxed">
-            Join <span className="text-white font-semibold">500+ garages</span> already saving
-            <span className="mx-2">·</span>
-            Avg <span className="text-white font-semibold">22% cost reduction</span>
+            Find, compare and buy car parts from 14 global suppliers.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <a
@@ -177,7 +158,7 @@ const Business = () => {
                 £{estimatedSavings.toLocaleString("en-GB")}
               </p>
               <p className="text-zinc-600 text-xs mt-3">
-                Based on £15 average saving per part across 7 suppliers.
+                Based on £15 average saving per part across 14 suppliers.
               </p>
             </div>
           </div>
@@ -303,96 +284,6 @@ const Business = () => {
               </div>
             ))}
           </div>
-        </section>
-
-        {/* Business testimonials */}
-        <section className="container max-w-5xl px-4 mb-20">
-          <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8">
-            What garages say
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {businessTestimonials.map((t) => (
-              <figure
-                key={t.author}
-                className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/50 flex flex-col"
-              >
-                <div className="flex gap-0.5 mb-3" aria-label="5 out of 5 stars">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <span key={i} style={{ color: "#cc1111" }} className="text-sm">
-                      ★
-                    </span>
-                  ))}
-                </div>
-                <blockquote className="text-zinc-200 text-[14px] leading-relaxed flex-1 mb-4">
-                  “{t.quote}”
-                </blockquote>
-                <figcaption className="text-xs text-zinc-500">
-                  <span className="text-white font-semibold">{t.author}</span>
-                  <span className="mx-1.5">·</span>
-                  {t.location}
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-        </section>
-
-        {/* Case studies */}
-        <section className="container max-w-5xl px-4 mb-20">
-          <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-8">
-            What Our Customers Say
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {[
-              {
-                name: "Independent Garage, Leeds",
-                quote:
-                  "We've been using GOPARTARA for 3 months. Finding the right parts at the right price used to take 20 minutes per job. Now it takes 2.",
-                badge: "Saved 18 minutes per job",
-              },
-              {
-                name: "Fleet Manager, London",
-                quote:
-                  "With 40 vehicles to maintain, every penny counts. GOPARTARA helped us cut our monthly parts spend significantly.",
-                badge: "Reduced parts costs by 15%",
-              },
-            ].map((c) => (
-              <figure
-                key={c.name}
-                className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/50 flex flex-col"
-              >
-                <div className="flex gap-0.5 mb-3" aria-label="5 out of 5 stars">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <span key={i} style={{ color: "#cc1111" }} className="text-sm">
-                      ★
-                    </span>
-                  ))}
-                </div>
-                <blockquote className="text-zinc-100 text-[15px] leading-relaxed flex-1 mb-4">
-                  “{c.quote}”
-                </blockquote>
-                <span
-                  className="self-start inline-flex items-center gap-1.5 mb-3"
-                  style={{
-                    background: "rgba(204,17,17,0.12)",
-                    border: "1px solid rgba(204,17,17,0.35)",
-                    color: "#ffffff",
-                    fontSize: 12,
-                    fontWeight: 700,
-                    padding: "4px 10px",
-                    borderRadius: 999,
-                  }}
-                >
-                  ✓ {c.badge}
-                </span>
-                <figcaption className="text-xs text-zinc-500">
-                  <span className="text-white font-semibold">{c.name}</span>
-                </figcaption>
-              </figure>
-            ))}
-          </div>
-          <p className="text-center text-xs text-zinc-600 mt-6 italic">
-            Case studies based on early user feedback. Names anonymised.
-          </p>
         </section>
 
         {/* Pricing */}
