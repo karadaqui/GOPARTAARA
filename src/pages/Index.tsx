@@ -1,18 +1,8 @@
-import { Suspense, lazy, useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Suspense, lazy, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import LiveActivityCounter from "@/components/LiveActivityCounter";
-import SocialProofStats from "@/components/SocialProofStats";
-import HomeCTASection from "@/components/HomeCTASection";
-
-
-
-import FeaturedListingsSection from "@/components/FeaturedListingsSection";
 import SectionDivider from "@/components/SectionDivider";
-
-import HomeShareRow from "@/components/HomeShareRow";
-import TrustedSuppliersBar from "@/components/TrustedSuppliersBar";
 
 // Below-the-fold: lazy-load to keep initial JS small and defer their data fetches
 const FeaturesSection = lazy(() => import("@/components/FeaturesSection"));
@@ -28,9 +18,7 @@ import WelcomeModal from "@/components/WelcomeModal";
 import LocationBanner from "@/components/LocationBanner";
 import ExitIntentBanner from "@/components/ExitIntentBanner";
 import ExitIntentPopup from "@/components/ExitIntentPopup";
-import FeaturedPartsSection from "@/components/FeaturedPartsSection";
-import FeaturedSupplierSpotlight from "@/components/FeaturedSupplierSpotlight";
-import WhyDriversTrustUs from "@/components/WhyDriversTrustUs";
+
 
 const Index = () => {
   const location = useLocation();
