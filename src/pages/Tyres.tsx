@@ -44,6 +44,25 @@ const FLAG_MAP: Record<string, string> = {
   '66605': '1f1ea-1f1ea',
 };
 
+// Expected tyre suppliers — used to show "browse all" fallback cards
+// for suppliers that returned 0 exact matches for the current size.
+const PUBLISHER_AFFID = '2845282';
+const EXPECTED_SUPPLIERS: { id: string; name: string; home: string }[] = [
+  { id: '4118', name: 'mytyres.co.uk', home: 'https://www.mytyres.co.uk/' },
+  { id: '12641', name: 'Tyres UK', home: 'https://www.tyres.co.uk/' },
+  { id: '12715', name: 'Tyres UK', home: 'https://www.tyres.co.uk/' },
+  { id: '12716', name: 'neumaticos-online.es', home: 'https://www.neumaticos-online.es/' },
+  { id: '93986', name: 'Pneumatici IT', home: 'https://www.pneumatici.it/' },
+  { id: '93988', name: 'ReifenDirekt', home: 'https://www.reifendirekt.de/' },
+  { id: '10499', name: 'Neumaticos.es', home: 'https://www.neumaticos.es/' },
+  { id: '23179', name: 'Neumaticos', home: 'https://www.neumaticos.es/' },
+  { id: '66605', name: 'ReifenDirekt DE', home: 'https://www.reifendirekt.de/' },
+  { id: '8794', name: 'Tirendo', home: 'https://www.tirendo.co.uk/' },
+  { id: '8626', name: 'Autobandenmarkt', home: 'https://www.autobandenmarkt.nl/' },
+];
+const buildBrowseUrl = (merchantId: string, home: string) =>
+  `https://www.awin1.com/cread.php?awinmid=${merchantId}&awinaffid=${PUBLISHER_AFFID}&ued=${encodeURIComponent(home)}`;
+
 const BRAND_GRADIENTS: Record<string, string> = {
   michelin: 'linear-gradient(90deg,#0033a0,#1e88e5)',
   continental: 'linear-gradient(90deg,#000,#1a1a1a)',
