@@ -189,11 +189,27 @@ serve(async (req) => {
 
     // Deduplicate by URL
     const seen = new Set<string>()
-    const deduped = mapped.filter((p) => {
+    let deduped = mapped.filter((p) => {
       if (!p.url) return true
       if (seen.has(p.url)) return false
       seen.add(p.url)
       return true
+    })
+
+    // Sanity check: if a product name explicitly contains a tyre-size pattern
+    // (e.g. "225/50 R17", "225/50R17"), drop it when that size doesn't match
+    // the searched width. Skips products whose names are pure descriptions
+    // with no recognizable size pattern (so we keep correctly-tagged rows).
+    const sizePattern = /(\d{3})\s*\/\s*\d{2}\s*R?\d{2}/i
+    const widthStr = String(width || '')
+    deduped = deduped.filter((p) => {
+      const name = String(p.name || '')
+      const m = name.match(sizePattern)
+      if (!m) return true // no size in name → trust tyre_size column
+      // If any size pattern in the name matches the searched width, keep it.
+      // Some long descriptions mention multiple sizes; accept if at least one matches.
+      const allMatches = name.match(/(\d{3})\s*\/\s*\d{2}\s*R?\d{2}/gi) || []
+      return allMatches.some((s) => s.startsWith(widthStr))
     })
 
     // Supplier rotation: group by supplier, sort each by price asc,
