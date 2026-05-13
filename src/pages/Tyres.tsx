@@ -630,7 +630,24 @@ const Tyres = () => {
                   : allSeason
                   ? { background: 'rgba(22,163,74,0.15)', color: '#4ade80', border: '1px solid rgba(22,163,74,0.4)' }
                   : { background: 'rgba(249,115,22,0.15)', color: '#fb923c', border: '1px solid rgba(249,115,22,0.4)' };
-                return (
+
+                // Region badge for out-of-region suppliers (sort, don't hide)
+                const supplierName = (t as any).supplier_name || (t as any).supplier || '';
+                const supplierCodes = lookupSupplierCountries(supplierName);
+                const outOfRegion =
+                  !isGlobal &&
+                  country?.code &&
+                  supplierCodes.length > 0 &&
+                  !supplierCodes.includes(country.code);
+                const regionLabel = outOfRegion
+                  ? supplierCodes
+                      .slice(0, 2)
+                      .map((c) => {
+                        const e = getCountry(c);
+                        return e ? `${e.flag} ${e.name}` : c;
+                      })
+                      .join(' + ') + (supplierCodes.length > 2 ? ' + EU' : '')
+                  : '';
                   <div
                     key={cardKey}
                     className="group rounded-xl overflow-hidden flex flex-col transition-all hover:-translate-y-1"
