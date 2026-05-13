@@ -331,38 +331,41 @@ const Tyres = () => {
                 <div className="flex items-end gap-2 sm:gap-3">
                   <div className="flex-1">
                     <label className="block text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-2 font-bold">Width</label>
-                    <select
+                    <input
+                      type="text"
+                      inputMode="numeric"
                       value={width}
                       onChange={(e) => setWidth(e.target.value)}
+                      placeholder="205"
                       className="w-full rounded-xl px-3 py-3 text-white text-base sm:text-lg font-bold text-center focus:outline-none focus:ring-2 focus:ring-red-600"
                       style={{ background: BG, border: `1px solid ${BORDER}` }}
-                    >
-                      {WIDTHS.map((w) => <option key={w} value={w}>{w}</option>)}
-                    </select>
+                    />
                   </div>
                   <div className="text-2xl sm:text-3xl font-black text-zinc-600 pb-3">/</div>
                   <div className="flex-1">
                     <label className="block text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-2 font-bold">Profile</label>
-                    <select
+                    <input
+                      type="text"
+                      inputMode="numeric"
                       value={profile}
                       onChange={(e) => setProfile(e.target.value)}
+                      placeholder="55"
                       className="w-full rounded-xl px-3 py-3 text-white text-base sm:text-lg font-bold text-center focus:outline-none focus:ring-2 focus:ring-red-600"
                       style={{ background: BG, border: `1px solid ${BORDER}` }}
-                    >
-                      {PROFILES.map((p) => <option key={p} value={p}>{p}</option>)}
-                    </select>
+                    />
                   </div>
                   <div className="text-2xl sm:text-3xl font-black text-zinc-600 pb-3">R</div>
                   <div className="flex-1">
                     <label className="block text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-2 font-bold">Rim</label>
-                    <select
+                    <input
+                      type="text"
+                      inputMode="numeric"
                       value={rim}
                       onChange={(e) => setRim(e.target.value)}
+                      placeholder="16"
                       className="w-full rounded-xl px-3 py-3 text-white text-base sm:text-lg font-bold text-center focus:outline-none focus:ring-2 focus:ring-red-600"
                       style={{ background: BG, border: `1px solid ${BORDER}` }}
-                    >
-                      {RIMS.map((r) => <option key={r} value={r}>{r}</option>)}
-                    </select>
+                    />
                   </div>
                 </div>
 
