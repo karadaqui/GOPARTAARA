@@ -99,21 +99,6 @@ const Flag = ({ id, size = 16 }: { id: string; size?: number }) => {
       loading="lazy"
     />
   );
-
-  try {
-    return renderTyresPage();
-  } catch (error) {
-    console.error('[Tyres] render failed', error);
-    return (
-      <div className="min-h-screen" style={{ background: BG, color: '#fff' }}>
-        <Navbar />
-        <main style={{ color: 'red', padding: '24px', fontSize: '16px', fontFamily: 'monospace' }}>
-          TYRES RENDER ERROR: {error instanceof Error ? error.message : String(error)}
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 };
 
 interface Tyre {
@@ -833,6 +818,21 @@ const Tyres = () => {
       <Footer />
     </div>
   );
+
+  try {
+    return renderTyresPage();
+  } catch (error) {
+    console.error('[Tyres] render failed', error);
+    return (
+      <div className="min-h-screen" style={{ background: BG, color: '#fff' }}>
+        <Navbar />
+        <main style={{ color: 'red', padding: '24px', fontSize: '16px', fontFamily: 'monospace' }}>
+          TYRES RENDER ERROR: {error instanceof Error ? error.message : String(error)}
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 };
 
 export default Tyres;
