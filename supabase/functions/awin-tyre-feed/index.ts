@@ -137,6 +137,15 @@ serve(async (req) => {
           if (data) rows.push(...data)
         }
       }
+      console.log(`Cache query took ${Date.now() - t0}ms, rows=${rows.length}, total=${totalCount}`)
+      let oldest = Date.now()
+      for (const r of rows) {
+        const t = new Date(r.cached_at).getTime()
+        if (t < oldest) oldest = t
+      }
+      return { rows, oldest, totalCount: totalCount ?? rows.length }
+    }
+
     // 1) Check cache
     let { rows, oldest, totalCount } = await queryCache()
 
