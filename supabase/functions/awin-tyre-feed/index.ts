@@ -34,6 +34,20 @@ serve(async (req) => {
 
     const rimNum = String(rim || '').replace(/^R/i, '')
     const tyreSize = `${width}/${profile} R${rimNum}`
+    // Format variants — different feeds store the size with different separators.
+    // We compare normalised by including all common spellings.
+    const tyreSizeVariants = Array.from(new Set([
+      `${width}/${profile} R${rimNum}`,
+      `${width}/${profile}R${rimNum}`,
+      `${width}/${profile} ${rimNum}`,
+      `${width}/${profile}-${rimNum}`,
+      `${width}/${profile}-R${rimNum}`,
+      `${width}-${profile}-R${rimNum}`,
+      `${width}-${profile}-${rimNum}`,
+      `${width} ${profile} R${rimNum}`,
+      `${width} ${profile} ${rimNum}`,
+      `${width}${profile}R${rimNum}`,
+    ]))
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
