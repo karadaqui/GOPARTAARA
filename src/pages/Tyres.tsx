@@ -584,23 +584,9 @@ const Tyres = () => {
                   ? { background: 'rgba(22,163,74,0.15)', color: '#4ade80', border: '1px solid rgba(22,163,74,0.4)' }
                   : { background: 'rgba(249,115,22,0.15)', color: '#fb923c', border: '1px solid rgba(249,115,22,0.4)' };
 
-                // Region badge for out-of-region suppliers (sort, don't hide)
-                const supplierName = (t as any).supplier_name || (t as any).supplier || '';
-                const supplierCodes = lookupSupplierCountries(supplierName);
-                const outOfRegion =
-                  !isGlobal &&
-                  country?.code &&
-                  supplierCodes.length > 0 &&
-                  !supplierCodes.includes(country.code);
-                const regionLabel = outOfRegion
-                  ? supplierCodes
-                      .slice(0, 2)
-                      .map((c) => {
-                        const e = getCountry(c);
-                        return e ? `${e.flag} ${e.name}` : c;
-                      })
-                      .join(' + ') + (supplierCodes.length > 2 ? ' + EU' : '')
-                  : '';
+                // TEMP DEBUG: bypass country-region badge logic while isolating render crash.
+                const outOfRegion = false;
+                const regionLabel = '';
                 return (
                   <div
                     key={cardKey}
@@ -713,10 +699,6 @@ const Tyres = () => {
               const presentIds = new Set(allResults.map(t => String(t.advertiserId)));
               const missing = EXPECTED_SUPPLIERS.filter(s => {
                 if (presentIds.has(s.id)) return false;
-                if (!isGlobal && country?.code) {
-                  const codes = lookupSupplierCountries(s.name);
-                  if (codes.length > 0 && !codes.includes(country.code)) return false;
-                }
                 if (supplier !== 'all' && supplier !== '' && String(supplier) !== s.id) return false;
                 return true;
               });
