@@ -184,6 +184,11 @@ const Tyres = () => {
       });
       if (!response.ok) throw new Error(`Tyre feed request failed: HTTP ${response.status}`);
       const data = await response.json();
+      console.log('[Tyres] response', {
+        total: data?.total,
+        productsLen: data?.products?.length,
+        sample: (data?.products || []).slice(0, 2),
+      });
       setAllResults((data?.products || []) as Tyre[]);
       setServerPage(data?.page || 1);
       setServerTotalPages(data?.totalPages || 1);
