@@ -73,31 +73,31 @@ serve(async (req) => {
       let rows: any[] = []
       const t0 = Date.now()
 
-      // Real total count across all feeds for this tyre size
+      // Real total count across all feeds for this tyre size (any variant)
       const { count: totalCount } = await supabase
         .from('tyre_products_cache')
         .select('*', { count: 'exact', head: true })
-        .eq('tyre_size', tyreSize)
+        .in('tyre_size', tyreSizeVariants)
 
       if (advertiserId) {
         const actualId = String(advertiserId).replace('debug_', '')
         const { data, error } = await supabase
           .from('tyre_products_cache')
           .select(cols)
-          .eq('tyre_size', tyreSize)
+          .in('tyre_size', tyreSizeVariants)
           .eq('feed_id', actualId)
           .range(0, PER_FEED_LIMIT - 1)
         if (error) console.error('Cache query error:', error)
         rows = data || []
       } else {
-        const feedIds = ['12641', '12716', '4118', '12715', '66605', '23179', '93988', '93986', '10499', '22551', '38765', '22991']
-        console.log(`Querying ${feedIds.length} hardcoded feed_ids for ${tyreSize}`)
+        const feedIds = ['12641', '12716', '4118', '12715', '66605', '23179', '93988', '93986', '10499', '22551', '38765', '22991', '32457', '26513']
+        console.log(`Querying ${feedIds.length} hardcoded feed_ids for ${tyreSize} (variants=${tyreSizeVariants.length})`)
         const results = await Promise.all(
           feedIds.map((fid) =>
             supabase
               .from('tyre_products_cache')
               .select(cols)
-              .eq('tyre_size', tyreSize)
+              .in('tyre_size', tyreSizeVariants)
               .eq('feed_id', fid)
               .range(0, PER_FEED_LIMIT - 1)
           )
