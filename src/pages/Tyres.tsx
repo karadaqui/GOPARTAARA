@@ -119,6 +119,7 @@ const CARD = '#141414';
 const CARD_2 = '#1a1a1a';
 const BORDER = '#262626';
 const BORDER_2 = '#2f2f2f';
+const TYRE_FEED_FUNCTION_URL = 'https://bkwieknlxvkrzluongif.supabase.co/functions/v1/awin-tyre-feed';
 
 const Tyres = () => {
   const [width, setWidth] = useState('205');
@@ -145,7 +146,7 @@ const Tyres = () => {
   const resetPage = () => setPage(1);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/awin-tyre-feed`, {
+    fetch(TYRE_FEED_FUNCTION_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -169,8 +170,8 @@ const Tyres = () => {
     setSearchError(null);
     setPage(1);
     try {
-      const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/awin-tyre-feed`;
-      console.log('[Tyres] fetchPage', { width: w, profile: p, rim: r, page: pageNum });
+      const url = TYRE_FEED_FUNCTION_URL;
+      console.log('[Tyres] fetchPage', { url, width: w, profile: p, rim: r, page: pageNum });
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -180,16 +181,16 @@ const Tyres = () => {
         },
         body: JSON.stringify({ width: w, profile: p, rim: r, page: pageNum }),
       });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!response.ok) throw new Error(`Tyre feed request failed: HTTP ${response.status}`);
       const data = await response.json();
       setAllResults((data?.products || []) as Tyre[]);
       setServerPage(data?.page || 1);
       setServerTotalPages(data?.totalPages || 1);
       setServerTotal(data?.total || 0);
     } catch (e: any) {
-      console.error(e);
+      console.error('[Tyres] fetchPage failed', e);
       setAllResults([]);
-      setSearchError('Search failed — please try again');
+      setSearchError(`Tyre search failed: ${e?.message || 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
