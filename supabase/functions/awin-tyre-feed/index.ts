@@ -148,6 +148,8 @@ serve(async (req) => {
       currency: r.currency,
       url: r.url,
       supplier_name: r.supplier_name,
+      supplier: r.supplier_name,
+      merchant: r.supplier_name,
       brand: r.brand || '',
       category: (r as any).category || '',
       shipping: 'Free delivery',
