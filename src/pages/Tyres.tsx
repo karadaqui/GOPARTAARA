@@ -197,6 +197,7 @@ const Tyres = () => {
   };
 
   const handleSearch = async () => {
+    console.log('[Tyres] handleSearch clicked', { width, profile, rim });
     setServerPage(1);
     await fetchPage(1);
   };
@@ -414,6 +415,7 @@ const Tyres = () => {
                 </div>
 
                 <button
+                  type="button"
                   onClick={handleSearch}
                   disabled={loading}
                   className="mt-5 w-full rounded-xl px-6 py-4 font-bold text-white text-sm uppercase tracking-[0.2em] transition-all hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
