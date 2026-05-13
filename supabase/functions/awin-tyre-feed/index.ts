@@ -83,53 +83,60 @@ serve(async (req) => {
     const cols = 'feed_id, supplier_name, product_name, price, currency, url, brand, category, image_url, cached_at'
     const PER_FEED_LIMIT = 500
 
+    const applyFilters = (q: any) => {
+      if (seasonPattern) q = q.ilike('product_name', seasonPattern)
+      if (brandFilter) q = q.ilike('brand', `%${brandFilter}%`)
+      if (minPriceFilter !== undefined && Number.isFinite(minPriceFilter)) q = q.gte('price', minPriceFilter)
+      if (maxPriceFilter !== undefined && Number.isFinite(maxPriceFilter)) q = q.lte('price', maxPriceFilter)
+      return q
+    }
+
     const queryCache = async () => {
       let rows: any[] = []
       const t0 = Date.now()
 
-      // Real total count across all feeds for this tyre size (any variant)
-      const { count: totalCount } = await supabase
+      // Real total count across all feeds for this tyre size (any variant) with filters
+      let countQ: any = supabase
         .from('tyre_products_cache')
         .select('*', { count: 'exact', head: true })
         .in('tyre_size', tyreSizeVariants)
+      if (feedIdFilter) countQ = countQ.eq('feed_id', feedIdFilter)
+      countQ = applyFilters(countQ)
+      const { count: totalCount } = await countQ
 
-      if (advertiserId) {
-        const actualId = String(advertiserId).replace('debug_', '')
-        const { data, error } = await supabase
+      const singleFeedId = feedIdFilter || (advertiserId ? String(advertiserId).replace('debug_', '') : undefined)
+
+      if (singleFeedId) {
+        let q: any = supabase
           .from('tyre_products_cache')
           .select(cols)
           .in('tyre_size', tyreSizeVariants)
-          .eq('feed_id', actualId)
+          .eq('feed_id', singleFeedId)
           .range(0, PER_FEED_LIMIT - 1)
+        q = applyFilters(q)
+        const { data, error } = await q
         if (error) console.error('Cache query error:', error)
         rows = data || []
       } else {
         const feedIds = ['12641', '12716', '4118', '12715', '66605', '23179', '93988', '93986', '10499', '22551', '38765', '22991', '32457', '26513']
         console.log(`Querying ${feedIds.length} hardcoded feed_ids for ${tyreSize} (variants=${tyreSizeVariants.length})`)
         const results = await Promise.all(
-          feedIds.map((fid) =>
-            supabase
+          feedIds.map((fid) => {
+            let q: any = supabase
               .from('tyre_products_cache')
               .select(cols)
               .in('tyre_size', tyreSizeVariants)
               .eq('feed_id', fid)
               .range(0, PER_FEED_LIMIT - 1)
-          )
+            q = applyFilters(q)
+            return q
+          })
         )
         for (const { data, error } of results) {
           if (error) console.error('Cache query error:', error)
           if (data) rows.push(...data)
         }
       }
-      console.log(`Cache query took ${Date.now() - t0}ms, rows=${rows.length}, total=${totalCount}`)
-      let oldest = Date.now()
-      for (const r of rows) {
-        const t = new Date(r.cached_at).getTime()
-        if (t < oldest) oldest = t
-      }
-      return { rows, oldest, totalCount: totalCount ?? rows.length }
-    }
-
     // 1) Check cache
     let { rows, oldest, totalCount } = await queryCache()
 
