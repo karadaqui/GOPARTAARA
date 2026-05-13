@@ -29,8 +29,22 @@ serve(async (req) => {
     }
 
     const { width, profile, rim, advertiserId } = body
+    const feedIdFilter: string | undefined = body.feed_id ? String(body.feed_id) : undefined
+    const seasonFilter: string | undefined = body.season && body.season !== 'all' ? String(body.season) : undefined
+    const brandFilter: string | undefined = body.brand && body.brand !== 'all' ? String(body.brand) : undefined
+    const minPriceFilter: number | undefined = body.min_price !== undefined && body.min_price !== '' ? Number(body.min_price) : undefined
+    const maxPriceFilter: number | undefined = body.max_price !== undefined && body.max_price !== '' ? Number(body.max_price) : undefined
     const page = Math.max(1, parseInt(body.page) || 1)
     const PAGE_SIZE = 500
+
+    // Map season → product_name ilike pattern
+    const seasonPattern = (() => {
+      if (!seasonFilter) return undefined
+      if (seasonFilter === 'winter') return '%winter%'
+      if (seasonFilter === 'allseason') return '%all%season%'
+      if (seasonFilter === 'summer') return '%summer%'
+      return `%${seasonFilter}%`
+    })()
 
     const rimNum = String(rim || '').replace(/^R/i, '')
     const tyreSize = `${width}/${profile} R${rimNum}`
