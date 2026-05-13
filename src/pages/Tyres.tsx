@@ -17,8 +17,6 @@ import {
   Globe,
 } from "lucide-react";
 import { useCountry } from "@/hooks/useCountry";
-import { lookupSupplierCountries } from "@/data/suppliers";
-import { getCountry } from "@/lib/countriesData";
 
 const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305','315','325','335','345','355'];
 const PROFILES = ['30','35','40','45','50','55','60','65','70','75','80'];
@@ -232,63 +230,9 @@ const Tyres = () => {
   const isWinterTyre = (name: string) => /winter|wintrac|wintercontact|ultragr|nordisk|nordic|ice/i.test(name);
   const isAllSeasonTyre = (name: string) => /all.?season|allseason|all season|4 season|4-season|4s |quadraxer|solus vier/i.test(name);
 
-  let displayed = [...allResults];
-
-  if (season === 'winter') {
-    displayed = displayed.filter(t => isWinterTyre(t.name || ''));
-  } else if (season === 'summer') {
-    displayed = displayed.filter(t => !isWinterTyre(t.name || '') && !isAllSeasonTyre(t.name || ''));
-  } else if (season === 'allseason') {
-    displayed = displayed.filter(t => isAllSeasonTyre(t.name || ''));
-  }
-
-  if (supplier !== 'all' && supplier !== '') {
-    displayed = displayed.filter(t => String(t.advertiserId) === String(supplier));
-  }
-
-  // Country preference: SORT not HIDE.
-  // Suppliers that ship to the selected country bubble to the top;
-  // out-of-region suppliers still appear below with a region badge.
-  if (!isGlobal && country?.code) {
-    const inRegion = (t: any) => {
-      const name = t.supplier_name || t.supplier || '';
-      const codes = lookupSupplierCountries(name);
-      return codes.length === 0 || codes.includes(country.code);
-    };
-    displayed = [...displayed].sort((a, b) => Number(inRegion(b)) - Number(inRegion(a)));
-  }
-
-  if (brand !== 'all' && brand !== '') {
-    displayed = displayed.filter(t => (t.brand || '').toLowerCase() === brand.toLowerCase());
-  }
-
-  if (minPrice) {
-    displayed = displayed.filter(t => parseFloat((t.price || '0').replace(/[^0-9.]/g, '')) >= parseFloat(minPrice));
-  }
-
-  if (maxPrice) {
-    displayed = displayed.filter(t => parseFloat((t.price || '0').replace(/[^0-9.]/g, '')) <= parseFloat(maxPrice));
-  }
-
-  if (sort === 'asc') {
-    displayed = [...displayed].sort((a, b) => parseFloat((a.price || '0').replace(/[^0-9.]/g, '')) - parseFloat((b.price || '0').replace(/[^0-9.]/g, '')));
-  } else if (sort === 'desc') {
-    displayed = [...displayed].sort((a, b) => parseFloat((b.price || '0').replace(/[^0-9.]/g, '')) - parseFloat((a.price || '0').replace(/[^0-9.]/g, '')));
-  }
-
-  if (sort === 'none') {
-    if (season === 'winter') {
-      displayed = [...displayed].sort((a, b) => Number(isWinterTyre(b.name || '')) - Number(isWinterTyre(a.name || '')));
-    } else if (season === 'summer') {
-      displayed = [...displayed].sort((a, b) => {
-        const aM = !isWinterTyre(a.name || '') && !isAllSeasonTyre(a.name || '');
-        const bM = !isWinterTyre(b.name || '') && !isAllSeasonTyre(b.name || '');
-        return Number(bM) - Number(aM);
-      });
-    } else if (season === 'allseason') {
-      displayed = [...displayed].sort((a, b) => Number(isAllSeasonTyre(b.name || '')) - Number(isAllSeasonTyre(a.name || '')));
-    }
-  }
+  // TEMP DEBUG: bypass all client-side filtering/sorting, including country sorting.
+  // This confirms whether the recent country preference logic is crashing render.
+  const displayed = Array.isArray(allResults) ? allResults : [];
 
   const totalPages = Math.max(1, Math.ceil(displayed.length / ITEMS_PER_PAGE));
   const safePage = Math.min(page, totalPages);
@@ -328,7 +272,7 @@ const Tyres = () => {
     return out;
   }, [safePage, totalPages]);
 
-  return (
+  const renderTyresPage = () => (
     <div className="min-h-screen" style={{ background: BG, color: '#fff' }}>
       <SEOHead title="Tyre Search | GoPartara" description="Compare tyre prices from 5 trusted suppliers across UK & Europe." />
       <Navbar />
@@ -640,23 +584,9 @@ const Tyres = () => {
                   ? { background: 'rgba(22,163,74,0.15)', color: '#4ade80', border: '1px solid rgba(22,163,74,0.4)' }
                   : { background: 'rgba(249,115,22,0.15)', color: '#fb923c', border: '1px solid rgba(249,115,22,0.4)' };
 
-                // Region badge for out-of-region suppliers (sort, don't hide)
-                const supplierName = (t as any).supplier_name || (t as any).supplier || '';
-                const supplierCodes = lookupSupplierCountries(supplierName);
-                const outOfRegion =
-                  !isGlobal &&
-                  country?.code &&
-                  supplierCodes.length > 0 &&
-                  !supplierCodes.includes(country.code);
-                const regionLabel = outOfRegion
-                  ? supplierCodes
-                      .slice(0, 2)
-                      .map((c) => {
-                        const e = getCountry(c);
-                        return e ? `${e.flag} ${e.name}` : c;
-                      })
-                      .join(' + ') + (supplierCodes.length > 2 ? ' + EU' : '')
-                  : '';
+                // TEMP DEBUG: bypass country-region badge logic while isolating render crash.
+                const outOfRegion = false;
+                const regionLabel = '';
                 return (
                   <div
                     key={cardKey}
@@ -769,10 +699,6 @@ const Tyres = () => {
               const presentIds = new Set(allResults.map(t => String(t.advertiserId)));
               const missing = EXPECTED_SUPPLIERS.filter(s => {
                 if (presentIds.has(s.id)) return false;
-                if (!isGlobal && country?.code) {
-                  const codes = lookupSupplierCountries(s.name);
-                  if (codes.length > 0 && !codes.includes(country.code)) return false;
-                }
                 if (supplier !== 'all' && supplier !== '' && String(supplier) !== s.id) return false;
                 return true;
               });
@@ -892,6 +818,21 @@ const Tyres = () => {
       <Footer />
     </div>
   );
+
+  try {
+    return renderTyresPage();
+  } catch (error) {
+    console.error('[Tyres] render failed', error);
+    return (
+      <div className="min-h-screen" style={{ background: BG, color: '#fff' }}>
+        <Navbar />
+        <main style={{ color: 'red', padding: '24px', fontSize: '16px', fontFamily: 'monospace' }}>
+          TYRES RENDER ERROR: {error instanceof Error ? error.message : String(error)}
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 };
 
 export default Tyres;
