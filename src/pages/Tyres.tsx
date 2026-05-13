@@ -160,17 +160,34 @@ const Tyres = () => {
   const [serverTotalPages, setServerTotalPages] = useState(1);
   const [serverTotal, setServerTotal] = useState(0);
 
-  const fetchPage = async (pageNum: number, override?: { w?: string; p?: string; r?: string }) => {
+  const fetchPage = async (
+    pageNum: number,
+    override?: {
+      w?: string; p?: string; r?: string;
+      feedId?: string; season?: string; brand?: string; minPrice?: string; maxPrice?: string;
+    }
+  ) => {
     const w = (override?.w ?? width) || '205';
     const p = (override?.p ?? profile) || '55';
     const r = (override?.r ?? rim) || '16';
+    const feedId = override?.feedId !== undefined ? override.feedId : (supplier !== 'all' ? supplier : '');
+    const seasonVal = override?.season !== undefined ? override.season : season;
+    const brandVal = override?.brand !== undefined ? override.brand : brand;
+    const minP = override?.minPrice !== undefined ? override.minPrice : minPrice;
+    const maxP = override?.maxPrice !== undefined ? override.maxPrice : maxPrice;
     setLoading(true);
     setSearched(true);
     setSearchError(null);
     setPage(1);
     try {
       const url = TYRE_FEED_FUNCTION_URL;
-      console.log('[Tyres] fetchPage', { url, width: w, profile: p, rim: r, page: pageNum });
+      const payload: Record<string, any> = { width: w, profile: p, rim: r, page: pageNum };
+      if (feedId && feedId !== 'all') payload.feed_id = feedId;
+      if (seasonVal && seasonVal !== 'all') payload.season = seasonVal;
+      if (brandVal && brandVal !== 'all') payload.brand = brandVal;
+      if (minP) payload.min_price = Number(minP);
+      if (maxP) payload.max_price = Number(maxP);
+      console.log('[Tyres] fetchPage', payload);
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -178,14 +195,13 @@ const Tyres = () => {
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ width: w, profile: p, rim: r, page: pageNum }),
+        body: JSON.stringify(payload),
       });
       if (!response.ok) throw new Error(`Tyre feed request failed: HTTP ${response.status}`);
       const data = await response.json();
       console.log('[Tyres] response', {
         total: data?.total,
         productsLen: data?.products?.length,
-        sample: (data?.products || []).slice(0, 2),
       });
       setAllResults((data?.products || []) as Tyre[]);
       setServerPage(data?.page || 1);
@@ -205,6 +221,16 @@ const Tyres = () => {
     setServerPage(1);
     await fetchPage(1);
   };
+
+  // Refetch from server whenever a filter changes (after first search)
+  useEffect(() => {
+    if (!searched) return;
+    const t = setTimeout(() => {
+      fetchPage(1);
+    }, 250);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [supplier, season, brand, minPrice, maxPrice]);
 
   const goToServerPage = async (n: number) => {
     if (n < 1 || n > serverTotalPages) return;
