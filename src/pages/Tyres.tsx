@@ -704,6 +704,16 @@ const Tyres = () => {
                         )}
                       </div>
 
+                      {outOfRegion && regionLabel && (
+                        <span
+                          className="inline-flex self-start items-center px-1.5 py-0.5 rounded text-[9px] font-semibold mt-1"
+                          style={{ background: 'rgba(113,113,122,0.18)', color: '#a1a1aa', border: '1px solid rgba(113,113,122,0.35)' }}
+                          title={`Ships from ${regionLabel}`}
+                        >
+                          {regionLabel} only
+                        </span>
+                      )}
+
                       <div className="flex items-center gap-1 mt-1.5">
                         <button
                           onClick={() => toggleSet(compare, cardKey, setCompare)}
