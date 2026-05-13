@@ -240,14 +240,16 @@ const Tyres = () => {
     displayed = displayed.filter(t => String(t.advertiserId) === String(supplier));
   }
 
-  // Country filter (skip when Global is selected). Keep items from suppliers
-  // we don't recognise so we don't accidentally hide unmatched feed sources.
+  // Country preference: SORT not HIDE.
+  // Suppliers that ship to the selected country bubble to the top;
+  // out-of-region suppliers still appear below with a region badge.
   if (!isGlobal && country?.code) {
-    displayed = displayed.filter(t => {
-      const name = (t as any).supplier_name || (t as any).supplier || '';
+    const inRegion = (t: any) => {
+      const name = t.supplier_name || t.supplier || '';
       const codes = lookupSupplierCountries(name);
       return codes.length === 0 || codes.includes(country.code);
-    });
+    };
+    displayed = [...displayed].sort((a, b) => Number(inRegion(b)) - Number(inRegion(a)));
   }
 
   if (brand !== 'all' && brand !== '') {
