@@ -306,6 +306,8 @@ const Tyres = () => {
     setWidth(s.w);
     setProfile(s.p);
     setRim(s.r);
+    setServerPage(1);
+    fetchPage(1, { w: s.w, p: s.p, r: s.r });
   };
 
   const pageNumbers = useMemo(() => {
