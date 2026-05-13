@@ -142,7 +142,25 @@ serve(async (req) => {
         }
         feedIds = [feedIdParam]
       } else {
-        feedIds = Object.keys(allFeeds)
+        // Fan-out: self-invoke once per feed so each runs in its own
+        // edge-function invocation (avoids CPU Time exceeded on bulk run).
+        const allIds = Object.keys(allFeeds)
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+        const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+        console.log(`Fan-out refresh for ${allIds.length} feeds: ${allIds.join(',')}`)
+        for (const fid of allIds) {
+          // Stagger by 2s so we don't hammer the runtime simultaneously
+          await new Promise((r) => setTimeout(r, 2000))
+          fetch(`${supabaseUrl}/functions/v1/refresh-tyre-cache?feedId=${fid}`, {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${serviceKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: '{}',
+          }).catch((e) => console.error(`Fan-out invoke failed for ${fid}:`, e))
+        }
+        return
       }
 
       // Clear cache: scoped to selected feed if param given, otherwise full clear
