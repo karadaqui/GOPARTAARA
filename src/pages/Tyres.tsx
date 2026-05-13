@@ -160,13 +160,17 @@ const Tyres = () => {
   const [serverTotalPages, setServerTotalPages] = useState(1);
   const [serverTotal, setServerTotal] = useState(0);
 
-  const fetchPage = async (pageNum: number) => {
+  const fetchPage = async (pageNum: number, override?: { w?: string; p?: string; r?: string }) => {
+    const w = (override?.w ?? width) || '205';
+    const p = (override?.p ?? profile) || '55';
+    const r = (override?.r ?? rim) || '16';
     setLoading(true);
     setSearched(true);
     setSearchError(null);
     setPage(1);
     try {
       const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/awin-tyre-feed`;
+      console.log('[Tyres] fetchPage', { width: w, profile: p, rim: r, page: pageNum });
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -174,7 +178,7 @@ const Tyres = () => {
           apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ width, profile, rim, page: pageNum }),
+        body: JSON.stringify({ width: w, profile: p, rim: r, page: pageNum }),
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const data = await response.json();
