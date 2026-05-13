@@ -143,14 +143,48 @@ serve(async (req) => {
 
     // Deduplicate by URL
     const seen = new Set<string>()
-    const products = mapped.filter((p) => {
+    const deduped = mapped.filter((p) => {
       if (!p.url) return true
       if (seen.has(p.url)) return false
       seen.add(p.url)
       return true
     })
 
-    const suppliers = Array.from(new Set(products.map((p) => p.supplier_name)))
+    // Supplier rotation: group by supplier, sort each by price asc,
+    // then interleave PER_SUPPLIER_CHUNK at a time so users see a
+    // genuine multi-supplier comparison instead of one supplier dominating.
+    const PER_SUPPLIER_CHUNK = 4
+    const parsePrice = (s: string) => {
+      const n = parseFloat(String(s).replace(/[^0-9.,-]/g, '').replace(',', '.'))
+      return Number.isFinite(n) ? n : Number.POSITIVE_INFINITY
+    }
+    const groups = new Map<string, typeof deduped>()
+    for (const p of deduped) {
+      const k = p.supplier_name || 'unknown'
+      if (!groups.has(k)) groups.set(k, [])
+      groups.get(k)!.push(p)
+    }
+    for (const arr of groups.values()) {
+      arr.sort((a, b) => parsePrice(a.price) - parsePrice(b.price))
+    }
+    const supplierOrder = Array.from(groups.keys())
+    const products: typeof deduped = []
+    let remaining = true
+    let offset = 0
+    while (remaining) {
+      remaining = false
+      for (const s of supplierOrder) {
+        const arr = groups.get(s)!
+        const slice = arr.slice(offset, offset + PER_SUPPLIER_CHUNK)
+        if (slice.length > 0) {
+          products.push(...slice)
+          remaining = true
+        }
+      }
+      offset += PER_SUPPLIER_CHUNK
+    }
+
+    const suppliers = supplierOrder
 
     const total = totalCount
     const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
