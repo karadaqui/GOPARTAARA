@@ -648,6 +648,7 @@ const Tyres = () => {
                       })
                       .join(' + ') + (supplierCodes.length > 2 ? ' + EU' : '')
                   : '';
+                return (
                   <div
                     key={cardKey}
                     className="group rounded-xl overflow-hidden flex flex-col transition-all hover:-translate-y-1"
