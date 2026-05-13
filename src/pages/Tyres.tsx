@@ -458,23 +458,34 @@ const Tyres = () => {
                   Prices from these trusted suppliers
                 </div>
                 <div className="flex flex-wrap items-center justify-center gap-2">
-                  {uniqueSuppliers.map((s) => (
-                    <div
-                      key={s.id}
-                      className="flex items-center gap-2 px-4 py-2 rounded-full"
-                      style={{ background: CARD, border: `1px solid ${BORDER}` }}
-                    >
-                      <Flag id={s.id} size={16} />
-                      <span className="text-sm text-zinc-200 font-medium">{s.name}</span>
-                      <span className="flex items-center gap-1 text-[10px] text-green-400 font-bold uppercase tracking-wider">
-                        <span className="relative flex h-1.5 w-1.5">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500" />
+                  {uniqueSuppliers.map((s) => {
+                    const active = supplier === s.id;
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => {
+                          setSupplier((prev) => (prev === s.id ? 'all' : s.id));
+                          resetPage();
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-full transition-all"
+                        style={{
+                          background: active ? RED : CARD,
+                          border: `1px solid ${active ? RED : BORDER}`,
+                        }}
+                      >
+                        <Flag id={s.id} size={16} />
+                        <span className="text-sm font-medium" style={{ color: active ? '#fff' : '#e4e4e7' }}>{s.name}</span>
+                        <span className="flex items-center gap-1 text-[10px] text-green-400 font-bold uppercase tracking-wider">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500" />
+                          </span>
+                          Live
                         </span>
-                        Live
-                      </span>
-                    </div>
-                  ))}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
