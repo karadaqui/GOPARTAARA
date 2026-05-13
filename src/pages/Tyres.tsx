@@ -468,6 +468,10 @@ const Tyres = () => {
           </div>
         )}
 
+        <div style={{ color: 'lime', padding: '20px', fontSize: '16px', fontFamily: 'monospace', border: '1px dashed lime', margin: '12px 0' }}>
+          DEBUG: searched={searched.toString()} | allResults={allResults.length} | displayed={displayed.length} | loading={loading.toString()} | searchError={searchError || 'none'} | country={country?.code || 'none'} | isGlobal={String(isGlobal)} | season={season} | supplier={supplier} | brand={brand} | minPrice={minPrice || '∅'} | maxPrice={maxPrice || '∅'}
+        </div>
+
         {!loading && searchError && (
           <div className="text-center py-20" style={{ color: RED }}>{searchError}</div>
         )}
