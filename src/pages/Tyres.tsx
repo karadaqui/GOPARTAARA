@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useCountry } from "@/hooks/useCountry";
 import { lookupSupplierCountries } from "@/data/suppliers";
+import { getCountry } from "@/lib/countriesData";
 
 const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305','315','325','335','345','355'];
 const PROFILES = ['30','35','40','45','50','55','60','65','70','75','80'];
@@ -240,14 +241,16 @@ const Tyres = () => {
     displayed = displayed.filter(t => String(t.advertiserId) === String(supplier));
   }
 
-  // Country filter (skip when Global is selected). Keep items from suppliers
-  // we don't recognise so we don't accidentally hide unmatched feed sources.
+  // Country preference: SORT not HIDE.
+  // Suppliers that ship to the selected country bubble to the top;
+  // out-of-region suppliers still appear below with a region badge.
   if (!isGlobal && country?.code) {
-    displayed = displayed.filter(t => {
-      const name = (t as any).supplier_name || (t as any).supplier || '';
+    const inRegion = (t: any) => {
+      const name = t.supplier_name || t.supplier || '';
       const codes = lookupSupplierCountries(name);
       return codes.length === 0 || codes.includes(country.code);
-    });
+    };
+    displayed = [...displayed].sort((a, b) => Number(inRegion(b)) - Number(inRegion(a)));
   }
 
   if (brand !== 'all' && brand !== '') {
@@ -627,6 +630,24 @@ const Tyres = () => {
                   : allSeason
                   ? { background: 'rgba(22,163,74,0.15)', color: '#4ade80', border: '1px solid rgba(22,163,74,0.4)' }
                   : { background: 'rgba(249,115,22,0.15)', color: '#fb923c', border: '1px solid rgba(249,115,22,0.4)' };
+
+                // Region badge for out-of-region suppliers (sort, don't hide)
+                const supplierName = (t as any).supplier_name || (t as any).supplier || '';
+                const supplierCodes = lookupSupplierCountries(supplierName);
+                const outOfRegion =
+                  !isGlobal &&
+                  country?.code &&
+                  supplierCodes.length > 0 &&
+                  !supplierCodes.includes(country.code);
+                const regionLabel = outOfRegion
+                  ? supplierCodes
+                      .slice(0, 2)
+                      .map((c) => {
+                        const e = getCountry(c);
+                        return e ? `${e.flag} ${e.name}` : c;
+                      })
+                      .join(' + ') + (supplierCodes.length > 2 ? ' + EU' : '')
+                  : '';
                 return (
                   <div
                     key={cardKey}
@@ -682,6 +703,16 @@ const Tyres = () => {
                           </span>
                         )}
                       </div>
+
+                      {outOfRegion && regionLabel && (
+                        <span
+                          className="inline-flex self-start items-center px-1.5 py-0.5 rounded text-[9px] font-semibold mt-1"
+                          style={{ background: 'rgba(113,113,122,0.18)', color: '#a1a1aa', border: '1px solid rgba(113,113,122,0.35)' }}
+                          title={`Ships from ${regionLabel}`}
+                        >
+                          {regionLabel} only
+                        </span>
+                      )}
 
                       <div className="flex items-center gap-1 mt-1.5">
                         <button
