@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useCountry } from "@/hooks/useCountry";
 import { lookupSupplierCountries } from "@/data/suppliers";
+import { getCountry } from "@/lib/countriesData";
 
 const WIDTHS = ['155','165','175','185','195','205','215','225','235','245','255','265','275','285','295','305','315','325','335','345','355'];
 const PROFILES = ['30','35','40','45','50','55','60','65','70','75','80'];
