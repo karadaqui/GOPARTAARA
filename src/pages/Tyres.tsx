@@ -1,5 +1,5 @@
 // Tyres v4 - elite automotive redesign
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -139,8 +139,9 @@ const Tyres = () => {
   const [sort, setSort] = useState<'none' | 'asc' | 'desc'>('none');
   const [page, setPage] = useState(1);
 
-  const [allSuppliersList, setAllSuppliersList] = useState<{ id: string; name: string }[]>([]);
-  const [allBrandsList, setAllBrandsList] = useState<string[]>([]);
+  const allSuppliersListRef = useRef<{ id: string; name: string }[]>([]);
+  const allBrandsListRef = useRef<string[]>([]);
+  const optionSearchKeyRef = useRef<string | null>(null);
 
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
   const [compare, setCompare] = useState<Set<string>>(new Set());
@@ -168,6 +169,7 @@ const Tyres = () => {
     override?: {
       w?: string; p?: string; r?: string;
       feedId?: string; season?: string; brand?: string; minPrice?: string; maxPrice?: string;
+      retryOnEmpty?: boolean;
     }
   ) => {
     const w = (override?.w ?? width) || '205';
@@ -178,6 +180,10 @@ const Tyres = () => {
     const brandVal = override?.brand !== undefined ? override.brand : brand;
     const minP = override?.minPrice !== undefined ? override.minPrice : minPrice;
     const maxP = override?.maxPrice !== undefined ? override.maxPrice : maxPrice;
+    const retryOnEmpty = override?.retryOnEmpty !== false;
+    const supplierFilterActive = Boolean(feedId && feedId !== 'all');
+    const brandFilterActive = Boolean(brandVal && brandVal !== 'all');
+    const optionSearchKey = `${w}/${p}/R${r}`;
     setLoading(true);
     setSearched(true);
     setSearchError(null);
@@ -207,23 +213,35 @@ const Tyres = () => {
         productsLen: data?.products?.length,
       });
       const products = (data?.products || []) as Tyre[];
-      setAllResults(products);
-      setServerPage(data?.page || 1);
-      setServerTotalPages(data?.totalPages || 1);
-      setServerTotal(data?.total || 0);
-      const supplierFilterActive = feedId && feedId !== 'all';
-      if (!supplierFilterActive) {
+      if (products.length === 0 && (supplierFilterActive || brandFilterActive) && retryOnEmpty) {
+        setSupplier('all');
+        setBrand('all');
+        await fetchPage(1, { w, p, r, feedId: '', season: seasonVal, brand: 'all', minPrice: minP, maxPrice: maxP, retryOnEmpty: false });
+        return;
+      }
+      if (optionSearchKeyRef.current !== optionSearchKey && !supplierFilterActive && !brandFilterActive && products.length > 0) {
+        optionSearchKeyRef.current = optionSearchKey;
         const byName = new Map<string, { id: string; name: string }>();
         products.forEach((t) => {
           const name = (t as any).supplier_name || (t as any).supplier || '';
           if (!name) return;
           if (!byName.has(name)) byName.set(name, { id: String(t.advertiserId), name });
         });
-        setAllSuppliersList(Array.from(byName.values()));
-        setAllBrandsList([...new Set(products.map((t) => t.brand).filter(Boolean) as string[])].sort());
+        allSuppliersListRef.current = Array.from(byName.values());
+        allBrandsListRef.current = [...new Set(products.map((t) => t.brand).filter(Boolean) as string[])].sort();
       }
+      setAllResults(products);
+      setServerPage(data?.page || 1);
+      setServerTotalPages(data?.totalPages || 1);
+      setServerTotal(data?.total || 0);
     } catch (e: any) {
       console.error('[Tyres] fetchPage failed', e);
+      if ((supplierFilterActive || brandFilterActive) && retryOnEmpty) {
+        setSupplier('all');
+        setBrand('all');
+        await fetchPage(1, { w, p, r, feedId: '', season: seasonVal, brand: 'all', minPrice: minP, maxPrice: maxP, retryOnEmpty: false });
+        return;
+      }
       setAllResults([]);
       setSearchError(`Tyre search failed: ${e?.message || 'Unknown error'}`);
     } finally {
@@ -236,6 +254,8 @@ const Tyres = () => {
     setServerPage(1);
     await fetchPage(1);
   };
+
+  const retrySearch = () => fetchPage(1);
 
   // Refetch from server whenever a filter changes (after first search)
   useEffect(() => {
@@ -457,11 +477,31 @@ const Tyres = () => {
         )}
 
         {!loading && searchError && (
-          <div className="text-center py-20" style={{ color: RED }}>{searchError}</div>
+          <div className="text-center py-20">
+            <div style={{ color: RED }}>{searchError}</div>
+            <button
+              type="button"
+              onClick={retrySearch}
+              className="mt-5 rounded-xl px-6 py-3 font-bold text-white text-xs uppercase tracking-[0.18em] transition-opacity hover:opacity-90"
+              style={{ background: RED }}
+            >
+              Try Again
+            </button>
+          </div>
         )}
 
         {!loading && !searchError && searched && allResults.length === 0 && (
-          <div className="text-center py-20 text-zinc-500">No tyres found for {width}/{profile} R{rim}.</div>
+          <div className="text-center py-20">
+            <div className="text-zinc-400">No results found — try a different size.</div>
+            <button
+              type="button"
+              onClick={retrySearch}
+              className="mt-5 rounded-xl px-6 py-3 font-bold text-white text-xs uppercase tracking-[0.18em] transition-opacity hover:opacity-90"
+              style={{ background: RED }}
+            >
+              Try Again
+            </button>
+          </div>
         )}
 
         {!loading && allResults.length > 0 && (
@@ -541,13 +581,13 @@ const Tyres = () => {
                 <div className="w-px h-6 bg-zinc-800 shrink-0" />
 
                 <select
-                  value={supplier === 'all' ? 'all' : (allSuppliersList.find(s => s.id === supplier)?.name || 'all')}
+                  value={supplier === 'all' ? 'all' : (allSuppliersListRef.current.find(s => s.id === supplier)?.name || 'all')}
                   onChange={(e) => {
                     const name = e.target.value;
                     if (name === 'all') {
                       setSupplier('all');
                     } else {
-                      const match = allSuppliersList.find(s => s.name === name);
+                      const match = allSuppliersListRef.current.find(s => s.name === name);
                       setSupplier(match ? match.id : 'all');
                     }
                     resetPage();
@@ -556,7 +596,7 @@ const Tyres = () => {
                   style={{ border: `1px solid ${BORDER_2}`, backgroundColor: '#18181b', color: 'white', colorScheme: 'dark' }}
                 >
                   <option value="all">All Suppliers</option>
-                  {allSuppliersList.map((s) => (
+                  {allSuppliersListRef.current.map((s) => (
                     <option key={s.name} value={s.name}>{s.name}</option>
                   ))}
                 </select>
@@ -568,7 +608,7 @@ const Tyres = () => {
                   style={{ border: `1px solid ${BORDER_2}`, backgroundColor: '#18181b', color: 'white', colorScheme: 'dark' }}
                 >
                   <option value="all">All Brands</option>
-                  {allBrandsList.map((b) => <option key={b} value={b}>{b}</option>)}
+                  {allBrandsListRef.current.map((b) => <option key={b} value={b}>{b}</option>)}
                 </select>
 
                 <div className="flex items-center gap-1 shrink-0">
