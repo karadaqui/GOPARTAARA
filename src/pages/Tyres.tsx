@@ -255,6 +255,8 @@ const Tyres = () => {
     await fetchPage(1);
   };
 
+  const retrySearch = () => fetchPage(1);
+
   // Refetch from server whenever a filter changes (after first search)
   useEffect(() => {
     if (!searched) return;
