@@ -169,6 +169,7 @@ const Tyres = () => {
     override?: {
       w?: string; p?: string; r?: string;
       feedId?: string; season?: string; brand?: string; minPrice?: string; maxPrice?: string;
+      retryOnEmpty?: boolean;
     }
   ) => {
     const w = (override?.w ?? width) || '205';
@@ -179,6 +180,10 @@ const Tyres = () => {
     const brandVal = override?.brand !== undefined ? override.brand : brand;
     const minP = override?.minPrice !== undefined ? override.minPrice : minPrice;
     const maxP = override?.maxPrice !== undefined ? override.maxPrice : maxPrice;
+    const retryOnEmpty = override?.retryOnEmpty !== false;
+    const supplierFilterActive = Boolean(feedId && feedId !== 'all');
+    const brandFilterActive = Boolean(brandVal && brandVal !== 'all');
+    const optionSearchKey = `${w}/${p}/R${r}`;
     setLoading(true);
     setSearched(true);
     setSearchError(null);
@@ -208,23 +213,35 @@ const Tyres = () => {
         productsLen: data?.products?.length,
       });
       const products = (data?.products || []) as Tyre[];
-      setAllResults(products);
-      setServerPage(data?.page || 1);
-      setServerTotalPages(data?.totalPages || 1);
-      setServerTotal(data?.total || 0);
-      const supplierFilterActive = feedId && feedId !== 'all';
-      if (!supplierFilterActive) {
+      if (products.length === 0 && (supplierFilterActive || brandFilterActive) && retryOnEmpty) {
+        setSupplier('all');
+        setBrand('all');
+        await fetchPage(1, { w, p, r, feedId: '', season: seasonVal, brand: 'all', minPrice: minP, maxPrice: maxP, retryOnEmpty: false });
+        return;
+      }
+      if (optionSearchKeyRef.current !== optionSearchKey && !supplierFilterActive && !brandFilterActive && products.length > 0) {
+        optionSearchKeyRef.current = optionSearchKey;
         const byName = new Map<string, { id: string; name: string }>();
         products.forEach((t) => {
           const name = (t as any).supplier_name || (t as any).supplier || '';
           if (!name) return;
           if (!byName.has(name)) byName.set(name, { id: String(t.advertiserId), name });
         });
-        setAllSuppliersList(Array.from(byName.values()));
-        setAllBrandsList([...new Set(products.map((t) => t.brand).filter(Boolean) as string[])].sort());
+        allSuppliersListRef.current = Array.from(byName.values());
+        allBrandsListRef.current = [...new Set(products.map((t) => t.brand).filter(Boolean) as string[])].sort();
       }
+      setAllResults(products);
+      setServerPage(data?.page || 1);
+      setServerTotalPages(data?.totalPages || 1);
+      setServerTotal(data?.total || 0);
     } catch (e: any) {
       console.error('[Tyres] fetchPage failed', e);
+      if ((supplierFilterActive || brandFilterActive) && retryOnEmpty) {
+        setSupplier('all');
+        setBrand('all');
+        await fetchPage(1, { w, p, r, feedId: '', season: seasonVal, brand: 'all', minPrice: minP, maxPrice: maxP, retryOnEmpty: false });
+        return;
+      }
       setAllResults([]);
       setSearchError(`Tyre search failed: ${e?.message || 'Unknown error'}`);
     } finally {
