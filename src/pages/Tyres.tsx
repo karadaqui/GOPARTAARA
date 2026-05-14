@@ -568,7 +568,7 @@ const Tyres = () => {
                   style={{ border: `1px solid ${BORDER_2}`, backgroundColor: '#18181b', color: 'white', colorScheme: 'dark' }}
                 >
                   <option value="all">All Brands</option>
-                  {uniqueBrands.map((b) => <option key={b} value={b}>{b}</option>)}
+                  {allBrandsList.map((b) => <option key={b} value={b}>{b}</option>)}
                 </select>
 
                 <div className="flex items-center gap-1 shrink-0">
