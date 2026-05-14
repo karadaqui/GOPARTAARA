@@ -1,5 +1,5 @@
 // Tyres v4 - elite automotive redesign
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
@@ -139,8 +139,9 @@ const Tyres = () => {
   const [sort, setSort] = useState<'none' | 'asc' | 'desc'>('none');
   const [page, setPage] = useState(1);
 
-  const [allSuppliersList, setAllSuppliersList] = useState<{ id: string; name: string }[]>([]);
-  const [allBrandsList, setAllBrandsList] = useState<string[]>([]);
+  const allSuppliersListRef = useRef<{ id: string; name: string }[]>([]);
+  const allBrandsListRef = useRef<string[]>([]);
+  const optionSearchKeyRef = useRef<string | null>(null);
 
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
   const [compare, setCompare] = useState<Set<string>>(new Set());
