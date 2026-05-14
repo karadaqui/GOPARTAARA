@@ -209,7 +209,7 @@ const Garage = () => {
       <SEOHead title="My Garage — Vehicle Manager | GOPARTARA" description="Save your vehicles and filter car part searches by make, model and year. Track MOT and tax expiry dates. Free for all registered users." path="/garage" noindex />
       <Navbar />
 
-      <div className="container max-w-4xl py-20 px-6 md:px-4">
+      <main className="container max-w-4xl py-20 px-6 md:px-4">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">
@@ -622,7 +622,7 @@ const Garage = () => {
             Free plan: 1 vehicle. <button onClick={() => navigate("/pricing")} className="text-primary hover:underline">Upgrade to Pro</button> for unlimited.
           </p>
         )}
-      </div>
+      </main>
 
       {/* Upgrade dialog */}
       <UpgradeModal

@@ -1466,7 +1466,7 @@ const SearchResults = () => {
       </div>
 
       {/* ── Main Content ── */}
-      <div className="max-w-7xl mx-auto w-full flex-1 px-4 sm:px-6 lg:px-8 py-6 sm:py-10 relative z-10 animate-fade-in" ref={resultsRef}>
+      <main className="max-w-7xl mx-auto w-full flex-1 px-4 sm:px-6 lg:px-8 py-6 sm:py-10 relative z-10 animate-fade-in" ref={resultsRef}>
         <LocationNudge />
 
         {/* ── Supplier Sources Banner ── */}
@@ -2685,7 +2685,7 @@ const SearchResults = () => {
             </div>
           </div>
         )}
-      </div>
+      </main>
 
       <CompareBar items={compareParts} onOpen={() => setShowCompare(true)} onClear={() => setCompareParts([])} />
       {showCompare && <CompareModal items={compareParts} onRemove={(id) => setCompareParts((prev) => prev.filter((p) => p.id !== id))} onClose={() => setShowCompare(false)} />}

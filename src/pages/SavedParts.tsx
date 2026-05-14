@@ -163,7 +163,7 @@ const SavedParts = () => {
       <SEOHead title="Saved Parts — GOPARTARA" description="Your saved car parts collection." path="/saved-parts" noindex />
       <Navbar />
 
-      <div className="container max-w-6xl flex-1 px-4 py-24">
+      <main className="container max-w-6xl flex-1 px-4 py-24">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -327,7 +327,7 @@ const SavedParts = () => {
             ))}
           </div>
         )}
-      </div>
+      </main>
 
       {/* New Folder Modal */}
       <Dialog open={showNewFolder} onOpenChange={setShowNewFolder}>

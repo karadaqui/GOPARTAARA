@@ -86,6 +86,7 @@ const Index = () => {
         ]}
       />
       <Navbar />
+      <main>
       <HeroSection />
 
       {/* Trust Bar */}
@@ -217,6 +218,7 @@ const Index = () => {
         </div>
       </section>
 
+      </main>
       <Footer />
       <BackToTop />
       <WelcomeModal />
