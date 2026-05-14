@@ -541,13 +541,13 @@ const Tyres = () => {
                 <div className="w-px h-6 bg-zinc-800 shrink-0" />
 
                 <select
-                  value={supplier === 'all' ? 'all' : (uniqueSuppliers.find(s => s.id === supplier)?.name || 'all')}
+                  value={supplier === 'all' ? 'all' : (allSuppliersList.find(s => s.id === supplier)?.name || 'all')}
                   onChange={(e) => {
                     const name = e.target.value;
                     if (name === 'all') {
                       setSupplier('all');
                     } else {
-                      const match = uniqueSuppliers.find(s => s.name === name);
+                      const match = allSuppliersList.find(s => s.name === name);
                       setSupplier(match ? match.id : 'all');
                     }
                     resetPage();
@@ -556,7 +556,7 @@ const Tyres = () => {
                   style={{ border: `1px solid ${BORDER_2}`, backgroundColor: '#18181b', color: 'white', colorScheme: 'dark' }}
                 >
                   <option value="all">All Suppliers</option>
-                  {uniqueSuppliers.map((s) => (
+                  {allSuppliersList.map((s) => (
                     <option key={s.name} value={s.name}>{s.name}</option>
                   ))}
                 </select>
