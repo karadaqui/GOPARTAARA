@@ -139,6 +139,9 @@ const Tyres = () => {
   const [sort, setSort] = useState<'none' | 'asc' | 'desc'>('none');
   const [page, setPage] = useState(1);
 
+  const [allSuppliersList, setAllSuppliersList] = useState<{ id: string; name: string }[]>([]);
+  const [allBrandsList, setAllBrandsList] = useState<string[]>([]);
+
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
   const [compare, setCompare] = useState<Set<string>>(new Set());
 
