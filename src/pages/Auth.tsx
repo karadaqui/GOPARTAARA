@@ -241,7 +241,7 @@ const Auth = () => {
       </div>
 
       {/* RIGHT FORM PANEL */}
-      <div className="flex-1 flex items-center justify-center px-4 py-10 relative">
+      <main className="flex-1 flex items-center justify-center px-4 py-10 relative">
         <button
           onClick={() => navigate("/")}
           className="absolute top-6 left-6 flex items-center gap-2 text-sm transition-colors"
@@ -382,7 +382,7 @@ const Auth = () => {
               {/* Divider */}
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex-1 h-px" style={{ background: "#1f1f1f" }} />
-                <span style={{ fontSize: "12px", color: "#52525b" }}>or</span>
+                <span style={{ fontSize: "12px", color: "#a1a1aa" }}>or</span>
                 <div className="flex-1 h-px" style={{ background: "#1f1f1f" }} />
               </div>
 
@@ -479,17 +479,17 @@ const Auth = () => {
 
               <p
                 className="text-center mt-6"
-                style={{ fontSize: "11px", color: "#52525b", lineHeight: 1.5 }}
+                style={{ fontSize: "11px", color: "#a1a1aa", lineHeight: 1.5 }}
               >
                 By continuing, you agree to our{" "}
-                <a href="/terms" style={{ color: "#71717a", textDecoration: "underline" }}>Terms</a>
+                <a href="/terms" style={{ color: "#d4d4d8", textDecoration: "underline" }}>Terms</a>
                 {" "}&{" "}
-                <a href="/privacy" style={{ color: "#71717a", textDecoration: "underline" }}>Privacy Policy</a>
+                <a href="/privacy" style={{ color: "#d4d4d8", textDecoration: "underline" }}>Privacy Policy</a>
               </p>
             </>
           )}
         </div>
-      </div>
+      </main>
     </div>
   );
 };
