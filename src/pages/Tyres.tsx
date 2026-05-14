@@ -206,10 +206,22 @@ const Tyres = () => {
         total: data?.total,
         productsLen: data?.products?.length,
       });
-      setAllResults((data?.products || []) as Tyre[]);
+      const products = (data?.products || []) as Tyre[];
+      setAllResults(products);
       setServerPage(data?.page || 1);
       setServerTotalPages(data?.totalPages || 1);
       setServerTotal(data?.total || 0);
+      const supplierFilterActive = feedId && feedId !== 'all';
+      if (!supplierFilterActive) {
+        const byName = new Map<string, { id: string; name: string }>();
+        products.forEach((t) => {
+          const name = (t as any).supplier_name || (t as any).supplier || '';
+          if (!name) return;
+          if (!byName.has(name)) byName.set(name, { id: String(t.advertiserId), name });
+        });
+        setAllSuppliersList(Array.from(byName.values()));
+        setAllBrandsList([...new Set(products.map((t) => t.brand).filter(Boolean) as string[])].sort());
+      }
     } catch (e: any) {
       console.error('[Tyres] fetchPage failed', e);
       setAllResults([]);
