@@ -559,13 +559,13 @@ const Tyres = () => {
                 <div className="w-px h-6 bg-zinc-800 shrink-0" />
 
                 <select
-                  value={supplier === 'all' ? 'all' : (allSuppliersList.find(s => s.id === supplier)?.name || 'all')}
+                  value={supplier === 'all' ? 'all' : (allSuppliersListRef.current.find(s => s.id === supplier)?.name || 'all')}
                   onChange={(e) => {
                     const name = e.target.value;
                     if (name === 'all') {
                       setSupplier('all');
                     } else {
-                      const match = allSuppliersList.find(s => s.name === name);
+                      const match = allSuppliersListRef.current.find(s => s.name === name);
                       setSupplier(match ? match.id : 'all');
                     }
                     resetPage();
@@ -574,7 +574,7 @@ const Tyres = () => {
                   style={{ border: `1px solid ${BORDER_2}`, backgroundColor: '#18181b', color: 'white', colorScheme: 'dark' }}
                 >
                   <option value="all">All Suppliers</option>
-                  {allSuppliersList.map((s) => (
+                  {allSuppliersListRef.current.map((s) => (
                     <option key={s.name} value={s.name}>{s.name}</option>
                   ))}
                 </select>
@@ -586,7 +586,7 @@ const Tyres = () => {
                   style={{ border: `1px solid ${BORDER_2}`, backgroundColor: '#18181b', color: 'white', colorScheme: 'dark' }}
                 >
                   <option value="all">All Brands</option>
-                  {allBrandsList.map((b) => <option key={b} value={b}>{b}</option>)}
+                  {allBrandsListRef.current.map((b) => <option key={b} value={b}>{b}</option>)}
                 </select>
 
                 <div className="flex items-center gap-1 shrink-0">
