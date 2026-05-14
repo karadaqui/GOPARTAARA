@@ -194,7 +194,7 @@ const Help = () => {
         }}
       />
       <Navbar />
-
+      <main>
       {/* Header */}
       <section className="relative pt-24 pb-16 px-4 sm:px-6 overflow-hidden">
         <div
@@ -423,7 +423,7 @@ const Help = () => {
           </div>
         </div>
       </section>
-
+      </main>
       <Footer />
     </div>
   );
