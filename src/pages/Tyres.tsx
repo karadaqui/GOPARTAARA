@@ -477,11 +477,31 @@ const Tyres = () => {
         )}
 
         {!loading && searchError && (
-          <div className="text-center py-20" style={{ color: RED }}>{searchError}</div>
+          <div className="text-center py-20">
+            <div style={{ color: RED }}>{searchError}</div>
+            <button
+              type="button"
+              onClick={retrySearch}
+              className="mt-5 rounded-xl px-6 py-3 font-bold text-white text-xs uppercase tracking-[0.18em] transition-opacity hover:opacity-90"
+              style={{ background: RED }}
+            >
+              Try Again
+            </button>
+          </div>
         )}
 
         {!loading && !searchError && searched && allResults.length === 0 && (
-          <div className="text-center py-20 text-zinc-500">No tyres found for {width}/{profile} R{rim}.</div>
+          <div className="text-center py-20">
+            <div className="text-zinc-400">No results found — try a different size.</div>
+            <button
+              type="button"
+              onClick={retrySearch}
+              className="mt-5 rounded-xl px-6 py-3 font-bold text-white text-xs uppercase tracking-[0.18em] transition-opacity hover:opacity-90"
+              style={{ background: RED }}
+            >
+              Try Again
+            </button>
+          </div>
         )}
 
         {!loading && allResults.length > 0 && (
