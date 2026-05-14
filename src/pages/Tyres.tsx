@@ -139,6 +139,9 @@ const Tyres = () => {
   const [sort, setSort] = useState<'none' | 'asc' | 'desc'>('none');
   const [page, setPage] = useState(1);
 
+  const [allSuppliersList, setAllSuppliersList] = useState<{ id: string; name: string }[]>([]);
+  const [allBrandsList, setAllBrandsList] = useState<string[]>([]);
+
   const [wishlist, setWishlist] = useState<Set<string>>(new Set());
   const [compare, setCompare] = useState<Set<string>>(new Set());
 
@@ -203,10 +206,22 @@ const Tyres = () => {
         total: data?.total,
         productsLen: data?.products?.length,
       });
-      setAllResults((data?.products || []) as Tyre[]);
+      const products = (data?.products || []) as Tyre[];
+      setAllResults(products);
       setServerPage(data?.page || 1);
       setServerTotalPages(data?.totalPages || 1);
       setServerTotal(data?.total || 0);
+      const supplierFilterActive = feedId && feedId !== 'all';
+      if (!supplierFilterActive) {
+        const byName = new Map<string, { id: string; name: string }>();
+        products.forEach((t) => {
+          const name = (t as any).supplier_name || (t as any).supplier || '';
+          if (!name) return;
+          if (!byName.has(name)) byName.set(name, { id: String(t.advertiserId), name });
+        });
+        setAllSuppliersList(Array.from(byName.values()));
+        setAllBrandsList([...new Set(products.map((t) => t.brand).filter(Boolean) as string[])].sort());
+      }
     } catch (e: any) {
       console.error('[Tyres] fetchPage failed', e);
       setAllResults([]);
@@ -526,13 +541,13 @@ const Tyres = () => {
                 <div className="w-px h-6 bg-zinc-800 shrink-0" />
 
                 <select
-                  value={supplier === 'all' ? 'all' : (uniqueSuppliers.find(s => s.id === supplier)?.name || 'all')}
+                  value={supplier === 'all' ? 'all' : (allSuppliersList.find(s => s.id === supplier)?.name || 'all')}
                   onChange={(e) => {
                     const name = e.target.value;
                     if (name === 'all') {
                       setSupplier('all');
                     } else {
-                      const match = uniqueSuppliers.find(s => s.name === name);
+                      const match = allSuppliersList.find(s => s.name === name);
                       setSupplier(match ? match.id : 'all');
                     }
                     resetPage();
@@ -541,7 +556,7 @@ const Tyres = () => {
                   style={{ border: `1px solid ${BORDER_2}`, backgroundColor: '#18181b', color: 'white', colorScheme: 'dark' }}
                 >
                   <option value="all">All Suppliers</option>
-                  {uniqueSuppliers.map((s) => (
+                  {allSuppliersList.map((s) => (
                     <option key={s.name} value={s.name}>{s.name}</option>
                   ))}
                 </select>
@@ -553,7 +568,7 @@ const Tyres = () => {
                   style={{ border: `1px solid ${BORDER_2}`, backgroundColor: '#18181b', color: 'white', colorScheme: 'dark' }}
                 >
                   <option value="all">All Brands</option>
-                  {uniqueBrands.map((b) => <option key={b} value={b}>{b}</option>)}
+                  {allBrandsList.map((b) => <option key={b} value={b}>{b}</option>)}
                 </select>
 
                 <div className="flex items-center gap-1 shrink-0">
