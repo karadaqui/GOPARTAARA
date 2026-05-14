@@ -858,7 +858,7 @@ const Tyres = () => {
             )}
           </>
         )}
-      </main>
+      </div>
 
       <Footer />
     </div>
