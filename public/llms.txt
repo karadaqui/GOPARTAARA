@@ -1,0 +1,15 @@
+# GOPARTARA
+
+GOPARTARA is a free car parts price comparison platform that searches over 1,000,000 car part listings from 14+ global suppliers simultaneously. Users can search by part name, vehicle registration number, or upload a photo to identify parts. The platform aggregates results from trusted suppliers including eBay, Amazon, and specialised auto parts retailers across the UK, Europe, and the US.
+
+Key features include:
+- Real-time price comparison across multiple suppliers
+- Vehicle-specific part compatibility checks via VIN and registration lookup
+- Price drop alerts with email notifications
+- Personal garage for tracking vehicle MOT, tax, and service history
+- Marketplace for buying and selling new and used car parts
+- Tyre search and comparison
+- EV charging equipment search
+- Saved parts collections with folder organisation
+
+GOPARTARA is built for car owners, mechanics, and automotive enthusiasts who want to find the best prices on car parts, tyres, and accessories. The platform is free to use with optional Pro and Elite subscription tiers for advanced features.
