@@ -451,7 +451,6 @@ const Blog = () => {
           </form>
         </div>
       </main>
-    </div>
 
       <Footer />
       <BackToTop />
@@ -470,6 +469,7 @@ const Blog = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+    </div>
   );
 };
 
