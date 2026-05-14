@@ -134,7 +134,7 @@ const Blog = () => {
       />
       <Navbar />
 
-      <div className="container max-w-6xl px-4 pb-20">
+      <main className="container max-w-6xl px-4 pb-20">
         {/* Editorial Header */}
         <div
           className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6"
@@ -450,7 +450,7 @@ const Blog = () => {
             </Button>
           </form>
         </div>
-      </div>
+      </main>
 
       <Footer />
       <BackToTop />

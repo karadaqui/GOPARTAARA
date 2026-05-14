@@ -182,7 +182,7 @@ const Pricing = () => {
         ]}
       />
       <Navbar />
-      <div className="pt-24">
+      <main className="pt-24">
         <PricingSection />
 
         {/* Enterprise & Trade */}
@@ -382,7 +382,7 @@ const Pricing = () => {
             </Button>
           </div>
         </div>
-      </div>
+      </main>
       <Footer />
       <BackToTop />
     </div>

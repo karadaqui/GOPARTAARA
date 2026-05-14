@@ -369,7 +369,7 @@ const Dashboard = () => {
       <Navbar />
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
 
-      <div className="container relative z-10 max-w-4xl pt-24 pb-12 px-4 flex-1">
+      <main className="container relative z-10 max-w-4xl pt-24 pb-12 px-4 flex-1">
         {/* Display Name Required Banner */}
         {needsDisplayName && (
           <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-5 mb-6 flex flex-col sm:flex-row sm:items-center gap-3">
@@ -1054,7 +1054,7 @@ const Dashboard = () => {
             </div>
           </section>
         )}
-      </div>
+      </main>
       <Footer />
     </div>
   );

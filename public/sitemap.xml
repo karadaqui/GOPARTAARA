@@ -22,4 +22,8 @@
   <url><loc>https://gopartara.com/blog/air-oil-fuel-filters</loc><lastmod>2026-04-24</lastmod><priority>0.6</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://gopartara.com/blog/find-car-parts-by-photo</loc><lastmod>2026-04-24</lastmod><priority>0.6</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://gopartara.com/blog/find-car-parts-by-reg</loc><lastmod>2026-04-24</lastmod><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://gopartara.com/auth</loc><lastmod>2026-04-24</lastmod><priority>0.3</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://gopartara.com/dashboard</loc><lastmod>2026-04-24</lastmod><priority>0.5</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://gopartara.com/alerts</loc><lastmod>2026-04-24</lastmod><priority>0.5</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://gopartara.com/saved</loc><lastmod>2026-04-24</lastmod><priority>0.5</priority><changefreq>weekly</changefreq></url>
 </urlset>

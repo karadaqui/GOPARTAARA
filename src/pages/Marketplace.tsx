@@ -441,7 +441,7 @@ const Marketplace = () => {
       />
       <Navbar />
 
-      <div className="container max-w-7xl pt-24 pb-20 px-4 flex-1">
+      <main className="container max-w-7xl pt-24 pb-20 px-4 flex-1">
         <div className="text-center mb-6">
           <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">
             <span className="text-primary">Parts</span> Marketplace
@@ -832,7 +832,7 @@ const Marketplace = () => {
               </Button>
             </div>
           </>
-      </div>
+      </main>
 
       <CompareBar items={compareParts} onOpen={() => setShowCompare(true)} onClear={() => setCompareParts([])} />
       {showCompare && (
