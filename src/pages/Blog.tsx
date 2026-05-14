@@ -449,6 +449,7 @@ const Blog = () => {
               {subscribing ? "Subscribing..." : "Subscribe"}
             </Button>
           </form>
+        </div>
       </main>
     </div>
 
@@ -469,7 +470,6 @@ const Blog = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
   );
 };
 
