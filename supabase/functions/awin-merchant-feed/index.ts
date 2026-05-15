@@ -17,6 +17,7 @@ const MERCHANT_LABELS: Record<string, string> = {
   '16809': 'Kohl Automobile',
   '8794': 'Tirendo',
   '104933': 'Direnza',
+  '30295': 'Gravity Performance',
 }
 
 serve(async (req) => {

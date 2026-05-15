@@ -259,6 +259,8 @@ const SHIPS_TO: Record<string, ShippingInfo> = {
   "16809": { label: "🇩🇪 DE + EU", codes: ["DE", ...EU_CODES] },
   "8794":  { label: "🇳🇴 Norway only", codes: ["NO"] },
   "118045":{ label: "🇬🇧 UK + EU", codes: ["GB", ...EU_CODES] },
+  "104933":{ label: "🇬🇧 UK + EU", codes: ["GB", ...EU_CODES] },
+  "30295": { label: "🇬🇧 UK only", codes: ["GB"] },
 };
 
 export function getSupplierShipping(supplier: Supplier): ShippingInfo {
