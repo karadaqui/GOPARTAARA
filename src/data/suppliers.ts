@@ -135,15 +135,15 @@ export const SUPPLIERS: Supplier[] = [
   // ── New Awin merchants (TASK 1) ────────────────────────────────────────
   {
     id: "dunford",
-    name: "Dunford Inc",
+    name: "WheelHero (Dunford Inc)",
     mid: 67974,
     countries: ["US"],
-    category: ["wheels", "tyres", "parts"],
-    baseUrl: "https://www.dunfordwheels.com",
-    searchUrl: "https://www.dunfordwheels.com/search?q={query}",
+    category: ["wheels", "tyres"],
+    baseUrl: "https://www.wheelhero.com",
+    searchUrl: "https://www.wheelhero.com/search?q={query}",
     affiliateUrl:
       "https://www.awin1.com/cread.php?awinmid=67974&awinaffid=2845282&ued={encodedUrl}",
-    logo: "Dunford Inc",
+    logo: "WheelHero",
     flag: "🇺🇸",
     live: true,
   },
