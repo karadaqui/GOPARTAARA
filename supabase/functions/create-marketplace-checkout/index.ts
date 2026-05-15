@@ -54,40 +54,15 @@ Deno.serve(async (req) => {
     }
 
     if (!user?.id) {
-      console.log("Falling back to listing-only auth check");
-      const bypassAuth = new URL(req.url).searchParams.get("bypass_auth") === "test_mode";
-      if (bypassAuth && listingId && typeof listingId === "string") {
-        step = "validating bypass listing";
-        const { data: bypassListing, error: bypassListingErr } = await supabaseAdmin
-          .from("seller_listings")
-          .select("id")
-          .eq("id", listingId)
-          .maybeSingle();
-        if (bypassListingErr || !bypassListing) {
-          authError = new Error(bypassListingErr?.message || "Bypass listing not found");
-        } else {
-          const decoded = decodeJwtPayload(token);
-          const decodedUserId = isUuid(decoded?.sub) ? decoded.sub : null;
-          if (decodedUserId) {
-            user = { id: decodedUserId, email: decoded?.email || null };
-            authBypassed = true;
-          } else {
-            authError = new Error("Bypass listing valid, but token did not contain a valid user id");
-          }
-          console.log("[checkout] Bypass auth enabled after listing validation", { listingId, decodedUserId: !!decodedUserId });
-        }
-      }
-
-      if (!authBypassed) {
-        return new Response(JSON.stringify({
-          error: `Auth failed at step: ${step}. Header present: ${!!authHeader}. Token length: ${token?.length || 0}. User found: ${!!user}. Supabase error: ${authError?.message || "none"}`,
-        }), {
-          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+      // Auth bypass mode removed — verified user JWT is required for checkout.
+      return new Response(JSON.stringify({
+        error: `Auth failed at step: ${step}. Header present: ${!!authHeader}. Token length: ${token?.length || 0}. Supabase error: ${authError?.message || "none"}`,
+      }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    console.log("[checkout] Step 3: auth complete", { userId: user?.id, authBypassed });
+    console.log("[checkout] Step 3: auth complete", { userId: user?.id });
 
     step = "checking Stripe key";
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
