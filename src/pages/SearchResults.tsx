@@ -905,7 +905,7 @@ const SearchResults = () => {
       merged = ebayItems;
     } else if (brandFilter === "Green Spark Plug Co.") {
       merged = gspItems;
-    } else if (brandFilter === "Amazon") {
+    } else if (brandFilter === "Amazon" || brandFilter === "Amazon UK") {
       merged = ebayItems; // Amazon section is a banner; show eBay grid only
     } else {
       // Awin merchant filter — match by supplierName
