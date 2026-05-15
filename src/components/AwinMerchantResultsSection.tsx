@@ -12,7 +12,7 @@ interface Props {
 // Awin merchants we render via the parametric feed (excluding suppliers that
 // already have their own bespoke surface — eBay, Green Spark Plug, EV King,
 // Amazon UK affiliate banner, and the existing tyre-cache feeds).
-const FEED_MERCHANT_IDS = new Set<number>([67974, 8626, 16673, 16809, 8794]);
+const FEED_MERCHANT_IDS = new Set<number>([67974, 8626, 16673, 16809, 8794, 104933]);
 
 const MerchantBlock = ({
   supplier,
