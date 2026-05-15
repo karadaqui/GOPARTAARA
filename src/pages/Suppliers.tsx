@@ -46,6 +46,8 @@ const partners: Partner[] = [
   { name: "Kohl Automobile", domain: "kohl-automobile.de", flag: "🇩🇪", ships: "Germany + EU", description: "German auto parts specialist.", supplierParam: "kohl" },
   { name: "Tirendo", domain: "tirendo.no", flag: "🇳🇴", ships: "Norway only", description: "Norway's leading tyre retailer.", supplierParam: "tirendo" },
   { name: "Dunford Inc", domain: "dunford.com", flag: "🇺🇸", ships: "US only", description: "US specialist auto parts supplier.", supplierParam: "dunford" },
+  { name: "Direnza", domain: "direnza.co.uk", flag: "🇬🇧", ships: "UK + EU", description: "UK aftermarket performance parts for Audi, BMW, Ford, Renault, Porsche, VW & more.", supplierParam: "direnza" },
+  { name: "Gravity Performance", domain: "gravityperformance.co.uk", flag: "🇬🇧", ships: "UK only", description: "Performance and tuning parts for road and track since 2004.", supplierParam: "gravityperformance" },
 ];
 
 function LogoOrInitial({ domain, name }: { domain?: string; name: string }) {
