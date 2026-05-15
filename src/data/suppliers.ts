@@ -217,6 +217,34 @@ export const SUPPLIERS: Supplier[] = [
     flag: "🇳🇴",
     live: true,
   },
+  {
+    id: "direnza",
+    name: "Direnza",
+    mid: 104933,
+    countries: ["GB", ...EU_CODES],
+    category: ["performance", "parts"],
+    baseUrl: "https://www.direnza.co.uk",
+    searchUrl: "https://www.direnza.co.uk/search?q={query}",
+    affiliateUrl:
+      "https://www.awin1.com/cread.php?awinmid=104933&awinaffid=2845282&ued={encodedUrl}",
+    logo: "Direnza",
+    flag: "🇬🇧",
+    live: true,
+  },
+  {
+    id: "gravityperformance",
+    name: "Gravity Performance",
+    mid: 30295,
+    countries: ["GB"],
+    category: ["performance", "parts"],
+    baseUrl: "https://www.gravityperformance.co.uk",
+    searchUrl: "https://www.gravityperformance.co.uk/search?q={query}",
+    affiliateUrl:
+      "https://www.awin1.com/cread.php?awinmid=30295&awinaffid=2845282&ued={encodedUrl}",
+    logo: "Gravity Performance",
+    flag: "🇬🇧",
+    live: true,
+  },
 ];
 
 /** Filter by selected country (returns all when country is "GLOBAL"). */
