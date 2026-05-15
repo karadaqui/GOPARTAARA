@@ -1020,7 +1020,7 @@ const HeroSection = () => {
 
         {/* Suppliers Section */}
         <div className={`transition-[colors,transform] ease-out delay-500 ${mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
-          <section className="bg-[#0a0a0a] py-12 px-4 max-w-2xl mx-auto">
+          <section className="bg-transparent py-12 px-4 max-w-2xl mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
               <div>
