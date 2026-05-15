@@ -11,7 +11,7 @@ const cors = {
 }
 
 const MERCHANT_LABELS: Record<string, string> = {
-  '67974': 'Dunford Inc',
+  '67974': 'WheelHero',
   '8626': 'Autobandenmarkt',
   '16673': 'Maxpeedingrods',
   '16809': 'Kohl Automobile',
