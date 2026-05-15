@@ -926,6 +926,16 @@ const SearchResults = () => {
     return merged;
   }, [filteredResults, gspProducts, awinAllProducts, brandFilter, sortBy, activeQuery]);
 
+  // When the supplier filter narrows results to a non-eBay source, the grid
+  // shows only filtered items — so the headline total + pagination should
+  // reflect that filtered count instead of eBay's full result total.
+  const isSupplierFilterNarrowing =
+    brandFilter !== "All" &&
+    brandFilter !== "eBay" &&
+    brandFilter !== "Amazon" &&
+    brandFilter !== "Amazon UK";
+  const displayedTotal = isSupplierFilterNarrowing ? interleavedResults.length : totalResults;
+
 
   const clearAllFilters = () => {
     setConditionFilter("All");
