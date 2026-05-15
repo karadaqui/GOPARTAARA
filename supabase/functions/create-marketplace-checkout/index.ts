@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
   let token = "";
   let user: { id: string; email?: string | null } | null = null;
   let authError: any = null;
-  let authBypassed = false;
+  
 
   try {
     step = "creating service client";
