@@ -23,7 +23,7 @@ const SUPPLIER_LINKS: Record<string, string> = {
   "Maxpeedingrods":        "https://www.awin1.com/cread.php?awinmid=16673&awinaffid=2845282&ued=https%3A%2F%2Fwww.maxpeedingrods.com",
   "Pneumatici IT":         "https://www.awin1.com/cread.php?awinmid=12716&awinaffid=2845282&ued=https%3A%2F%2Fwww.pneumatici.it",
   "neumaticos-online.es":  "https://www.awin1.com/cread.php?awinmid=10499&awinaffid=2845282&ued=https%3A%2F%2Fwww.neumaticos-online.es",
-  "ReifenDirekt EE":       "https://www.awin1.com/cread.php?awinmid=10747&awinaffid=2845282&ued=https%3A%2F%2Fwww.reifendirekt.ee",
+  "ReifenDirekt EE":       "https://www.awin1.com/cread.php?awinmid=10747&awinaffid=2845282&ued=https%3A%2F%2Fwww.reifendirekt.co.ee",
   "autobandenmarkt":       "https://www.awin1.com/cread.php?awinmid=8626&awinaffid=2845282&ued=https%3A%2F%2Fwww.autobandenmarkt.be",
   "Kohl Automobile":       "https://www.awin1.com/cread.php?awinmid=16809&awinaffid=2845282&ued=https%3A%2F%2Fwww.kohl-shop.de",
   "Tirendo":               "https://www.awin1.com/cread.php?awinmid=8794&awinaffid=2845282&ued=https%3A%2F%2Fwww.tirendo.no",
