@@ -198,13 +198,13 @@ const CONDITION_OPTIONS: FilterOption[] = [
 ];
 
 // Parts-only suppliers (Tyre suppliers live on /tyres and must NOT appear here)
+// EV King has its own dedicated page and is intentionally excluded here.
 const BRAND_OPTIONS: FilterOption[] = [
   { label: "All Suppliers", value: "All" },
   { label: "🌍 eBay Global", value: "eBay", tooltip: "Varies by seller" },
   { label: "🔩 Green Spark Plug Co. (Classic & Vintage)", value: "Green Spark Plug Co.", tooltip: "Worldwide" },
   { label: "🇬🇧 Amazon UK", value: "Amazon UK", tooltip: "UK + EU" },
   { label: "🌍 Maxpeedingrods", value: "Maxpeedingrods", tooltip: "Worldwide" },
-  { label: "🇬🇧 EV King", value: "EV King", tooltip: "UK + EU" },
   { label: "🇬🇧 Direnza", value: "Direnza", tooltip: "UK + EU" },
   { label: "🇬🇧 Gravity Performance", value: "Gravity Performance", tooltip: "UK only" },
   { label: "🇩🇪 Kohl Automobile", value: "Kohl Automobile", tooltip: "Germany + EU" },
