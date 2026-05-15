@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useAwinMerchantProducts, type AwinMerchantProduct } from "@/hooks/useAwinMerchantProducts";
 
 // Active feed merchants (must match FEED_MERCHANT_IDS in AwinMerchantResultsSection)
-const FEED_MERCHANTS = ["67974", "8626", "16673", "16809", "8794"] as const;
+const FEED_MERCHANTS = ["67974", "8626", "16673", "16809", "8794", "104933"] as const;
 
 /**
  * Aggregates products from all active Awin feed merchants into a single flat
