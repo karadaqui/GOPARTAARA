@@ -9,6 +9,20 @@ interface Props {
   countryCode: string;
 }
 
+// Parse vehicle make/model/year from product title (e.g. "Audi S5 B8/8T 3.0 V6 2007-2016 - ...")
+const MAKES = ["Audi","BMW","Ford","Renault","Porsche","Volkswagen","VW","Vauxhall","Mini","Fiat","Mercedes","Mercedes-Benz","Peugeot","Citroen","Citroën","Skoda","Seat","Toyota","Honda","Nissan","Mazda","Subaru","Mitsubishi","Hyundai","Kia","Volvo","Jaguar","Land Rover","Range Rover","Lexus","Alfa Romeo","Opel"];
+const parseVehicle = (title: string): string | null => {
+  if (!title) return null;
+  const make = MAKES.find((m) => new RegExp(`\\b${m.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\$&")}\\b`, "i").test(title));
+  if (!make) return null;
+  const yearMatch = title.match(/\b(19|20)\d{2}(?:\s*[-–]\s*(?:19|20)?\d{2,4})?\b/);
+  const idx = title.toLowerCase().indexOf(make.toLowerCase());
+  const after = title.slice(idx + make.length).split(/[-–|,]/)[0].trim();
+  const model = after.split(/\s+/).slice(0, 4).join(" ");
+  const yr = yearMatch ? ` ${yearMatch[0]}` : "";
+  return `${make} ${model}${yr}`.trim();
+};
+
 // Awin merchants we render via the parametric feed (excluding suppliers that
 // already have their own bespoke surface — eBay, Green Spark Plug, EV King,
 // Amazon UK affiliate banner, and the existing tyre-cache feeds).
@@ -62,7 +76,9 @@ const MerchantBlock = ({
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
-          {products.slice(0, 4).map((p: AwinMerchantProduct) => (
+          {products.slice(0, 4).map((p: AwinMerchantProduct) => {
+            const vehicle = parseVehicle(p.title);
+            return (
             <a
               key={p.id}
               href={p.url}
@@ -78,10 +94,18 @@ const MerchantBlock = ({
                 )}
               </div>
               <div className="p-3 flex flex-col flex-1">
-                <div className="flex items-center gap-1.5 mb-1">
+                <div className="flex items-center gap-1.5 mb-1 flex-wrap">
                   <span className="text-[10px] font-semibold text-amber-400 truncate">
                     {p.supplierName}
                   </span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
+                    New
+                  </span>
+                  {p.inStock !== false && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/10 text-green-400 border border-green-500/20 font-medium inline-flex items-center gap-1">
+                      <span className="w-1 h-1 rounded-full bg-green-400" /> In stock
+                    </span>
+                  )}
                 </div>
                 <p className="text-sm font-semibold text-foreground mb-2 line-clamp-2 leading-snug min-h-[2.5rem] group-hover:text-amber-400 transition-colors">
                   {p.title}
@@ -89,14 +113,42 @@ const MerchantBlock = ({
                 <div className="flex items-baseline gap-1 mb-2">
                   <span className="text-lg font-bold text-foreground">{p.price || "See price"}</span>
                 </div>
+                <div className="flex flex-col gap-0.5 text-[11px] text-muted-foreground mb-2">
+                  {vehicle && (
+                    <div className="flex gap-1">
+                      <span className="text-zinc-500">Fits:</span>
+                      <span className="text-zinc-300 truncate">{vehicle}</span>
+                    </div>
+                  )}
+                  {p.brand && (
+                    <div className="flex gap-1">
+                      <span className="text-zinc-500">Brand:</span>
+                      <span className="text-zinc-300 truncate">{p.brand}</span>
+                    </div>
+                  )}
+                  {p.category && (
+                    <div className="flex gap-1">
+                      <span className="text-zinc-500">Category:</span>
+                      <span className="text-zinc-300 truncate">{p.category}</span>
+                    </div>
+                  )}
+                  <div className="flex gap-1">
+                    <span className="text-zinc-500">Part #:</span>
+                    <span className="text-zinc-300 truncate font-mono">{p.id.split('-').slice(1).join('-') || p.id}</span>
+                  </div>
+                </div>
                 <ShippingPill supplierName={supplier.name} className="mb-2 self-start" />
                 <p className="text-[11px] text-muted-foreground mb-3">{p.shipping}</p>
-                <span className="mt-auto block w-full text-center py-2 bg-amber-600/20 group-hover:bg-amber-600/30 border border-amber-700/30 text-amber-400 text-xs font-semibold rounded-xl transition-colors">
-                  View on {supplier.name} →
+                <span
+                  style={{ whiteSpace: "nowrap", height: "44px" }}
+                  className="mt-auto flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold transition-colors duration-150"
+                >
+                  <ExternalLink size={14} /> View on {supplier.name} →
                 </span>
               </div>
             </a>
-          ))}
+            );
+          })}
         </div>
       )}
       <p className="text-[10px] text-muted-foreground mt-2 text-center">
