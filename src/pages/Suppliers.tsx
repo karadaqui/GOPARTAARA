@@ -28,6 +28,8 @@ const SUPPLIER_LINKS: Record<string, string> = {
   "Kohl Automobile":       "https://www.awin1.com/cread.php?awinmid=16809&awinaffid=2845282&ued=https%3A%2F%2Fwww.kohl-automobile.de",
   "Tirendo":               "https://www.awin1.com/cread.php?awinmid=8794&awinaffid=2845282&ued=https%3A%2F%2Fwww.tirendo.no",
   "Dunford Inc":           "https://www.awin1.com/cread.php?awinmid=67974&awinaffid=2845282&ued=https%3A%2F%2Fwww.dunford.com",
+  "Direnza":               "https://www.awin1.com/cread.php?awinmid=104933&awinaffid=2845282&ued=https%3A%2F%2Fwww.direnza.co.uk",
+  "Gravity Performance":   "https://www.awin1.com/cread.php?awinmid=30295&awinaffid=2845282&ued=https%3A%2F%2Fwww.gravityperformance.co.uk",
 };
 
 const partners: Partner[] = [
