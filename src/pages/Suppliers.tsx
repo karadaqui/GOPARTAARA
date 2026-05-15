@@ -25,9 +25,9 @@ const SUPPLIER_LINKS: Record<string, string> = {
   "neumaticos-online.es":  "https://www.awin1.com/cread.php?awinmid=10499&awinaffid=2845282&ued=https%3A%2F%2Fwww.neumaticos-online.es",
   "ReifenDirekt EE":       "https://www.awin1.com/cread.php?awinmid=10747&awinaffid=2845282&ued=https%3A%2F%2Fwww.reifendirekt.ee",
   "autobandenmarkt":       "https://www.awin1.com/cread.php?awinmid=8626&awinaffid=2845282&ued=https%3A%2F%2Fwww.autobandenmarkt.be",
-  "Kohl Automobile":       "https://www.awin1.com/cread.php?awinmid=16809&awinaffid=2845282&ued=https%3A%2F%2Fwww.kohl-automobile.de",
+  "Kohl Automobile":       "https://www.awin1.com/cread.php?awinmid=16809&awinaffid=2845282&ued=https%3A%2F%2Fwww.kohl-shop.de",
   "Tirendo":               "https://www.awin1.com/cread.php?awinmid=8794&awinaffid=2845282&ued=https%3A%2F%2Fwww.tirendo.no",
-  "Dunford Inc":           "https://www.awin1.com/cread.php?awinmid=67974&awinaffid=2845282&ued=https%3A%2F%2Fwww.dunford.com",
+  "Dunford Inc":           "https://www.awin1.com/cread.php?awinmid=67974&awinaffid=2845282&ued=https%3A%2F%2Fwww.wheelhero.com",
   "Direnza":               "https://www.awin1.com/cread.php?awinmid=104933&awinaffid=2845282&ued=https%3A%2F%2Fwww.direnza.co.uk",
   "Gravity Performance":   "https://www.awin1.com/cread.php?awinmid=30295&awinaffid=2845282&ued=https%3A%2F%2Fwww.gravityperformance.co.uk",
 };
