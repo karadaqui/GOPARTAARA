@@ -66,7 +66,7 @@ import { SUPPLIERS as ALL_SUPPLIERS, shippingPriority } from "@/data/suppliers";
 // Parts-only supplier pills (tyre suppliers live on /tyres)
 const PARTS_SUPPLIER_IDS = new Set([
   "ebay", "greensparkplug", "amazonuk", "maxpeedingrods",
-  "evking", "direnza", "gravityperformance", "kohl", "dunford",
+  "direnza", "gravityperformance", "kohl", "dunford",
 ]);
 const SUPPLIERS = ALL_SUPPLIERS
   .filter(s => s.live !== false && PARTS_SUPPLIER_IDS.has(s.id))
@@ -906,7 +906,7 @@ const SearchResults = () => {
     } else if (brandFilter === "Green Spark Plug Co.") {
       merged = gspItems;
     } else if (brandFilter === "Amazon" || brandFilter === "Amazon UK") {
-      merged = ebayItems; // Amazon section is a banner; show eBay grid only
+      merged = []; // Amazon UK is an affiliate banner-only supplier — no product feed
     } else {
       // Awin merchant filter — match by supplierName
       const target = brandFilter.toLowerCase();

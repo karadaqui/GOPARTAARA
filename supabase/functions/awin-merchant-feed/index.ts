@@ -39,14 +39,23 @@ serve(async (req) => {
     }
 
     const tokens = query.toLowerCase().split(/\s+/).filter(Boolean).slice(0, 6)
-    let q = supabase.from('parts_cache').select('*').eq('advertiser_id', merchantId).limit(200)
+    // OR-match: any token in name/brand/category counts (more permissive than AND)
+    const orParts: string[] = []
     for (const t of tokens) {
-      const safe = t.replace(/[\\%_]/g, (m) => '\\' + m)
+      const safe = t.replace(/[\\%_,()]/g, (m) => '\\' + m)
       const p = `%${safe}%`
-      q = q.or(`name.ilike.${p},brand.ilike.${p},category.ilike.${p}`)
+      orParts.push(`name.ilike.${p}`, `brand.ilike.${p}`, `category.ilike.${p}`)
     }
+    let q = supabase.from('parts_cache').select('*').eq('advertiser_id', merchantId).limit(200)
+    if (orParts.length > 0) q = q.or(orParts.join(','))
 
-    const { data, error } = await q
+    let { data, error } = await q
+    // Fallback: if no token-matching products exist, show latest items from this merchant
+    if (!error && (!data || data.length === 0)) {
+      const fb = await supabase.from('parts_cache').select('*').eq('advertiser_id', merchantId).limit(60)
+      data = fb.data
+      error = fb.error
+    }
     if (error) {
       console.error('parts_cache query', error.message)
       return new Response(JSON.stringify({ products: [], error: error.message }),
