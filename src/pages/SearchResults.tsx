@@ -2369,7 +2369,7 @@ const SearchResults = () => {
                 </div>
 
                 {/* ── Pagination (numeric) — directly after results grid ── */}
-                {liveResults.length > 0 && totalPages > 1 && (() => {
+                {liveResults.length > 0 && totalPages > 1 && !isSupplierFilterNarrowing && (() => {
                   const goTo = (p: number) => {
                     const target = Math.max(1, Math.min(totalPages, p));
                     if (target === currentPage) return;
