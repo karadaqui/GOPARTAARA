@@ -6,19 +6,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const decodeJwtPayload = (jwt?: string) => {
-  try {
-    const payload = jwt?.split(".")?.[1];
-    if (!payload) return null;
-    const normalized = payload.replace(/-/g, "+").replace(/_/g, "/");
-    const padded = normalized.padEnd(normalized.length + ((4 - (normalized.length % 4)) % 4), "=");
-    return JSON.parse(atob(padded));
-  } catch (error) {
-    console.warn("[checkout] Failed to decode JWT payload", error);
-    return null;
-  }
-};
-
 const isUuid = (value?: string | null) =>
   !!value && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 
