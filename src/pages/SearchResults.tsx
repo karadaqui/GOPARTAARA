@@ -1636,7 +1636,7 @@ const SearchResults = () => {
               <div>
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
-                    {totalResults > 0 ? `${totalResults.toLocaleString()} results` : "Results"}
+                    {displayedTotal > 0 ? `${displayedTotal.toLocaleString()} results` : "Results"}
                     <span style={{ color: "#333333", fontWeight: 400 }}> · </span>
                     <span style={{ color: "#888888", fontWeight: 400 }}>{categoryFilter !== "All Parts" ? `${categoryFilter} — ` : ""}{activeQuery}</span>
                   </h1>
