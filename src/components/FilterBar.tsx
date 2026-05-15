@@ -208,7 +208,6 @@ const BRAND_OPTIONS: FilterOption[] = [
   { label: "🇬🇧 Direnza", value: "Direnza", tooltip: "UK + EU" },
   { label: "🇬🇧 Gravity Performance", value: "Gravity Performance", tooltip: "UK only" },
   { label: "🇩🇪 Kohl Automobile", value: "Kohl Automobile", tooltip: "Germany + EU" },
-  { label: "🇺🇸 Dunford Inc", value: "Dunford Inc", tooltip: "US only" },
   { label: "Polo-motorrad · Coming soon", value: "Polo-motorrad", disabled: true },
 ];
 

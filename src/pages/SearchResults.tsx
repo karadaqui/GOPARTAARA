@@ -66,7 +66,7 @@ import { SUPPLIERS as ALL_SUPPLIERS, shippingPriority } from "@/data/suppliers";
 // Parts-only supplier pills (tyre suppliers live on /tyres)
 const PARTS_SUPPLIER_IDS = new Set([
   "ebay", "greensparkplug", "amazonuk", "maxpeedingrods",
-  "direnza", "gravityperformance", "kohl", "dunford",
+  "direnza", "gravityperformance", "kohl",
 ]);
 const SUPPLIERS = ALL_SUPPLIERS
   .filter(s => s.live !== false && PARTS_SUPPLIER_IDS.has(s.id))

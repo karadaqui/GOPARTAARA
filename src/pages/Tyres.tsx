@@ -58,6 +58,7 @@ const EXPECTED_SUPPLIERS: { id: string; name: string; home: string }[] = [
   { id: '66605', name: 'ReifenDirekt DE', home: 'https://www.reifendirekt.de/' },
   { id: '8794', name: 'Tirendo', home: 'https://www.tirendo.co.uk/' },
   { id: '8626', name: 'Autobandenmarkt', home: 'https://www.autobandenmarkt.nl/' },
+  { id: '67974', name: 'WheelHero', home: 'https://www.wheelhero.com/' },
 ];
 const buildBrowseUrl = (merchantId: string, home: string) =>
   `https://www.awin1.com/cread.php?awinmid=${merchantId}&awinaffid=${PUBLISHER_AFFID}&ued=${encodeURIComponent(home)}`;
