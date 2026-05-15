@@ -1716,7 +1716,9 @@ const SearchResults = () => {
                           ? "Searching..."
                           : activeFilterCount > 0
                             ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
-                            : `Page ${currentPage.toLocaleString()} of ${Math.max(totalPages, 1).toLocaleString()} pages · ${totalResults.toLocaleString()} total listings`}
+                            : isSupplierFilterNarrowing
+                              ? `${interleavedResults.length.toLocaleString()} ${brandFilter} listing${interleavedResults.length === 1 ? "" : "s"}`
+                              : `Page ${currentPage.toLocaleString()} of ${Math.max(totalPages, 1).toLocaleString()} pages · ${totalResults.toLocaleString()} total listings`}
                       </span>
                       {!liveLoading && (
                         <span style={{ fontSize: "12px", color: "#3f3f46", marginLeft: "8px" }}>
