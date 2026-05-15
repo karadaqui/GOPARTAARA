@@ -20,17 +20,14 @@ const ConfirmShopDelete = () => {
 
   const verifyToken = async () => {
     const { data, error } = await supabase
-      .from("deletion_requests")
-      .select("*")
-      .eq("token", token!)
-      .eq("type", "shop")
-      .maybeSingle();
+      .rpc("verify_deletion_token", { p_token: token! });
 
-    if (error || !data) { setStatus("error"); return; }
-    if (data.confirmed) { setStatus("used"); return; }
-    if (new Date(data.expires_at) < new Date()) { setStatus("expired"); return; }
+    const row = Array.isArray(data) ? data[0] : data;
+    if (error || !row || row.type !== "shop") { setStatus("error"); return; }
+    if (row.confirmed) { setStatus("used"); return; }
+    if (new Date(row.expires_at) < new Date()) { setStatus("expired"); return; }
 
-    setDeletionRequest(data);
+    setDeletionRequest(row);
     setStatus("valid");
   };
 
@@ -39,22 +36,15 @@ const ConfirmShopDelete = () => {
     setStatus("confirming");
 
     try {
-      // Mark as confirmed via public RLS policy (token-based, no auth needed)
-      const { error: updateError } = await supabase
-        .from("deletion_requests")
-        .update({ confirmed: true, confirmed_at: new Date().toISOString() })
-        .eq("token", token)
-        .eq("confirmed", false);
+      const { data, error: updateError } = await supabase
+        .rpc("confirm_deletion_request", { p_token: token });
 
-      if (updateError) {
+      if (updateError || !data) {
         console.error("Failed to confirm deletion:", updateError);
         setStatus("error");
         return;
       }
 
-      // The actual deletion of listings/profile will be handled by the user
-      // when they are logged in, or by an edge function triggered by the confirmation.
-      // For now, mark as done.
       setStatus("done");
       setTimeout(() => navigate("/"), 5000);
     } catch (err) {
