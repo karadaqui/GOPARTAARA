@@ -819,12 +819,13 @@ const SearchResults = () => {
 
   // ── Green Spark Plug Co. real product feed (AWIN) ──
   const gspIsClassic = isClassicPartSearch(activeQuery);
-  const { products: gspProducts } = useGspProducts(activeQuery, gspIsClassic && brandFilter !== "Amazon");
+  const isAmazonOnly = brandFilter === "Amazon" || brandFilter === "Amazon UK";
+  const { products: gspProducts } = useGspProducts(activeQuery, gspIsClassic && !isAmazonOnly);
 
   // ── All Awin merchant feeds (Dunford, Maxpeedingrods, Kohl, Tirendo, Autobandenmarkt) ──
   const { products: awinAllProducts } = useAllAwinMerchants(
     activeQuery,
-    !!activeQuery && brandFilter !== "Amazon",
+    !!activeQuery && !isAmazonOnly,
   );
 
   // Helper: parse price strings like "£12.99" / "$45.00" / "EUR 19,90" → number
