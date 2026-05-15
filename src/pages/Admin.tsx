@@ -144,7 +144,7 @@ const Admin = () => {
   useEffect(() => {
     if (!user) { navigate("/auth?redirect=/admin"); return; }
     if (subLoading) return;
-    const ok = user.id === ADMIN_UUID || user.email === ADMIN_EMAIL || subscriptionPlan === "admin";
+    const ok = user.id === ADMIN_UUID;
     if (!ok) {
       toast({ title: "Access denied", variant: "destructive" });
       navigate("/");

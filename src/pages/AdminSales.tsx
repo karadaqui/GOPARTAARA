@@ -17,6 +17,7 @@ import {
 import { getCommissionRate, getCommissionPercent } from "@/lib/commission";
 
 const ADMIN_EMAIL = "info@gopartara.com";
+const ADMIN_UUID = "95e19b6b-32ec-4af8-8184-d02638ac2ded";
 
 interface SaleRow {
   id: string;
@@ -58,7 +59,7 @@ const AdminSales = () => {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user || user.email !== ADMIN_EMAIL) {
+    if (!user || user.id !== ADMIN_UUID) {
       navigate("/dashboard");
       return;
     }

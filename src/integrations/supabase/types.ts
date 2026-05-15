@@ -1646,6 +1646,7 @@ export type Database = {
     }
     Functions: {
       cleanup_rate_limits: { Args: never; Returns: undefined }
+      confirm_deletion_request: { Args: { p_token: string }; Returns: boolean }
       delete_email: {
         Args: { message_id: number; queue_name: string }
         Returns: boolean
@@ -1678,6 +1679,16 @@ export type Database = {
           message: Json
           msg_id: number
           read_ct: number
+        }[]
+      }
+      verify_deletion_token: {
+        Args: { p_token: string }
+        Returns: {
+          confirmed: boolean
+          created_at: string
+          expires_at: string
+          id: string
+          type: string
         }[]
       }
     }
