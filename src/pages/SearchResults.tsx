@@ -819,12 +819,13 @@ const SearchResults = () => {
 
   // ── Green Spark Plug Co. real product feed (AWIN) ──
   const gspIsClassic = isClassicPartSearch(activeQuery);
-  const { products: gspProducts } = useGspProducts(activeQuery, gspIsClassic && brandFilter !== "Amazon");
+  const isAmazonOnly = brandFilter === "Amazon" || brandFilter === "Amazon UK";
+  const { products: gspProducts } = useGspProducts(activeQuery, gspIsClassic && !isAmazonOnly);
 
   // ── All Awin merchant feeds (Dunford, Maxpeedingrods, Kohl, Tirendo, Autobandenmarkt) ──
   const { products: awinAllProducts } = useAllAwinMerchants(
     activeQuery,
-    !!activeQuery && brandFilter !== "Amazon",
+    !!activeQuery && !isAmazonOnly,
   );
 
   // Helper: parse price strings like "£12.99" / "$45.00" / "EUR 19,90" → number
@@ -904,7 +905,7 @@ const SearchResults = () => {
       merged = ebayItems;
     } else if (brandFilter === "Green Spark Plug Co.") {
       merged = gspItems;
-    } else if (brandFilter === "Amazon") {
+    } else if (brandFilter === "Amazon" || brandFilter === "Amazon UK") {
       merged = ebayItems; // Amazon section is a banner; show eBay grid only
     } else {
       // Awin merchant filter — match by supplierName
@@ -924,6 +925,16 @@ const SearchResults = () => {
 
     return merged;
   }, [filteredResults, gspProducts, awinAllProducts, brandFilter, sortBy, activeQuery]);
+
+  // When the supplier filter narrows results to a non-eBay source, the grid
+  // shows only filtered items — so the headline total + pagination should
+  // reflect that filtered count instead of eBay's full result total.
+  const isSupplierFilterNarrowing =
+    brandFilter !== "All" &&
+    brandFilter !== "eBay" &&
+    brandFilter !== "Amazon" &&
+    brandFilter !== "Amazon UK";
+  const displayedTotal = isSupplierFilterNarrowing ? interleavedResults.length : totalResults;
 
 
   const clearAllFilters = () => {
@@ -1625,7 +1636,7 @@ const SearchResults = () => {
               <div>
                 <div className="flex items-center gap-3 flex-wrap">
                   <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
-                    {totalResults > 0 ? `${totalResults.toLocaleString()} results` : "Results"}
+                    {displayedTotal > 0 ? `${displayedTotal.toLocaleString()} results` : "Results"}
                     <span style={{ color: "#333333", fontWeight: 400 }}> · </span>
                     <span style={{ color: "#888888", fontWeight: 400 }}>{categoryFilter !== "All Parts" ? `${categoryFilter} — ` : ""}{activeQuery}</span>
                   </h1>
@@ -1705,7 +1716,9 @@ const SearchResults = () => {
                           ? "Searching..."
                           : activeFilterCount > 0
                             ? `Showing ${filteredResults.length} of ${liveResults.length} loaded`
-                            : `Page ${currentPage.toLocaleString()} of ${Math.max(totalPages, 1).toLocaleString()} pages · ${totalResults.toLocaleString()} total listings`}
+                            : isSupplierFilterNarrowing
+                              ? `${interleavedResults.length.toLocaleString()} ${brandFilter} listing${interleavedResults.length === 1 ? "" : "s"}`
+                              : `Page ${currentPage.toLocaleString()} of ${Math.max(totalPages, 1).toLocaleString()} pages · ${totalResults.toLocaleString()} total listings`}
                       </span>
                       {!liveLoading && (
                         <span style={{ fontSize: "12px", color: "#3f3f46", marginLeft: "8px" }}>
@@ -2356,7 +2369,7 @@ const SearchResults = () => {
                 </div>
 
                 {/* ── Pagination (numeric) — directly after results grid ── */}
-                {liveResults.length > 0 && totalPages > 1 && (() => {
+                {liveResults.length > 0 && totalPages > 1 && !isSupplierFilterNarrowing && (() => {
                   const goTo = (p: number) => {
                     const target = Math.max(1, Math.min(totalPages, p));
                     if (target === currentPage) return;
