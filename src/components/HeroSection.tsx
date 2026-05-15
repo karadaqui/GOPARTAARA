@@ -1033,7 +1033,7 @@ const HeroSection = () => {
               </div>
               <div className="inline-flex items-center gap-1.5 text-[10px] bg-green-500/10 border border-green-500/20 text-green-400 rounded-full px-2 py-0.5 font-bold">
                 <span className="w-1 h-1 rounded-full bg-green-400 animate-pulse" />
-                14 Live
+                16 Live
               </div>
             </div>
 
