@@ -41,7 +41,7 @@ const partners: Partner[] = [
   { name: "Maxpeedingrods", domain: "maxpeedingrods.com", flag: "🌍", ships: "Ships worldwide", description: "Performance & aftermarket parts worldwide.", supplierParam: "maxpeedingrods" },
   { name: "Pneumatici IT", domain: "pneumatici.it", flag: "🇮🇹", ships: "Italy + EU", description: "Leading Italian tyre & parts retailer.", supplierParam: "pneumatici" },
   { name: "neumaticos-online.es", domain: "neumaticos-online.es", flag: "🇪🇸", ships: "Spain + EU", description: "Spain's top online tyre specialist.", supplierParam: "neumaticosonline" },
-  { name: "ReifenDirekt EE", domain: "reifendirekt.ee", flag: "🇩🇪", ships: "Germany + EU", description: "German quality tyres at great prices.", supplierParam: "reifendirekt" },
+  { name: "ReifenDirekt EE", domain: "reifendirekt.co.ee", flag: "🇩🇪", ships: "Germany + EU", description: "German quality tyres at great prices.", supplierParam: "reifendirekt" },
   { name: "autobandenmarkt", domain: "autobandenmarkt.be", flag: "🇧🇪", ships: "Belgium + EU", description: "Belgium's trusted tyre marketplace.", supplierParam: "autobandenmarkt" },
   { name: "Kohl Automobile", domain: "kohl-automobile.de", flag: "🇩🇪", ships: "Germany + EU", description: "German auto parts specialist.", supplierParam: "kohl" },
   { name: "Tirendo", domain: "tirendo.no", flag: "🇳🇴", ships: "Norway only", description: "Norway's leading tyre retailer.", supplierParam: "tirendo" },
