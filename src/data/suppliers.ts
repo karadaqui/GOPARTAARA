@@ -221,7 +221,7 @@ export const SUPPLIERS: Supplier[] = [
     id: "direnza",
     name: "Direnza",
     mid: 104933,
-    countries: ["GB", ...EU_CODES],
+    countries: ["GB"],
     category: ["performance", "parts"],
     baseUrl: "https://www.direnza.co.uk",
     searchUrl: "https://www.direnza.co.uk/search?q={query}",
