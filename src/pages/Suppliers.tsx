@@ -28,6 +28,8 @@ const SUPPLIER_LINKS: Record<string, string> = {
   "Kohl Automobile":       "https://www.awin1.com/cread.php?awinmid=16809&awinaffid=2845282&ued=https%3A%2F%2Fwww.kohl-automobile.de",
   "Tirendo":               "https://www.awin1.com/cread.php?awinmid=8794&awinaffid=2845282&ued=https%3A%2F%2Fwww.tirendo.no",
   "Dunford Inc":           "https://www.awin1.com/cread.php?awinmid=67974&awinaffid=2845282&ued=https%3A%2F%2Fwww.dunford.com",
+  "Direnza":               "https://www.awin1.com/cread.php?awinmid=104933&awinaffid=2845282&ued=https%3A%2F%2Fwww.direnza.co.uk",
+  "Gravity Performance":   "https://www.awin1.com/cread.php?awinmid=30295&awinaffid=2845282&ued=https%3A%2F%2Fwww.gravityperformance.co.uk",
 };
 
 const partners: Partner[] = [
@@ -44,6 +46,8 @@ const partners: Partner[] = [
   { name: "Kohl Automobile", domain: "kohl-automobile.de", flag: "🇩🇪", ships: "Germany + EU", description: "German auto parts specialist.", supplierParam: "kohl" },
   { name: "Tirendo", domain: "tirendo.no", flag: "🇳🇴", ships: "Norway only", description: "Norway's leading tyre retailer.", supplierParam: "tirendo" },
   { name: "Dunford Inc", domain: "dunford.com", flag: "🇺🇸", ships: "US only", description: "US specialist auto parts supplier.", supplierParam: "dunford" },
+  { name: "Direnza", domain: "direnza.co.uk", flag: "🇬🇧", ships: "UK + EU", description: "UK aftermarket performance parts for Audi, BMW, Ford, Renault, Porsche, VW & more.", supplierParam: "direnza" },
+  { name: "Gravity Performance", domain: "gravityperformance.co.uk", flag: "🇬🇧", ships: "UK only", description: "Performance and tuning parts for road and track since 2004.", supplierParam: "gravityperformance" },
 ];
 
 function LogoOrInitial({ domain, name }: { domain?: string; name: string }) {

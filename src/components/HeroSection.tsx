@@ -1055,6 +1055,7 @@ const HeroSection = () => {
                 { name: 'Tirendo', cat: 'Tyres', coverage: 'Norway only', twemoji: '1f1f3-1f1f4', url: 'https://www.awin1.com/cread.php?awinmid=8794&awinaffid=2845282&ued=https%3A%2F%2Fwww.tirendo.no' },
                 { name: 'Dunford Inc', cat: 'Auto Parts', coverage: 'US only', twemoji: '1f1fa-1f1f8', url: 'https://www.awin1.com/cread.php?awinmid=67974&awinaffid=2845282&ued=https%3A%2F%2Fwww.dunford.com' },
                 { name: 'Direnza', cat: 'Performance Parts', coverage: 'UK + EU', twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=104933&awinaffid=2845282&ued=https%3A%2F%2Fwww.direnza.co.uk' },
+                { name: 'Gravity Performance', cat: 'Performance & Tuning Parts', coverage: 'UK only', twemoji: '1f1ec-1f1e7', url: 'https://www.awin1.com/cread.php?awinmid=30295&awinaffid=2845282&ued=https%3A%2F%2Fwww.gravityperformance.co.uk' },
               ].map((s: { name: string; cat: string; coverage: string; twemoji: string; url: string }) => {
                 const rowClass = "gp-supplier-row flex items-center gap-3 py-2.5 -mx-2 px-2 rounded-lg group";
                 const inner = (
