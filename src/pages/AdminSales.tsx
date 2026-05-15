@@ -59,7 +59,7 @@ const AdminSales = () => {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user || user.email !== ADMIN_EMAIL) {
+    if (!user || user.id !== ADMIN_UUID) {
       navigate("/dashboard");
       return;
     }
