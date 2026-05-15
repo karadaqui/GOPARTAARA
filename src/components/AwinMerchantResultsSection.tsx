@@ -143,7 +143,7 @@ const MerchantBlock = ({
                   style={{ whiteSpace: "nowrap", height: "44px" }}
                   className="mt-auto flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold transition-colors duration-150"
                 >
-                  <ExternalLink size={14} /> View on {supplier.name} →
+                  <ExternalLink size={14} /> View →
                 </span>
               </div>
             </a>
