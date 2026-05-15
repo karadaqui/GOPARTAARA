@@ -9,6 +9,20 @@ interface Props {
   countryCode: string;
 }
 
+// Parse vehicle make/model/year from product title (e.g. "Audi S5 B8/8T 3.0 V6 2007-2016 - ...")
+const MAKES = ["Audi","BMW","Ford","Renault","Porsche","Volkswagen","VW","Vauxhall","Mini","Fiat","Mercedes","Mercedes-Benz","Peugeot","Citroen","Citroën","Skoda","Seat","Toyota","Honda","Nissan","Mazda","Subaru","Mitsubishi","Hyundai","Kia","Volvo","Jaguar","Land Rover","Range Rover","Lexus","Alfa Romeo","Opel"];
+const parseVehicle = (title: string): string | null => {
+  if (!title) return null;
+  const make = MAKES.find((m) => new RegExp(`\\b${m.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\$&")}\\b`, "i").test(title));
+  if (!make) return null;
+  const yearMatch = title.match(/\b(19|20)\d{2}(?:\s*[-–]\s*(?:19|20)?\d{2,4})?\b/);
+  const idx = title.toLowerCase().indexOf(make.toLowerCase());
+  const after = title.slice(idx + make.length).split(/[-–|,]/)[0].trim();
+  const model = after.split(/\s+/).slice(0, 4).join(" ");
+  const yr = yearMatch ? ` ${yearMatch[0]}` : "";
+  return `${make} ${model}${yr}`.trim();
+};
+
 // Awin merchants we render via the parametric feed (excluding suppliers that
 // already have their own bespoke surface — eBay, Green Spark Plug, EV King,
 // Amazon UK affiliate banner, and the existing tyre-cache feeds).
