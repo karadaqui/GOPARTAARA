@@ -197,21 +197,19 @@ const CONDITION_OPTIONS: FilterOption[] = [
   { label: "Refurbished", value: "Refurbished" },
 ];
 
+// Parts-only suppliers (Tyre suppliers live on /tyres and must NOT appear here)
 const BRAND_OPTIONS: FilterOption[] = [
   { label: "All Suppliers", value: "All" },
   { label: "🌍 eBay Global", value: "eBay", tooltip: "Varies by seller" },
   { label: "🔩 Green Spark Plug Co. (Classic & Vintage)", value: "Green Spark Plug Co.", tooltip: "Worldwide" },
-  { label: "🇬🇧 mytyres.co.uk", value: "mytyres.co.uk", tooltip: "UK only" },
-  { label: "🌍 Tyres UK (Tyres.net)", value: "Tyres UK", tooltip: "UK only" },
-  { label: "🇪🇸 neumaticos-online.es", value: "neumaticos-online.es", tooltip: "Spain + EU" },
-  { label: "🇮🇹 Pneumatici IT", value: "Pneumatici IT", tooltip: "Italy + EU" },
-  { label: "🇪🇪 ReifenDirekt EE", value: "ReifenDirekt EE", tooltip: "Germany + EU" },
-  { label: "🇺🇸 Dunford Inc", value: "Dunford Inc", tooltip: "US only" },
-  { label: "🇧🇪 Autobandenmarkt", value: "Autobandenmarkt", tooltip: "Belgium + EU" },
-  { label: "🇺🇸 Maxpeedingrods", value: "Maxpeedingrods", tooltip: "Worldwide" },
+  { label: "🇬🇧 Amazon UK", value: "Amazon UK", tooltip: "UK + EU" },
+  { label: "🌍 Maxpeedingrods", value: "Maxpeedingrods", tooltip: "Worldwide" },
+  { label: "🇬🇧 EV King", value: "EV King", tooltip: "UK + EU" },
+  { label: "🇬🇧 Direnza", value: "Direnza", tooltip: "UK + EU" },
+  { label: "🇬🇧 Gravity Performance", value: "Gravity Performance", tooltip: "UK only" },
   { label: "🇩🇪 Kohl Automobile", value: "Kohl Automobile", tooltip: "Germany + EU" },
-  { label: "🇳🇴 Tirendo", value: "Tirendo", tooltip: "Norway only" },
-  { label: "Amazon · Coming soon", value: "Amazon", disabled: true },
+  { label: "🇺🇸 Dunford Inc", value: "Dunford Inc", tooltip: "US only" },
+  { label: "Polo-motorrad · Coming soon", value: "Polo-motorrad", disabled: true },
 ];
 
 const FilterBar = ({

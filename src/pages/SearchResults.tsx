@@ -63,8 +63,13 @@ const parseTwemoji = () => {
 
 // ── Supplier configs (filtered by selected country at render time) ──
 import { SUPPLIERS as ALL_SUPPLIERS, shippingPriority } from "@/data/suppliers";
+// Parts-only supplier pills (tyre suppliers live on /tyres)
+const PARTS_SUPPLIER_IDS = new Set([
+  "ebay", "greensparkplug", "amazonuk", "maxpeedingrods",
+  "evking", "direnza", "gravityperformance", "kohl", "dunford",
+]);
 const SUPPLIERS = ALL_SUPPLIERS
-  .filter(s => s.live !== false)
+  .filter(s => s.live !== false && PARTS_SUPPLIER_IDS.has(s.id))
   .map(s => ({ id: s.id, label: s.name === "eBay" ? "eBay Global" : s.name, status: "live" as const, _supplier: s }));
 
 const googleSite = (domain: string) => (q: string) =>
