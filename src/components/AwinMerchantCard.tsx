@@ -152,7 +152,7 @@ const AwinMerchantCard = ({
             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold transition-colors duration-150"
             title={`Affiliate link — supports GOPARTARA at no extra cost`}
           >
-            <ExternalLink size={14} /> View on {supplierShort} →
+            <ExternalLink size={14} /> View →
           </a>
           {onCompareToggle && (
             <button
