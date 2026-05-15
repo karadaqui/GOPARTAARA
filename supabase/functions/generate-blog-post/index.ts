@@ -25,21 +25,38 @@ Deno.serve(async (req) => {
 
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Check if user-initiated or automated
+    // Check if user-initiated or automated (cron)
     const authHeader = req.headers.get("Authorization");
+    const cronSecretHeader = req.headers.get("x-cron-secret");
+    const expectedCronSecret = Deno.env.get("CRON_SECRET");
     let authorName = "PARTARA Team";
     let isAutomated = false;
     let batchCount = 1;
 
-    try {
-      const body = await req.json();
-      if (body?.batch) batchCount = Math.min(body.batch, 5);
-      if (body?.automated) isAutomated = true;
-    } catch {
-      // No body — single post mode
+    let body: any = {};
+    try { body = await req.json(); } catch { /* no body */ }
+    if (body?.batch) batchCount = Math.min(body.batch, 5);
+
+    // Automated mode requires a valid CRON_SECRET header — never trust a
+    // client-set body flag alone.
+    if (body?.automated === true) {
+      if (!expectedCronSecret || cronSecretHeader !== expectedCronSecret) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      isAutomated = true;
     }
 
-    if (!isAutomated && authHeader) {
+    if (!isAutomated) {
+      // Manual mode: require authenticated user
+      if (!authHeader) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
       const userClient = createClient(supabaseUrl, supabaseAnonKey, {
         global: { headers: { Authorization: authHeader } },
