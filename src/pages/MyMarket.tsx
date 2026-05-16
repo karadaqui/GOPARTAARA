@@ -293,23 +293,22 @@ const MyMarket = () => {
 
     if (sp) {
       setProfile(sp as SellerProfile);
-      // Load bank details from profiles table
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("seller_bank_details")
+      // Bank details now live exclusively in seller_payout_info (loaded above into payoutInfo)
+      const pi: any = (await supabase
+        .from("seller_payout_info" as any)
+        .select("full_name, sort_code, account_number, paypal_email")
         .eq("user_id", user!.id)
-        .single();
-      const bankDetails = (profileData?.seller_bank_details as any) || {};
+        .maybeSingle()).data || {};
       setProfileForm({
         business_name: sp.business_name,
         description: sp.description || "",
         contact_email: sp.contact_email || "",
         contact_phone: sp.contact_phone || "",
         website_url: sp.website_url || "",
-        bank_account_name: bankDetails.account_name || "",
-        bank_sort_code: bankDetails.sort_code || "",
-        bank_account_number: bankDetails.account_number || "",
-        bank_paypal_email: bankDetails.paypal_email || "",
+        bank_account_name: pi.full_name || "",
+        bank_sort_code: pi.sort_code || "",
+        bank_account_number: pi.account_number || "",
+        bank_paypal_email: pi.paypal_email || "",
         ships_to: normalizeShipsToCodes((sp as any).ships_to),
         country: ((sp as any).description?.match(/^Country: ([^\n]+)/)?.[1]) || DEFAULT_COUNTRY,
         sender_name: (sp as any).sender_name || "",
@@ -522,10 +521,6 @@ const MyMarket = () => {
         account_number: profileForm.bank_account_number || null,
         paypal_email: profileForm.bank_paypal_email || null,
       };
-      const hasBankDetails = Object.values(bankDetails).some(v => v);
-      if (hasBankDetails) {
-        await supabase.from("profiles").update({ seller_bank_details: bankDetails } as any).eq("user_id", user!.id);
-      }
       await syncPayoutInfo(bankDetails);
       toast({ title: "Profile created!" });
       setEditingProfile(false);
@@ -579,7 +574,6 @@ const MyMarket = () => {
         account_number: profileForm.bank_account_number || null,
         paypal_email: profileForm.bank_paypal_email || null,
       };
-      await supabase.from("profiles").update({ seller_bank_details: bankDetails } as any).eq("user_id", user!.id);
       await syncPayoutInfo(bankDetails);
       toast({ title: "Profile updated!" });
       setEditingProfile(false);
