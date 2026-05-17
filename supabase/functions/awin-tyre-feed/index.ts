@@ -12,7 +12,9 @@ const FEED_TO_SUPPLIER: Record<string, string> = {
   '4118': 'mytyres.co.uk',
   '12715': 'Tyres UK',
   '12716': 'neumaticos-online.es',
-  '67974': 'WheelHero',
+  '103419': 'WheelHero',
+  '104208': 'WheelHero',
+  '104209': 'WheelHero',
 }
 
 serve(async (req) => {
