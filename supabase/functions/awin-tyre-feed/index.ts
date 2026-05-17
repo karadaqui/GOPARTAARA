@@ -84,7 +84,7 @@ serve(async (req) => {
 
     // Fetch up to 500 rows per feed_id (cap to keep response under 3s)
     const cols = 'feed_id, supplier_name, product_name, price, currency, url, brand, category, image_url, cached_at'
-    const PER_FEED_LIMIT = 5000
+
 
     // Limit per feed: high when a single supplier is selected (so users see everything),
     // lower when fanning across all feeds to keep total response size in check.
