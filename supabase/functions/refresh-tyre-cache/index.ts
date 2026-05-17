@@ -59,9 +59,17 @@ async function fetchFeedList(): Promise<Record<string, FeedMeta>> {
   const feedIdIdx = idx('feedid')
   const advIdIdx = idx('advertiserid')
   const advNameIdx = idx('advertisername')
+  const feedNameIdx = idx('feedname')
   const regionIdx = idx('primaryregion')
   const langIdx = idx('language')
   const urlIdx = headers.findIndex(h => h.includes('url') || h.includes('download'))
+
+  // Feed-ID-specific supplier name overrides (when advertiser name differs from brand)
+  const SUPPLIER_OVERRIDES: Record<string, string> = {
+    '103419': 'WheelHero',
+    '104208': 'WheelHero',
+    '104209': 'WheelHero',
+  }
 
   console.log('feedList headers:', headers.join(', '))
   console.log(`indices: feedId=${feedIdIdx} advName=${advNameIdx} url=${urlIdx}`)
