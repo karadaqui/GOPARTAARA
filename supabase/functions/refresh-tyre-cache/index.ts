@@ -177,7 +177,7 @@ serve(async (req) => {
       }
 
       // Clear cache: scoped to selected feed if param given, otherwise full clear
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 500; i++) {
         let q = supabase.from('tyre_products_cache').select('id').limit(1000)
         if (feedIdParam) q = q.eq('feed_id', feedIdParam)
         const { data: rows, error: selErr } = await q
