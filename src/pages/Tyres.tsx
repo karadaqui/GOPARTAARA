@@ -600,9 +600,13 @@ const Tyres = () => {
                   style={{ border: `1px solid ${BORDER_2}`, backgroundColor: '#18181b', color: 'white', colorScheme: 'dark' }}
                 >
                   <option value="all">All Suppliers</option>
-                  {allSuppliersListRef.current.map((s) => (
-                    <option key={s.name} value={s.name}>{s.name}</option>
-                  ))}
+                  {(() => {
+                    const list = [...allSuppliersListRef.current];
+                    if (!list.some((s) => s.name === 'WheelHero')) list.push({ id: '67974', name: 'WheelHero' });
+                    return list.map((s) => (
+                      <option key={s.name} value={s.name}>{s.name}</option>
+                    ));
+                  })()}
                 </select>
 
                 <select
