@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import SafeImage from "@/components/SafeImage";
+import WheelHeroImage from "@/components/WheelHeroImage";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Loader2,
