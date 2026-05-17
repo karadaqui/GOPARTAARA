@@ -49,8 +49,10 @@ Deno.serve(async (req) => {
       isAutomated = true;
     }
 
+    const ADMIN_UUID = "95e19b6b-32ec-4af8-8184-d02638ac2ded";
+
     if (!isAutomated) {
-      // Manual mode: require authenticated user
+      // Manual mode: require authenticated admin user
       if (!authHeader) {
         return new Response(JSON.stringify({ error: "Unauthorized" }), {
           status: 401,
@@ -69,20 +71,21 @@ Deno.serve(async (req) => {
         });
       }
 
-      const { data: profileData } = await adminClient
-        .from("profiles")
-        .select("display_name")
-        .eq("user_id", user.id)
-        .single();
-      if (profileData?.display_name) authorName = profileData.display_name;
+      // Admin-only manual generation
+      if (user.id !== ADMIN_UUID) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
-      // Enforce 2 manual posts per day
+      // Enforce 2 manual posts per day per user via blog_generations table
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
       const { count: todayCount } = await adminClient
-        .from("blog_posts")
+        .from("blog_generations")
         .select("*", { count: "exact", head: true })
-        .eq("author", authorName)
+        .eq("user_id", user.id)
         .gte("created_at", todayStart.toISOString());
 
       if ((todayCount || 0) >= 2) {
