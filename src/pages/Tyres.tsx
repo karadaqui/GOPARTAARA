@@ -548,6 +548,8 @@ const Tyres = () => {
                 <div className="flex flex-wrap items-center justify-center gap-2">
                   {uniqueSuppliers.map((s) => {
                     const active = supplier === s.id;
+                    const supplierFilterActive = supplier && supplier !== 'all';
+                    const dimmed = supplierFilterActive && !active;
                     return (
                       <button
                         key={s.id}
@@ -560,6 +562,7 @@ const Tyres = () => {
                         style={{
                           background: active ? RED : CARD,
                           border: `1px solid ${active ? RED : BORDER}`,
+                          opacity: dimmed ? 0.35 : 1,
                         }}
                       >
                         <Flag id={s.id} size={16} />
