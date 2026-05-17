@@ -282,6 +282,8 @@ const Tyres = () => {
       if (!name) return;
       if (!byName.has(name)) byName.set(name, { id: String(t.advertiserId), name });
     });
+    // Always surface WheelHero (wheels/rims) alongside tyre suppliers
+    if (!byName.has('WheelHero')) byName.set('WheelHero', { id: '67974', name: 'WheelHero' });
     return Array.from(byName.values());
   }, [allResults]);
 
