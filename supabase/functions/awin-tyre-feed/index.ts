@@ -118,7 +118,7 @@ serve(async (req) => {
         if (error) console.error('Cache query error:', error)
         rows = data || []
       } else {
-        const feedIds = ['12641', '12716', '4118', '12715', '66605', '23179', '93988', '93986', '10499', '22551', '38765', '22991', '32457', '26513']
+        const feedIds = ['12641', '12716', '4118', '12715', '66605', '23179', '93988', '93986', '10499', '22551', '38765', '22991', '32457', '26513', '67974']
         console.log(`Querying ${feedIds.length} hardcoded feed_ids for ${tyreSize} (variants=${tyreSizeVariants.length})`)
         const results = await Promise.all(
           feedIds.map((fid) => {
