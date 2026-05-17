@@ -3,11 +3,21 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.2'
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cron-secret',
 }
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
+
+  // Cron-only endpoint — require CRON_SECRET header
+  const cronSecret = req.headers.get('x-cron-secret')
+  const expected = Deno.env.get('CRON_SECRET')
+  if (!expected || cronSecret !== expected) {
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { ...cors, 'Content-Type': 'application/json' },
+    })
+  }
 
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,

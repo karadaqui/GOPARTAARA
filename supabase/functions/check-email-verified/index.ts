@@ -12,11 +12,11 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { email } = await req.json();
-    if (!email || typeof email !== "string") {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
       return new Response(
-        JSON.stringify({ error: "Email is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -26,8 +26,19 @@ Deno.serve(async (req) => {
       { auth: { persistSession: false } }
     );
 
+    const token = authHeader.replace("Bearer ", "");
+    const { data: userData, error: userErr } = await supabase.auth.getUser(token);
+    if (userErr || !userData?.user?.email) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Users can only check their own email's verification status.
+    const sessionEmail = userData.user.email.toLowerCase().trim();
     const { data, error } = await supabase.rpc("is_email_confirmed", {
-      p_email: email.toLowerCase().trim(),
+      p_email: sessionEmail,
     });
 
     if (error) {

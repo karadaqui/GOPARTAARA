@@ -160,6 +160,13 @@ Deno.serve(async (req) => {
     }
 
     if (action === "price_drop") {
+      // Only the seller of this listing can trigger a price-drop notification.
+      if (sellerUserId !== userData.user.id) {
+        return new Response(JSON.stringify({ error: "Forbidden" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
       // Notify buyers whose price alerts are now met
       const newPrice = parseFloat(target_price);
       if (isNaN(newPrice)) {

@@ -49,7 +49,7 @@ const Blog = () => {
   useEffect(() => {
     if (user) {
       const checkAdmin = async () => {
-        if (user.email === ADMIN_EMAIL) { setIsAdmin(true); return; }
+        if (user.id === "95e19b6b-32ec-4af8-8184-d02638ac2ded") { setIsAdmin(true); return; }
         const { data } = await supabase
           .from("profiles")
           .select("subscription_plan")

@@ -54,10 +54,8 @@ Deno.serve(async (req) => {
     }
 
     if (!user?.id) {
-      // Auth bypass mode removed — verified user JWT is required for checkout.
-      return new Response(JSON.stringify({
-        error: `Auth failed at step: ${step}. Header present: ${!!authHeader}. Token length: ${token?.length || 0}. Supabase error: ${authError?.message || "none"}`,
-      }), {
+      console.error(`[checkout] Auth failed at step: ${step}. Header present: ${!!authHeader}. Token length: ${token?.length || 0}. Supabase error: ${authError?.message || "none"}`);
+      return new Response(JSON.stringify({ error: "Authentication required" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
