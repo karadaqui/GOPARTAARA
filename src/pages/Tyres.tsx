@@ -61,7 +61,7 @@ const EXPECTED_SUPPLIERS: { id: string; name: string; home: string }[] = [
   { id: '66605', name: 'ReifenDirekt DE', home: 'https://www.reifendirekt.de/' },
   { id: '8794', name: 'Tirendo', home: 'https://www.tirendo.co.uk/' },
   { id: '8626', name: 'Autobandenmarkt', home: 'https://www.autobandenmarkt.nl/' },
-  { id: '103419', name: 'WheelHero', home: 'https://www.wheelhero.com/' },
+  { id: '104209', name: 'WheelHero', home: 'https://www.wheelhero.com/' },
 ];
 const buildBrowseUrl = (merchantId: string, home: string) =>
   `https://www.awin1.com/cread.php?awinmid=${merchantId}&awinaffid=${PUBLISHER_AFFID}&ued=${encodeURIComponent(home)}`;
@@ -285,7 +285,7 @@ const Tyres = () => {
       if (!byName.has(name)) byName.set(name, { id: String(t.advertiserId), name });
     });
     // Always surface WheelHero (wheels/rims) alongside tyre suppliers
-    if (!byName.has('WheelHero')) byName.set('WheelHero', { id: '103419', name: 'WheelHero' });
+    if (!byName.has('WheelHero')) byName.set('WheelHero', { id: '104209', name: 'WheelHero' });
     return Array.from(byName.values());
   }, [allResults]);
 
@@ -604,7 +604,7 @@ const Tyres = () => {
                   <option value="all">All Suppliers</option>
                   {(() => {
                     const list = [...allSuppliersListRef.current];
-                    if (!list.some((s) => s.name === 'WheelHero')) list.push({ id: '103419', name: 'WheelHero' });
+                    if (!list.some((s) => s.name === 'WheelHero')) list.push({ id: '104209', name: 'WheelHero' });
                     return list.map((s) => (
                       <option key={s.name} value={s.name}>{s.name}</option>
                     ));
