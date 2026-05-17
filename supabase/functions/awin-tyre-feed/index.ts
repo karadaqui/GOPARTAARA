@@ -86,6 +86,11 @@ serve(async (req) => {
     const cols = 'feed_id, supplier_name, product_name, price, currency, url, brand, category, image_url, cached_at'
     const PER_FEED_LIMIT = 5000
 
+    // Limit per feed: high when a single supplier is selected (so users see everything),
+    // lower when fanning across all feeds to keep total response size in check.
+    const PER_FEED_LIMIT_SINGLE = 5000
+    const PER_FEED_LIMIT_MULTI = 1000
+
     const applyFilters = (q: any) => {
       if (seasonPattern) q = q.ilike('product_name', seasonPattern)
       if (brandFilter) q = q.ilike('brand', `%${brandFilter}%`)
@@ -115,7 +120,7 @@ serve(async (req) => {
           .select(cols)
           .in('tyre_size', tyreSizeVariants)
           .eq('feed_id', singleFeedId)
-          .range(0, PER_FEED_LIMIT - 1)
+          .range(0, PER_FEED_LIMIT_SINGLE - 1)
         q = applyFilters(q)
         const { data, error } = await q
         if (error) console.error('Cache query error:', error)
@@ -130,7 +135,7 @@ serve(async (req) => {
               .select(cols)
               .in('tyre_size', tyreSizeVariants)
               .eq('feed_id', fid)
-              .range(0, PER_FEED_LIMIT - 1)
+              .range(0, PER_FEED_LIMIT_MULTI - 1)
             q = applyFilters(q)
             return q
           })
