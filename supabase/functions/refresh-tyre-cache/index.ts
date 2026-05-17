@@ -177,7 +177,7 @@ serve(async (req) => {
       }
 
       // Clear cache: scoped to selected feed if param given, otherwise full clear
-      for (let i = 0; i < 50; i++) {
+      for (let i = 0; i < 500; i++) {
         let q = supabase.from('tyre_products_cache').select('id').limit(1000)
         if (feedIdParam) q = q.eq('feed_id', feedIdParam)
         const { data: rows, error: selErr } = await q
@@ -200,8 +200,8 @@ serve(async (req) => {
         const dec = new TextDecoder()
         let buf = ''
         let lc = 0
-        let hdrs: string[] = []
-        let ni = -1, pi = -1, ui = -1, bi = -1, descIdx = -1, imgIdx = -1, catIdx = -1
+          let hdrs: string[] = []
+          let ni = -1, pi = -1, ui = -1, bi = -1, descIdx = -1, imgIdx = -1, imgFallbackIdx = -1, catIdx = -1
         const batch: any[] = []
         let feedInserted = 0
 
@@ -232,9 +232,13 @@ serve(async (req) => {
               ui = hdrs.findIndex(h => norm(h).includes('deeplink'))
               bi = hdrs.findIndex(h => norm(h).includes('brandname') || norm(h) === 'brand')
               descIdx = hdrs.findIndex(h => h.includes('desc'))
-              imgIdx = hdrs.findIndex(h => /image|img|photo|picture|thumb/i.test(h))
+              // Prefer merchant_image_url (raw merchant image) over aw_image_url
+              // (Awin's productserve converter often returns noimage.gif for some merchants like WheelHero).
+              imgIdx = hdrs.findIndex(h => norm(h) === 'merchantimageurl')
+              imgFallbackIdx = hdrs.findIndex(h => /image|img|photo|picture|thumb/i.test(h))
+              if (imgIdx < 0) { imgIdx = imgFallbackIdx; imgFallbackIdx = -1 }
               catIdx = hdrs.findIndex(h => norm(h).includes('merchantcategory') || norm(h) === 'category')
-              console.log(`Feed ${feedId} headers: ni=${ni} pi=${pi} ui=${ui} bi=${bi} descIdx=${descIdx} imgIdx=${imgIdx} catIdx=${catIdx}`)
+              console.log(`Feed ${feedId} headers: ni=${ni} pi=${pi} ui=${ui} bi=${bi} descIdx=${descIdx} imgIdx=${imgIdx} imgFallback=${imgFallbackIdx} catIdx=${catIdx}`)
               continue
             }
             if (ni < 0 || pi < 0 || ui < 0) continue
@@ -244,7 +248,10 @@ serve(async (req) => {
             const price = parseFloat(cols[pi] || '0')
             const linkUrl = (cols[ui] || '').replace(/^"|"$/g, '').trim()
             const brand = (cols[bi] || '').replace(/^"|"$/g, '').trim()
-            const imageUrl = imgIdx >= 0 ? (cols[imgIdx] || '').replace(/^"|"$/g, '').trim() : ''
+            let imageUrl = imgIdx >= 0 ? (cols[imgIdx] || '').replace(/^"|"$/g, '').trim() : ''
+            if (!imageUrl && imgFallbackIdx >= 0) {
+              imageUrl = (cols[imgFallbackIdx] || '').replace(/^"|"$/g, '').trim()
+            }
             const category = catIdx >= 0 ? (cols[catIdx] || '').replace(/^"|"$/g, '').trim() : ''
 
             if (!linkUrl || !linkUrl.startsWith('http') || price <= 0) continue

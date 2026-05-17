@@ -217,12 +217,8 @@ const Tyres = () => {
         productsLen: data?.products?.length,
       });
       const products = (data?.products || []) as Tyre[];
-      if (products.length === 0 && (supplierFilterActive || brandFilterActive) && retryOnEmpty) {
-        setSupplier('all');
-        setBrand('all');
-        await fetchPage(1, { w, p, r, feedId: '', season: seasonVal, brand: 'all', minPrice: minP, maxPrice: maxP, retryOnEmpty: false });
-        return;
-      }
+      // Issue 3: When user explicitly selected a supplier and/or brand and we get 0 results,
+      // do NOT silently reset filters. Show the empty state with an informative message.
       if (optionSearchKeyRef.current !== optionSearchKey && !supplierFilterActive && !brandFilterActive && products.length > 0) {
         optionSearchKeyRef.current = optionSearchKey;
         const byName = new Map<string, { id: string; name: string }>();
@@ -240,12 +236,6 @@ const Tyres = () => {
       setServerTotal(data?.total || 0);
     } catch (e: any) {
       console.error('[Tyres] fetchPage failed', e);
-      if ((supplierFilterActive || brandFilterActive) && retryOnEmpty) {
-        setSupplier('all');
-        setBrand('all');
-        await fetchPage(1, { w, p, r, feedId: '', season: seasonVal, brand: 'all', minPrice: minP, maxPrice: maxP, retryOnEmpty: false });
-        return;
-      }
       setAllResults([]);
       setSearchError(`Tyre search failed: ${e?.message || 'Unknown error'}`);
     } finally {
@@ -278,16 +268,24 @@ const Tyres = () => {
   };
 
   const uniqueSuppliers = useMemo(() => {
+    // Issue 2: When a filter (supplier/brand) is active, the results only contain
+    // matching products, so deriving the pill list from results would collapse to one.
+    // Use the full list captured during the last unfiltered search instead, so users
+    // can switch supplier and the bar stays the same shape.
+    const supplierFilterActive = supplier && supplier !== 'all';
+    const brandFilterActive = brand && brand !== 'all';
+    const useFullList = (supplierFilterActive || brandFilterActive) && allSuppliersListRef.current.length > 0;
+    const source = useFullList ? allSuppliersListRef.current : allResults.map((t) => ({
+      id: String(t.advertiserId),
+      name: (t as any).supplier_name || (t as any).supplier || '',
+    }));
     const byName = new Map<string, { id: string; name: string }>();
-    allResults.forEach((t) => {
-      const name = (t as any).supplier_name || (t as any).supplier || '';
-      if (!name) return;
-      if (!byName.has(name)) byName.set(name, { id: String(t.advertiserId), name });
+    source.forEach((s) => {
+      if (!s.name) return;
+      if (!byName.has(s.name)) byName.set(s.name, s);
     });
-    // Always surface WheelHero (wheels/rims) alongside tyre suppliers
-    if (!byName.has('WheelHero')) byName.set('WheelHero', { id: '104209', name: 'WheelHero' });
     return Array.from(byName.values());
-  }, [allResults]);
+  }, [allResults, supplier, brand]);
 
   const uniqueBrands = useMemo(
     () => [...new Set(allResults.map((t) => t.brand).filter(Boolean) as string[])].sort(),
@@ -496,19 +494,48 @@ const Tyres = () => {
           </div>
         )}
 
-        {!loading && !searchError && searched && allResults.length === 0 && (
-          <div className="text-center py-20">
-            <div className="text-zinc-400">No results found — try a different size.</div>
-            <button
-              type="button"
-              onClick={retrySearch}
-              className="mt-5 rounded-xl px-6 py-3 font-bold text-white text-xs uppercase tracking-[0.18em] transition-opacity hover:opacity-90"
-              style={{ background: RED }}
-            >
-              Try Again
-            </button>
-          </div>
-        )}
+        {!loading && !searchError && searched && allResults.length === 0 && (() => {
+          const supplierName = supplier !== 'all'
+            ? (allSuppliersListRef.current.find(s => s.id === supplier)?.name
+                || uniqueSuppliers.find(s => s.id === supplier)?.name
+                || 'this supplier')
+            : '';
+          const brandActive = brand && brand !== 'all';
+          const supplierActive = supplier && supplier !== 'all';
+          let message = 'No results found — try a different size.';
+          if (supplierActive && brandActive) {
+            message = `${brand} is not available from ${supplierName}. Try selecting a different brand or view all suppliers.`;
+          } else if (supplierActive) {
+            message = `No matching tyres from ${supplierName} in this size. Try a different size or view all suppliers.`;
+          } else if (brandActive) {
+            message = `${brand} is not available in this size. Try selecting a different brand.`;
+          }
+          return (
+            <div className="text-center py-20">
+              <div className="text-zinc-300 max-w-xl mx-auto">{message}</div>
+              <div className="mt-5 flex items-center justify-center gap-2 flex-wrap">
+                {(supplierActive || brandActive) && (
+                  <button
+                    type="button"
+                    onClick={() => { setSupplier('all'); setBrand('all'); }}
+                    className="rounded-xl px-6 py-3 font-bold text-white text-xs uppercase tracking-[0.18em] transition-opacity hover:opacity-90"
+                    style={{ background: RED }}
+                  >
+                    View All Suppliers
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={retrySearch}
+                  className="rounded-xl px-6 py-3 font-bold text-xs uppercase tracking-[0.18em] transition-opacity hover:opacity-90"
+                  style={{ background: 'transparent', color: '#e4e4e7', border: `1px solid ${BORDER_2}` }}
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          );
+        })()}
 
         {!loading && allResults.length > 0 && (
           <>
@@ -521,6 +548,8 @@ const Tyres = () => {
                 <div className="flex flex-wrap items-center justify-center gap-2">
                   {uniqueSuppliers.map((s) => {
                     const active = supplier === s.id;
+                    const supplierFilterActive = supplier && supplier !== 'all';
+                    const dimmed = supplierFilterActive && !active;
                     return (
                       <button
                         key={s.id}
@@ -533,6 +562,7 @@ const Tyres = () => {
                         style={{
                           background: active ? RED : CARD,
                           border: `1px solid ${active ? RED : BORDER}`,
+                          opacity: dimmed ? 0.35 : 1,
                         }}
                       >
                         <Flag id={s.id} size={16} />
