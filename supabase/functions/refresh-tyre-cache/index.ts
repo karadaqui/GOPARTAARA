@@ -84,8 +84,13 @@ async function fetchFeedList(): Promise<Record<string, FeedMeta>> {
     let url = (cols[urlIdx] || '').trim()
     if (!feedId || !advName || !url) continue
 
+    const feedName = feedNameIdx >= 0 ? (cols[feedNameIdx] || '').trim() : ''
     const lower = advName.toLowerCase()
-    if (!TYRE_KEYWORDS.some(k => lower.includes(k))) continue
+    const feedLower = feedName.toLowerCase()
+    const matches = TYRE_KEYWORDS.some(k => lower.includes(k) || feedLower.includes(k))
+      || feedLower.includes('tire')
+      || SUPPLIER_OVERRIDES[feedId]
+    if (!matches) continue
 
     // Ensure CSV format with required columns; downloadUrl is usually a gzip CSV.
     // Inject brand_name and merchant_category into the /columns/ segment if present.
@@ -97,11 +102,11 @@ async function fetchFeedList(): Promise<Record<string, FeedMeta>> {
     })
     // Feeds where `name` contains the model and `desc` contains size or marketing blurb.
     // For these, use `name` as product_name (useDesc=false).
-    const NAME_AS_PRODUCT_FEEDS = new Set(['12715', '93988', '93986', '93986_pneumatici', '23179', '10499', '66605', '12641', '4118'])
+    const NAME_AS_PRODUCT_FEEDS = new Set(['12715', '93988', '93986', '93986_pneumatici', '23179', '10499', '66605', '12641', '4118', '103419', '104208', '104209'])
     out[feedId] = {
       feedId,
       cur: detectCurrency(region, language),
-      supplier: advName,
+      supplier: SUPPLIER_OVERRIDES[feedId] || advName,
       url,
       useDesc: !NAME_AS_PRODUCT_FEEDS.has(feedId),
     }
