@@ -41,6 +41,7 @@ const FLAG_MAP: Record<string, string> = {
   '93986': '1f1ee-1f1f9',
   '10747': '1f1ea-1f1ea',
   '66605': '1f1ea-1f1ea',
+  '67974': '1f1fa-1f1f8',
 };
 
 // Expected tyre suppliers — used to show "browse all" fallback cards
