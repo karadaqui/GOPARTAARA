@@ -584,7 +584,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        {(isAdmin || user?.email === "info@gopartara.com") && (
+        {isAdmin && (
           <div className="mb-6 flex justify-end">
             <button
               onClick={handleResetSearchCount}
