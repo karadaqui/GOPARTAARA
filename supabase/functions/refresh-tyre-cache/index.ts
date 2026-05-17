@@ -232,11 +232,21 @@ serve(async (req) => {
               ui = hdrs.findIndex(h => norm(h).includes('deeplink'))
               bi = hdrs.findIndex(h => norm(h).includes('brandname') || norm(h) === 'brand')
               descIdx = hdrs.findIndex(h => h.includes('desc'))
-              // Prefer merchant_image_url (raw merchant image) over aw_image_url
-              // (Awin's productserve converter often returns noimage.gif for some merchants like WheelHero).
-              imgIdx = hdrs.findIndex(h => norm(h) === 'merchantimageurl')
-              imgFallbackIdx = hdrs.findIndex(h => /image|img|photo|picture|thumb/i.test(h))
-              if (imgIdx < 0) { imgIdx = imgFallbackIdx; imgFallbackIdx = -1 }
+              // Image preference is feed-specific. For WheelHero (feeds 103419/104208/104209),
+              // merchant_image_url gets CSV-truncated and aw_image_url returns valid
+              // productserve.com URLs — so prefer aw_image_url for those. For other feeds
+              // (mytyres etc.), aw_image_url often returns noimage.gif so merchant_image_url wins.
+              const WHEELHERO_FEEDS = new Set(['103419', '104208', '104209'])
+              const awImgI = hdrs.findIndex(h => norm(h) === 'awimageurl')
+              const merchImgI = hdrs.findIndex(h => norm(h) === 'merchantimageurl')
+              const genericImgI = hdrs.findIndex(h => /image|img|photo|picture|thumb/i.test(h))
+              if (WHEELHERO_FEEDS.has(feedId)) {
+                imgIdx = awImgI >= 0 ? awImgI : (merchImgI >= 0 ? merchImgI : genericImgI)
+                imgFallbackIdx = merchImgI >= 0 && merchImgI !== imgIdx ? merchImgI : -1
+              } else {
+                imgIdx = merchImgI >= 0 ? merchImgI : (awImgI >= 0 ? awImgI : genericImgI)
+                imgFallbackIdx = awImgI >= 0 && awImgI !== imgIdx ? awImgI : -1
+              }
               catIdx = hdrs.findIndex(h => norm(h).includes('merchantcategory') || norm(h) === 'category')
               console.log(`Feed ${feedId} headers: ni=${ni} pi=${pi} ui=${ui} bi=${bi} descIdx=${descIdx} imgIdx=${imgIdx} imgFallback=${imgFallbackIdx} catIdx=${catIdx}`)
               continue
