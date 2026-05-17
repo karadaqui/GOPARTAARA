@@ -217,12 +217,8 @@ const Tyres = () => {
         productsLen: data?.products?.length,
       });
       const products = (data?.products || []) as Tyre[];
-      if (products.length === 0 && (supplierFilterActive || brandFilterActive) && retryOnEmpty) {
-        setSupplier('all');
-        setBrand('all');
-        await fetchPage(1, { w, p, r, feedId: '', season: seasonVal, brand: 'all', minPrice: minP, maxPrice: maxP, retryOnEmpty: false });
-        return;
-      }
+      // Issue 3: When user explicitly selected a supplier and/or brand and we get 0 results,
+      // do NOT silently reset filters. Show the empty state with an informative message.
       if (optionSearchKeyRef.current !== optionSearchKey && !supplierFilterActive && !brandFilterActive && products.length > 0) {
         optionSearchKeyRef.current = optionSearchKey;
         const byName = new Map<string, { id: string; name: string }>();
@@ -240,12 +236,6 @@ const Tyres = () => {
       setServerTotal(data?.total || 0);
     } catch (e: any) {
       console.error('[Tyres] fetchPage failed', e);
-      if ((supplierFilterActive || brandFilterActive) && retryOnEmpty) {
-        setSupplier('all');
-        setBrand('all');
-        await fetchPage(1, { w, p, r, feedId: '', season: seasonVal, brand: 'all', minPrice: minP, maxPrice: maxP, retryOnEmpty: false });
-        return;
-      }
       setAllResults([]);
       setSearchError(`Tyre search failed: ${e?.message || 'Unknown error'}`);
     } finally {
