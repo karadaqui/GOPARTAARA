@@ -906,10 +906,12 @@ const Dashboard = () => {
         {/* Recently Searched (from localStorage) */}
         <RecentlyViewedWidget />
 
-        {/* Blog Generator */}
-        <div className="mb-6">
-          <BlogGenerateSection />
-        </div>
+        {/* Blog Generator — admin only */}
+        {isAdmin && (
+          <div className="mb-6">
+            <BlogGenerateSection />
+          </div>
+        )}
 
         {/* Search History — Pro/Elite only */}
         {isPro ? (
