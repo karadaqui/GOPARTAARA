@@ -494,19 +494,48 @@ const Tyres = () => {
           </div>
         )}
 
-        {!loading && !searchError && searched && allResults.length === 0 && (
-          <div className="text-center py-20">
-            <div className="text-zinc-400">No results found — try a different size.</div>
-            <button
-              type="button"
-              onClick={retrySearch}
-              className="mt-5 rounded-xl px-6 py-3 font-bold text-white text-xs uppercase tracking-[0.18em] transition-opacity hover:opacity-90"
-              style={{ background: RED }}
-            >
-              Try Again
-            </button>
-          </div>
-        )}
+        {!loading && !searchError && searched && allResults.length === 0 && (() => {
+          const supplierName = supplier !== 'all'
+            ? (allSuppliersListRef.current.find(s => s.id === supplier)?.name
+                || uniqueSuppliers.find(s => s.id === supplier)?.name
+                || 'this supplier')
+            : '';
+          const brandActive = brand && brand !== 'all';
+          const supplierActive = supplier && supplier !== 'all';
+          let message = 'No results found — try a different size.';
+          if (supplierActive && brandActive) {
+            message = `${brand} is not available from ${supplierName}. Try selecting a different brand or view all suppliers.`;
+          } else if (supplierActive) {
+            message = `No matching tyres from ${supplierName} in this size. Try a different size or view all suppliers.`;
+          } else if (brandActive) {
+            message = `${brand} is not available in this size. Try selecting a different brand.`;
+          }
+          return (
+            <div className="text-center py-20">
+              <div className="text-zinc-300 max-w-xl mx-auto">{message}</div>
+              <div className="mt-5 flex items-center justify-center gap-2 flex-wrap">
+                {(supplierActive || brandActive) && (
+                  <button
+                    type="button"
+                    onClick={() => { setSupplier('all'); setBrand('all'); }}
+                    className="rounded-xl px-6 py-3 font-bold text-white text-xs uppercase tracking-[0.18em] transition-opacity hover:opacity-90"
+                    style={{ background: RED }}
+                  >
+                    View All Suppliers
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={retrySearch}
+                  className="rounded-xl px-6 py-3 font-bold text-xs uppercase tracking-[0.18em] transition-opacity hover:opacity-90"
+                  style={{ background: 'transparent', color: '#e4e4e7', border: `1px solid ${BORDER_2}` }}
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
+          );
+        })()}
 
         {!loading && allResults.length > 0 && (
           <>
