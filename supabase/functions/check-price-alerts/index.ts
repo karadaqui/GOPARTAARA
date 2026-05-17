@@ -74,6 +74,13 @@ Deno.serve(async (req) => {
     });
 
   try {
+    // Cron-only endpoint
+    const cronSecret = req.headers.get("x-cron-secret");
+    const expected = Deno.env.get("CRON_SECRET");
+    if (!expected || cronSecret !== expected) {
+      return json({ error: "Unauthorized" }, 401);
+    }
+
     const EBAY_APP_ID = Deno.env.get("EBAY_APP_ID");
     const EBAY_CERT_ID = Deno.env.get("EBAY_CERT_ID");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
