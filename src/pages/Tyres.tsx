@@ -268,16 +268,24 @@ const Tyres = () => {
   };
 
   const uniqueSuppliers = useMemo(() => {
+    // Issue 2: When a filter (supplier/brand) is active, the results only contain
+    // matching products, so deriving the pill list from results would collapse to one.
+    // Use the full list captured during the last unfiltered search instead, so users
+    // can switch supplier and the bar stays the same shape.
+    const supplierFilterActive = supplier && supplier !== 'all';
+    const brandFilterActive = brand && brand !== 'all';
+    const useFullList = (supplierFilterActive || brandFilterActive) && allSuppliersListRef.current.length > 0;
+    const source = useFullList ? allSuppliersListRef.current : allResults.map((t) => ({
+      id: String(t.advertiserId),
+      name: (t as any).supplier_name || (t as any).supplier || '',
+    }));
     const byName = new Map<string, { id: string; name: string }>();
-    allResults.forEach((t) => {
-      const name = (t as any).supplier_name || (t as any).supplier || '';
-      if (!name) return;
-      if (!byName.has(name)) byName.set(name, { id: String(t.advertiserId), name });
+    source.forEach((s) => {
+      if (!s.name) return;
+      if (!byName.has(s.name)) byName.set(s.name, s);
     });
-    // Always surface WheelHero (wheels/rims) alongside tyre suppliers
-    if (!byName.has('WheelHero')) byName.set('WheelHero', { id: '104209', name: 'WheelHero' });
     return Array.from(byName.values());
-  }, [allResults]);
+  }, [allResults, supplier, brand]);
 
   const uniqueBrands = useMemo(
     () => [...new Set(allResults.map((t) => t.brand).filter(Boolean) as string[])].sort(),
