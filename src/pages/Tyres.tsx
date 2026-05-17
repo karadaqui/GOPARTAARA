@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import SafeImage from "@/components/SafeImage";
+import WheelHeroImage from "@/components/WheelHeroImage";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Loader2,
@@ -748,7 +749,9 @@ const Tyres = () => {
                     <div className="h-1 w-full" style={{ background: brandGradient(t.brand) }} />
 
                     <div className="relative aspect-square flex items-center justify-center p-3" style={{ background: CARD_2 }}>
-                      {t.image_url ? (
+                      {(t.supplier_name || '').toLowerCase().includes('wheelhero') ? (
+                        <WheelHeroImage src={t.image_url} alt={t.name} brand={t.brand} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
+                      ) : t.image_url ? (
                         <SafeImage src={t.image_url} alt={t.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
                       ) : (
                         <div className="text-zinc-700 text-[10px]">No image</div>
