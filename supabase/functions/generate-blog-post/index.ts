@@ -37,10 +37,13 @@ Deno.serve(async (req) => {
     try { body = await req.json(); } catch { /* no body */ }
     if (body?.batch) batchCount = Math.min(body.batch, 5);
 
-    // Automated mode requires a valid CRON_SECRET header — never trust a
-    // client-set body flag alone.
+    // Automated mode: accept either a valid CRON_SECRET header, or a bearer
+    // token matching the Supabase service-role key (used by the pg_cron job).
     if (body?.automated === true) {
-      if (!expectedCronSecret || cronSecretHeader !== expectedCronSecret) {
+      const bearer = authHeader?.replace(/^Bearer\s+/i, "");
+      const cronOk = expectedCronSecret && cronSecretHeader === expectedCronSecret;
+      const serviceOk = bearer && bearer === supabaseServiceKey;
+      if (!cronOk && !serviceOk) {
         return new Response(JSON.stringify({ error: "Unauthorized" }), {
           status: 401,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
