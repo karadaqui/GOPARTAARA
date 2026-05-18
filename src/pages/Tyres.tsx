@@ -813,13 +813,7 @@ const Tyres = () => {
                     <div className="h-1 w-full" style={{ background: brandGradient(t.brand) }} />
 
                     <div className="relative aspect-square flex items-center justify-center p-3" style={{ background: CARD_2 }}>
-                      {(t.supplier_name || '').toLowerCase().includes('wheelhero') ? (
-                        <WheelHeroImage src={t.image_url} alt={t.name} brand={t.brand} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
-                      ) : t.image_url ? (
-                        <SafeImage src={t.image_url} alt={t.name} className="w-full h-full object-contain group-hover:scale-105 transition-transform" />
-                      ) : (
-                        <div className="text-zinc-700 text-[10px]">No image</div>
-                      )}
+                      <TyreProductImage product={t} />
                     </div>
 
                     <div className="p-2.5 flex-1 flex flex-col gap-1.5">
