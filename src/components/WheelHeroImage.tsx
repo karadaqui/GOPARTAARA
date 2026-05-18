@@ -62,6 +62,14 @@ const WheelHeroImage = ({ src, alt, brand, className }: WheelHeroImageProps) => 
       decoding="async"
       className={className}
       onError={() => setErrored(true)}
+      onLoad={(e) => {
+        const img = e.currentTarget;
+        // productserve.com redirects broken images to a tiny noimage.gif placeholder.
+        // Detect by unusually small natural dimensions and swap to brand placeholder.
+        if (img.naturalWidth > 0 && img.naturalWidth <= 60 && img.naturalHeight <= 60) {
+          setErrored(true);
+        }
+      }}
     />
   );
 };
