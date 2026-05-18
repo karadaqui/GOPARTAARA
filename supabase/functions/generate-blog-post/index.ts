@@ -128,45 +128,44 @@ Deno.serve(async (req) => {
         .update({ last_used: new Date().toISOString() })
         .eq("id", chosen.id);
 
-      const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${lovableApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
-          messages: [
-            {
-              role: "system",
-              content: `You are an expert automotive journalist writing for a UK car parts comparison website called PARTARA (gopartara.com). Write detailed, SEO-optimised blog posts. Always write in British English. Be helpful, practical, and specific. Include real part names, common car models, and practical advice. End every post with a CTA mentioning PARTARA. Today's date is ${today}.`,
-            },
-            {
-              role: "user",
-              content: `Write a comprehensive, SEO-optimised blog post about: "${chosen.topic}".
+      const systemPrompt = `You are an expert automotive journalist writing for a UK car parts comparison website called PARTARA (gopartara.com). Write detailed, SEO-optimised blog posts. Always write in British English. Be helpful, practical, and specific. Include real part names, common car models, and practical advice. End every post with a CTA mentioning PARTARA. Today's date is ${today}.`;
+
+      const userPrompt = `Write a comprehensive, SEO-optimised blog post about: "${chosen.topic}".
 Format as JSON with these exact fields:
 - title (compelling SEO title, under 60 chars)
 - slug (URL-friendly, lowercase letters numbers and hyphens only)
-- content (full HTML blog post, minimum 800 words, include h2/h3 subheadings, bullet points, practical tips. Use proper HTML tags like <h2>, <h3>, <p>, <ul>, <li>, <strong>.)
+- content (full HTML blog post, 500-650 words, include h2/h3 subheadings, bullet points, practical tips. Use proper HTML tags like <h2>, <h3>, <p>, <ul>, <li>, <strong>.)
 - excerpt (meta description, 150-160 chars)
 - category (one of: Buying Guide, Maintenance, Education, Comparison, Tutorial, News)
 - tags (array of 5 relevant tags)
 - read_time (e.g. "5 min read")
-Return ONLY valid JSON, no markdown code blocks.`,
-            },
-          ],
-          response_format: { type: "json_object" },
+Return ONLY valid JSON, no markdown code blocks.`;
+
+      const aiResponse = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": anthropicKey,
+          "anthropic-version": "2023-06-01",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 4000,
+          system: systemPrompt,
+          messages: [{ role: "user", content: userPrompt }],
         }),
       });
 
       if (!aiResponse.ok) {
-        console.error("AI gateway error:", aiResponse.status);
+        console.error("Anthropic error:", aiResponse.status, await aiResponse.text());
         continue;
       }
 
       const aiData = await aiResponse.json();
-      const content = aiData.choices?.[0]?.message?.content;
+      let content = aiData.content?.[0]?.text;
       if (!content) continue;
+      // Strip ``` fences if the model added them
+      content = content.trim().replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
 
       let post: any;
       try {
