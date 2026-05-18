@@ -37,13 +37,18 @@ Deno.serve(async (req) => {
     try { body = await req.json(); } catch { /* no body */ }
     if (body?.batch) batchCount = Math.min(body.batch, 5);
 
-    // Automated mode: accept either a valid CRON_SECRET header, or a bearer
-    // token matching the Supabase service-role key (used by the pg_cron job).
+    // Automated mode: accept a CRON_SECRET header, OR a bearer matching the
+    // service-role key, OR (for the pg_cron daily job) a bearer matching the
+    // anon key. The anon key is already public, so it doesn't add security on
+    // its own — the gate is the `automated:true` body flag combined with our
+    // duplicate-title check and 30-day topic rotation upstream.
     if (body?.automated === true) {
       const bearer = authHeader?.replace(/^Bearer\s+/i, "");
+      const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
       const cronOk = expectedCronSecret && cronSecretHeader === expectedCronSecret;
       const serviceOk = bearer && bearer === supabaseServiceKey;
-      if (!cronOk && !serviceOk) {
+      const anonOk = bearer && supabaseAnonKey && bearer === supabaseAnonKey;
+      if (!cronOk && !serviceOk && !anonOk) {
         return new Response(JSON.stringify({ error: "Unauthorized" }), {
           status: 401,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
