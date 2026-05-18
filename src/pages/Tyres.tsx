@@ -4,7 +4,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
 import SafeImage from "@/components/SafeImage";
-import WheelHeroImage from "@/components/WheelHeroImage";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Loader2,
@@ -111,11 +110,76 @@ interface Tyre {
   name: string;
   price: string;
   brand?: string;
+  brand_name?: string;
   supplier_name: string;
   advertiserId: string | number;
   url: string;
   image_url?: string;
 }
+
+const WheelHeroPlaceholder = ({ brand }: { brand?: string }) => (
+  <div style={{
+    width: '100%',
+    aspectRatio: '1',
+    background: '#111111',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '12px',
+    borderRadius: '8px'
+  }}>
+    <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="32" cy="32" r="30" stroke="#444" strokeWidth="2"/>
+      <circle cx="32" cy="32" r="18" stroke="#444" strokeWidth="2"/>
+      <circle cx="32" cy="32" r="5" fill="#444"/>
+      <line x1="32" y1="2" x2="32" y2="14" stroke="#444" strokeWidth="2"/>
+      <line x1="32" y1="50" x2="32" y2="62" stroke="#444" strokeWidth="2"/>
+      <line x1="2" y1="32" x2="14" y2="32" stroke="#444" strokeWidth="2"/>
+      <line x1="50" y1="32" x2="62" y2="32" stroke="#444" strokeWidth="2"/>
+      <line x1="11" y1="11" x2="19" y2="19" stroke="#444" strokeWidth="2"/>
+      <line x1="45" y1="45" x2="53" y2="53" stroke="#444" strokeWidth="2"/>
+      <line x1="53" y1="11" x2="45" y2="19" stroke="#444" strokeWidth="2"/>
+      <line x1="19" y1="45" x2="11" y2="53" stroke="#444" strokeWidth="2"/>
+    </svg>
+    <span style={{
+      color: '#ffffff',
+      fontWeight: '700',
+      fontSize: '13px',
+      letterSpacing: '0.1em',
+      textTransform: 'uppercase'
+    }}>
+      {brand || 'WheelHero'}
+    </span>
+    <span style={{
+      color: '#f59e0b',
+      fontSize: '12px'
+    }}>
+      View on WheelHero →
+    </span>
+  </div>
+);
+
+const TyreProductImage = ({ product }: { product: Tyre }) => {
+  const [imageError, setImageError] = useState(false);
+  const supplierName = product.supplier_name?.toLowerCase() || '';
+  const isWheelHero = supplierName.includes('wheelhero') || supplierName.includes('wheel hero');
+
+  if (isWheelHero || (isWheelHero && imageError)) {
+    return <WheelHeroPlaceholder brand={product.brand_name || product.brand || 'WheelHero'} />;
+  }
+
+  return product.image_url ? (
+    <SafeImage
+      src={product.image_url}
+      alt={product.name}
+      className="w-full h-full object-contain group-hover:scale-105 transition-transform"
+      onError={() => setImageError(true)}
+    />
+  ) : (
+    <div className="text-zinc-700 text-[10px]">No image</div>
+  );
+};
 
 const RED = '#dc2626';
 const BG = '#0a0a0a';
